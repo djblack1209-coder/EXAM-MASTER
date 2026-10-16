@@ -5,6 +5,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as practiceApi from '@/services/api/domains/practice.api.js';
 import { getLoginSessionEpoch, getToken, getUserId } from '@/services/auth-storage.js';
+import { obfuscate } from '@/utils/crypto/cipher.js';
 
 // Mock logger
 vi.mock('@/utils/logger.js', () => ({
@@ -137,6 +138,87 @@ describe('storageService', () => {
       storageService.save('EXAM_USER_ID', identity.userId, true);
       expect(storageService.getSessionEpoch()).toBeNull();
       expect(uni.getStorageSync('_enc_EXAM_SESSION_EPOCH')).toBe('');
+    });
+    it.each(['plain', 'empty-plain', 'encrypted-prefix'])(
+      '%s浏览器迁移先写新格式再删旧格式，事件不发撤销且无敏感迁移元数据',
+      (format) => {
+        const listener = vi.fn(),
+          stop = storageService.onIdentityChange(listener);
+        const events = [];
+        localStorage.clear();
+        vi.stubGlobal('uni', {});
+        const set = localStorage.setItem.getMockImplementation(),
+          remove = localStorage.removeItem.getMockImplementation();
+        try {
+          storageService.saveLoginSession(identity);
+          const epoch = getLoginSessionEpoch();
+          const source = format === 'encrypted-prefix' ? '_enc_EXAM_TOKEN' : 'EXAM_TOKEN';
+          if (format !== 'empty-plain') localStorage.removeItem('__exam_storage__:_enc_EXAM_TOKEN');
+          localStorage.setItem(
+            source,
+            format === 'empty-plain' ? '' : format === 'plain' ? identity.token : obfuscate(identity.token)
+          );
+          const setSpy = vi.spyOn(localStorage, 'setItem').mockImplementation((key, value) => {
+            const oldValue = localStorage.getItem(key);
+            set(key, value);
+            events.push({ key, oldValue, newValue: value });
+          });
+          const removeSpy = vi.spyOn(localStorage, 'removeItem').mockImplementation((key) => {
+            const oldValue = localStorage.getItem(key);
+            remove(key);
+            if (oldValue !== null) events.push({ key, oldValue, newValue: null });
+          });
+          listener.mockClear();
+          expect(storageService.save('EXAM_TOKEN', identity.token, true)).toBe(true);
+          for (const event of events) window.dispatchEvent(new StorageEvent('storage', event));
+          expect(listener.mock.calls.every(([change]) => change?.type !== 'logout')).toBe(true);
+          expect(getLoginSessionEpoch()).toBe(epoch);
+          expect(getToken()).toBe(identity.token);
+          const newWrite = events.findIndex(
+            (event) => event.key === '__exam_storage__:_enc_EXAM_TOKEN' && event.newValue !== null
+          );
+          const oldDelete = events.findIndex((event) => event.key === source && event.newValue === null);
+          expect(oldDelete).toBeGreaterThan(newWrite);
+          for (const event of events.filter((event) => event.key.startsWith('__exam_identity_migration_v1:'))) {
+            expect(JSON.stringify(event)).not.toContain(identity.token);
+            expect(JSON.stringify(event)).not.toContain(epoch);
+          }
+          expect(
+            Array.from({ length: localStorage.length }, (_, i) => localStorage.key(i)).some((key) =>
+              key.startsWith('__exam_identity_migration_v1:')
+            )
+          ).toBe(false);
+          // The same removal after the bracket is a real revocation, even with restored identity.
+          window.dispatchEvent(
+            new StorageEvent('storage', { key: source, oldValue: 'synthetic-old-value', newValue: null })
+          );
+          expect(listener).toHaveBeenLastCalledWith({ type: 'logout' });
+          setSpy.mockRestore();
+          removeSpy.mockRestore();
+        } finally {
+          stop();
+          vi.unstubAllGlobals();
+          localStorage.clear();
+        }
+      }
+    );
+    it('加密迁移写入未成功时保留明文与会话代号', () => {
+      storageService.saveLoginSession(identity);
+      const epoch = getLoginSessionEpoch();
+      uni.removeStorageSync('_enc_EXAM_TOKEN');
+      uni.setStorageSync('EXAM_TOKEN', identity.token);
+      const write = uni.setStorageSync.getMockImplementation();
+      const spy = vi.spyOn(uni, 'setStorageSync').mockImplementation((key, value) => {
+        if (key === '_enc_EXAM_TOKEN') throw new Error('SYNTHETIC_QUOTA_FAILURE');
+        write(key, value);
+      });
+      try {
+        expect(storageService.save('EXAM_TOKEN', identity.token, true)).toBe(false);
+        expect(uni.getStorageSync('EXAM_TOKEN')).toBe(identity.token);
+        expect(getLoginSessionEpoch()).toBe(epoch);
+      } finally {
+        spy.mockRestore();
+      }
     });
     it('续期、重复保存、资料更新和保留全局的清理均不换代', () => {
       storageService.saveLoginSession(identity);

@@ -419,8 +419,10 @@ it('不可用的记录生命周期不能以空上下文确认移除或恢复定�
     content = locator(p);
   storageService.save('conversation_learning_v1_lifecycle', { owner, contract: 'wrong', generation: '12345678' }, true);
   expect(store.recordContext()).toBeNull();
-  expect(() => store.previewPendingRemoval(entry().id)).toThrow('撤销标记');
-  expect(() => store.restorePendingLocator(content, true)).toThrow('撤销标记');
+  expect(() => store.previewPendingRemoval(entry().id)).toThrow(expect.objectContaining({ code: 'CONTEXT_CHANGED' }));
+  expect(() => store.restorePendingLocator(content, true)).toThrow(
+    expect.objectContaining({ code: 'CONTEXT_CHANGED' })
+  );
   storageService.remove('conversation_learning_v1_lifecycle', true);
   vi.spyOn(learningRepository, 'lifecycleContext').mockImplementation(() => {
     throw new Error('TEST_ONLY_CONTEXT_UNAVAILABLE');

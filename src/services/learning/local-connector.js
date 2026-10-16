@@ -1,6 +1,7 @@
 import { assert } from './learning-domain.js';
 import { createUtf8StreamDecoder } from '../../../laf-backend/functions/_shared/learning-stream-codec.js';
 import { appConnectorSupported, requestAppConnector } from './app-connector.js';
+import { getLoginSessionEpoch, getUserId } from '../auth-storage.js';
 
 export const WEIXIN_CONNECTOR_ORIGIN = 'https://wenli-weixin.invalid';
 
@@ -60,8 +61,20 @@ export function assertConnectorPlatform(platform) {
 export async function requestConnector(
   connection,
   url,
-  { platform, signal, method = 'POST', body, timeout = 30000, limit = 100000 } = {}
+  { platform, signal, assertCurrent, method = 'POST', body, timeout = 30000, limit = 100000 } = {}
 ) {
+  const session = getLoginSessionEpoch(),
+    owner = getUserId();
+  const checkCurrent = () => {
+    assertCurrent?.();
+    assert(
+      getLoginSessionEpoch() === session && getUserId() === owner,
+      'CONTEXT_CHANGED',
+      '登录会话已变化，旧连接结果未采用'
+    );
+    assert(!signal?.aborted, 'CANCELLED', '连接请求已取消');
+  };
+  checkCurrent();
   assertConnectorPlatform(platform);
   validateLocalConnector(url.href, connection.allowedOrigins, connection.consent);
   assert(connection.token?.length >= 32, 'AUTH_REQUIRED', '连接器需要至少32字符访问令牌');
@@ -75,8 +88,13 @@ export async function requestConnector(
     Authorization: `Bearer ${connection.token}`,
     ...(body !== undefined ? { 'Content-Type': 'application/json' } : {})
   };
-  if (platform === 'weixin') return requestWeixinConnector(url.href, { signal, method, body, timeout, limit, headers });
-  if (platform === 'app') return requestAppConnector(connection, url.href, { signal, method, body, timeout, limit });
+  if (platform === 'weixin' || platform === 'app') {
+    const result = await (platform === 'weixin'
+      ? requestWeixinConnector(url.href, { signal, method, body, timeout, limit, headers })
+      : requestAppConnector(connection, url.href, { signal, method, body, timeout, limit }));
+    checkCurrent();
+    return result;
+  }
   const controller = new AbortController();
   let timedOut = false;
   const abort = () => controller.abort();
@@ -94,6 +112,7 @@ export async function requestConnector(
       redirect: 'error'
     });
     const result = await readConnectorResponse(response, limit);
+    checkCurrent();
     assert(!signal?.aborted, 'CANCELLED', '连接请求已取消');
     assert(!timedOut, 'TIMEOUT', '连接请求超时，未确认完成');
     return { ok: response.ok, body: result };
@@ -249,7 +268,7 @@ export async function readConnectorResponse(response, limit = 100000) {
   }
 }
 
-export async function testLocalConnector(connection, { platform, signal } = {}) {
+export async function testLocalConnector(connection, { platform, signal, assertCurrent } = {}) {
   assertConnectorPlatform(platform);
   const url = validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
   assert(
@@ -262,6 +281,7 @@ export async function testLocalConnector(connection, { platform, signal } = {}) 
   const { ok, body: result } = await requestConnector(connection, url, {
     platform,
     signal,
+    assertCurrent,
     method: 'GET',
     timeout: 5000
   });
@@ -324,6 +344,7 @@ export async function callLocalConnector(connection, input, options = {}) {
   const { ok, body: result } = await requestConnector(connection, url, {
     platform: options.platform,
     signal: options.signal,
+    assertCurrent: options.assertCurrent,
     body: JSON.stringify(payload)
   });
   const messages = {

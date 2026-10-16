@@ -3,7 +3,7 @@ import { appMaterialParseSupported, MATERIAL_PARSE_TIMEOUT } from './app-connect
 import { MATERIAL_LIMITS, materialFingerprint } from './material-intake.js';
 import { validateLocalConnector, assertConnectorPlatform, requestConnector } from './local-connector.js';
 
-export async function testMaterialConnector(connection, { platform, signal } = {}) {
+export async function testMaterialConnector(connection, { platform, signal, assertCurrent } = {}) {
   assertConnectorPlatform(platform);
   assert(connection, 'PRECONDITION', '请先授权资料连接器');
   validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
@@ -11,6 +11,7 @@ export async function testMaterialConnector(connection, { platform, signal } = {
   const { ok, body: result } = await requestConnector(connection, new URL('/health', connection.endpoint), {
     platform,
     signal,
+    assertCurrent,
     body: '{}',
     timeout: 5000
   });
@@ -80,7 +81,7 @@ export async function testMaterialConnector(connection, { platform, signal } = {
   return result.data;
 }
 
-export async function requestUploadRecovery(connection, action, upload, { platform, signal } = {}) {
+export async function requestUploadRecovery(connection, action, upload, { platform, signal, assertCurrent } = {}) {
   assertConnectorPlatform(platform);
   assert(connection, 'PRECONDITION', '请重新授权原资料识别服务');
   validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
@@ -103,6 +104,7 @@ export async function requestUploadRecovery(connection, action, upload, { platfo
   const { ok, body: result } = await requestConnector(connection, new URL('/parse', connection.endpoint), {
     platform,
     signal,
+    assertCurrent,
     timeout: 10000,
     limit: 20000,
     body: JSON.stringify({
@@ -150,7 +152,7 @@ export async function requestUploadRecovery(connection, action, upload, { platfo
   return receipt;
 }
 
-export async function requestUploadMaintenance(connection, preview, { platform, signal } = {}) {
+export async function requestUploadMaintenance(connection, preview, { platform, signal, assertCurrent } = {}) {
   assertConnectorPlatform(platform);
   assert(connection, 'PRECONDITION', '请先重新授权原资料识别服务');
   validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
@@ -179,6 +181,7 @@ export async function requestUploadMaintenance(connection, preview, { platform, 
   const { ok, body: result } = await requestConnector(connection, new URL('/parse', connection.endpoint), {
     platform,
     signal,
+    assertCurrent,
     timeout: 10000,
     limit: 20000,
     body: JSON.stringify({
@@ -361,6 +364,7 @@ export async function parseConnectedMaterial(connection, input, options = {}) {
     const { ok, body: result } = await requestConnector(connection, endpoint, {
       platform: options.platform,
       signal: options.signal,
+      assertCurrent: options.assertCurrent,
       body,
       timeout: layout ? MATERIAL_PARSE_TIMEOUT : 35000,
       limit: 2000000
@@ -408,6 +412,7 @@ export async function parseConnectedMaterial(connection, input, options = {}) {
       material.id = `${material.original.connectorFileId}:${materialFingerprint(endpoint.origin)}${layout ? ':' + material.original.storageId : ''}`;
     }
     results.push(material);
+    options.assertCurrent?.();
     await options.onBatch?.(material);
     if (upload) {
       await options.onUploadSaved?.(upload.id);
@@ -426,7 +431,7 @@ export async function parseConnectedMaterial(connection, input, options = {}) {
   return { results, nextPage: page, fileId, pagesPerAction: layout ? 4 : 20 };
 }
 
-export async function deleteConnectedMaterial(connection, original, { platform, signal } = {}) {
+export async function deleteConnectedMaterial(connection, original, { platform, signal, assertCurrent } = {}) {
   assertConnectorPlatform(platform);
   assert(connection, 'PRECONDITION', '请连接保存原件的资料识别服务后重试');
   validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
@@ -440,6 +445,7 @@ export async function deleteConnectedMaterial(connection, original, { platform, 
   const { ok, body: result } = await requestConnector(connection, new URL('/delete', connection.endpoint), {
     platform,
     signal,
+    assertCurrent,
     body: JSON.stringify({ fileId: original.fileId }),
     timeout: 10000,
     limit: 20000

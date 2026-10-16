@@ -175,6 +175,11 @@ export function learningId(prefix = 'learn') {
 export const useConversationLearningStore = defineStore('conversation-learning', () => {
   let sessionEpoch = storageService.getSessionEpoch();
   let sessionRevision = 0;
+  let sessionRevocation = new AbortController();
+  const operationSessions = [];
+  let sessionReady = false;
+  let resettingSession = false;
+  let observedIdentity = { owner: getUserId(), token: getToken() };
   const state = ref(learningRepository.read());
   let notificationObserver = null,
     notificationRefreshTimer = null;
@@ -260,16 +265,48 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   }
   function recordContext() {
     try {
+      if (sessionReady && !resettingSession) ensureSessionCurrent(undefined, undefined, { readOnly: true });
       return JSON.stringify([learningRepository.lifecycleContext(), loginContext()]);
     } catch {
       return null;
     }
   }
   function loginContext() {
-    return JSON.stringify([getLoginSessionEpoch(), sessionRevision]);
+    return JSON.stringify([sessionEpoch, sessionRevision]);
+  }
+  // Notifications accelerate revocation. Every operation and result checks persisted identity itself.
+  function ensureSessionCurrent(expectedSession = operationSessions.at(-1), signal, { readOnly = false } = {}) {
+    const epoch = getLoginSessionEpoch();
+    const identity = { owner: getUserId(), token: getToken() };
+    if (
+      epoch !== sessionEpoch ||
+      identity.owner !== observedIdentity.owner ||
+      Boolean(identity.token) !== Boolean(observedIdentity.token)
+    ) {
+      reloadRecords({ identityChanged: true });
+      assert(readOnly, 'CONTEXT_CHANGED', '登录会话已变化，请重新确认授权后继续');
+    }
+    // A revoked authenticated session must not be silently upgraded here. Guests can study offline.
+    assert(readOnly || !identity.token || epoch, 'CONTEXT_CHANGED', '登录会话已撤销，请重新登录');
+    if (identity.token !== observedIdentity.token) {
+      observedIdentity = identity;
+      cancelModelReads(undefined, 'CONTEXT_CHANGED');
+      cancelModelActions();
+      if (controllerUsesAccountToken) controller?.abort('CREDENTIALS_CHANGED');
+      poetryController?.abort();
+      if (syncRequest) cancelSync();
+    }
+    assert(
+      expectedSession === undefined || expectedSession === loginContext(),
+      'CONTEXT_CHANGED',
+      '登录会话已变化，旧结果未写入'
+    );
+    assert(!signal?.aborted, 'CANCELLED', '请求已取消，旧结果未写入');
+    return loginContext();
   }
   function cancelModelActions() {
     for (const controller of modelActions) controller.abort();
+    modelActions.clear();
   }
   function resetModelResources() {
     cancelPoetryReference();
@@ -296,6 +333,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     return records ? JSON.stringify([records, materialIdentity()]) : null;
   }
   function prepareMaterialAction() {
+    ensureSessionCurrent();
     learningRepository.prepareAsyncAction();
     const context = materialContext();
     assert(context, 'CONTEXT_CHANGED', '本机记录上下文不可用，请重新核对');
@@ -604,8 +642,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   function reminderQueue(at = Date.now()) {
     return reminderJobs(state.value, at, { dayKey });
   }
-  const notificationContext = () => JSON.stringify(learningRepository.notificationConsentContext());
+  const notificationContext = () => JSON.stringify([learningRepository.notificationConsentContext(), sessionEpoch]);
   function prepareNotificationConsent() {
+    ensureSessionCurrent();
     idleRecords();
     learningRepository.prepareAsyncAction();
     return notificationContext();
@@ -671,6 +710,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     assert(allowStopped || !active.value.stopped, 'STOPPED', '当前学习已停止');
   }
   function commitJourneyBatch(operations) {
+    ensureSessionCurrent();
     const outcome = learningRepository.commitBatch(operations, state.value.revision);
     state.value = outcome.state;
     uni.$emit('conversationLearningUpdated');
@@ -829,7 +869,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const teachingProgress = computed(() => observeTeaching(state.value));
   const currentPlan = computed(() => state.value.plans.find((p) => p.id === summary.value.tasks.planId));
   function resetAccountResources() {
+    sessionRevocation.abort();
+    sessionRevocation = new AbortController();
     sessionEpoch = getLoginSessionEpoch();
+    observedIdentity = { owner: getUserId(), token: getToken() };
     sessionRevision++;
     cancelModelActions();
     localConnectionController?.abort();
@@ -857,8 +900,29 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     materialProgress.value = null;
     materialImportState.value = null;
     materialImportContext = null;
+    selectedTrainingId.value = null;
+    controller = null;
+    computeRequest = null;
+    controllerUsesAccountToken = false;
+    localConnectionController = null;
+    materialController = null;
+    materialConnectionController = null;
+    materialRequestContext = null;
+    materialConnectionRequestContext = null;
+    if (syncRequest) syncRequest.feedback = false;
+    syncController = null;
+    syncRequest = null;
+    historyController = null;
+    historyRequestContext = null;
+    busy.value = false;
+    materialBusy.value = false;
+    materialConnectionBusy.value = false;
+    syncBusy.value = false;
+    syncProgress.value = null;
+    historyBusy.value = false;
   }
   function refresh() {
+    if (!resettingSession) ensureSessionCurrent(undefined, undefined, { readOnly: true });
     // Invalidate reactive projections before a read can throw or notify a subscriber.
     recordReadState.value = 'loading';
     recordSnapshotContext.value = null;
@@ -892,6 +956,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     recordLocation.value = null;
     conversationLocation.value = null;
     if (identityChanged) {
+      resettingSession = true;
       recordReadState.value = 'loading';
       recordSnapshotContext.value = null;
       resetAccountResources();
@@ -909,37 +974,30 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       materialController?.abort();
       materialConnection.value = null;
       error.value = '本机记录已变化且暂不可读，请重新核对；旧资料动作已取消。';
+    } finally {
+      resettingSession = false;
     }
   }
-  let observedIdentity = { owner: getUserId(), token: getToken() };
   const stopIdentityChanges = storageService.onIdentityChange(
     (change) => {
       const previous = observedIdentity;
-      observedIdentity = { owner: getUserId(), token: getToken() };
+      const identity = { owner: getUserId(), token: getToken() };
       const reliableOwner = (owner) => typeof owner === 'string' && owner.trim().length > 0;
       if (
         change?.type === 'logout' ||
         !getLoginSessionEpoch() ||
         getLoginSessionEpoch() !== sessionEpoch ||
         !reliableOwner(previous.owner) ||
-        !reliableOwner(observedIdentity.owner) ||
-        previous.owner !== observedIdentity.owner ||
-        observedIdentity.owner !== state.value.owner ||
-        Boolean(previous.token) !== Boolean(observedIdentity.token)
+        !reliableOwner(identity.owner) ||
+        previous.owner !== identity.owner ||
+        identity.owner !== state.value.owner ||
+        Boolean(previous.token) !== Boolean(identity.token)
       ) {
         reloadRecords({ identityChanged: true });
         if (change?.type === 'logout') observedIdentity = { owner: null, token: null };
         return;
       }
-      if (previous.token !== observedIdentity.token) {
-        // Cloud transports bind the token at send time and cannot reauthenticate in flight.
-        // Local/material connectors and local history validation use independent credentials.
-        cancelModelReads(undefined, 'CONTEXT_CHANGED');
-        cancelModelActions();
-        if (controllerUsesAccountToken) controller?.abort('CREDENTIALS_CHANGED');
-        poetryController?.abort();
-        if (syncRequest) cancelSync();
-      }
+      ensureSessionCurrent();
       if (change?.type === 'records') reloadRecords();
     },
     {
@@ -979,6 +1037,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     historyController?.abort();
   });
   function commit(type, data, id = learningId()) {
+    ensureSessionCurrent();
     const result = learningRepository.commit({ id, type, data });
     state.value = result.state;
     uni.$emit('conversationLearningUpdated');
@@ -1685,7 +1744,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         m.questionKey === scope.questionKey
     );
     if (existing) return { reused: true, messageId: existing.id };
-    const request = { controller: new AbortController(), context: computeReferenceContext(), owner: state.value.owner };
+    const request = {
+      controller: new AbortController(),
+      context: computeReferenceContext(),
+      owner: state.value.owner,
+      session: ensureSessionCurrent()
+    };
     const epoch = `revision_${state.value.revision}`;
     computeRequest = request;
     controller = request.controller;
@@ -1701,7 +1765,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           epoch,
           ...scope
         },
-        { expectedOwner: request.owner, signal: request.controller.signal }
+        {
+          expectedOwner: request.owner,
+          signal: request.controller.signal,
+          assertCurrent: () => ensureSessionCurrent(request.session, request.controller.signal)
+        }
       );
       refresh();
       assert(
@@ -1828,6 +1896,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     { flush: 'sync' }
   );
   function verifyPoetryReference(encouragement, attempt) {
+    ensureSessionCurrent();
     if (!poetryReferenceEnabled.value) return;
     const context = recordContext();
     if (!context) return;
@@ -1845,7 +1914,14 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const timer = setTimeout(() => requestController.abort(), 1200);
     // The already-published local encouragement is immediate; optional source metadata never writes learning facts.
     void Promise.race([
-      requestLearningPoetryReference({ expectedOwner: owner, signal: requestController.signal }),
+      requestLearningPoetryReference({
+        expectedOwner: owner,
+        signal: requestController.signal,
+        assertCurrent: () => {
+          ensureSessionCurrent(undefined, requestController.signal);
+          assert(recordContext() === context, 'CONTEXT_CHANGED', '登录会话已变化，旧参考未采用');
+        }
+      }),
       cancelled
     ])
       .then((result) => {
@@ -1971,6 +2047,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     return result;
   }
   async function send(raw, options = {}) {
+    ensureSessionCurrent();
     if (options.feedbackAttemptId) {
       assert(!options.visual, 'FORBIDDEN', '写作反馈不发送图片');
       feedbackAttempt(options.feedbackAttemptId);
@@ -2266,6 +2343,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     };
     if (options.visual) request.visualSource = options.image.source;
     const assertCurrent = () => {
+      ensureSessionCurrent(request.session, requestController.signal);
       refresh();
       if (request.feedbackAttemptId) feedbackAttempt(request.feedbackAttemptId);
       assert(!requestController.signal.aborted, 'CANCELLED', '请求已取消，旧模型响应未写入');
@@ -2414,7 +2492,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         mode === 'local'
           ? await callLocalConnector(localConnection.value, payload, {
               signal: requestController.signal,
-              platform: learningClientPlatform()
+              platform: learningClientPlatform(),
+              assertCurrent
             })
           : await generateLearningTurn(payload, {
               signal: requestController.signal,
@@ -2454,8 +2533,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
   }
   function applyModelResult(data, request, signal) {
-    const assertSession = () =>
-      assert(loginContext() === request.session && !signal?.aborted, 'CONTEXT_CHANGED', '登录会话已变化，旧响应未写入');
+    const assertSession = () => ensureSessionCurrent(request.session, signal);
     assertSession();
     const { id, conversationId, questionKey: requestedQuestionKey } = request;
     assert(
@@ -2495,6 +2573,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       maxCalls: 3,
       deadline: Date.now() + 5000,
       origin: 'model',
+      assertCurrent: assertSession,
       model: data.model || request.modelId,
       lockedMethod: request.lockedMethod,
       signal
@@ -2685,7 +2764,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       assertRecovery();
       const result = await fetchLearningResult(pending.requestId, {
         expectedOwner: owner,
-        signal: requestController.signal
+        signal: requestController.signal,
+        assertCurrent: assertRecovery
       });
       assertRecovery();
       if (!result.success) {
@@ -2733,7 +2813,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         { tool: 'model.cancel_request', version: '1', status: 'cancelled', errorCode: 'CLIENT_CANCELLED' },
         `${pending.id}:dismiss`
       );
-      void cancelLearningTurn(pending.id, { expectedOwner: pending.owner })
+      void cancelLearningTurn(pending.id, {
+        expectedOwner: pending.owner,
+        assertCurrent: () => ensureSessionCurrent(pending.session)
+      })
         .then((result) => {
           if (!result.success && state.value.owner === pending.owner && pending.session === loginContext())
             error.value = '客户端已取消，服务端取消未确认；实际用量需查看模型用量状态';
@@ -2767,6 +2850,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       throw failure;
     }
     const context = recordContext();
+    const session = ensureSessionCurrent();
     assert(context, 'CONTEXT_CHANGED', '本机记录上下文不可用，请重新核对');
     const existing = modelReads.get(kind);
     if (existing?.context === context) return existing.promise;
@@ -2807,6 +2891,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           (numbers(data.resultCache, ['entries', 'bytes']) &&
             numbers(data.resultCache.policy, ['maxEntries', 'maxBytes', 'ttlMs']))));
     const apply = (result) => {
+      ensureSessionCurrent(session, operation.controller.signal);
       if (kind === 'models') {
         models.value = result.success ? result.data.models : [];
         poetryReferenceEnabled.value = result.success && result.data.poetryReferenceEnabled === true;
@@ -2841,7 +2926,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       try {
         const request = kind === 'models' ? fetchLearningModels : fetchLearningUsage;
         let result = await Promise.race([
-          request({ signal: operation.controller.signal, expectedOwner: getUserId() || undefined }),
+          request({
+            signal: operation.controller.signal,
+            expectedOwner: getUserId() || undefined,
+            assertCurrent: () => ensureSessionCurrent(session, operation.controller.signal)
+          }),
           cancelled
         ]);
         refresh();
@@ -2874,11 +2963,17 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   async function modelAction(action) {
     refresh();
     const context = recordContext();
+    const session = ensureSessionCurrent();
     assert(context, 'CONTEXT_CHANGED', '登录会话不可用，请重新核对');
     const controller = new AbortController();
     modelActions.add(controller);
     try {
-      const result = await action({ expectedOwner: state.value.owner, signal: controller.signal });
+      const result = await action({
+        expectedOwner: state.value.owner,
+        signal: controller.signal,
+        assertCurrent: () => ensureSessionCurrent(session, controller.signal)
+      });
+      ensureSessionCurrent(session, controller.signal);
       assert(
         !controller.signal.aborted && recordContext() === context,
         'CONTEXT_CHANGED',
@@ -2940,9 +3035,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     materialImportContext = context;
     materialProgress.value = null;
     materialImportState.value = { phase: 'processing' };
-    materialController = new AbortController();
+    const requestController = new AbortController();
+    materialController = requestController;
     materialRequestContext = context;
-    const signal = materialController.signal;
+    const signal = requestController.signal;
     const checkContext = () => {
       assert(!signal.aborted, 'CANCELLED', '资料处理已取消');
       assert(materialContext() === context, 'CONTEXT_CHANGED', '账户、记录或资料授权已变更，旧资料结果未写入');
@@ -3033,9 +3129,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       if (materialContext() === context) materialImportState.value = { phase: signal.aborted ? 'cancelled' : 'failed' };
       throw failure;
     } finally {
-      materialBusy.value = false;
-      materialController = null;
-      materialRequestContext = null;
+      if (materialController === requestController) {
+        materialBusy.value = false;
+        materialController = null;
+        materialRequestContext = null;
+      }
     }
   }
 
@@ -3059,9 +3157,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       owner = state.value.owner;
     const connection = materialConnection.value ? JSON.parse(JSON.stringify(materialConnection.value)) : null;
     materialBusy.value = true;
-    materialController = new AbortController();
+    const requestController = new AbortController();
+    materialController = requestController;
     materialRequestContext = context;
-    const signal = materialController.signal;
+    const signal = requestController.signal;
     const check = () =>
       assert(
         !signal.aborted && materialContext() === context,
@@ -3071,7 +3170,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     try {
       let receipt = await requestUploadRecovery(connection, 'upload-receipt', entry, {
         platform: learningClientPlatform(),
-        signal
+        signal,
+        assertCurrent: check
       });
       check();
       const linked = uploadLinked(receipt, entry);
@@ -3079,16 +3179,19 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         assert(!linked, 'HAS_SAVED_MATERIAL', '这份原件已关联保存资料，请使用资料删除范围预览；待办保留');
         receipt = await requestUploadRecovery(connection, 'close-upload', entry, {
           platform: learningClientPlatform(),
-          signal
+          signal,
+          assertCurrent: check
         });
         check();
       }
       if (linked || receipt.state === 'closed') pendingUploads.value = pendingUploadJournal.remove(id, owner);
       return { ...receipt, ...(linked ? { state: 'linked', materialId: linked.id } : {}), entry, context };
     } finally {
-      materialBusy.value = false;
-      materialController = null;
-      materialRequestContext = null;
+      if (materialController === requestController) {
+        materialBusy.value = false;
+        materialController = null;
+        materialRequestContext = null;
+      }
     }
   }
   const inspectUpload = (id, consent) => uploadAction(id, consent);
@@ -3195,21 +3298,32 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       owner = state.value.owner;
     const connection = materialConnection.value ? JSON.parse(JSON.stringify(materialConnection.value)) : null;
     materialBusy.value = true;
-    materialController = new AbortController();
+    const requestController = new AbortController();
+    materialController = requestController;
     materialRequestContext = context;
-    const signal = materialController.signal;
+    const signal = requestController.signal;
     let result;
+    const assertCurrent = () => {
+      ensureSessionCurrent(undefined, signal);
+      assert(materialContext() === context, 'CONTEXT_CHANGED', '账户或资料授权已变化，维护回执未采用');
+    };
     try {
-      result = await requestUploadMaintenance(connection, preview, { platform: learningClientPlatform(), signal });
+      result = await requestUploadMaintenance(connection, preview, {
+        platform: learningClientPlatform(),
+        signal,
+        assertCurrent
+      });
       assert(
         !signal.aborted && materialContext() === context,
         'CONTEXT_CHANGED',
         '账户或资料授权已变化，维护回执未采用'
       );
     } finally {
-      materialBusy.value = false;
-      materialController = null;
-      materialRequestContext = null;
+      if (materialController === requestController) {
+        materialBusy.value = false;
+        materialController = null;
+        materialRequestContext = null;
+      }
     }
     materialConnection.value.capabilities.uploadMaintenance.generation = result.generation;
     return preview
@@ -3234,21 +3348,25 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const deletion = (current.materialDeletions || []).find((d) => d.deletionId === deletionId);
     assert(deletion, 'NOT_FOUND', '删除任务不存在');
     if (deletion.originalStatus !== 'pending') return { status: deletion.originalStatus };
+    const context = prepareMaterialAction();
     materialBusy.value = true;
-    materialController = new AbortController();
-    const signal = materialController.signal;
-    const context = { owner: current.owner, lifecycle: learningRepository.lifecycleRevision() };
-    const check = () =>
+    const requestController = new AbortController();
+    materialController = requestController;
+    const signal = requestController.signal;
+    materialRequestContext = context;
+    const check = () => {
+      ensureSessionCurrent();
       assert(
-        learningRepository.read().owner === context.owner &&
-          learningRepository.lifecycleRevision() === context.lifecycle,
+        !signal.aborted && materialContext() === context,
         'CONTEXT_CHANGED',
-        '账户或记录已变化，旧删除回执未写入'
+        '账户、记录或授权已变化，旧删除回执未写入'
       );
+    };
     try {
       await deleteConnectedMaterial(materialConnection.value, deletion.original, {
         platform: learningClientPlatform(),
-        signal
+        signal,
+        assertCurrent: check
       });
       check();
       commit(
@@ -3261,8 +3379,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       check();
       return { status: 'pending', message: error.message };
     } finally {
-      materialBusy.value = false;
-      materialController = null;
+      if (materialController === requestController) {
+        materialBusy.value = false;
+        materialController = null;
+        materialRequestContext = null;
+      }
     }
   }
   async function deleteMaterial(preview, consent) {
@@ -3407,13 +3528,15 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const connection = localConnection.value;
     assert(connection, 'PRECONDITION', '请先配置本地连接器');
     const context = recordContext();
+    const session = ensureSessionCurrent();
     const controller = new AbortController();
     localConnectionController?.abort();
     localConnectionController = controller;
     try {
       const result = await testLocalConnector(connection, {
         platform: learningClientPlatform(),
-        signal: controller.signal
+        signal: controller.signal,
+        assertCurrent: () => ensureSessionCurrent(session, controller.signal)
       });
       assert(
         !controller.signal.aborted && recordContext() === context && localConnection.value === connection,
@@ -3431,6 +3554,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     assert(!materialBusy.value && !materialConnectionBusy.value, 'BUSY', '资料正在处理或检查连接');
     const connection = materialConnection.value;
     const context = materialContext();
+    const session = ensureSessionCurrent();
     assert(context, 'CONTEXT_CHANGED', '本机记录上下文不可用，未发起检查');
     const snapshot = connection ? JSON.parse(JSON.stringify(connection)) : null;
     const controller = new AbortController();
@@ -3441,7 +3565,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     try {
       const result = await testMaterialConnector(snapshot, {
         platform: learningClientPlatform(),
-        signal: controller.signal
+        signal: controller.signal,
+        assertCurrent: () => ensureSessionCurrent(session, controller.signal)
       });
       assert(materialContext() === context, 'CONTEXT_CHANGED', '账户、记录或资料授权已变更，未采用旧检查结果');
       assert(!controller.signal.aborted, 'CANCELLED', '资料连接检查已取消，尚未发送资料');
@@ -3485,11 +3610,15 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     historyController = controller;
     const context = recordContext(),
       revision = state.value.revision;
+    const session = ensureSessionCurrent();
+    const assertCurrent = () => ensureSessionCurrent(session, controller.signal);
     historyRequestContext = { context, revision };
     try {
       const result = await prepare({
         signal: controller.signal,
+        assertCurrent,
         onProgress: (progress) => {
+          assertCurrent();
           if (!controller.signal.aborted && recordContext() === context && state.value.revision === revision)
             historyProgress.value = progress;
         }
@@ -3546,6 +3675,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     return state.value;
   }
   function idleRecords() {
+    ensureSessionCurrent();
     assert(!busy.value && !materialBusy.value && !syncBusy.value && !historyBusy.value, 'BUSY', '请等待或取消当前任务');
   }
   function previewGuestMigration() {
@@ -3574,6 +3704,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       controller: new AbortController(),
       context: recordContext(),
       owner: state.value.owner,
+      session: ensureSessionCurrent(),
       feedback: true,
       kind
     };
@@ -3595,7 +3726,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     };
     let applied = false;
     try {
-      const next = await action(request.controller.signal);
+      const assertCurrent = () => ensureSessionCurrent(request.session, request.controller.signal);
+      const next = await action(request.controller.signal, assertCurrent);
+      assertCurrent();
       assert(!request.controller.signal.aborted, 'CANCELLED', syncCancelledMessage(kind));
       assert(
         next.owner === request.owner && getUserId() === request.owner,
@@ -3640,10 +3773,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   }
   function syncRecords(consent) {
     return runSync(
-      (signal) =>
+      (signal, assertCurrent) =>
         synchronizeLearning(learningRepository, consent, undefined, {
           signal,
+          assertCurrent,
           onProgress: (progress) => {
+            assertCurrent();
             if (!signal.aborted) syncProgress.value = progress;
           }
         }),
@@ -3667,11 +3802,16 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   function deleteCloudRecords(consent) {
     assert(consent, 'CONSENT_REQUIRED', '删除云端学习副本需要明确确认');
     return runSync(
-      async (signal) => {
+      async (signal, assertCurrent) => {
         const owner = learningRepository.read().owner;
         const context = recordContext();
         syncProgress.value = { phase: '删除云端学习副本', calls: 1 };
-        const result = await learningRequest('/learning-sync', { action: 'delete' }, { expectedOwner: owner, signal });
+        const result = await learningRequest(
+          '/learning-sync',
+          { action: 'delete' },
+          { expectedOwner: owner, signal, assertCurrent }
+        );
+        assertCurrent();
         assert(learningRepository.read().owner === owner, 'OWNER_MISMATCH', '账户已切换，未显示旧账户删除结果');
         assert(!signal.aborted, 'CANCELLED', '删除确认已取消；云端是否已删除需重新查询');
         assert(recordContext() === context, 'CONTEXT_CHANGED', '学习记录已变化，未显示旧删除回执；云端结果仍需核对');
@@ -3689,10 +3829,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   }
   function adoptCloudRecords(preview, consent) {
     return runSync(
-      (signal) =>
+      (signal, assertCurrent) =>
         adoptRemoteConflict(learningRepository, preview, consent, undefined, {
           signal,
+          assertCurrent,
           onProgress: (progress) => {
+            assertCurrent();
             if (!signal.aborted) syncProgress.value = progress;
           }
         }),
@@ -3725,7 +3867,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       message: '冲突归档已移除，可重新同步；当前本机与云端记录保留。'
     };
   }
-  return {
+  const exposed = {
+    ensureSessionCurrent,
     recordReadState,
     reloadRecords,
     searchRecords,
@@ -3903,4 +4046,79 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     previewGuestMigration,
     migrateGuest
   };
+  // Guard the complete public action surface, including read/cache and cancellation actions.
+  const readOnlyActions = new Set([
+    'reloadRecords',
+    'refresh',
+    'searchRecords',
+    'dismissLocatedRecord',
+    'scopedSummary',
+    'recordContext',
+    'materialContext',
+    'journeyContext',
+    'writingContext',
+    'oatutorContext',
+    'computeReferenceContext',
+    'sentenceCanSubmit',
+    'vocabularyTaskFor',
+    'vocabularyCanSubmit',
+    'scienceCanSubmit',
+    'writingCanSubmit',
+    'reminderQueue',
+    'notificationContext',
+    'observeCalendar',
+    'attachNotifications',
+    'exportData',
+    'isSyncConflictCurrent',
+    'exportSyncConflict',
+    'cancel',
+    'cancelMaterial',
+    'cancelSync',
+    'cancelHistory',
+    'cancelModelReads'
+  ]);
+  for (const [name, action] of Object.entries(exposed)) {
+    if (typeof action !== 'function' || action === ensureSessionCurrent) continue;
+    const run = (...args) => {
+      const check = (session) => ensureSessionCurrent(session, undefined, { readOnly: readOnlyActions.has(name) });
+      const session = check();
+      const revocation = sessionRevocation.signal;
+      operationSessions.push(session);
+      try {
+        const result = action(...args);
+        if (result?.then) {
+          let rejectRevoked;
+          const revoked = new Promise((_resolve, reject) => {
+            rejectRevoked = () =>
+              reject(Object.assign(new Error('登录会话已变化，旧操作已撤销'), { code: 'CONTEXT_CHANGED' }));
+            if (revocation.aborted) rejectRevoked();
+            else revocation.addEventListener('abort', rejectRevoked, { once: true });
+          });
+          return Promise.race([result, revoked])
+            .then(
+              (value) => {
+                check(session);
+                return value;
+              },
+              (failure) => {
+                check(session);
+                throw failure;
+              }
+            )
+            .finally(() => revocation.removeEventListener('abort', rejectRevoked));
+        }
+        check(session);
+        return result;
+      } catch (failure) {
+        check(session);
+        throw failure;
+      } finally {
+        operationSessions.pop();
+      }
+    };
+    exposed[name] = action.constructor.name === 'AsyncFunction' ? async (...args) => run(...args) : run;
+  }
+  sessionReady = true;
+  ensureSessionCurrent(undefined, undefined, { readOnly: true });
+  return exposed;
 });

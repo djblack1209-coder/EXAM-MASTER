@@ -39,7 +39,7 @@ function checkedRemote(result, owner) {
   );
   return state;
 }
-function checkSharedEvents(repository, local, remote) {
+function checkSharedEvents(repository, local, remote, assertCurrent) {
   const known = new Map(remote.events.map((event) => [event.id, event]));
   const conflicts = local.events
     .filter((event) => {
@@ -54,13 +54,14 @@ function checkSharedEvents(repository, local, remote) {
     })
     .map((event) => event.id);
   if (conflicts.length) {
+    assertCurrent();
     repository.captureSyncConflict?.(remote, conflicts);
     assert(false, 'CONFLICT', '同一操作对应不同内容；本机与云端副本保留，可在记录与隐私中处理');
   }
   return known;
 }
 
-function checkedPush(repository, result, operations, owner) {
+function checkedPush(repository, result, operations, owner, assertCurrent) {
   if (result?.data?.snapshotRequired || result?.data?.history) {
     assert(
       result.success &&
@@ -73,7 +74,7 @@ function checkedPush(repository, result, operations, owner) {
     return null;
   }
   const remote = checkedRemote(result, owner);
-  const received = checkSharedEvents(repository, { events: operations }, remote);
+  const received = checkSharedEvents(repository, { events: operations }, remote, assertCurrent);
   assert(
     operations.every((event) => received.has(event.id)),
     'INVALID_RESPONSE',
@@ -185,7 +186,19 @@ function operationBatches(events) {
   if (batch.length) batches.push(batch);
   return batches;
 }
-export async function synchronizeLearning(repository, consent, request = learningRequest, { signal, onProgress } = {}) {
+export async function synchronizeLearning(
+  repository,
+  consent,
+  request = learningRequest,
+  { signal, onProgress, assertCurrent } = {}
+) {
+  const session = getLoginSessionEpoch();
+  const checkSession = () => {
+    assertCurrent?.();
+    assert(getLoginSessionEpoch() === session, 'CONTEXT_CHANGED', '登录会话已变化，旧同步结果未写入');
+    assert(!signal?.aborted, 'CANCELLED', '同步已取消，本机记录保留');
+  };
+  checkSession();
   assert(consent, 'CONSENT_REQUIRED', '同步会上传当前用户的对话、资料片段和学习记录，需要明确授权');
   repository.assertWriteAccess?.();
   let initial = repository.read();
@@ -194,10 +207,12 @@ export async function synchronizeLearning(repository, consent, request = learnin
     total = null,
     lastProgress = {};
   const notify = (progress) => {
+    checkSession();
     lastProgress = { ...lastProgress, ...progress };
     onProgress?.({ ...lastProgress, completed, total });
   };
   const assertContext = () => {
+    checkSession();
     assert(!signal?.aborted, 'CANCELLED', '同步已取消，本机记录保留；已发送批次可能已保存云端');
     assert(repository.read().owner === initial.owner, 'OWNER_MISMATCH', '用户已切换，停止旧账户同步');
     assert(repository.lifecycleRevision?.() === lifecycle, 'CONTEXT_CHANGED', '记录已删除或恢复，旧同步结果未写入');
@@ -211,9 +226,9 @@ export async function synchronizeLearning(repository, consent, request = learnin
   );
   for (const operations of operationBatches(deletionOps)) {
     const result = await send({ action: 'push', operations, timezone: initial.timezone, returnSnapshot: false });
-    const received = checkedPush(repository, result, operations, initial.owner);
+    const received = checkedPush(repository, result, operations, initial.owner, assertContext);
     remote = received || (await pullSnapshot(send, initial.timezone, initial.owner));
-    const ids = checkSharedEvents(repository, { events: operations }, remote);
+    const ids = checkSharedEvents(repository, { events: operations }, remote, assertContext);
     assert(
       operations.every((event) => ids.has(event.id)),
       'INVALID_RESPONSE',
@@ -223,11 +238,12 @@ export async function synchronizeLearning(repository, consent, request = learnin
   for (const event of remote.events.filter(
     (e) => e.type === 'material.delete' && !initial.events.some((local) => local.id === e.id)
   )) {
+    assertContext();
     repository.commit({ id: event.id, type: event.type, data: event.data, at: event.at });
     lifecycle = repository.lifecycleRevision?.();
     initial = repository.read();
   }
-  const known = checkSharedEvents(repository, initial, remote),
+  const known = checkSharedEvents(repository, initial, remote, assertContext),
     pending = initial.events.filter((e) => !known.has(e.id));
   assert(
     pending.every((e) => e.data),
@@ -239,7 +255,7 @@ export async function synchronizeLearning(repository, consent, request = learnin
   let snapshotRequired = false;
   for (const operations of operationBatches(pending)) {
     const result = await send({ action: 'push', operations, timezone: initial.timezone, returnSnapshot: false });
-    const received = checkedPush(repository, result, operations, initial.owner);
+    const received = checkedPush(repository, result, operations, initial.owner, assertContext);
     snapshotRequired = !received;
     if (received) remote = received;
     completed += operations.length;
@@ -248,7 +264,7 @@ export async function synchronizeLearning(repository, consent, request = learnin
   if (snapshotRequired) remote = await pullSnapshot(send, initial.timezone, initial.owner);
   const current = repository.read();
   assertContext();
-  const remoteIds = checkSharedEvents(repository, current, remote);
+  const remoteIds = checkSharedEvents(repository, current, remote, assertContext);
   assert(
     initial.events.every((event) => remoteIds.has(event.id)),
     'INVALID_RESPONSE',
@@ -256,6 +272,7 @@ export async function synchronizeLearning(repository, consent, request = learnin
   );
   for (const event of current.events.filter((e) => !remoteIds.has(e.id)))
     remote = applyLearningOperation(remote, { id: event.id, type: event.type, data: event.data, at: event.at }).state;
+  assertContext();
   return repository.replaceSynchronized(remote);
 }
 export async function adoptRemoteConflict(
@@ -263,14 +280,18 @@ export async function adoptRemoteConflict(
   preview,
   consent,
   request = learningRequest,
-  { signal, onProgress } = {}
+  { signal, onProgress, assertCurrent } = {}
 ) {
+  const session = getLoginSessionEpoch();
+  assertCurrent?.();
   assert(consent, 'CONSENT_REQUIRED', '采用云端记录需要明确确认；未合并的本机副本保留');
   assert(repository.isSyncConflictCurrent?.(preview) !== false, 'CONFLICT', '冲突副本已变化，请重新打开并核对');
   const lifecycle = repository.lifecycleRevision?.(),
     current = repository.read();
   assert(current.owner === preview?.owner, 'OWNER_MISMATCH', '账户已切换，请重新预览');
   const check = () => {
+    assertCurrent?.();
+    assert(getLoginSessionEpoch() === session, 'CONTEXT_CHANGED', '登录会话已变化，旧同步结果未写入');
     assert(!signal?.aborted, 'CANCELLED', '已取消采用云端记录');
     assert(repository.read().owner === current.owner, 'OWNER_MISMATCH', '账户已切换');
     assert(repository.lifecycleRevision?.() === lifecycle, 'CONTEXT_CHANGED', '记录已恢复或删除，未采用旧结果');

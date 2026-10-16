@@ -261,7 +261,7 @@ describe('微信连接器保留鉴权/授权/重定向/容量/生命周期合同
     const store = useConversationLearningStore();
     store.materialConnection = { ...materialConnection };
     const p = store.importFile({ size: 4, name: 'sample.pdf', contentBase64: 'dGVzdA==' }),
-      rejected = expect(p).rejects.toMatchObject({ code: 'CANCELLED' });
+      rejected = expect(p).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
     uni.setStorageSync('EXAM_USER_ID', 'second-owner');
     store.refresh();
     await rejected;
