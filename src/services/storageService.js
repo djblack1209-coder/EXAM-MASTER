@@ -232,10 +232,10 @@ function isIdentityStorageKey(key) {
 }
 
 const identityListeners = new Set();
-function notifyIdentityChange() {
+function notifyIdentityChange(change) {
   for (const listener of identityListeners) {
     try {
-      listener();
+      listener(change);
     } catch {
       // A subscriber must never turn a successful identity write into a failure.
       logger.warn('[StorageService] 身份变化订阅处理失败');
@@ -411,18 +411,23 @@ class StorageService {
   onIdentityChange(listener, eventBus = uni) {
     identityListeners.add(listener);
     const authEvents = ['user:logout', 'loginStatusChanged', 'auth:userdata', 'auth:restore'];
-    const changed = () => {
-      if (identityListeners.has(listener)) listener();
+    const changed = (change) => {
+      if (identityListeners.has(listener)) listener(change);
     };
-    for (const event of authEvents) eventBus.$on?.(event, changed);
+    const authListeners = authEvents.map((event) => [
+      event,
+      () => changed(event === 'user:logout' ? { type: 'logout' } : undefined)
+    ]);
+    for (const [event, handler] of authListeners) eventBus.$on?.(event, handler);
     const storageChanged = (event) => {
       if (event.storageArea && event.storageArea !== window.localStorage) return;
-      if (event.key === null || isIdentityStorageKey(event.key)) changed();
+      if (event.key === null) changed({ type: 'records' });
+      else if (isIdentityStorageKey(event.key)) changed();
     };
     if (typeof window !== 'undefined') window.addEventListener('storage', storageChanged);
     return () => {
       identityListeners.delete(listener);
-      for (const event of authEvents) eventBus.$off?.(event, changed);
+      for (const [event, handler] of authListeners) eventBus.$off?.(event, handler);
       if (typeof window !== 'undefined') window.removeEventListener('storage', storageChanged);
     };
   }
@@ -785,7 +790,7 @@ class StorageService {
       }
       return false;
     } finally {
-      notifyIdentityChange();
+      notifyIdentityChange({ type: 'records' });
     }
   }
 
@@ -918,7 +923,7 @@ class StorageService {
     } catch (error) {
       logger.error('[StorageService] 清理用户数据失败:', error);
     } finally {
-      if (cleared > 0 && userId === getUserId()) notifyIdentityChange();
+      if (cleared > 0 && userId === getUserId()) notifyIdentityChange({ type: 'records' });
     }
     return cleared;
   }

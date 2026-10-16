@@ -166,6 +166,94 @@ async function storeRecords() {
   return { store, first };
 }
 describe('record location uses canonical facts', () => {
+  it.each(
+    ['cloud', 'local'].flatMap((mode) =>
+      [
+        'refresh',
+        'same-token',
+        'same-id',
+        'userInfo',
+        'EXAM_USER_INFO',
+        'access_token',
+        'refresh_token',
+        'token_expire_time',
+        'auth:restore'
+      ].map((change) => ({ mode, change }))
+    )
+  )(
+    'keeps configuration, search and the open original for $mode / $change through encrypted storage',
+    async ({ mode, change }) => {
+      storageService.save('EXAM_USER_ID', 'same-account-search-owner', true);
+      storageService.save('EXAM_TOKEN', 'synthetic-original-session-token', true);
+      const { store } = await storeRecords();
+      const result = store.searchRecords('第一稿');
+      store.openRecord(result.items[0].id, result.context);
+      store.selectedMode = mode;
+      store.modelId = 'explicit-model';
+      store.models = [{ id: 'explicit-model', capabilities: { stream: true } }];
+      store.modelPresets = [{ id: 'preset' }];
+      store.usage = { fixture: 'visible-usage' };
+      store.localConnection = { endpoint: 'http://127.0.0.1:8765/chat', consent: true };
+      store.materialConnection = { endpoint: 'http://127.0.0.1:8765/parse', consent: true };
+      store.sharingAllowed = true;
+      store.streamEnabled = true;
+      store.streamPreview = '当前预览';
+      store.poetryReferenceEnabled = true;
+      store.error = '保留的提示';
+      const fields = [
+        'selectedMode',
+        'modelId',
+        'models',
+        'modelPresets',
+        'usage',
+        'localConnection',
+        'materialConnection',
+        'sharingAllowed',
+        'streamEnabled',
+        'streamPreview',
+        'poetryReferenceEnabled',
+        'error'
+      ];
+      const configuration = () => clone(Object.fromEntries(fields.map((key) => [key, store[key]])));
+      const before = configuration(),
+        state = store.state,
+        original = store.locatedRecord,
+        location = store.conversationLocation,
+        facts = store.exportData();
+      const search = computed(() => store.searchRecords('第一稿'));
+      const filtered = computed(() => store.searchRecords('', { filter: 'pending' }));
+      expect(search.value.total).toBe(1);
+      expect(filtered.value.total).toBe(2);
+      if (change === 'auth:restore') uni.$on.mock.calls.findLast(([name]) => name === change)[1]();
+      else {
+        const key =
+          change === 'refresh' || change === 'same-token'
+            ? 'EXAM_TOKEN'
+            : change === 'same-id'
+              ? 'EXAM_USER_ID'
+              : change;
+        const value =
+          change === 'refresh'
+            ? 'synthetic-renewed-session-token'
+            : change === 'same-token'
+              ? 'synthetic-original-session-token'
+              : change === 'same-id'
+                ? 'same-account-search-owner'
+                : { nickname: '更新资料' };
+        expect(storageService.save(key, value, true)).toBe(true);
+        expect(uni.getStorageSync(key)).toBe('');
+        expect(uni.getStorageSync(`_enc_${key}`)).toBeTruthy();
+      }
+      expect(configuration()).toEqual(before);
+      expect(store.state).toBe(state);
+      expect(store.locatedRecord).toBe(original);
+      expect(store.conversationLocation).toBe(location);
+      expect(store.recordReadState).toBe('ready');
+      expect(search.value.total).toBe(1);
+      expect(filtered.value.total).toBe(2);
+      expect(store.exportData()).toBe(facts);
+    }
+  );
   it.each(['EXAM_USER_ID', '_enc_EXAM_USER_ID', '__exam_storage__:EXAM_USER_ID', '__exam_storage__:_enc_EXAM_USER_ID'])(
     'revokes cached originals on %s using real encrypted login writes and fresh compat identity reads',
     async (eventKey) => {

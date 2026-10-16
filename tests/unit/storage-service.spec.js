@@ -82,12 +82,15 @@ describe('storageService', () => {
         expect(listener).not.toHaveBeenCalled();
         storageService.clearUserData();
         expect(listener).toHaveBeenCalledOnce();
+        expect(listener).toHaveBeenLastCalledWith({ type: 'records' });
         for (const event of ['user:logout', 'loginStatusChanged', 'auth:userdata', 'auth:restore']) {
           uni.$on.mock.calls.findLast(([name]) => name === event)[1]();
+          expect(listener).toHaveBeenLastCalledWith(event === 'user:logout' ? { type: 'logout' } : undefined);
         }
         expect(listener).toHaveBeenCalledTimes(5);
         window.dispatchEvent(new StorageEvent('storage', { key: null }));
         expect(listener).toHaveBeenCalledTimes(6);
+        expect(listener).toHaveBeenLastCalledWith({ type: 'records' });
         storageService.clear(true, { preserveGlobal: false });
         expect(listener).toHaveBeenCalledTimes(7);
       } finally {
