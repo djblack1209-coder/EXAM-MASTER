@@ -69,9 +69,7 @@ function safeGetStorageSync(key, strict = false) {
         : typeof wx !== 'undefined' && supportsStorage(wx)
           ? wx
           : null;
-    if (runtime) {
-      return Reflect.get(runtime, 'getStorageSync').call(runtime, key);
-    }
+    if (runtime) return readStorageStrict(runtime, key, strict);
   } catch (error) {
     if (strict) throw error;
   }
@@ -85,26 +83,44 @@ function safeGetStorageSync(key, strict = false) {
   return '';
 }
 
+// A runtime may swallow native read errors and return ''. Existing nonempty keys
+// cannot silently become guests. Never cross runtime boundaries after a failed read.
+export function readStorageStrict(runtime, key, strict = true) {
+  const reader = strict && runtime.getStorageSyncStrict ? 'getStorageSyncStrict' : 'getStorageSync';
+  const value = Reflect.get(runtime, reader).call(runtime, key);
+  if (strict && (value === '' || value === undefined || value === null) && runtime.getStorageInfoSync) {
+    const info = runtime.getStorageInfoSync();
+    if (!Array.isArray(info?.keys) || info.keys.includes(key))
+      throw Object.assign(new Error('存储暂不可读，请重试'), { code: 'SESSION_UNAVAILABLE' });
+  }
+  return value;
+}
+export const sessionUnavailable = () =>
+  Object.assign(new Error('登录状态暂不可读，请重试'), { code: 'SESSION_UNAVAILABLE' });
+
 function getStoredAuthValue(key) {
+  let record, encrypted, plain;
   try {
-    const record = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
+    record = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
     if (record && typeof record === 'object' && typeof record.token === 'string') {
       if ('revocation' in record && record.revocation !== (safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null))
         return null;
-      if (key === 'EXAM_USER_ID') return record.owner;
-      if (key === 'EXAM_TOKEN') return record.token;
+      return key === 'EXAM_USER_ID' ? record.owner : record.token;
     }
-    const encrypted = normalizeStringValue(safeGetStorageSync(`_enc_${key}`));
-    if (encrypted) {
-      const decrypted = deobfuscate(encrypted);
-      if (decrypted !== null) return decrypted;
-    }
+    encrypted = normalizeStringValue(safeGetStorageSync(`_enc_${key}`, true));
+    plain = normalizeStringValue(safeGetStorageSync(key, true));
   } catch {
-    /* ignore */
+    throw sessionUnavailable();
   }
-
-  const plainValue = normalizeStringValue(safeGetStorageSync(key));
-  return plainValue || null;
+  if (encrypted) {
+    try {
+      const value = deobfuscate(encrypted);
+      if (value !== null) return value;
+    } catch {
+      /* Legacy corrupt alias may use its readable plain copy. */
+    }
+  }
+  return plain || null;
 }
 
 /**
@@ -228,7 +244,7 @@ export function readSessionSnapshot() {
       if (token && owner === 'guest') continue;
       return {
         status: enabled && token && !epoch ? 'changed' : 'current',
-        session: Object.freeze({ owner, epoch }),
+        session: Object.freeze({ owner, epoch, proof: sessionCredentialProof(owner, token) }),
         token,
         enabled,
         record: complete ? before : null

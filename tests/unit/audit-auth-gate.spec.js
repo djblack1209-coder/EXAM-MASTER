@@ -374,8 +374,8 @@ describe('[审计] TokenRefreshPlugin — Token 刷新机制', () => {
     expect(tokenPlugin.isTokenExpiringSoon()).toBe(false);
   });
 
-  it('saveTokens + getAccessToken — 正确存取', () => {
-    tokenPlugin.saveTokens('access-123', 'refresh-456', 3600);
+  it('saveTokens + getAccessToken — 正确存取', async () => {
+    await tokenPlugin.saveTokens('access-123', 'refresh-456', 3600);
 
     const token = tokenPlugin.getAccessToken();
     expect(token).toBe('access-123');
@@ -384,34 +384,34 @@ describe('[审计] TokenRefreshPlugin — Token 刷新机制', () => {
     expect(refreshToken).toBe('refresh-456');
   });
 
-  it('clearTokens — 清除所有 Token', () => {
-    tokenPlugin.saveTokens('access-123', 'refresh-456', 3600);
+  it('clearTokens — 清除所有 Token', async () => {
+    await tokenPlugin.saveTokens('access-123', 'refresh-456', 3600);
     tokenPlugin.clearTokens();
 
     expect(tokenPlugin.getAccessToken()).toBeNull();
     expect(tokenPlugin.getRefreshToken()).toBeNull();
   });
 
-  it('isTokenExpired — Token 未过期时返回 false', () => {
+  it('isTokenExpired — Token 未过期时返回 false', async () => {
     // 保存一个 1 小时后过期的 Token
-    tokenPlugin.saveTokens('token', 'refresh', 3600);
+    await tokenPlugin.saveTokens('token', 'refresh', 3600);
     expect(tokenPlugin.isTokenExpired()).toBe(false);
   });
 
-  it('isTokenExpiringSoon — 5分钟内过期返回 true', () => {
+  it('isTokenExpiringSoon — 5分钟内过期返回 true', async () => {
     // 保存一个 4 分钟后过期的 Token（在 5 分钟缓冲区内）
-    tokenPlugin.saveTokens('token', 'refresh', 240); // 240秒 = 4分钟
+    await tokenPlugin.saveTokens('token', 'refresh', 240); // 240秒 = 4分钟
     expect(tokenPlugin.isTokenExpiringSoon()).toBe(true);
   });
 
-  it('isTokenExpiringSoon — 10分钟后过期返回 false', () => {
-    tokenPlugin.saveTokens('token', 'refresh', 600); // 600秒 = 10分钟
+  it('isTokenExpiringSoon — 10分钟后过期返回 false', async () => {
+    await tokenPlugin.saveTokens('token', 'refresh', 600); // 600秒 = 10分钟
     expect(tokenPlugin.isTokenExpiringSoon()).toBe(false);
   });
 
   it('refreshToken — 未配置 refreshTokenFn 时抛错', async () => {
     tokenPlugin.init({ refreshTokenFn: null });
-    tokenPlugin.saveTokens('token', 'refresh', 3600);
+    await tokenPlugin.saveTokens('token', 'refresh', 3600);
 
     await expect(tokenPlugin.refreshToken()).rejects.toThrow('refreshTokenFn not configured');
   });
@@ -433,7 +433,7 @@ describe('[审计] TokenRefreshPlugin — Token 刷新机制', () => {
     });
 
     tokenPlugin.init({ refreshTokenFn: mockRefreshFn, enablePreCheck: false });
-    tokenPlugin.saveTokens('old-token', 'old-refresh', 3600);
+    await tokenPlugin.saveTokens('old-token', 'old-refresh', 3600);
 
     const newToken = await tokenPlugin.refreshToken();
     expect(newToken).toBe('new-access-token');
@@ -450,7 +450,7 @@ describe('[审计] TokenRefreshPlugin — Token 刷新机制', () => {
     });
 
     tokenPlugin.init({ refreshTokenFn: mockRefreshFn, enablePreCheck: false });
-    tokenPlugin.saveTokens('old-token', 'old-refresh', 3600);
+    await tokenPlugin.saveTokens('old-token', 'old-refresh', 3600);
 
     // 并发发起两次刷新
     const p1 = tokenPlugin.refreshToken();
@@ -477,7 +477,7 @@ describe('[审计] TokenRefreshPlugin — Token 刷新机制', () => {
       maxRefreshRetries: 1,
       onLogout: mockOnLogout
     });
-    tokenPlugin.saveTokens('old-token', 'old-refresh', 3600);
+    await tokenPlugin.saveTokens('old-token', 'old-refresh', 3600);
     tokenPlugin.refreshRetryCount = 1; // 已达重试上限
 
     await expect(tokenPlugin.refreshToken()).rejects.toThrow();
@@ -614,7 +614,7 @@ describe('[审计] 401 处理链 — Token 过期响应处理', () => {
       enablePreCheck: false,
       maxRefreshRetries: 2
     });
-    plugin.saveTokens('old-token', 'old-refresh', 3600);
+    await plugin.saveTokens('old-token', 'old-refresh', 3600);
 
     let callCount = 0;
     const mockRequest = vi.fn().mockImplementation(() => {
@@ -647,7 +647,7 @@ describe('[审计] 401 处理链 — Token 过期响应处理', () => {
       onLogout: null,
       onRefreshFailed: null
     });
-    plugin.saveTokens('old-token', 'old-refresh', 3600);
+    await plugin.saveTokens('old-token', 'old-refresh', 3600);
     plugin.refreshRetryCount = 1;
 
     try {

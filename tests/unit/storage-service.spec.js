@@ -1004,7 +1004,8 @@ describe('阶段5一致会话与存储入口', () => {
       expect(receipts.map((item) => item.status)).toEqual(['rejected', 'fulfilled']);
       const session = captureSession();
       expect(Object.isFrozen(session)).toBe(true);
-      expect(Object.keys(session)).toEqual(['owner', 'epoch']);
+      expect(Object.keys(session)).toEqual(['owner', 'epoch', 'proof']);
+      expect(session.proof).toMatch(/^[a-f0-9]{64}$/);
       expect(session.owner).toBe('lock-B');
       expect(sessionForRequest(session).token).toBe('fixture-token-B');
       expect(checkSession(session)).toBe('current');
