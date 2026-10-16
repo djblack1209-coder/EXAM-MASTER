@@ -112,7 +112,41 @@
             :label="t('learning.ki6')"
           />
         </view>
-        <view class="recent-list" :aria-label="t('learning.k5p')">
+        <view v-if="recordSearch" class="recent-list" :aria-label="t('learning.records.results')">
+          <text class="sidebar-caption" role="status">{{
+            t('learning.records.count', { count: recordSearch.total })
+          }}</text>
+          <BaseButton
+            v-for="record in recordSearch.items"
+            :key="record.id"
+            class="recent-item"
+            align="start"
+            variant="quiet"
+            :disabled="learning.busy"
+            :aria-disabled="learning.busy"
+            @tap="openRecord(record.id, recordSearch.context)"
+          >
+            <BaseIcon :name="record.kind === 'conversation' ? 'chat' : 'book-open'" tone="ink-3" />
+            <view class="material-copy">
+              <text class="sidebar-label">{{ record.label }}</text>
+              <text class="sidebar-caption">{{ record.day }} · {{ record.excerpt }}</text>
+            </view>
+          </BaseButton>
+          <BaseEmpty
+            v-if="!recordSearch.total"
+            :title="t('learning.records.empty')"
+            show-button
+            :button-text="t('learning.records.clear')"
+            @action="query = ''"
+          />
+          <BaseButton v-if="recordPage" variant="quiet" @tap="recordPage--">{{
+            t('learning.records.previous')
+          }}</BaseButton>
+          <BaseButton v-if="recordSearch.hasMore" variant="quiet" @tap="recordPage++">{{
+            t('learning.records.next')
+          }}</BaseButton>
+        </view>
+        <view v-else class="recent-list" :aria-label="t('learning.k5p')">
           <view v-for="conversation in recent" :key="conversation.id" class="recent-conversation">
             <BaseButton
               class="recent-item"
@@ -270,6 +304,24 @@ const menuOpen = ref(false);
 const menuLeaving = ref(false);
 const reducedMotion = ref(true);
 const query = ref('');
+const recordPage = ref(0);
+const recordSearch = computed(() =>
+  query.value.trim() ? learning.searchRecords(query.value, { offset: recordPage.value * 8, limit: 8 }) : null
+);
+watch(
+  query,
+  () => {
+    recordPage.value = 0;
+  },
+  { flush: 'sync' }
+);
+watch(
+  () => JSON.stringify([learning.state.owner, learning.recordContext()]),
+  () => {
+    query.value = '';
+  },
+  { flush: 'sync' }
+);
 const directoryDayLimit = ref(7);
 const directoryDays = computed(() => learning.timeline.slice(-directoryDayLimit.value));
 watch([() => learning.recordContext(), () => learning.selectedConversationId], () => {
@@ -303,12 +355,7 @@ const navigation = computed(() => [
 const mobileNavigation = computed(() =>
   navigation.value.filter((item) => ['learning', 'practice', 'mistake', 'profile'].includes(item.id))
 );
-const recent = computed(() =>
-  [...learning.state.conversations]
-    .reverse()
-    .filter((item) => item.goal.toLocaleLowerCase().includes(query.value.trim().toLocaleLowerCase()))
-    .slice(0, 8)
-);
+const recent = computed(() => [...learning.state.conversations].reverse().slice(0, 8));
 const dateLabel = computed(() => formatDate(learning.summary.day + 'T12:00:00'));
 let unbind = () => undefined;
 let releaseMotion = () => undefined;
@@ -390,6 +437,16 @@ function resume(id) {
   learning.locateConversation(id);
   menuOpen.value = false;
   if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
+}
+function openRecord(id, context) {
+  try {
+    learning.openRecord(id, context);
+    error.value = '';
+    menuOpen.value = false;
+    if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
+  } catch (failure) {
+    error.value = publicError(failure);
+  }
 }
 function locate(id, day, groupId = null) {
   learning.locateConversation(id, day, groupId);
