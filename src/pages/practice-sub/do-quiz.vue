@@ -1487,7 +1487,7 @@ export default {
       );
 
       if (success) {
-        logger.log(immediate ? '[do-quiz] 进度保存已确认' : '[do-quiz] 已安排保存进度');
+        logger.log('[App] 诊断事件');
       }
     },
 

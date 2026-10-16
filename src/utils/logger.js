@@ -4,7 +4,7 @@
  *
  * 功能：
  * 1. 生产环境自动禁用所有日志输出
- * 2. 开发环境保留完整日志功能
+ * 2. 开发与正式环境均只输出静态操作标签和数值计数
  * 3. 支持日志级别控制
  *
  * 使用方法：
@@ -29,6 +29,13 @@ const LOG_LEVELS = {
 // 当前日志级别（生产环境只显示错误，开发环境显示所有）
 const currentLevel = isProduction ? LOG_LEVELS.ERROR : LOG_LEVELS.DEBUG;
 
+// Labels are static at source call sites (covered by the privacy source audit).
+// Never serialize arbitrary strings, objects, Error messages or stacks after the label.
+const publicArgs = ([label, ...values]) => [
+  typeof label === 'string' ? label : '[App] 诊断事件',
+  ...values.filter((value) => typeof value === 'number' && Number.isFinite(value))
+];
+
 /**
  * 日志工具类
  */
@@ -43,7 +50,7 @@ class Logger {
    */
   debug(...args) {
     if (this.level <= LOG_LEVELS.DEBUG) {
-      console.log('[DEBUG]', ...args);
+      console.log('[DEBUG]', ...publicArgs(args));
     }
   }
 
@@ -52,7 +59,7 @@ class Logger {
    */
   log(...args) {
     if (this.level <= LOG_LEVELS.LOG) {
-      console.log(...args);
+      console.log(...publicArgs(args));
     }
   }
 
@@ -61,7 +68,7 @@ class Logger {
    */
   warn(...args) {
     if (this.level <= LOG_LEVELS.WARN) {
-      console.warn(...args);
+      console.warn(...publicArgs(args));
     }
   }
 
@@ -70,7 +77,7 @@ class Logger {
    */
   error(...args) {
     if (this.level <= LOG_LEVELS.ERROR) {
-      console.error(...args);
+      console.error(...publicArgs(args));
     }
   }
 
@@ -92,9 +99,9 @@ class Logger {
   /**
    * 表格日志（仅开发环境）
    */
-  table(data) {
+  table() {
     if (this.level <= LOG_LEVELS.LOG && console.table) {
-      console.table(data);
+      console.table('[App] 表格诊断已省略');
     }
   }
 

@@ -510,7 +510,12 @@ function viewPlanDetail(plan) {
 
 /** 智能调整计划 */
 function adjustPlan(planId) {
-  if (!isUserLoggedIn()) {
+  const loginState = isUserLoggedIn();
+  if (loginState === null) {
+    toast.info('登录状态暂不可读，请重试');
+    return;
+  }
+  if (!loginState) {
     toast.info(t('plan.copy40'));
     return;
   }
@@ -530,7 +535,13 @@ function adjustPlan(planId) {
 
 /** 删除计划 */
 function deletePlan(planId) {
-  if (!isUserLoggedIn()) {
+  const session = captureSession();
+  const loginState = isUserLoggedIn();
+  if (loginState === null) {
+    toast.info('登录状态暂不可读，请重试');
+    return;
+  }
+  if (!loginState) {
     toast.info(t('plan.copy43'));
     return;
   }
@@ -540,7 +551,7 @@ function deletePlan(planId) {
     confirmColor: 'var(--danger)',
     success: (res) => {
       if (res.confirm) {
-        const success = intelligentPlanManager.deletePlan(planId);
+        const success = intelligentPlanManager.deletePlan(planId, session);
         if (success) {
           toast.success(t('plan.copy46'));
           loadPlans();

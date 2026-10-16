@@ -51,7 +51,10 @@ function _extractErrorInfo(type, error) {
 }
 
 function _isDuplicate(errorInfo) {
-  const key = `${errorInfo.type}:${errorInfo.message}`;
+  let hash = 2166136261;
+  for (const character of JSON.stringify([errorInfo.type, errorInfo.message]))
+    hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
+  const key = hash >>> 0;
   const now = Date.now();
   if (_recentErrors.has(key) && now - _recentErrors.get(key) < DEDUP_WINDOW_MS) {
     return true;
@@ -71,10 +74,16 @@ function _shouldIgnore(message) {
 }
 
 function _handleError(type, error) {
-  const errorInfo = _extractErrorInfo(type, error);
-
-  if (_shouldIgnore(errorInfo.message)) return;
-  if (_isDuplicate(errorInfo)) return;
+  const extracted = _extractErrorInfo(type, error);
+  if (_shouldIgnore(extracted.message)) return;
+  if (_isDuplicate(extracted)) return;
+  const errorInfo = {
+    type: ['Runtime Error', 'Unhandled Promise Rejection', 'Vue Error'].includes(type) ? type : 'Application Error',
+    message: '应用操作失败',
+    stack: '',
+    page: 'app',
+    timestamp: extracted.timestamp
+  };
 
   // 内存日志
   _errorLogs.push(errorInfo);
@@ -98,10 +107,7 @@ function _handleError(type, error) {
   }
 
   // 控制台输出
-  logger.error(`[${type}]`, errorInfo.message);
-  if (errorInfo.stack) {
-    logger.error('Stack:', errorInfo.stack);
-  }
+  logger.error('[App] 应用操作失败');
 
   // 开发环境 toast 提示
   if (import.meta.env.DEV && _config.enableToast) {

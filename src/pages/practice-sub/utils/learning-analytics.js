@@ -438,7 +438,7 @@ class LearningAnalytics {
           // 显示第一个新解锁的成就
           const first = newlyUnlocked[0];
           toast.info(`解锁成就：${first.name || first.id}`, 3000);
-          logger.log(`[LearningAnalytics] 后端自动检测解锁了 ${newlyUnlocked.length} 个成就`);
+          logger.log('[LearningAnalytics] 后端自动检测解锁了 [省略] 个成就');
         }
       } catch (e) {
         logger.warn('[LearningAnalytics] 后端成就检测失败:', e.message);
@@ -460,7 +460,7 @@ class LearningAnalytics {
         }
         if (changed) {
           this._saveAchievements();
-          logger.log(`[LearningAnalytics] 从后端合并成就，当前共 ${this.achievements.length} 个`);
+          logger.log('[LearningAnalytics] 从后端合并成就，当前共 [省略] 个');
         }
       } catch (e) {
         logger.warn('[LearningAnalytics] 拉取后端成就列表失败:', e.message);
@@ -489,11 +489,11 @@ class LearningAnalytics {
           await unlockAchievement(achievementId, { session: originSession });
           assertSession(originSession);
         } catch (e) {
-          logger.warn(`[LearningAnalytics] 同步成就 ${achievementId} 失败:`, e.message);
+          logger.warn('[LearningAnalytics] 同步成就 [省略] 失败:', e.message);
         }
       }
 
-      logger.log(`[LearningAnalytics] 已同步 ${newAchievementIds.length} 个成就到后端`);
+      logger.log('[LearningAnalytics] 已同步 [省略] 个成就到后端');
     } catch (e) {
       // 同步失败不影响本地使用
       logger.warn('[LearningAnalytics] 成就后端同步失败:', e.message);

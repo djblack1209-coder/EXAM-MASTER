@@ -25,7 +25,7 @@
             </view>
             <view class="profile-copy">
               <text class="user-name">{{ userName }}</text>
-              <BaseButton v-if="!isLoggedIn" class="login-hint" variant="secondary" @tap="goLogin">{{
+              <BaseButton v-if="isLoggedIn === false" class="login-hint" variant="secondary" @tap="goLogin">{{
                 t('dashboard.copy98')
               }}</BaseButton>
               <text v-else class="login-hint">{{ t('dashboard.copy99') }}</text>
@@ -114,6 +114,7 @@ import '@/styles/yozi-pages.scss';
 import { useUserStore } from '@/stores/modules/user';
 import { useStudyStore } from '@/stores/modules/study';
 import { useThemeStore } from '@/stores/modules/theme.js';
+import { readSessionSnapshot } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo, consumeProfilePanel } from '@/utils/safe-navigate';
 import { logger } from '@/utils/logger.js';
@@ -170,15 +171,19 @@ export default {
     },
 
     isLoggedIn() {
-      return !!(this.userStore?.isLogin || storageService.get('EXAM_USER_ID'));
+      const isLogin = this.userStore?.isLogin;
+      if (readSessionSnapshot().status === 'unavailable') return null;
+      return !!(isLogin || storageService.get('EXAM_USER_ID'));
     },
 
     userName() {
-      if (!this.isLoggedIn) return t('dashboard.copy113');
+      if (this.isLoggedIn === false) return t('dashboard.copy113');
+      if (this.isLoggedIn === null) return this.userStore?.userInfo?.nickName || t('dashboard.copy114');
       return this.userStore?.userInfo?.nickName || storageService.get('userInfo')?.nickName || t('dashboard.copy114');
     },
 
     avatarUrl() {
+      if (this.isLoggedIn === null) return this.userStore?.userInfo?.avatarUrl || '';
       return this.userStore?.userInfo?.avatarUrl || storageService.get('userInfo')?.avatarUrl || '';
     },
 

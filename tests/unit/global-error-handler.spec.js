@@ -27,43 +27,43 @@ describe('globalErrorHandler', () => {
       globalErrorHandler.report('Test', err);
       const logs = globalErrorHandler.getErrorLogs();
       expect(logs).toHaveLength(1);
-      expect(logs[0].type).toBe('Test');
-      expect(logs[0].message).toBe('test error');
-      expect(logs[0].stack).toBeTruthy();
+      expect(logs[0].type).toBe('Application Error');
+      expect(logs[0].message).toBe('应用操作失败');
+      expect(logs[0].stack).toBe('');
     });
 
     it('应记录字符串错误', () => {
       globalErrorHandler.report('Runtime', 'something broke');
       const logs = globalErrorHandler.getErrorLogs();
       expect(logs).toHaveLength(1);
-      expect(logs[0].message).toBe('something broke');
+      expect(logs[0].message).toBe('应用操作失败');
     });
 
     it('应记录对象错误（errMsg）', () => {
       globalErrorHandler.report('API', { errMsg: 'request:fail' });
       const logs = globalErrorHandler.getErrorLogs();
-      expect(logs[0].message).toBe('request:fail');
+      expect(logs[0].message).toBe('应用操作失败');
     });
 
     it('应记录对象错误（message）', () => {
       globalErrorHandler.report('API', { message: 'timeout' });
       const logs = globalErrorHandler.getErrorLogs();
-      expect(logs[0].message).toBe('timeout');
+      expect(logs[0].message).toBe('应用操作失败');
     });
 
     it('null 应记录为 Unknown error', () => {
       globalErrorHandler.report('NullTest', null);
       const logs = globalErrorHandler.getErrorLogs();
       expect(logs.length).toBeGreaterThanOrEqual(1);
-      const nullLog = logs.find((l) => l.type === 'NullTest');
-      expect(nullLog.message).toBe('Unknown error');
+      const nullLog = logs.at(-1);
+      expect(nullLog.message).toBe('应用操作失败');
     });
 
     it('undefined 应记录为 Unknown error', () => {
       globalErrorHandler.report('UndefTest', undefined);
       const logs = globalErrorHandler.getErrorLogs();
-      const undefLog = logs.find((l) => l.type === 'UndefTest');
-      expect(undefLog.message).toBe('Unknown error');
+      const undefLog = logs.at(-1);
+      expect(undefLog.message).toBe('应用操作失败');
     });
 
     it('应包含页面信息和时间戳', () => {
@@ -78,7 +78,7 @@ describe('globalErrorHandler', () => {
       globalErrorHandler.report('Test', 'persist me');
       const stored = uni.getStorageSync('runtime_errors');
       expect(stored).toHaveLength(1);
-      expect(stored[0].message).toBe('persist me');
+      expect(stored[0].message).toBe('应用操作失败');
     });
   });
 
@@ -114,7 +114,7 @@ describe('globalErrorHandler', () => {
       globalErrorHandler.report('Test', 'real error');
 
       expect(globalErrorHandler.getErrorLogs()).toHaveLength(1);
-      expect(globalErrorHandler.getErrorLogs()[0].message).toBe('real error');
+      expect(globalErrorHandler.getErrorLogs()[0].message).toBe('应用操作失败');
     });
 
     it('应接受 onError 回调', () => {
@@ -123,7 +123,7 @@ describe('globalErrorHandler', () => {
 
       globalErrorHandler.report('Test', 'callback test');
       expect(onError).toHaveBeenCalledTimes(1);
-      expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'callback test' }));
+      expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: '应用操作失败' }));
     });
   });
 
@@ -139,7 +139,7 @@ describe('globalErrorHandler', () => {
       const logs = globalErrorHandler.getErrorLogs();
       expect(logs).toHaveLength(1);
       expect(logs[0].type).toBe('Vue Error');
-      expect(logs[0].message).toBe('vue error');
+      expect(logs[0].message).toBe('应用操作失败');
     });
   });
 
@@ -165,13 +165,15 @@ describe('globalErrorHandler', () => {
   describe('内存日志上限', () => {
     it('超过50条应丢弃最早的', () => {
       // 先清空去重缓存（每条用不同消息）
+      const entries = [];
       for (let i = 0; i < 55; i++) {
         globalErrorHandler.report('Test', `error_${i}`);
+        entries.push(globalErrorHandler.getErrorLogs().at(-1));
       }
       const logs = globalErrorHandler.getErrorLogs();
       expect(logs.length).toBeLessThanOrEqual(50);
       // 最早的应该被丢弃
-      expect(logs[0].message).toBe('error_5');
+      expect(logs[0]).toBe(entries[5]);
     });
   });
 });

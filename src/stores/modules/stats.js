@@ -21,7 +21,7 @@ import {
   recordStudyTime as apiRecordStudyTime,
   updateStreak as apiUpdateStreak
 } from '@/services/api/domains/stats.api.js';
-import { getToken, getUserId, captureSession, checkSession } from '@/services/auth-storage.js';
+import { checkSession, readSessionSnapshot } from '@/services/auth-storage.js';
 import { logger } from '@/utils/logger.js';
 
 /** 缓存过期时间（毫秒） */
@@ -54,8 +54,17 @@ export const useStatsStore = defineStore('stats', () => {
   // ==================== 内部工具 ====================
 
   function sessionContext() {
-    const session = captureSession();
-    const next = { owner: getUserId() || '', token: getToken() || '', session };
+    const snapshot = readSessionSnapshot();
+    if (snapshot.status === 'unavailable') {
+      error.value = '登录状态暂不可读，请重试';
+      return { ..._identity, revision: _revision, unavailable: true };
+    }
+    const session = snapshot.session;
+    const next = {
+      owner: session?.owner === 'guest' ? '' : session?.owner || '',
+      token: snapshot.token || '',
+      session
+    };
     if (
       !_identity ||
       checkSession(_identity.session) === 'changed' ||
@@ -68,7 +77,8 @@ export const useStatsStore = defineStore('stats', () => {
     return { revision: _revision, ...next };
   }
   function isCurrent(context) {
-    return checkSession(context.session) === 'current' && sessionContext().revision === context.revision;
+    const next = sessionContext();
+    return !next.unavailable && checkSession(context.session) === 'current' && next.revision === context.revision;
   }
   function startRead(context) {
     _pendingReads.add(context);
@@ -106,6 +116,7 @@ export const useStatsStore = defineStore('stats', () => {
    */
   async function fetchOverview(force = false) {
     const context = sessionContext();
+    if (context.unavailable) return overview.value;
     if (!context.token) {
       overview.value = _emptyOverview();
       return overview.value;
@@ -120,7 +131,7 @@ export const useStatsStore = defineStore('stats', () => {
     error.value = null;
     try {
       const res = await apiGetOverview({ session: context.session });
-      if (!isCurrent(context)) return _emptyOverview();
+      if (!isCurrent(context)) return checkSession(context.session) !== 'changed' ? overview.value : _emptyOverview();
       if (res?.code === 0 && res.data) {
         overview.value = res.data;
         _overviewFetchedAt = Date.now();
@@ -131,7 +142,7 @@ export const useStatsStore = defineStore('stats', () => {
       overview.value = _emptyOverview();
       return overview.value;
     } catch (err) {
-      if (!isCurrent(context)) return _emptyOverview();
+      if (!isCurrent(context)) return checkSession(context.session) !== 'changed' ? overview.value : _emptyOverview();
       logger.warn('[StatsStore] fetchOverview 失败:', err);
       error.value = '获取统计数据失败';
       if (!overview.value) overview.value = _emptyOverview();
@@ -148,6 +159,7 @@ export const useStatsStore = defineStore('stats', () => {
    */
   async function fetchDailyStats(days = 7) {
     const context = sessionContext();
+    if (context.unavailable) return { stats: dailyStats.value, summary: {} };
     if (!context.token) {
       dailyStats.value = [];
       return { stats: [], summary: {} };
@@ -156,14 +168,16 @@ export const useStatsStore = defineStore('stats', () => {
     startRead(context);
     try {
       const res = await apiGetDailyStats({ days }, { session: context.session });
-      if (!isCurrent(context)) return { stats: [], summary: {} };
+      if (!isCurrent(context))
+        return { stats: checkSession(context.session) !== 'changed' ? dailyStats.value : [], summary: {} };
       if (res?.code === 0 && res.data) {
         dailyStats.value = res.data.stats || [];
         return res.data;
       }
       return { stats: dailyStats.value, summary: {} };
     } catch (err) {
-      if (!isCurrent(context)) return { stats: [], summary: {} };
+      if (!isCurrent(context))
+        return { stats: checkSession(context.session) !== 'changed' ? dailyStats.value : [], summary: {} };
       logger.warn('[StatsStore] fetchDailyStats 失败:', err);
       return { stats: dailyStats.value, summary: {} };
     } finally {
@@ -179,6 +193,7 @@ export const useStatsStore = defineStore('stats', () => {
    */
   async function fetchTrend(period = 'week', force = false) {
     const context = sessionContext();
+    if (context.unavailable) return trend.value;
     if (!context.token) {
       trend.value = null;
       return null;
@@ -191,7 +206,7 @@ export const useStatsStore = defineStore('stats', () => {
     startRead(context);
     try {
       const res = await apiGetTrend({ period }, { session: context.session });
-      if (!isCurrent(context)) return null;
+      if (!isCurrent(context)) return checkSession(context.session) !== 'changed' ? trend.value : null;
       if (res?.code === 0 && res.data) {
         trend.value = res.data;
         _trendFetchedAt = Date.now();
@@ -199,7 +214,7 @@ export const useStatsStore = defineStore('stats', () => {
       }
       return trend.value;
     } catch (err) {
-      if (!isCurrent(context)) return null;
+      if (!isCurrent(context)) return checkSession(context.session) !== 'changed' ? trend.value : null;
       logger.warn('[StatsStore] fetchTrend 失败:', err);
       return trend.value;
     } finally {
@@ -213,6 +228,7 @@ export const useStatsStore = defineStore('stats', () => {
    */
   async function fetchRankInfo() {
     const context = sessionContext();
+    if (context.unavailable) return rankInfo.value;
     if (!context.token) {
       rankInfo.value = null;
       return null;
@@ -220,14 +236,14 @@ export const useStatsStore = defineStore('stats', () => {
 
     try {
       const res = await apiGetRankInfo({ session: context.session });
-      if (!isCurrent(context)) return null;
+      if (!isCurrent(context)) return checkSession(context.session) !== 'changed' ? rankInfo.value : null;
       if (res?.code === 0 && res.data) {
         rankInfo.value = res.data;
         return res.data;
       }
       return rankInfo.value;
     } catch (err) {
-      if (!isCurrent(context)) return null;
+      if (!isCurrent(context)) return checkSession(context.session) !== 'changed' ? rankInfo.value : null;
       logger.warn('[StatsStore] fetchRankInfo 失败:', err);
       return rankInfo.value;
     }
@@ -240,6 +256,7 @@ export const useStatsStore = defineStore('stats', () => {
    */
   async function reportStudyTime(minutes) {
     const context = sessionContext();
+    if (context.unavailable) return false;
     if (!context.token || !minutes || minutes <= 0) return false;
 
     try {
@@ -269,6 +286,7 @@ export const useStatsStore = defineStore('stats', () => {
    */
   async function reportStreak() {
     const context = sessionContext();
+    if (context.unavailable) return null;
     if (!context.token) return null;
 
     try {

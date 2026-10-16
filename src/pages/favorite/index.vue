@@ -310,7 +310,7 @@ import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
 import { usePageDialog } from '@/composables/usePageDialog.js';
 const { pageDialog, settleDialog, modal } = usePageDialog();
 import { toast } from '@/utils/toast.js';
-import { getUserId } from '@/services/auth-storage.js';
+import { getUserId, captureSession, checkSession, readSessionSnapshot } from '@/services/auth-storage.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { useFavoriteStore } from '@/stores/modules/favorite.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
@@ -325,7 +325,8 @@ const isRefreshing = ref(false);
 const statusBarHeight = ref(44);
 const isDark = computed(() => useThemeStore().isDark);
 const loadError = ref('');
-const viewOwner = ref(getUserId() || '');
+const initialSession = captureSession();
+const viewOwner = ref(initialSession?.owner === 'guest' ? '' : initialSession?.owner || '');
 const isLoading = ref(true); // ✅ F018: 加载状态
 
 // 收藏夹
@@ -457,7 +458,13 @@ function initSystemUI() {
 
 /** 加载当前账户已保存的收藏。 */
 async function loadData() {
-  const expected = getUserId() || '';
+  const session = captureSession();
+  if (!session) {
+    loadError.value = '登录状态暂不可读，请重试';
+    isLoading.value = false;
+    return;
+  }
+  const expected = session.owner === 'guest' ? '' : session.owner;
   if (viewOwner.value !== expected) {
     favorites.value = [];
     folders.value = [];
@@ -473,7 +480,7 @@ async function loadData() {
   viewOwner.value = expected;
   try {
     await favoriteStore.loadFavorites();
-    if ((getUserId() || '') !== expected) return;
+    if (checkSession(session) === 'changed') return;
     if (favoriteStore.lastError) throw favoriteStore.lastError;
     favoriteStore.loadFolders();
     favoriteStore.loadStats();
@@ -482,17 +489,25 @@ async function loadData() {
     stats.value = favoriteStore.stats;
     loadError.value = '';
   } catch (_error) {
-    if ((getUserId() || '') !== expected) return;
+    if (_error.code === 'SESSION_UNAVAILABLE' || checkSession(session) === 'unavailable') {
+      loadError.value = '登录状态暂不可读，请重试';
+      return;
+    }
+    if (checkSession(session) === 'changed') return;
     favorites.value = [];
     folders.value = [];
     stats.value = { totalCount: 0 };
     loadError.value = t('favorite.unavailable');
   } finally {
-    if ((getUserId() || '') === expected) isLoading.value = false;
+    if (checkSession(session) !== 'changed') isLoading.value = false;
   }
 }
 
 function owned(expected) {
+  if (readSessionSnapshot().status === 'unavailable') {
+    toast.info('登录状态暂不可读，请重试');
+    return false;
+  }
   if (expected !== (getUserId() || '')) {
     toast.info(t('favorite.copy34'));
     loadData();
@@ -560,14 +575,15 @@ function showFolderActions(folder) {
 
 /** 重命名收藏夹 */
 function renameFolderPrompt(folder) {
+  const session = captureSession();
   modal.show({
     title: t('favorite.copy37'),
     editable: true,
     placeholderText: folder.name,
     success: (res) => {
       if (res.confirm && res.content && res.content.trim()) {
-        if (!owned(folder.favoriteOwnerId)) return;
-        const result = favoriteStore.renameFolder(folder.id, res.content.trim(), folder.favoriteOwnerId);
+        if (checkSession(session) !== 'current' || !owned(folder.favoriteOwnerId)) return;
+        const result = favoriteStore.renameFolder(folder.id, res.content.trim(), session);
         if (result.success) {
           toast.success(t('favorite.copy38'));
           loadData();
@@ -579,13 +595,14 @@ function renameFolderPrompt(folder) {
 
 /** 确认删除收藏夹 */
 function confirmDeleteFolder(folder) {
+  const session = captureSession();
   modal.show({
     title: t('favorite.copy40'),
     content: t('favorite.copy41', { v0: folder.name }),
     success: (res) => {
       if (res.confirm) {
-        if (!owned(folder.favoriteOwnerId)) return;
-        const result = favoriteStore.deleteFolder(folder.id, folder.favoriteOwnerId);
+        if (checkSession(session) !== 'current' || !owned(folder.favoriteOwnerId)) return;
+        const result = favoriteStore.deleteFolder(folder.id, session);
         if (result.success) {
           toast.success(t('favorite.copy42'));
           loadData();
@@ -597,7 +614,9 @@ function confirmDeleteFolder(folder) {
   });
 }
 
+let folderSession = null;
 function openFolderModal() {
+  folderSession = captureSession();
   if (owned(viewOwner.value)) showFolderModal.value = true;
 }
 
@@ -614,7 +633,7 @@ function createFolder() {
       name: newFolderName.value.trim(),
       icon: newFolderIcon.value
     },
-    viewOwner.value
+    folderSession
   );
 
   if (result.success) {
@@ -630,7 +649,7 @@ function createFolder() {
 
 /** 移动到收藏夹（打开弹窗） */
 function moveToFolder(item) {
-  movingItem.value = item;
+  movingItem.value = { ...item, favoriteSession: captureSession() };
   showMoveModal.value = true;
 }
 
@@ -639,7 +658,7 @@ function confirmMove(folderId) {
   if (!movingItem.value || folderId === movingItem.value.folderId) return;
 
   if (!owned(movingItem.value.favoriteOwnerId)) return;
-  const result = favoriteStore.moveToFolder(movingItem.value.id, folderId, movingItem.value.favoriteOwnerId);
+  const result = favoriteStore.moveToFolder(movingItem.value.id, folderId, movingItem.value.favoriteSession);
 
   if (result.success) {
     toast.success(t('favorite.copy47'));
@@ -653,14 +672,15 @@ function confirmMove(folderId) {
 
 /** 删除收藏 */
 function removeFavorite(item) {
+  const session = captureSession();
   modal.show({
     title: t('favorite.copy49'),
     content: t('favorite.copy50'),
     success: async (res) => {
       if (res.confirm) {
-        if (!owned(item.favoriteOwnerId)) return;
-        const result = await favoriteStore.removeFromFavorite(item.id, item.favoriteOwnerId);
-        if (!owned(item.favoriteOwnerId)) return;
+        if (checkSession(session) !== 'current' || !owned(item.favoriteOwnerId)) return;
+        const result = await favoriteStore.removeFromFavorite(item.id, session);
+        if (checkSession(session) !== 'current' || !owned(item.favoriteOwnerId)) return;
         if (result.success) {
           toast.success(t('favorite.copy51'));
           loadData();
@@ -674,7 +694,7 @@ function removeFavorite(item) {
 
 /** 打开笔记编辑弹窗 */
 function openNoteModal(item) {
-  editingItem.value = item;
+  editingItem.value = { ...item, favoriteSession: captureSession() };
   noteContent.value = item.note || '';
   showNoteModal.value = true;
 }
@@ -687,7 +707,7 @@ function saveNote() {
   const result = favoriteStore.updateNote(
     editingItem.value.id,
     noteContent.value.trim(),
-    editingItem.value.favoriteOwnerId
+    editingItem.value.favoriteSession
   );
 
   if (result.success) {

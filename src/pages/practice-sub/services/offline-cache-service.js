@@ -92,7 +92,7 @@ export const offlineCache = {
       assertSession(session);
       cached[category] = questions;
       storageService.save(STORAGE_KEYS.CACHED_QUESTIONS, cached, true, session);
-      logger.log(`[OfflineCacheService] 缓存 ${questions.length} 道题目 (${category})`);
+      logger.log('[OfflineCacheService] 缓存 [省略] 道题目 ([省略])');
     } catch (err) {
       logger.warn('[OfflineCacheService] cacheQuestions 失败:', err);
     }
@@ -109,7 +109,7 @@ export const offlineCache = {
       assertSession(session);
       queue.push({ action, data, timestamp: Date.now(), session });
       storageService.save(STORAGE_KEYS.SYNC_QUEUE, queue, true, session);
-      logger.log(`[OfflineCacheService] 加入同步队列: ${action}`);
+      logger.log('[OfflineCacheService] 加入同步队列: [省略]');
     } catch (err) {
       logger.warn('[OfflineCacheService] addToSyncQueue 失败:', err);
     }

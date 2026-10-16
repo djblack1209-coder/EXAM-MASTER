@@ -381,13 +381,13 @@ async function onPullRefresh() {
 // 触底加载更多
 function loadMore() {
   const nextPage = currentPage.value + 1;
-  logger.log(`[mistake-book] 📄 触底加载: page=${nextPage}, isLoading=${isLoading.value}, hasMore=${hasMore.value}`);
+  logger.log('[mistake-book] 📄 触底加载: page=[省略], isLoading=[省略], hasMore=[省略]');
   if (isLoading.value || !hasMore.value) {
-    logger.log(`[mistake-book] ⏸️ 分页加载被阻止 - isLoading: ${isLoading.value}, hasMore: ${hasMore.value}`);
+    logger.log('[mistake-book] ⏸️ 分页加载被阻止 - isLoading: [省略], hasMore: [省略]');
     return;
   }
   currentPage.value = nextPage;
-  logger.log(`[mistake-book] ➡️ 开始加载第 ${currentPage.value} 页（追加模式）`);
+  logger.log('[mistake-book] ➡️ 开始加载第 [省略] 页（追加模式）');
   loadData(false);
 }
 
@@ -467,9 +467,7 @@ async function loadData(reset = false) {
   }
 
   isLoading.value = true;
-  logger.log(
-    `[mistake-book] 开始加载数据 - reset: ${reset}, currentPage: ${currentPage.value}, pageSize: ${PAGE_SIZE}`
-  );
+  logger.log('[mistake-book] 开始加载数据 - reset: [省略], currentPage: [省略], pageSize: [省略]');
 
   try {
     if (reset) {
@@ -478,7 +476,7 @@ async function loadData(reset = false) {
       logger.log('[mistake-book] 🔄 重置状态，从第1页开始加载');
     }
 
-    logger.log(`[mistake-book] 📡 调用 storageService.getMistakes(${currentPage.value}, ${PAGE_SIZE})`);
+    logger.log('[mistake-book] 📡 调用 storageService.getMistakes([省略], [省略])');
     // 使用云端方法获取错题列表
     const result = await storageService.getMistakes(currentPage.value, PAGE_SIZE);
     if ((getUserId() || '') !== ownerId) return;
@@ -493,27 +491,22 @@ async function loadData(reset = false) {
 
     if (result && result.list) {
       const normalizedList = normalizeMistakes(result.list);
-      const beforeCount = mistakes.value.length;
       if (reset) {
         mistakes.value = normalizedList;
-        logger.log(`[mistake-book] 重置模式：加载了 ${normalizedList.length} 条错题`);
+        logger.log('[mistake-book] 重置模式：加载了 [省略] 条错题');
       } else {
         // 追加数据（用于分页加载）
         mistakes.value = [...mistakes.value, ...normalizedList];
-        logger.log(
-          `[mistake-book] 追加模式：从 ${beforeCount} 条增加到 ${mistakes.value.length} 条（新增 ${normalizedList.length} 条）`
-        );
+        logger.log('[mistake-book] 追加模式：从 [省略] 条增加到 [省略] 条（新增 [省略] 条）');
       }
 
       // 如果本页返回空列表，强制终止分页，防止无限加载
       hasMore.value = normalizedList.length > 0 && (result.hasMore || false);
-      logger.log(
-        `[mistake-book] 当前状态 - 总错题数: ${mistakes.value.length}, hasMore: ${hasMore.value}, currentPage: ${currentPage.value}`
-      );
+      logger.log('[mistake-book] 当前状态 - 总错题数: [省略], hasMore: [省略], currentPage: [省略]');
 
       // 空状态检查
       if (mistakes.value.length === 0) {
-        logger.log(`[mistake-book] 📭 空状态：错题列表为空，显示空状态UI`);
+        logger.log('[mistake-book] 📭 空状态：错题列表为空，显示空状态UI');
       }
 
       // 如果从云端获取，本地缓存已在 storageService.getMistakes 中更新（包含合并逻辑）
@@ -688,11 +681,11 @@ async function removeMistake(mistake) {
           if (result.success) {
             // 从列表中移除
             mistakes.value = mistakes.value.filter((item) => (item.id ?? item._id) !== id);
-            logger.log(`[mistake-book] ✅ 删除成功，列表剩余 ${mistakes.value.length} 条错题`);
+            logger.log('[mistake-book] ✅ 删除成功，列表剩余 [省略] 条错题');
             toast.success(t('mistake.copy45'));
           } else {
             // 保存失败不丢弃原记录或替换尚未加载的其他条目。
-            logger.warn(`[mistake-book] 移除未确认: ${result.error}`);
+            logger.warn('[mistake-book] 移除未确认: [省略]');
             toast.info(t('mistake.copy46'));
           }
         } catch (error) {
