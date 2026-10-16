@@ -1,9 +1,11 @@
-/* Yozi 设计板唯一令牌来源。数值对应 board-src.html 的令牌表与 .y-btn--primary。 */
+/* 原模板字体 + 客户批准的紫蓝设计板；业务扩展只沿用本表。 */
 @use './legacy-aliases' as legacy;
 
 @mixin yozi-light {
   --font-display: 'Epilogue', 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;
   --font-ui: 'DM Sans', 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;
+  --font-scene-title: 'Playfair Display', 'PingFang SC', 'Noto Sans SC', serif;
+  --font-scene-ticker: 'Poppins', 'PingFang SC', 'Noto Sans SC', sans-serif;
 
   --canvas: #f2effb;
   --glow-1: #e2d9fc;
@@ -68,7 +70,12 @@
   --t-state: 180ms;
   --t-enter: 280ms;
   --landing-marquee-time: 82s;
-  --landing-sky-opacity: 0.18;
+  --scene-sky-fallback: #2f6ff0;
+  --scene-wordmark: rgba(255, 255, 255, 0.5);
+  --playful-canvas: #dfe4f2;
+  --playful-mobile-canvas: #f0eefa;
+  --playful-ink: #080909;
+  --playful-badge: #f7f8fa;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --size-display: 44px;
@@ -102,6 +109,8 @@
   --weight-bold: 700;
   --weight-extrabold: 800;
   --weight-black: 900;
+  --weight-ui-emphasis: var(--weight-medium);
+  --weight-display: var(--weight-black);
   --tracking-display: -0.035em;
   --tracking-title: -0.03em;
   --tracking-section: -0.025em;
@@ -160,7 +169,6 @@
   color-scheme: light;
 }
 @mixin yozi-dark {
-  --landing-sky-opacity: 0.08;
   --canvas: #110f27;
   --glow-1: #2a1f5c;
   --glow-2: #14295a;

@@ -11,6 +11,92 @@ import {
 } from '../../scripts/build/release-blocker-backlog.mjs';
 
 describe('release blocker backlog', () => {
+  it('exposes public-use gaps even when every candidate source slot was auto-paired', () => {
+    const backlog = buildReleaseBlockerBacklog({
+      questionAudit: {
+        summary: {
+          sourceManifestPublishableOfficialPapers: 0,
+          sourceManifestAutoPairedOfficialSourceSlots: 1,
+          sourceManifestCoverageGapCount: 0,
+          sourceManifestPublicUseCoverageGapCount: 1
+        },
+        coverage: { tracks: [] },
+        releaseReadiness: { canPublish: false },
+        sourceEvidence: {
+          coverage: { math1: { presentYears: [2024], missingYears: [], coverageRate: 1 } },
+          publicUseCoverage: {
+            math1: {
+              presentYears: [],
+              missingYears: [2024],
+              coverageRate: 0,
+              missingYearDiagnostics: {
+                2024: { candidateCount: 1, blockReasons: { 'publicUseEvidence=missing': 1 }, sampleCandidates: [] }
+              }
+            }
+          }
+        }
+      }
+    });
+    const gap = backlog.items.find((item) => item.id === 'source_evidence_missing:math1:2024');
+    expect(gap).toBeTruthy();
+    expect(gap.nextAction).toContain('公开使用');
+    expect(gap.nextAction).toContain('SHA256');
+    expect(backlog.summary.sourceEvidenceGaps).toBe(0);
+    expect(backlog.summary.sourcePublicUseGaps).toBe(1);
+    expect(backlog.summary.sourceAutoPairedSlots).toBe(1);
+    expect(renderBacklogMarkdown(backlog)).toContain('公开使用证据缺口=1');
+  });
+  it('requires replacement of branded references even when a local paper and answer are readable', () => {
+    const sample = {
+      sourceId: 'src_1b0fd1f2d5c9741193305511',
+      sourceType: 'official_paper',
+      inferredSourceRole: 'paper_answer',
+      autoPairEligible: false,
+      publishBlocked: true,
+      blockReasons: ['branded_reference_rights_unverified'],
+      riskFlags: ['brand_leak', 'copyright_review_required', 'manual_review_required']
+    };
+    const questionAudit = {
+      summary: {},
+      coverage: {
+        tracks: [{ track: 'math2', requiredYears: [2021], publishedYears: [], pendingYears: [], missingYears: [2021] }]
+      },
+      sourceEvidence: {
+        coverage: {
+          math2: {
+            presentYears: [],
+            missingYears: [2021],
+            missingYearDiagnostics: {
+              2021: {
+                candidateCount: 1,
+                officialPaperCandidateCount: 1,
+                publishBlockedCandidateCount: 1,
+                autoPairEligibleCandidateCount: 0,
+                blockReasons: { branded_reference_rights_unverified: 1 },
+                sampleCandidates: [sample]
+              }
+            }
+          }
+        }
+      }
+    };
+    const backlog = buildReleaseBlockerBacklog({
+      questionAudit,
+      localSourceAudit: {
+        sources: [
+          { track: 'math2', year: 2021, role: 'paper_answer', textLayer: 'usable', quality: 'ready', blockers: [] }
+        ]
+      }
+    });
+    const slot = backlog.publicCourseSlotBacklog.find((row) => row.slotKey === 'math2:2021');
+    expect(slot.sourceManifestRegistrationChecklist.status).toBe('blocked_before_auto_pair');
+    expect(slot.sourceManifestRegistrationChecklist.blockers).toContain(
+      'manifest_candidate_branded_reference_rights_unverified'
+    );
+    expect(slot.sourceManifestRegistrationChecklist.postRegistrationCommands).toEqual([]);
+    expect(slot.nextAction).toContain('替换未核验公开使用权与判分依据的品牌参考解析');
+  });
+
   it('can skip markdown output for temporary read-only audits', async () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-release-backlog-'));
     const questionAuditPath = path.join(tempDir, 'question-bank-release-audit.json');

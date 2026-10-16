@@ -14,7 +14,9 @@
     <!-- 导航栏 - 添加设计系统工具类 -->
     <view v-if="!isInitLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content ds-flex ds-flex-between" :style="{ paddingRight: capsuleSafeRight + 'px' }">
-        <BaseButton class="nav-back" variant="secondary" @tap="goBack"><BaseIcon name="arrow-left" /></BaseButton>
+        <BaseButton class="nav-back" :label="$t('ui.back')" variant="secondary" @tap="goBack"
+          ><BaseIcon name="arrow-left"
+        /></BaseButton>
         <text class="nav-title ds-text-lg ds-font-semibold">{{ $t('pages.mistake') }}</text>
         <view class="nav-actions">
           <!-- 移除垃圾桶图标 -->

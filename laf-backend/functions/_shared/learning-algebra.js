@@ -1,5 +1,7 @@
 // 有界纯函数解析器：无 eval、动态代码、网络或系统命令。精确整数运算越界即降级。
 export const ALGEBRA_CONTRACT = 'safe-algebra-v1';
+export const NAMED_EQUATION_CONTRACT = 'safe-named-equation-v1';
+export const NAMED_LINEAR_INEQUALITY_CONTRACT = 'safe-named-linear-inequality-v1';
 export const INEQUALITY_CONTRACT = 'safe-linear-inequality-v1';
 export const QUADRATIC_INEQUALITY_CONTRACT = 'safe-quadratic-inequality-v1';
 export const ALGEBRA_LIMITS = Object.freeze({
@@ -549,8 +551,8 @@ function canonicalIntervals(intervals) {
   }
   return result;
 }
-export function parseInequalityAnswer(raw) {
-  const { body, stated } = answerParts(raw);
+export function parseInequalityAnswer(raw, symbol = null) {
+  const { body, stated } = answerParts(namedAlgebraAnswer({ symbol, task: 'inequality' }, raw));
   if (stated.length) fail('unsupported_inequality_domain');
   let input = comparisonNotation(body)
     .replace(/\\infty\b/g, '∞')
@@ -671,6 +673,41 @@ export function algebraPrompt(task, expression, domain = 'real') {
     : `在${domainLabels[domain]}范围内解方程 ${expression}，写出全部精确解。`;
 }
 export function deriveAlgebraQuestion(prompt) {
+  // An explicit new prompt keeps historical x-only questions and their evidence unchanged.
+  const namedEquation = /^在(实数|整数|正数)范围内解关于 ([a-z]) 的方程 (.+)，写出全部精确解。$/.exec(prompt || '');
+  const namedInequality = /^在(实数)范围内解关于 ([a-z]) 的一次不等式 (.+)，写出完整解集。$/.exec(prompt || '');
+  const named = namedEquation || namedInequality;
+  if (named) {
+    const symbol = named[2],
+      task = namedInequality ? 'inequality' : 'equation',
+      contract = namedInequality ? NAMED_LINEAR_INEQUALITY_CONTRACT : NAMED_EQUATION_CONTRACT;
+    try {
+      const expression = notation(namedInequality ? comparisonNotation(named[3]) : named[3]);
+      // Expand the existing bounded notation first: a variable named f must not rewrite \\frac.
+      if (/[a-zA-Z]/.test(expression.replaceAll(symbol, ''))) fail('unsupported_variable');
+      const derived = deriveAlgebraQuestion(
+        namedInequality
+          ? algebraPrompt('inequality', expression.replaceAll(symbol, 'x'))
+          : `在${named[1]}范围内解方程 ${expression.replaceAll(symbol, 'x')}，写出全部精确解。`
+      );
+      return {
+        ...derived,
+        symbol,
+        symbolExpression: expression,
+        validation: derived.validation ? { ...derived.validation, evidenceId: contract, symbol } : null
+      };
+    } catch (error) {
+      if (!(error instanceof AlgebraError)) throw error;
+      return {
+        task,
+        symbol,
+        domain: Object.keys(domainLabels).find((key) => domainLabels[key] === named[1]),
+        status: 'pending',
+        reason: error.code,
+        validation: null
+      };
+    }
+  }
   const equivalence = /^在实数范围内化简 (.+)，并保留定义域。$/.exec(prompt || '');
   const equation = /^在(实数|整数|正数)范围内解方程 (.+)，写出全部精确解。$/.exec(prompt || '');
   const inequality = /^在实数范围内解(二次)?不等式 (.+)，写出完整解集。$/.exec(prompt || '');
@@ -748,8 +785,29 @@ export function deriveAlgebraQuestion(prompt) {
     return { task, expression, domain, status: 'pending', reason: error.code, validation: null };
   }
 }
+function algebraContract(derived) {
+  return derived?.symbol
+    ? derived.task === 'inequality'
+      ? NAMED_LINEAR_INEQUALITY_CONTRACT
+      : NAMED_EQUATION_CONTRACT
+    : derived?.quadratic
+      ? QUADRATIC_INEQUALITY_CONTRACT
+      : derived?.task === 'inequality'
+        ? INEQUALITY_CONTRACT
+        : ALGEBRA_CONTRACT;
+}
+export function deriveAlgebraQuestionFor(question) {
+  const derived = deriveAlgebraQuestion(question?.prompt);
+  if (
+    derived?.symbol &&
+    question?.algebra?.contract !== algebraContract(derived) &&
+    question?.source?.evidenceId !== algebraContract(derived)
+  )
+    return null;
+  return derived;
+}
 export function normalizeAlgebraQuestion(question) {
-  const derived = deriveAlgebraQuestion(question.prompt);
+  const derived = deriveAlgebraQuestionFor(question);
   if (!derived || question.rubric || question.options?.length) {
     if (question.validation?.type === 'algebra') question.validation = null;
     delete question.algebra;
@@ -757,13 +815,10 @@ export function normalizeAlgebraQuestion(question) {
   }
   question.answerType = 'algebra';
   question.validation = derived.validation;
-  const contract = derived.quadratic
-    ? QUADRATIC_INEQUALITY_CONTRACT
-    : derived.task === 'inequality'
-      ? INEQUALITY_CONTRACT
-      : ALGEBRA_CONTRACT;
+  const contract = algebraContract(derived);
   question.algebra = {
     contract,
+    ...(derived.symbol ? { symbol: derived.symbol } : {}),
     ...(derived.quadratic ? { quadratic: true } : {}),
     task: derived.task,
     domain: derived.domain,
@@ -786,17 +841,32 @@ export function normalizeAlgebraQuestion(question) {
   return question;
 }
 const pending = (basis) => ({ status: 'pending', outcome: null, basis });
+function namedAlgebraAnswer(reference, raw) {
+  if (!reference.symbol) return raw;
+  if (!/^[a-z]$/.test(reference.symbol)) fail('unsupported_variable');
+  const value = notation(
+    reference.task === 'inequality' && typeof raw === 'string'
+      ? comparisonNotation(raw)
+          .replace(/\\infty\b/g, '∞')
+          .replace(/\\cup\b/g, '∪')
+          .replace(/\\in\b/g, '∈')
+      : raw
+  );
+  if (reference.symbol !== 'x' && value.includes('x')) fail('answer_variable_mismatch');
+  return value.replaceAll(reference.symbol, 'x');
+}
 export function gradeAlgebraAnswer(question, raw) {
   if (question.uncertainties?.some((item) => !item.resolved)) return pending('critical_input_uncertain');
-  const reference = deriveAlgebraQuestion(question.prompt);
+  const reference = deriveAlgebraQuestionFor(question);
   if (!reference?.validation || question.rubric || question.options?.length)
     return pending(reference?.reason || 'no_independent_reference');
   try {
-    const { body, stated } = answerParts(raw),
+    const canonicalAnswer = namedAlgebraAnswer(reference, raw),
+      { body, stated } = answerParts(canonicalAnswer),
       rule = reference.validation;
     let outcome;
     if (reference.task === 'inequality') {
-      outcome = intervalsSame(parseInequalityAnswer(raw), rule.solution.intervals) ? 'correct' : 'wrong';
+      outcome = intervalsSame(parseInequalityAnswer(canonicalAnswer), rule.solution.intervals) ? 'correct' : 'wrong';
     } else if (reference.task === 'equivalence') {
       if (notation(body).replace(/\s/g, '') === notation(reference.expression).replace(/\s/g, ''))
         return pending('original_expression_repeated');
@@ -865,11 +935,12 @@ export function gradeAlgebraAnswer(question, raw) {
   }
 }
 export function isAlgebraAnswer(question, raw) {
-  const reference = deriveAlgebraQuestion(question.prompt);
+  const reference = deriveAlgebraQuestionFor(question);
   if (!reference) return false;
   try {
-    const { body } = answerParts(raw);
-    if (reference.task === 'inequality') parseInequalityAnswer(raw);
+    const canonicalAnswer = namedAlgebraAnswer(reference, raw),
+      { body } = answerParts(canonicalAnswer);
+    if (reference.task === 'inequality') parseInequalityAnswer(canonicalAnswer);
     else if (reference.task === 'equation') {
       if (/^(?:任意|所有)(?:实数|整数|正数)$|^[ℝℤRZ]$/.test(body)) return true;
       finiteSet(body);
@@ -884,6 +955,8 @@ export function createAlgebraQuestion(id, goal, parent = null) {
   let prompt = deriveAlgebraQuestion(goal) ? goal : null;
   const simplify = /^化简\s+(.+)$/.exec(goal.trim());
   const solve = /^(?:(实数|整数|正数)(?:范围内)?\s*)?解方程\s+(.+)$/.exec(goal.trim());
+  const named = /^(?:(实数|整数|正数)(?:范围内)?\s*)?解关于\s*([a-z])\s*的方程\s+(.+)$/.exec(goal.trim());
+  const namedInequality = /^(?:实数(?:范围内)?\s*)?解关于\s*([a-z])\s*的(?:一次)?不等式\s+(.+)$/.exec(goal.trim());
   const inequality = /^(?:实数(?:范围内)?\s*)?解不等式\s+(.+)$/.exec(goal.trim());
   const quadratic = /^(?:实数(?:范围内)?\s*)?解二次不等式\s+(.+)$/.exec(goal.trim());
   if (inequality) prompt = algebraPrompt('inequality', inequality[1]);
@@ -895,6 +968,9 @@ export function createAlgebraQuestion(id, goal, parent = null) {
       solve[2],
       solve[1] ? Object.keys(domainLabels).find((key) => domainLabels[key] === solve[1]) : 'real'
     );
+  if (named) prompt = `在${named[1] || '实数'}范围内解关于 ${named[2]} 的方程 ${named[3]}，写出全部精确解。`;
+  if (namedInequality)
+    prompt = `在实数范围内解关于 ${namedInequality[1]} 的一次不等式 ${namedInequality[2]}，写出完整解集。`;
   if (!prompt) return null;
   const derived = deriveAlgebraQuestion(prompt),
     task = derived?.task;
@@ -913,11 +989,7 @@ export function createAlgebraQuestion(id, goal, parent = null) {
           : '代数等价与定义域',
     source: {
       kind: 'executable',
-      evidenceId: derived?.quadratic
-        ? QUADRATIC_INEQUALITY_CONTRACT
-        : task === 'inequality'
-          ? INEQUALITY_CONTRACT
-          : ALGEBRA_CONTRACT
+      evidenceId: algebraContract(derived)
     },
     uncertainties: [],
     ...(parent ? { parentQuestionKey: `${parent.id}@${parent.version}` } : {})
@@ -951,18 +1023,18 @@ function exactQuotient(numerator, denominator) {
   return isZero(remainder) ? trim(quotient) : null;
 }
 export function algebraReferenceText(question) {
-  const derived = deriveAlgebraQuestion(question.prompt);
+  const derived = deriveAlgebraQuestionFor(question);
   if (!derived?.validation) return null;
   const rule = derived.validation,
-    domain = rule.excluded.length ? `，x≠${rule.excluded.map(fractionText).join('、')}` : '';
+    domain = rule.excluded.length ? `，${derived.symbol || 'x'}≠${rule.excluded.map(fractionText).join('、')}` : '';
   if (derived.task === 'inequality') {
     if (derived.quadratic) return intervalSetText(rule.solution.intervals);
     const interval = rule.solution.intervals[0];
     if (!interval) return '无解';
     if (!interval.lower && !interval.upper) return '任意实数';
     return interval.lower
-      ? `x${interval.lowerClosed ? '≥' : '>'}${fractionText(interval.lower)}`
-      : `x${interval.upperClosed ? '≤' : '<'}${fractionText(interval.upper)}`;
+      ? `${derived.symbol || 'x'}${interval.lowerClosed ? '≥' : '>'}${fractionText(interval.lower)}`
+      : `${derived.symbol || 'x'}${interval.upperClosed ? '≤' : '<'}${fractionText(interval.upper)}`;
   }
   if (derived.task === 'equation')
     return rule.solution.all
@@ -1019,7 +1091,7 @@ export function inequalityDiagram(question) {
     question.uncertainties?.some((item) => !item.resolved)
   )
     return null;
-  const derived = deriveAlgebraQuestion(question.prompt);
+  const derived = deriveAlgebraQuestionFor(question);
   if (derived?.task !== 'inequality' || !derived.validation) return null;
   const interval = derived.validation.solution.intervals[0];
   if (!interval) return { kind: 'empty', description: '解集为空，数轴上没有满足条件的点。' };
@@ -1039,8 +1111,26 @@ export function inequalityDiagram(question) {
 }
 export function createAlgebraVariant(id, parent) {
   if (!parent || parent.rubric || parent.options?.length) return null;
-  const derived = deriveAlgebraQuestion(parent?.prompt);
+  const derived = deriveAlgebraQuestionFor(parent);
   if (!derived?.validation || parent.uncertainties?.some((item) => !item.resolved)) return null;
+  if (derived.symbol) {
+    if (derived.domain === 'real' && !derived.symbolExpression.includes(derived.symbol)) return null;
+    const expression =
+      derived.domain === 'real'
+        ? derived.symbolExpression.replaceAll(derived.symbol, `(${derived.symbol}+1)`)
+        : derived.symbolExpression;
+    const q = createAlgebraQuestion(
+      id,
+      `解关于 ${derived.symbol} 的${derived.task === 'inequality' ? '一次不等式' : '方程'} ${expression}`,
+      parent
+    );
+    if (!q?.validation) return null;
+    q.variantChange =
+      derived.domain === 'real'
+        ? `将原式中的${derived.symbol}整体替换为(${derived.symbol}+1)，独立重算完整解集与原式限制`
+        : `从${domainLabels[derived.domain]}改为实数范围，独立核对当前未知量的全部解与分母限制`;
+    return q;
+  }
   if (derived.task === 'inequality') {
     const [left, operator, right] = comparisonNotation(derived.expression).split(/(<=|>=|<|>)/);
     // 同时负倍缩放和左右对调，关系方向保留；再由原式独立重算验证。
@@ -1082,7 +1172,7 @@ export function createAlgebraVariant(id, parent) {
 }
 export function algebraTeaching(question, method, level = 1) {
   if (!question || question.rubric || question.options?.length) return null;
-  const derived = deriveAlgebraQuestion(question?.prompt);
+  const derived = deriveAlgebraQuestionFor(question);
   if (!derived?.validation || question.uncertainties?.some((item) => !item.resolved)) return null;
   if (derived.task === 'inequality')
     return derived.quadratic
@@ -1099,7 +1189,7 @@ export function algebraTeaching(question, method, level = 1) {
           ? direct
           : level === 2
             ? equation
-              ? '把两边移到同一侧；先求分子零点，再排除原分母零点。不要漏掉第二个根。'
+              ? '把两边移到同一侧；先求分子零点，再排除原分母零点。核对全部候选解。'
               : '按幂次收集系数；约分前先记录原分母不能为零的条件。'
             : '先写出原式的定义域，再进行等价变形。',
       level: Math.min(3, Math.max(1, level))
@@ -1188,7 +1278,8 @@ function quadraticInequalityTeaching(question, method, level) {
   return segments[method] ? { helped: true, method, ...segments[method] } : null;
 }
 function inequalityTeaching(question, method, level) {
-  const reference = algebraReferenceText(question);
+  const reference = algebraReferenceText(question),
+    symbol = deriveAlgebraQuestionFor(question).symbol || 'x';
   const direct = `有界一次不等式工具给出的完整实数解集：${reference}。使用精确有理数合并两边；除以负数时反向，严格/非严格边界分别保留。`;
   const segments = {
     explain: { content: direct, level: 3 },
@@ -1213,7 +1304,7 @@ function inequalityTeaching(question, method, level) {
     },
     example: {
       content:
-        reference === 'x≤2'
+        reference === `${symbol}≤2`
           ? '例题 -2*x+8>0：移项为 -2*x>-8，除以-2时反向，得到x<4；4不能取到。回到当前题，独立检查系数和边界。'
           : '例题 -3*x+6≥0：移项为 -3*x≥-6，除以-3时反向，得到x≤2；2可以取到。回到当前题，独立检查系数和边界。',
       level: 2
@@ -1235,5 +1326,12 @@ function inequalityTeaching(question, method, level) {
       helped: false
     }
   };
-  return segments[method] ? { helped: true, method, ...segments[method] } : null;
+  if (!segments[method]) return null;
+  const segment = segments[method];
+  if (symbol !== 'x') {
+    segment.content = segment.content.replaceAll('x', symbol);
+    if (method === 'hint' && level === 2)
+      segment.content = `把两边相减，合并${symbol}的系数与常数项；系数为负时除法反向，系数为0时直接判断常数关系。`;
+  }
+  return { helped: true, method, ...segment };
 }

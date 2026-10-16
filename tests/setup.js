@@ -239,6 +239,11 @@ globalScope.uni = {
     scale: vi.fn()
   })),
   createSelectorQuery: vi.fn(() => ({
+    select: vi.fn().mockReturnThis(),
+    selectViewport: vi.fn().mockReturnThis(),
+    boundingClientRect: vi.fn().mockReturnThis(),
+    scrollOffset: vi.fn().mockReturnThis(),
+    exec: vi.fn((callback) => callback?.([null, { scrollTop: 0 }])),
     in: vi.fn(() => ({
       select: vi.fn(() => ({
         fields: vi.fn(() => ({

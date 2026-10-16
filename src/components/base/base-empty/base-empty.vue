@@ -60,7 +60,7 @@ const poses = { empty: 'idle', loading: 'think', error: 'curious' };
 }
 .base-state__title {
   color: var(--ink);
-  font: var(--weight-bold) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
 }
 .base-state__description {
   color: var(--ink-3);

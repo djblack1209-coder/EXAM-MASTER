@@ -30,6 +30,166 @@ const stubs = {
   BaseIcon: true
 };
 describe('学习路线的明确操作与阅读', () => {
+  it('停止后可只读展开待核对原答，聚焦阅读区且不写记录或放开巩固和提交', async () => {
+    const s = useConversationLearningStore();
+    s.start('分数练习');
+    s.configureJourney(s.journeyContext(), {
+      title: '分数练习',
+      startDay: s.todaySummary.day,
+      durationDays: 7,
+      minutes: 30,
+      mode: 'batch',
+      moduleIds: ['fraction-add-subtract', 'fraction-multiply-divide']
+    });
+    const first = s.startTraining(s.journeyContext(), 'fraction-add-subtract', 1);
+    s.submitTraining(s.journeyContext(), first.id, ['0.9']);
+    const pending = s.startTraining(s.journeyContext(), 'fraction-multiply-divide', 1);
+    s.submitTraining(s.journeyContext(), pending.id, ['还没有算出']);
+    s.commit('task.stop', { conversationId: s.active.id });
+    const before = s.exportData();
+    wrapper = mount(LearningPage, {
+      attachTo: document.body,
+      global: { stubs: { ...stubs, PrivacyPopup: true, LearningLab: true } }
+    });
+    const button = (label) => wrapper.findAll('button').find((b) => b.text().trim() === label);
+    await button('查看原答').trigger('tap');
+    await flushPromises();
+    const original = wrapper.get('#learning-review-original');
+    expect(original.text()).toContain('计算 2/3 × 1/4。');
+    expect(original.text()).toContain('原答：还没有算出');
+    expect(original.text()).toContain('原答已保存，反馈待核对');
+    expect(document.activeElement).toBe(original.element);
+    expect(button('开始巩固检验').attributes('disabled')).toBeDefined();
+    expect(button('完成本次复盘').attributes('disabled')).toBeDefined();
+    expect(s.exportData()).toBe(before);
+    await original.find('button').trigger('tap');
+    await flushPromises();
+    expect(wrapper.find('#learning-review-original').exists()).toBe(false);
+    expect(document.activeElement).toBe(button('查看原答').element);
+    expect(s.exportData()).toBe(before);
+  });
+  it('到期复测和独立巩固都把焦点交给当前题，停止阅读不恢复任务或改原答', async () => {
+    const s = useConversationLearningStore();
+    s.start('分数练习');
+    s.configureJourney(s.journeyContext(), {
+      title: '分数练习',
+      startDay: s.todaySummary.day,
+      durationDays: 7,
+      minutes: 30,
+      mode: 'batch',
+      moduleIds: ['fraction-add-subtract']
+    });
+    const group = s.startTraining(s.journeyContext(), 'fraction-add-subtract', 1);
+    s.submitTraining(s.journeyContext(), group.id, ['0.9']);
+    const originals = JSON.stringify(s.state.attempts);
+    s.commit('task.stop', { conversationId: s.active.id });
+    wrapper = mount(LearningPage, {
+      attachTo: document.body,
+      global: { stubs: { ...stubs, PrivacyPopup: true, LearningLab: true } }
+    });
+    const button = (label) => wrapper.findAll('button').find((b) => b.text().trim() === label);
+    await button('回到复测题').trigger('tap');
+    await flushPromises();
+    expect(document.activeElement).toBe(wrapper.get('#active-learning-question').element);
+    expect(s.state.events.at(-1).data.kind).toBe('review');
+    expect(s.active.stopped).toBe(true);
+    expect(button('提交答案').attributes('disabled')).toBeDefined();
+    expect(JSON.stringify(s.state.attempts)).toBe(originals);
+    s.commit('task.resume', { conversationId: s.active.id, source: 'self_report' });
+    await flushPromises();
+    await button('开始巩固检验').trigger('tap');
+    await flushPromises();
+    expect(document.activeElement).toBe(wrapper.get('#active-learning-question').element);
+    expect(s.activeQuestion.parentQuestionKey).toBe(group.questionKeys[0]);
+    expect(JSON.stringify(s.state.attempts)).toBe(originals);
+  });
+  it('复盘后的无效题量就近显示错误，未来题组只读定位且不生成额外事实', async () => {
+    const s = useConversationLearningStore();
+    s.start('分数练习');
+    s.configureJourney(s.journeyContext(), {
+      title: '分数练习',
+      startDay: s.todaySummary.day,
+      durationDays: 7,
+      minutes: 30,
+      mode: 'batch',
+      moduleIds: ['fraction-add-subtract']
+    });
+    const group = s.startTraining(s.journeyContext(), 'fraction-add-subtract', 1);
+    s.submitTraining(s.journeyContext(), group.id, ['11/12']);
+    s.confirmRecap(s.journeyContext());
+    wrapper = mount(LearningPage, {
+      attachTo: document.body,
+      global: { stubs: { ...stubs, PrivacyPopup: true, LearningLab: true } }
+    });
+    const button = (label) => wrapper.findAll('button').find((b) => b.text().trim() === label);
+    const input = wrapper.get('[aria-label="分数加减下一批题量"]');
+    const before = s.exportData();
+    await input.setValue('999');
+    await button('安排明日训练').trigger('tap');
+    await flushPromises();
+    expect(document.activeElement).toBe(wrapper.get('#learning-review-feedback').element);
+    expect(s.exportData()).toBe(before);
+    await input.setValue('2');
+    await button('安排明日训练').trigger('tap');
+    await flushPromises();
+    expect(wrapper.find('#learning-review-feedback').exists()).toBe(false);
+    const planned = s.exportData();
+    wrapper.unmount();
+    wrapper = mount(LearningPage, {
+      attachTo: document.body,
+      global: { stubs: { ...stubs, PrivacyPopup: true, LearningLab: true } }
+    });
+    expect(wrapper.get('[aria-label="分数加减下一批题量"]').element.value).toBe('2');
+    expect(wrapper.get('[aria-label="分数加减下一批题量"]').attributes('readonly')).toBeDefined();
+    await button('查看题组').trigger('tap');
+    await flushPromises();
+    expect(document.activeElement).toBe(wrapper.get('#learning-training-panel').element);
+    expect(wrapper.get('[data-test="training-submit"]').attributes('disabled')).toBeDefined();
+    expect(s.exportData()).toBe(planned);
+  });
+  it('修改已保存路线失败时就近显示并聚焦原因，原路线保持，取消后可重新修正', async () => {
+    const s = useConversationLearningStore();
+    s.start('分数练习');
+    s.configureJourney(s.journeyContext(), {
+      title: '分数练习',
+      startDay: s.todaySummary.day,
+      durationDays: 30,
+      minutes: 40,
+      mode: 'batch',
+      moduleIds: ['fraction-add-subtract']
+    });
+    const before = s.exportData();
+    wrapper = mount(LearningJourney, { attachTo: document.body, global: { stubs } });
+    const originalScroll = Element.prototype.scrollIntoView;
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    try {
+      const button = (label) => wrapper.findAll('button').find((b) => b.text().trim() === label);
+      await button('调整目标').trigger('tap');
+      await wrapper.get('[aria-label="路线计划天数"]').setValue('400');
+      await wrapper.get('[data-test="journey-save"]').trigger('tap');
+      await flushPromises();
+      const error = wrapper.get('#learning-journey-feedback');
+      expect(error.text()).toContain('计划周期须为1至365天');
+      expect(error.element.compareDocumentPosition(wrapper.get('.journey-route-heading').element) & 4).toBe(4);
+      expect(document.activeElement).toBe(error.element);
+      expect(scroll).toHaveBeenCalledWith({ block: 'center', behavior: 'auto' });
+      expect(s.exportData()).toBe(before);
+      expect(wrapper.get('[aria-label="路线计划天数"]').element.value).toBe('400');
+      await button('取消').trigger('tap');
+      expect(wrapper.find('#learning-journey-feedback').exists()).toBe(false);
+      expect(s.exportData()).toBe(before);
+      await button('调整目标').trigger('tap');
+      expect(wrapper.get('[aria-label="路线计划天数"]').element.value).toBe('30');
+      await wrapper.get('[aria-label="路线计划天数"]').setValue('20');
+      await wrapper.get('[data-test="journey-save"]').trigger('tap');
+      await flushPromises();
+      expect(s.active.journey.durationDays).toBe(20);
+      expect(s.state.attempts).toHaveLength(0);
+    } finally {
+      Element.prototype.scrollIntoView = originalScroll;
+    }
+  });
   it('从其他页面定位长会话旧日时不被当前题分页覆盖，较早日期可达且不改记录', async () => {
     const query = {
       select: () => query,
@@ -164,6 +324,10 @@ describe('学习路线的明确操作与阅读', () => {
       .findAll('[aria-label="训练节奏"] button')
       .find((b) => b.text() === '整批训练')
       .trigger('tap');
+    await wrapper
+      .findAll('.journey-module-options button')
+      .find((b) => b.text().includes('整数加法'))
+      .trigger('tap');
     await wrapper.find('[data-test="journey-save"]').trigger('tap');
     await flushPromises();
     expect(wrapper.text()).toContain('清晰的运算目标');
@@ -192,7 +356,6 @@ describe('学习路线的明确操作与阅读', () => {
     await wrapper.find('button').trigger('tap');
     const chips = wrapper.findAll('.journey-module-options button');
     for (const label of [
-      'Integer addition',
       'Integer subtraction',
       'Integer division',
       'Fraction addition and subtraction',
@@ -249,7 +412,6 @@ describe('学习路线的明确操作与阅读', () => {
     ]) {
       expect(chips.some((b) => b.text().includes(label))).toBe(true);
     }
-    await chips.find((b) => b.text().includes('Integer addition')).trigger('tap');
     await chips.find((b) => b.text().includes('Velocity–time graph')).trigger('tap');
     expect(s.exportData()).toBe(before);
     await wrapper.find('[data-test="journey-save"]').trigger('tap');

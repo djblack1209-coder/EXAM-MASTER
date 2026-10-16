@@ -43,28 +43,19 @@ defineProps({
 
 <style lang="scss" scoped>
 .skeleton-container {
-  --skeleton-bg: #e5e7eb;
-  --skeleton-highlight: #d1d5db;
-  --card-bg: #ffffff;
-  --card-border: rgba(0, 0, 0, 0.04);
-
-  padding: 30rpx;
-}
-
-.skeleton-container.dark-mode {
-  --skeleton-bg: #2c2c2e;
-  --skeleton-highlight: #3a3a3c;
-  --card-bg: var(--bg-card);
-  --card-border: var(--border-color);
+  --skeleton-bg: var(--line);
+  --card-bg: var(--paper);
+  --card-border: var(--line);
+  padding: var(--s-4);
 }
 
 .glass-card {
   background: var(--card-bg);
-  border: 2rpx solid var(--card-border);
-  border-radius: 28rpx;
-  padding: 30rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: 0;
+  border-radius: var(--r-md);
+  padding: var(--s-5);
+  margin-bottom: var(--s-4);
+  box-shadow: var(--lift-1);
 }
 
 @keyframes skeleton-pulse {

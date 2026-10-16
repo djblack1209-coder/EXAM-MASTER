@@ -30,6 +30,14 @@ const zh = {
   blockedHelp: '本次无法创建账户，请稍后再来。',
   smsClosed: '短信暂未开放，请使用其他登录方式。',
   providerClosed: '此登录方式暂未开放。',
+  verifying: '正在登录',
+  verifyingHelp: '正在验证微信授权',
+  authorized: '授权已完成',
+  signedIn: '登录成功',
+  returnDesktop: '请返回Yozi AI桌面应用继续学习',
+  redirecting: '即将跳转',
+  failed: '登录失败',
+  signInAgain: '重新登录',
   retry: '登录未完成，请重试。',
   rate: '操作太频繁，请稍后再试。',
   confirmAgain: '请重新确认年龄后继续。',
@@ -109,6 +117,14 @@ const en = {
   blockedHelp: 'An account cannot be created in this session. Please come back later.',
   smsClosed: 'SMS is not available yet. Please use another sign-in option.',
   providerClosed: 'This sign-in option is not available yet.',
+  verifying: 'Signing in',
+  verifyingHelp: 'Verifying WeChat authorization',
+  authorized: 'Authorization complete',
+  signedIn: 'Signed in',
+  returnDesktop: 'Return to Yozi AI on your desktop to continue learning',
+  redirecting: 'Redirecting',
+  failed: 'Sign-in failed',
+  signInAgain: 'Sign in again',
   retry: 'Sign-in did not finish. Please try again.',
   rate: 'Too many attempts. Please try again later.',
   confirmAgain: 'Please confirm your age again to continue.',
@@ -158,3 +174,6 @@ const en = {
   improving: 'In progress'
 };
 registerMessages('login', { 'zh-CN': zh, en });
+
+// Fixed English presentation; form, consent and errors retain the user's language.
+export const loginPresentation = Object.freeze({ title: en.title, subtitle: en.subtitle });

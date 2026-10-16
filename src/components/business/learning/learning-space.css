@@ -24,6 +24,9 @@
   flex-direction: column;
   gap: var(--s-4);
   min-width: 0;
+  max-height: calc(100vh - var(--s-8) * 2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .space-main {
   min-width: 0;
@@ -46,7 +49,7 @@
   flex: none;
 }
 .brand-name {
-  font: var(--weight-black) var(--size-title-3)/var(--leading-title-3) var(--font-display);
+  font: var(--weight-display) var(--size-title-3)/var(--leading-title-3) var(--font-display);
   letter-spacing: var(--tracking-section);
 }
 .desktop-navigation,
@@ -126,7 +129,7 @@
   flex-wrap: wrap;
 }
 .space-title {
-  font: var(--weight-bold) var(--size-title-2)/var(--leading-title-2) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-title-2)/var(--leading-title-2) var(--font-ui);
   letter-spacing: var(--tracking-title);
 }
 .space-content,
@@ -146,7 +149,7 @@
 }
 .welcome-title {
   white-space: pre-line;
-  font: var(--weight-bold) var(--size-title-1)/var(--leading-title-1) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-title-1)/var(--leading-title-1) var(--font-ui);
 }
 .goal-panel,
 .panel,
@@ -171,7 +174,7 @@
 }
 .section-title {
   display: block;
-  font: var(--weight-bold) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
   margin-bottom: var(--s-3);
 }
 .subtle,
@@ -209,7 +212,7 @@
   flex-wrap: wrap;
 }
 .conversation-title {
-  font: var(--weight-semibold) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
 }
 .conversation-day {
   display: flex;
@@ -379,6 +382,7 @@
     display: inline-flex;
   }
   .space-sidebar {
+    max-height: none;
     position: fixed;
     top: 0;
     bottom: 0;
@@ -432,7 +436,7 @@
   }
   .mobile-dock .base-button__content text {
     white-space: nowrap;
-    font: var(--weight-semibold) var(--size-caption)/var(--leading-caption) var(--font-ui);
+    font: var(--weight-ui-emphasis) var(--size-caption)/var(--leading-caption) var(--font-ui);
   }
   .mobile-dock .selected {
     color: var(--violet-ink);

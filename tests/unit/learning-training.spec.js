@@ -43,6 +43,20 @@ function setup(moduleIds = ['arithmetic-add'], timezone = null) {
 }
 
 describe('整批训练的实际学习记录', () => {
+  it('明确回到单题只取消整批临时选择，未知题组仍拒绝，原答和事实保持', () => {
+    const s = setup(['fraction-add-subtract']);
+    const group = s.startTraining(s.journeyContext(), 'fraction-add-subtract', 1);
+    s.submitTraining(s.journeyContext(), group.id, ['22/24']);
+    const before = s.exportData();
+    s.selectTraining(null);
+    expect(s.batchTrainingActive).toBe(false);
+    expect(s.activeQuestion).toBeTruthy();
+    expect(() => s.selectTraining('unknown-group')).toThrow('题组不存在');
+    expect(s.exportData()).toBe(before);
+    s.selectTraining(group.id);
+    expect(s.batchTrainingActive).toBe(true);
+    expect(s.exportData()).toBe(before);
+  });
   it('跨日/模块目录仅定位完整会话，停止、原答、全部消息与恢复事实不变化', () => {
     const s = setup(['arithmetic-add', 'writing-notice']);
     const id = s.active.id;

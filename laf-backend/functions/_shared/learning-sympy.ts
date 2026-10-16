@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { spawn, execFile } from 'node:child_process';
 import { isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { deriveAlgebraQuestion, parseAlgebraExpression } from './learning-algebra.js';
+import { deriveAlgebraQuestionFor, parseAlgebraExpression } from './learning-algebra.js';
 
 export const SYMPY_ADAPTER = Object.freeze({
   contract: 'sympy-reference-v1',
@@ -59,7 +59,7 @@ export function prepareSympyReference(context: SympyContext, scope: Scope) {
   );
   const attempt = attempts.find((item: any) => item.id === scope.attemptId);
   if (!question || !attempt || attempt !== attempts.at(-1)) fail('ORIGINAL_ANSWER_CHANGED');
-  const derived = deriveAlgebraQuestion(question.prompt);
+  const derived = deriveAlgebraQuestionFor(question);
   if (!derived || derived.task !== 'equation') fail('UNSUPPORTED_QUESTION');
   if (question.uncertainties?.some((item: any) => !item.resolved)) fail('UNRESOLVED_QUESTION');
   const sides = derived.expression.split('=');

@@ -161,7 +161,7 @@ describe('login page explicit actions', () => {
     await regions.vm.$emit('update:modelValue', 'US');
     await flushPromises();
     expect(uni.getStorageSync('yozi_login_region')).toBe('US');
-    expect(wrapper.text()).toContain('登录 Yozi AI');
+    expect(wrapper.text()).toContain('Sign in to Yozi AI');
     expect(action(wrapper, '使用邮箱登录').props('disabled')).toBe(true);
     await action(wrapper, '使用邮箱登录').vm.$emit('tap');
     await flushPromises();

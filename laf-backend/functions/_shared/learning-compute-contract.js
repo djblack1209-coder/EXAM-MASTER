@@ -1,4 +1,4 @@
-import { deriveAlgebraQuestion, parseAlgebraExpression } from './learning-algebra.js';
+import { deriveAlgebraQuestionFor, parseAlgebraExpression } from './learning-algebra.js';
 
 export const COMPUTE_CONTRACT = 'learning-compute-v1';
 export const SYMPY_SOURCE = Object.freeze({
@@ -34,7 +34,7 @@ export function computeScopeFor(state, conversationId) {
     .filter((item) => item.conversationId === conversationId && item.questionKey === session.activeQuestionKey)
     .at(-1);
   if (!question || !attempt) fail('PRECONDITION', '请先明确提交本题原答');
-  const derived = deriveAlgebraQuestion(question.prompt);
+  const derived = deriveAlgebraQuestionFor(question);
   if (!derived || derived.task !== 'equation' || question.uncertainties?.some((item) => !item.resolved))
     fail('UNSUPPORTED_QUESTION', '本题暂不支持参考计算');
   try {
@@ -84,7 +84,7 @@ export function normalizeComputeReference(value, state, conversationId, question
     items.length <= limit &&
     new Set(items).size === items.length &&
     items.every((s) => typeof s === 'string' && s.length > 0 && s.length <= 512 && !/[\r\n\0]/.test(s));
-  const derived = deriveAlgebraQuestion(expected.expected.question.prompt);
+  const derived = deriveAlgebraQuestionFor(expected.expected.question);
   if (
     !result ||
     Object.keys(result).sort().join(',') !== 'all,domain,excluded,gradingAuthority,solutions,upstream,version' ||

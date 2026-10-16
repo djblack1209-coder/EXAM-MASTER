@@ -28,7 +28,7 @@ import { conversationStrategy, requestedTeachingMethod } from './learning-strate
 import { validPrerequisiteQuestion } from './learning-prerequisite.js';
 import {
   normalizeAlgebraQuestion,
-  deriveAlgebraQuestion,
+  deriveAlgebraQuestionFor,
   gradeAlgebraAnswer,
   isAlgebraAnswer,
   parseExactNumberAnswer,
@@ -893,7 +893,7 @@ export function gradeAnswer(question, answer, state = null) {
     return gradeConditionProbe(question, answer);
   if (deriveConditionQuestion(question.prompt) && !question.rubric && !question.options?.length)
     return gradeConditionAnswer(question, answer);
-  if (deriveAlgebraQuestion(question.prompt) && !question.rubric && !question.options?.length)
+  if (deriveAlgebraQuestionFor(question) && !question.rubric && !question.options?.length)
     return gradeAlgebraAnswer(question, answer);
   const rule = question.validation;
   // 来自模型的 reference 不能自行提升为独立判分依据。

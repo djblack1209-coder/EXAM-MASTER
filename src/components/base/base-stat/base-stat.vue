@@ -31,7 +31,7 @@ defineProps({
   align-items: baseline;
   gap: var(--s-1);
   color: var(--ink);
-  font: var(--weight-bold) var(--size-number)/var(--leading-number) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-number)/var(--leading-number) var(--font-ui);
   font-variant-numeric: tabular-nums;
 }
 .base-stat__unit {

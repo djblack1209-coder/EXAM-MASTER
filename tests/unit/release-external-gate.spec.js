@@ -2,9 +2,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 const SCRIPT = path.resolve(process.cwd(), 'scripts/build/release-external-gate.mjs');
+const ownedTempDirs = [];
+afterEach(() => {
+  for (const dir of ownedTempDirs.splice(0)) fs.rmSync(dir, { recursive: true, force: true });
+});
 
 function passedWechatEvidence() {
   return [
@@ -62,6 +66,7 @@ function releaseEnv(overrides = {}) {
     VITE_WX_APP_ID: 'wx1234567890abcdef',
     VITE_API_BASE_URL: 'https://api.exam-master.app',
     JWT_SECRET: 'x'.repeat(64),
+    LEARNING_VAULT_KEY: 'a'.repeat(64),
     PASSWORD_SALT: 'y'.repeat(32),
     REQUEST_SIGN_SALT: 'z'.repeat(32),
     ADMIN_SECRET: 'admin-secret',
@@ -80,7 +85,9 @@ function releaseEnv(overrides = {}) {
 }
 
 function tempDir() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-release-gate-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-release-gate-'));
+  ownedTempDirs.push(dir);
+  return dir;
 }
 
 function runGate(args = [], env = {}) {
@@ -95,6 +102,37 @@ function runGate(args = [], env = {}) {
 }
 
 describe('release external gate', () => {
+  it('blocks a missing or malformed current model vault even when legacy provider configuration is present', () => {
+    const dir = tempDir();
+    const output = path.join(dir, 'external.json');
+    for (const [key, code] of [
+      ['', 'missing_env:LEARNING_VAULT_KEY'],
+      ['b'.repeat(63), 'invalid_model_vault_key'],
+      ['not-a-hex-vault-key-'.repeat(4), 'invalid_model_vault_key']
+    ]) {
+      const result = runGate(
+        ['--output', output, '--no-env-files', '--fail-on-blockers'],
+        releaseEnv({ LEARNING_VAULT_KEY: key })
+      );
+      expect(result.status).toBe(2);
+      const text = fs.readFileSync(output, 'utf8');
+      const report = JSON.parse(text);
+      expect(report.sections.productionConfig.status).toBe('blocked');
+      expect(report.sections.productionConfig.blockers.map((item) => item.code)).toContain(code);
+      expect(report.sections.productionConfig.blockers.map((item) => item.code)).not.toContain('missing_ai_provider');
+      if (key) expect(text).not.toContain(key);
+    }
+  });
+  it('accepts the exact current vault format without exposing the key in the release report', () => {
+    const dir = tempDir();
+    const output = path.join(dir, 'external.json');
+    const key = 'Ab12'.repeat(16);
+    const result = runGate(['--output', output, '--no-env-files'], releaseEnv({ LEARNING_VAULT_KEY: key }));
+    expect(result.status).toBe(0);
+    const text = fs.readFileSync(output, 'utf8');
+    expect(JSON.parse(text).sections.productionConfig.status).toBe('passed');
+    expect(text).not.toContain(key);
+  });
   it('reports missing production external blockers without requiring secrets in git', () => {
     const dir = tempDir();
     const output = path.join(dir, 'external.json');
@@ -319,6 +357,7 @@ describe('release external gate', () => {
         'VITE_WX_APP_ID=wx1234567890abcdef',
         'VITE_API_BASE_URL=https://api.exam-master.app',
         `JWT_SECRET=${'x'.repeat(64)}`,
+        `LEARNING_VAULT_KEY=${'a'.repeat(64)}`,
         `PASSWORD_SALT=${'y'.repeat(32)}`,
         `REQUEST_SIGN_SALT=${'z'.repeat(32)}`,
         'ADMIN_SECRET=admin-secret',

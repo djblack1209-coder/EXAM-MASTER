@@ -332,6 +332,8 @@ const PRIVATE_QUIZ_KEYS = new Set([
   'favorite_settings',
   'EXAM_QUIZ_PROGRESS',
   'EXAM_QUIZ_PROGRESS_TIME',
+  'EXAM_STUDY_PROGRESS',
+  'studyProgress',
   'question_timer_settings',
   'question_time_records'
 ]);

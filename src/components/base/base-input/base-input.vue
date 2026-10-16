@@ -312,7 +312,7 @@ onBeforeUnmount(() => {
 }
 .base-field__label {
   color: var(--ink-2);
-  font: var(--weight-semibold) var(--size-small)/var(--leading-small) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-small)/var(--leading-small) var(--font-ui);
 }
 .base-field__group {
   display: flex;
@@ -381,7 +381,7 @@ onBeforeUnmount(() => {
   padding: 0 var(--s-4);
   border-right: var(--border-thin) solid var(--line);
   color: var(--ink);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
 }
 .base-field__help {
   color: var(--ink-3);

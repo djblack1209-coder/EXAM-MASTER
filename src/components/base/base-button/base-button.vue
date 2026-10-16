@@ -116,7 +116,7 @@ function keydown(event) {
   margin: 0;
   border: 0;
   border-radius: var(--r-md);
-  font: var(--weight-semibold) var(--size-body)/1 var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-body)/1 var(--font-ui);
   cursor: pointer;
   white-space: nowrap;
   transition:

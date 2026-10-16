@@ -19,9 +19,9 @@ let large: any;
 beforeAll(() => {
   large = historyFixture();
 }, 20000);
-function database(initial: any) {
+function database(initial: any, revision = 10) {
   const id = `learning_sync_${crypto.createHash('sha256').update('u1').digest('hex')}`;
-  const rows = new Map([[id, { _id: id, user_id: 'u1', state: initial, revision: 10 }]]);
+  const rows = new Map([[id, { _id: id, user_id: 'u1', state: initial, revision }]]);
   const db = {
     collection: () => ({
       where: (q: any) => ({
@@ -46,6 +46,64 @@ function database(initial: any) {
   return { db, rows, id };
 }
 describe('服务端历史单文档与分页传输', () => {
+  it('预读空账户后首次写入沿本机时区，重复与后续读取不重置路线时区', async () => {
+    const { db } = database(emptyLearningState('u1', 'Asia/Shanghai'), 0);
+    const read = await syncLearningOperations(db, 'u1', [], 'America/Los_Angeles');
+    expect(read.state.timezone).toBe('Asia/Shanghai');
+    expect(read.revision).toBe(0);
+    const operations = [
+      { id: 'tz-goal', type: 'conversation.start', at: Date.now(), data: { goal: '分数复习' } },
+      {
+        id: 'tz-route',
+        type: 'journey.configure',
+        at: Date.now(),
+        data: {
+          conversationId: 'tz-goal',
+          title: '分数复习',
+          startDay: '2026-10-13',
+          durationDays: 2,
+          minutes: 40,
+          mode: 'batch',
+          moduleIds: ['fraction-add-subtract']
+        }
+      }
+    ];
+    const first = await syncLearningOperations(db, 'u1', operations, 'America/Los_Angeles');
+    expect(first.state.timezone).toBe('America/Los_Angeles');
+    expect(first.state.conversations[0].journey.timezone).toBe('America/Los_Angeles');
+    const repeated = await syncLearningOperations(db, 'u1', operations, 'Asia/Shanghai');
+    expect(repeated).toEqual(first);
+    expect((await syncLearningOperations(db, 'u1', [], 'Asia/Shanghai')).state).toEqual(first.state);
+  });
+  it('已有事实即使旧存储版本为零，也不按另一设备时区重建', async () => {
+    const start = { id: 'old-goal', type: 'conversation.start', at: Date.now(), data: { goal: '保留原目标' } };
+    const original = applyLearningOperation(emptyLearningState('u1', 'America/Los_Angeles'), start).state;
+    const { db } = database(original, 0);
+    const result = await syncLearningOperations(db, 'u1', [start], 'Asia/Shanghai');
+    expect(result.state).toEqual(original);
+    expect(result.revision).toBe(0);
+  });
+  it('首次时区建立遇到无效批次时不留下部分事实或改写空记录', async () => {
+    const { db, rows, id } = database(emptyLearningState('u1', 'Asia/Shanghai'), 0);
+    const original = structuredClone(rows.get(id));
+    await expect(
+      syncLearningOperations(
+        db,
+        'u1',
+        [
+          { id: 'before-invalid', type: 'conversation.start', at: Date.now(), data: { goal: '分数复习' } },
+          {
+            id: 'invalid-answer',
+            type: 'attempt.submit',
+            at: Date.now(),
+            data: { conversationId: 'before-invalid', answer: '1/2', explicit: true }
+          }
+        ],
+        'America/Los_Angeles'
+      )
+    ).rejects.toThrow();
+    expect(rows.get(id)).toEqual(original);
+  });
   it('旧快照兼容，压缩完整 150 万以上字符且限制解压、损坏和账户', async () => {
     expect(await decodeServerHistory(emptyLearningState('u1'), 'u1')).toMatchObject({ owner: 'u1' });
     const packed = await encodeServerHistory(large, 'u1');

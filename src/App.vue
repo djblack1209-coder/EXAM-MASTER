@@ -405,6 +405,10 @@ export default {
 /* ============================================
    全局默认样式重置
    ============================================ */
+:root,
+page {
+  font-synthesis: none;
+}
 page {
   height: 100%;
   background-color: var(--bg-page);
@@ -444,6 +448,7 @@ textarea,
 scroll-view {
   box-sizing: border-box;
   font-family: inherit;
+  font-synthesis: none;
 }
 
 /* ============================================
@@ -457,7 +462,7 @@ scroll-view {
 .apple-group-card {
   background: var(--yozi-reading);
   border: 0;
-  border-radius: 24px;
+  border-radius: var(--r-lg);
   color: var(--text-main);
   box-shadow: var(--yozi-shadow);
 }
@@ -521,7 +526,7 @@ scroll-view {
   justify-content: center;
   padding: var(--spacing-sm) var(--spacing-xl);
   border-radius: var(--em3d-radius-pill);
-  font-weight: 700;
+  font-weight: var(--weight-ui-emphasis);
   font-size: 14px;
   letter-spacing: -0.01em;
   transition: var(--em3d-ease-press);
@@ -652,9 +657,7 @@ scroll-view {
 }
 
 /* 卡片点击态 - 新拟物化凹陷效果 */
-.card-hover:active,
-.glass-card:active,
-.stat-card:active {
+.card-hover:active {
   transform: translateY(var(--press-y));
   box-shadow: var(--clay-shadow-press);
 }
@@ -671,7 +674,7 @@ button:active {
 .list-item:active,
 .activity-item:active,
 .option-item:active {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--paper-sunk);
 }
 
 /* 深色模式下的列表项点击态 */
@@ -681,7 +684,7 @@ button:active {
 page[data-theme='dark'] .list-item:active,
 page[data-theme='dark'] .activity-item:active,
 page[data-theme='dark'] .option-item:active {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--paper-sunk);
 }
 
 /* 图标点击态 - 旋转缩放 */
@@ -704,7 +707,7 @@ page[data-theme='dark'] .option-item:active {
 .user-avatar:active,
 .avatar-ring:active {
   transform: translateY(var(--press-y));
-  box-shadow: 0 0 20rpx rgba(0, 229, 255, 0.5);
+  box-shadow: var(--lift-1);
 }
 
 /* 禁用点击态的元素 */

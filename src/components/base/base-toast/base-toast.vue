@@ -42,7 +42,7 @@ onBeforeUnmount(() => clearTimeout(timer));
   background: var(--toast-bg);
   color: var(--toast-fg);
   box-shadow: var(--lift-2);
-  font: var(--weight-semibold) var(--size-small)/var(--leading-small) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-small)/var(--leading-small) var(--font-ui);
 }
 .base-toast :deep(.base-button) {
   color: var(--toast-fg);

@@ -26,7 +26,7 @@ defineProps({
   height: var(--s-6);
   padding: 0 var(--s-2);
   border-radius: var(--r-xs);
-  font: var(--weight-semibold) var(--size-caption)/1 var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-caption)/1 var(--font-ui);
   background: var(--paper-sunk);
   color: var(--ink-2);
   white-space: nowrap;

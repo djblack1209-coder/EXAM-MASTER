@@ -9,9 +9,54 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.baidu.verified_source_registry import build_verified_source_export  # noqa: E402
+from scripts.baidu.source_manifest import normalize_record, merge_manifest  # noqa: E402
 
 
 class VerifiedSourceRegistryTest(unittest.TestCase):
+    def test_public_use_proof_survives_export_and_manifest_but_not_replaced_file(self):
+        import hashlib
+
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            original = folder / "2024-math1-paper-answer.pdf"
+            original.write_bytes(b"synthetic original question and answer")
+            source_url = "https://example.invalid/original.pdf"
+            proof = {
+                "contract": "public-course-public-use-v1",
+                "basis": "permission",
+                "scope": "public_course_redistribution",
+                "sourceHash": "sha256:" + hashlib.sha256(original.read_bytes()).hexdigest(),
+                "sourceUrl": source_url,
+                "evidenceUrl": "https://example.invalid/permission",
+                "verifiedAt": "2020-01-01T00:00:00Z",
+                "verifiedBy": "synthetic-verifier",
+                "note": "Synthetic permission covers this exact file.",
+            }
+            source = {
+                "id": "synthetic", "localPath": str(original), "sourceUrl": source_url,
+                "track": "math1", "year": 2024, "sourceType": "official_paper",
+                "answerEvidenceStatus": "matched", "sourceRole": "paper_answer",
+                "verifiedBy": "synthetic-verifier", "evidenceNote": "Synthetic source verification.",
+                "publicUseEvidence": proof,
+            }
+            registry = folder / "registry.json"
+            registry.write_text(json.dumps({"sources": [source]}))
+            exported = build_verified_source_export(registry)["files"][0]
+            item = normalize_record(exported, provider="local", source_channel="verified_registry", now="2020-01-01T00:00:00Z")
+            self.assertEqual(item["publicUseEvidence"], proof)
+            merged, _ = merge_manifest({"items": [item]}, [dict(item)], "2020-01-02T00:00:00Z")
+            self.assertEqual(merged["items"][0]["publicUseEvidence"], proof)
+            for change in [{"scope": "personal_use"}, {"sourceUrl": "https://example.invalid/other.pdf"},
+                           {"evidenceUrl": "file:///permission"}, {"verifiedBy": ""}, {"verifiedAt": "invalid"}]:
+                with self.subTest(change=change):
+                    registry.write_text(json.dumps({"sources": [{**source, "publicUseEvidence": {**proof, **change}}]}))
+                    with self.assertRaisesRegex(ValueError, "publicUseEvidence"):
+                        build_verified_source_export(registry)
+            registry.write_text(json.dumps({"sources": [source]}))
+            original.write_bytes(b"replacement original bytes")
+            with self.assertRaisesRegex(ValueError, "sourceHash=mismatch_or_missing"):
+                build_verified_source_export(registry)
+
     def test_build_export_computes_hash_and_preserves_release_evidence_fields(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)

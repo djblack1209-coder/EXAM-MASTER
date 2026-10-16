@@ -803,6 +803,6 @@ onUnmounted(closeOriginal);
 }
 .diagram-label {
   font-size: var(--size-small);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
 }
 </style>

@@ -74,7 +74,7 @@ function keydown(event) {
   background: var(--violet-soft);
   border-color: var(--violet);
   color: var(--violet-ink);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
 }
 .base-chip[disabled] {
   color: var(--ink-4);

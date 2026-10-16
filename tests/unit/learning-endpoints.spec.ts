@@ -113,6 +113,37 @@ it('登录身份与学习上下文不一致时，拒绝向模型发送旧用户�
   expect(mock.rows.size).toBe(0);
 });
 afterEach(() => vi.unstubAllEnvs());
+
+describe('诗词调用接续', () => {
+  const body = { action: 'poetry', context: 'independent-practice-correct' };
+
+  it('沿用身份与限流，默认关闭的查询不读取账户、不写数据、不调用模型', async () => {
+    expect((await models({ headers: {}, body })).code).toBe(401);
+    mock.allowed = false;
+    expect((await models(context(body))).code).toBe(429);
+    mock.allowed = true;
+    expect(await models(context(body))).toEqual({ code: 0, success: true, data: { reference: null } });
+    expect(mock.queries).toEqual([]);
+    expect(mock.rows.size).toBe(0);
+    expect(callLearningProvider).not.toHaveBeenCalled();
+    expect(callStreamingLearningProvider).not.toHaveBeenCalled();
+    const catalog = await models(context({ action: 'list' }));
+    expect(catalog.data.poetryReferenceEnabled).toBe(false);
+  });
+
+  it.each([
+    { action: 'poetry', context: 'other-topic' },
+    { ...body, answer: 'synthetic private answer' },
+    { ...body, conversationId: 'synthetic-private-id' },
+    { ...body, endpoint: 'https://untrusted.example/graphql' },
+    { action: 'poetry', context: { prompt: 'synthetic private prompt' } }
+  ])('拒绝任意情境、私有字段或指定上游：%j', async (invalid) => {
+    expect((await models(context(invalid))).code).toBe(400);
+    expect(mock.queries).toEqual([]);
+    expect(mock.rows.size).toBe(0);
+    expect(callLearningProvider).not.toHaveBeenCalled();
+  });
+});
 it.each([
   ['learning-visual-v2', { template: 'constant_net_force', massKg: 2, netForceN: 4, direction: 'right' }],
   [
@@ -894,7 +925,11 @@ it('DNS 网络保护拒绝后保留未调用及零成本事实，同ID不重发�
   failure.executionStage = 'not_called';
   vi.mocked(callLearningProvider).mockRejectedValueOnce(failure);
   const body = streamBody('dns-not-called');
-  expect(await ai(context(body))).toMatchObject({ success: false, error: 'SSRF_BLOCKED' });
+  expect(await ai(context(body))).toMatchObject({
+    success: false,
+    error: 'SSRF_BLOCKED',
+    message: expect.stringContaining('本次未调用模型')
+  });
   const usage = await models(context({ action: 'usage' }));
   expect(usage.data.calls).toHaveLength(1);
   expect(usage.data.calls[0]).toMatchObject({
@@ -908,7 +943,10 @@ it('DNS 网络保护拒绝后保留未调用及零成本事实，同ID不重发�
   expect(usage.data.entitlement.spent).toBe(0);
   expect(usage.data.cost.spent).toBe(0);
   expect((await ai(context(body))).code).toBe(409);
-  expect((await models(context({ action: 'result', requestId: body.requestId }))).success).toBe(false);
+  expect(await models(context({ action: 'result', requestId: body.requestId }))).toMatchObject({
+    success: false,
+    message: expect.stringContaining('没有可恢复的回复')
+  });
   expect(callLearningProvider).toHaveBeenCalledTimes(1);
   expect((await models(context({ action: 'usage' }, 'u2'))).data.calls).toHaveLength(0);
 });

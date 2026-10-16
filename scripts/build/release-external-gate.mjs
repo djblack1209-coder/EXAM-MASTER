@@ -292,6 +292,15 @@ function checkProductionConfig(env) {
   requireEnv(env, 'VITE_WX_APP_ID', blockers);
   requireEnv(env, 'VITE_API_BASE_URL', blockers);
   requireEnv(env, 'JWT_SECRET', blockers, { minLength: 48 });
+  if (requireEnv(env, 'LEARNING_VAULT_KEY', blockers)) {
+    // 与 learning-account 的 AES-256-GCM 保险库格式保持一致，报告只写字段名。
+    if (!/^[a-f0-9]{64}$/i.test(valueFor(env, 'LEARNING_VAULT_KEY'))) {
+      blockers.push({
+        code: 'invalid_model_vault_key',
+        message: 'LEARNING_VAULT_KEY must contain exactly 64 hexadecimal characters'
+      });
+    }
+  }
   requireEnv(env, 'PASSWORD_SALT', blockers, { minLength: 24 });
   requireEnv(env, 'REQUEST_SIGN_SALT', blockers, { minLength: 24 });
   requireEnv(env, 'ADMIN_SECRET', blockers, { minLength: 8 });

@@ -12,7 +12,7 @@
  */
 
 import { defineStore } from 'pinia';
-import { ref, shallowRef, computed } from 'vue';
+import { ref, shallowRef, computed, onScopeDispose } from 'vue';
 import {
   getStatsOverview as apiGetOverview,
   getDailyStats as apiGetDailyStats,
@@ -21,7 +21,7 @@ import {
   recordStudyTime as apiRecordStudyTime,
   updateStreak as apiUpdateStreak
 } from '@/services/api/domains/stats.api.js';
-import { getToken } from '@/services/auth-storage.js';
+import { getToken, getUserId } from '@/services/auth-storage.js';
 import { logger } from '@/utils/logger.js';
 
 /** 缓存过期时间（毫秒） */
@@ -47,11 +47,30 @@ export const useStatsStore = defineStore('stats', () => {
   // 缓存时间戳
   let _overviewFetchedAt = 0;
   let _trendFetchedAt = 0;
+  let _identity = null;
+  let _revision = 0;
+  const _pendingReads = new Set();
 
   // ==================== 内部工具 ====================
 
-  function _isLoggedIn() {
-    return !!getToken();
+  function sessionContext() {
+    const next = { owner: getUserId() || '', token: getToken() || '' };
+    if (!_identity || _identity.owner !== next.owner || _identity.token !== next.token) {
+      clearCache();
+      _identity = next;
+    }
+    return { revision: _revision, ...next };
+  }
+  function isCurrent(context) {
+    return sessionContext().revision === context.revision;
+  }
+  function startRead(context) {
+    _pendingReads.add(context);
+    loading.value = true;
+  }
+  function finishRead(context) {
+    _pendingReads.delete(context);
+    loading.value = _pendingReads.size > 0;
   }
 
   /** 空的统计数据（未登录或请求失败时返回） */
@@ -80,7 +99,8 @@ export const useStatsStore = defineStore('stats', () => {
    * @returns {Promise<Object>} 统计数据
    */
   async function fetchOverview(force = false) {
-    if (!_isLoggedIn()) {
+    const context = sessionContext();
+    if (!context.token) {
       overview.value = _emptyOverview();
       return overview.value;
     }
@@ -90,10 +110,11 @@ export const useStatsStore = defineStore('stats', () => {
       return overview.value;
     }
 
-    loading.value = true;
+    startRead(context);
     error.value = null;
     try {
       const res = await apiGetOverview();
+      if (!isCurrent(context)) return _emptyOverview();
       if (res?.code === 0 && res.data) {
         overview.value = res.data;
         _overviewFetchedAt = Date.now();
@@ -104,12 +125,13 @@ export const useStatsStore = defineStore('stats', () => {
       overview.value = _emptyOverview();
       return overview.value;
     } catch (err) {
+      if (!isCurrent(context)) return _emptyOverview();
       logger.warn('[StatsStore] fetchOverview 失败:', err);
       error.value = '获取统计数据失败';
       if (!overview.value) overview.value = _emptyOverview();
       return overview.value;
     } finally {
-      loading.value = false;
+      finishRead(context);
     }
   }
 
@@ -119,24 +141,27 @@ export const useStatsStore = defineStore('stats', () => {
    * @returns {Promise<{stats:Array, summary:Object}>}
    */
   async function fetchDailyStats(days = 7) {
-    if (!_isLoggedIn()) {
+    const context = sessionContext();
+    if (!context.token) {
       dailyStats.value = [];
       return { stats: [], summary: {} };
     }
 
-    loading.value = true;
+    startRead(context);
     try {
       const res = await apiGetDailyStats({ days });
+      if (!isCurrent(context)) return { stats: [], summary: {} };
       if (res?.code === 0 && res.data) {
         dailyStats.value = res.data.stats || [];
         return res.data;
       }
       return { stats: dailyStats.value, summary: {} };
     } catch (err) {
+      if (!isCurrent(context)) return { stats: [], summary: {} };
       logger.warn('[StatsStore] fetchDailyStats 失败:', err);
       return { stats: dailyStats.value, summary: {} };
     } finally {
-      loading.value = false;
+      finishRead(context);
     }
   }
 
@@ -147,7 +172,8 @@ export const useStatsStore = defineStore('stats', () => {
    * @returns {Promise<Object>}
    */
   async function fetchTrend(period = 'week', force = false) {
-    if (!_isLoggedIn()) {
+    const context = sessionContext();
+    if (!context.token) {
       trend.value = null;
       return null;
     }
@@ -156,9 +182,10 @@ export const useStatsStore = defineStore('stats', () => {
       return trend.value;
     }
 
-    loading.value = true;
+    startRead(context);
     try {
       const res = await apiGetTrend({ period });
+      if (!isCurrent(context)) return null;
       if (res?.code === 0 && res.data) {
         trend.value = res.data;
         _trendFetchedAt = Date.now();
@@ -166,10 +193,11 @@ export const useStatsStore = defineStore('stats', () => {
       }
       return trend.value;
     } catch (err) {
+      if (!isCurrent(context)) return null;
       logger.warn('[StatsStore] fetchTrend 失败:', err);
       return trend.value;
     } finally {
-      loading.value = false;
+      finishRead(context);
     }
   }
 
@@ -178,19 +206,22 @@ export const useStatsStore = defineStore('stats', () => {
    * @returns {Promise<Object|null>}
    */
   async function fetchRankInfo() {
-    if (!_isLoggedIn()) {
+    const context = sessionContext();
+    if (!context.token) {
       rankInfo.value = null;
       return null;
     }
 
     try {
       const res = await apiGetRankInfo();
+      if (!isCurrent(context)) return null;
       if (res?.code === 0 && res.data) {
         rankInfo.value = res.data;
         return res.data;
       }
       return rankInfo.value;
     } catch (err) {
+      if (!isCurrent(context)) return null;
       logger.warn('[StatsStore] fetchRankInfo 失败:', err);
       return rankInfo.value;
     }
@@ -202,10 +233,12 @@ export const useStatsStore = defineStore('stats', () => {
    * @returns {Promise<boolean>} 是否成功
    */
   async function reportStudyTime(minutes) {
-    if (!_isLoggedIn() || !minutes || minutes <= 0) return false;
+    const context = sessionContext();
+    if (!context.token || !minutes || minutes <= 0) return false;
 
     try {
       const res = await apiRecordStudyTime(minutes);
+      if (!isCurrent(context)) return false;
       if (res?.code === 0) {
         // 更新本地缓存
         if (overview.value) {
@@ -218,6 +251,7 @@ export const useStatsStore = defineStore('stats', () => {
       }
       return false;
     } catch (err) {
+      if (!isCurrent(context)) return false;
       logger.warn('[StatsStore] reportStudyTime 失败:', err);
       return false;
     }
@@ -228,10 +262,12 @@ export const useStatsStore = defineStore('stats', () => {
    * @returns {Promise<{streakDays:number, totalStudyDays:number}|null>}
    */
   async function reportStreak() {
-    if (!_isLoggedIn()) return null;
+    const context = sessionContext();
+    if (!context.token) return null;
 
     try {
       const res = await apiUpdateStreak();
+      if (!isCurrent(context)) return null;
       if (res?.code === 0 && res.data) {
         // 更新本地缓存
         if (overview.value) {
@@ -243,6 +279,7 @@ export const useStatsStore = defineStore('stats', () => {
       }
       return null;
     } catch (err) {
+      if (!isCurrent(context)) return null;
       logger.warn('[StatsStore] reportStreak 失败:', err);
       return null;
     }
@@ -252,6 +289,10 @@ export const useStatsStore = defineStore('stats', () => {
    * 清空缓存（登出时调用）
    */
   function clearCache() {
+    _revision++;
+    _pendingReads.clear();
+    loading.value = false;
+    error.value = null;
     overview.value = null;
     dailyStats.value = [];
     trend.value = null;
@@ -259,6 +300,8 @@ export const useStatsStore = defineStore('stats', () => {
     _overviewFetchedAt = 0;
     _trendFetchedAt = 0;
   }
+  uni.$on('user:logout', clearCache);
+  onScopeDispose(() => uni.$off('user:logout', clearCache));
 
   // ==================== Computed ====================
 

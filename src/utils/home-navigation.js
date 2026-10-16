@@ -1,6 +1,7 @@
 import { logger } from '@/utils/logger.js';
 
 export const HOME_TAB_URL = '/pages/index/index';
+export const LEARNING_ENTRY_URL = '/pages/learning/index';
 
 function normalizeRoute(route) {
   return String(route || '')
@@ -24,12 +25,14 @@ export function isHomeRoute(route = getCurrentRoute()) {
 
 export function openHomeTab(options = {}) {
   const {
+    learningEntry = false,
     verifyDelays = [350, 1200, 2500],
     schedule = (callback, delay) => setTimeout(callback, delay),
     isCurrent = () => true,
     onSuccess,
     onFail
   } = options;
+  const destination = learningEntry ? LEARNING_ENTRY_URL : HOME_TAB_URL;
   let settled = false;
   let fallbackStarted = false;
 
@@ -56,7 +59,7 @@ export function openHomeTab(options = {}) {
 
   const verifyRoute = (source, error) => {
     if (cancelled()) return;
-    if (isHomeRoute()) {
+    if (normalizeRoute(getCurrentRoute()) === normalizeRoute(destination)) {
       finishSuccess();
       return;
     }
@@ -65,13 +68,13 @@ export function openHomeTab(options = {}) {
       fallbackStarted = true;
       logger.warn(`[home-navigation] ${source} did not land on home, trying reLaunch`, error);
       uni.reLaunch({
-        url: HOME_TAB_URL,
+        url: destination,
         success: () => scheduleVerification('reLaunch'),
         fail: (err2) => {
           if (cancelled()) return;
           logger.warn('[home-navigation] reLaunch failed, trying redirectTo', err2);
           uni.redirectTo({
-            url: HOME_TAB_URL,
+            url: destination,
             success: () => scheduleVerification('redirectTo'),
             fail: (err3) => {
               logger.error('[home-navigation] all home navigation attempts failed', err3);
@@ -92,20 +95,20 @@ export function openHomeTab(options = {}) {
     }
   };
 
-  uni.switchTab({
-    url: HOME_TAB_URL,
-    success: () => scheduleVerification('switchTab'),
+  const navigationOptions = {
+    url: destination,
+    success: () => scheduleVerification(learningEntry ? 'redirectTo' : 'switchTab'),
     fail: (err1) => {
       if (cancelled()) return;
-      logger.warn('[home-navigation] switchTab failed, trying reLaunch', err1);
+      logger.warn(`[home-navigation] ${learningEntry ? 'redirectTo' : 'switchTab'} failed, trying reLaunch`, err1);
       uni.reLaunch({
-        url: HOME_TAB_URL,
+        url: destination,
         success: () => scheduleVerification('reLaunch'),
         fail: (err2) => {
           if (cancelled()) return;
           logger.warn('[home-navigation] reLaunch failed, trying redirectTo', err2);
           uni.redirectTo({
-            url: HOME_TAB_URL,
+            url: destination,
             success: () => scheduleVerification('redirectTo'),
             fail: (err3) => {
               logger.error('[home-navigation] all home navigation attempts failed', err3);
@@ -115,7 +118,14 @@ export function openHomeTab(options = {}) {
         }
       });
     }
-  });
+  };
+  // H5 imports uni APIs from static member access; computed access leaves an empty global uni object.
+  if (learningEntry) uni.redirectTo(navigationOptions);
+  else uni.switchTab(navigationOptions);
+}
+
+export function openLearningEntry(options = {}) {
+  return openHomeTab({ ...options, learningEntry: true });
 }
 
 export default openHomeTab;

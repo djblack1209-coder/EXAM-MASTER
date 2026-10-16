@@ -24,6 +24,7 @@
     <view
       ref="learningRoot"
       class="learning-page"
+      :class="{ 'chat-empty': !learning.active }"
       :style="composerHeight ? { '--learning-composer-height': `${composerHeight}px` } : undefined"
     >
       <!-- #ifdef H5 -->
@@ -274,140 +275,34 @@
           >
         </view>
       </BaseCard>
-      <BaseCard v-if="!learning.active" class="goal-panel" padding="none">
-        <view class="button-row" :aria-label="t('learning.kmc')">
-          <BaseChip
-            v-for="(label, track) in LEARNING_TRACKS"
-            :key="track"
-            :data-test="'task-track-' + track"
-            :class="{ chosen: taskTrack === track }"
-            :model-value="taskTrack === track"
-            @update:model-value="selectTaskTrack(track)"
-          >
-            {{ t('learning.' + track) }}
-          </BaseChip>
-        </view>
-        <BaseButton
-          class="quiet-button"
-          :aria-expanded="showTaskOptions"
-          variant="quiet"
-          @tap="showTaskOptions = !showTaskOptions"
-        >
-          {{
-            taskStage || taskEdition
-              ? [taskStage, taskEdition].filter(Boolean).map(learningText).join(' · ')
-              : t('learning.k3p')
-          }}
-          <BaseIcon :name="showTaskOptions ? 'chevron-up' : 'chevron-down'" tone="ink-3" />
-        </BaseButton>
-        <view v-if="showTaskOptions" class="preference-fields">
-          <text class="field-label">{{
-            ['primary', 'junior', 'senior'].includes(taskTrack) ? t('learning.k4b') : t('learning.k8p')
-          }}</text>
-          <view class="button-row" :aria-label="t('learning.kqb')">
-            <BaseChip
-              v-for="option in taskStages"
-              :key="option"
-              :class="{ chosen: !customStage && taskStage === option }"
-              :model-value="!customStage && taskStage === option"
-              @update:model-value="
-                customStage = false;
-                taskStage = option;
-              "
-            >
-              {{ option ? learningText(option) : t('learning.k2z') }}
-            </BaseChip>
-            <BaseChip
-              :model-value="customStage"
-              @update:model-value="
-                customStage = true;
-                taskStage = '';
-              "
-              >{{ t('learning.k2w') }}</BaseChip
-            >
-          </view>
-          <BaseInput
-            v-if="customStage"
-            v-model="taskStage"
-            class="field"
-            maxlength="100"
-            :placeholder="t('learning.kh')"
-            :label="t('learning.k46')"
-          />
-          <text class="field-label">{{
-            ['primary', 'junior', 'senior'].includes(taskTrack) ? t('learning.ka5') : t('learning.krv')
-          }}</text>
-          <view class="button-row" :aria-label="t('learning.kpt')">
-            <BaseChip
-              v-for="option in taskEditions"
-              :key="option"
-              :class="{ chosen: !customEdition && taskEdition === option }"
-              :model-value="!customEdition && taskEdition === option"
-              @update:model-value="
-                customEdition = false;
-                taskEdition = option;
-              "
-            >
-              {{ option ? learningText(option) : t('learning.k2z') }}
-            </BaseChip>
-            <BaseChip
-              :model-value="customEdition"
-              @update:model-value="
-                customEdition = true;
-                taskEdition = '';
-              "
-              >{{ t('learning.k2w') }}</BaseChip
-            >
-          </view>
-          <BaseInput
-            v-if="customEdition"
-            v-model="taskEdition"
-            class="field"
-            maxlength="100"
-            :placeholder="t('learning.kqt')"
-            :label="t('learning.k60')"
-          />
-        </view>
-        <BaseInput
-          :model-value="goal"
-          class="field"
-          :placeholder="t('learning.kbo')"
-          maxlength="1000"
-          :label="t('learning.kfl')"
-          multiline
-          @input="goal = textInputValue($event)"
-        />
-        <view class="goal-actions">
-          <BaseButton class="material-shortcut" variant="quiet" @tap="showMaterial = !showMaterial">
-            <BaseIcon name="upload" tone="ink-3" />
-            <text>{{ t('learning.kot') }}</text>
-          </BaseButton>
-          <BaseButton
-            class="primary"
-            :disabled="!goal.trim()"
-            :aria-disabled="!goal.trim()"
-            variant="primary"
-            @tap="start"
-            >{{ t('learning.kms') }}<BaseIcon name="arrow-right" tone="on-clay" />
-          </BaseButton>
-        </view>
-        <view class="starter-row">
-          <BaseButton v-for="starter in starters" :key="starter" variant="quiet" @tap="goal = starter">
-            {{ learningText(starter) }}
-          </BaseButton>
-        </view>
-      </BaseCard>
       <view v-if="learning.active" class="conversation-area">
         <view class="conversation-toolbar">
           <view>
-            <text class="conversation-title">{{ learning.active.goal }}</text>
+            <text class="conversation-title">{{ learning.active?.goal }}</text>
           </view>
           <BaseButton :disabled="learning.busy" :aria-disabled="learning.busy" variant="quiet" @tap="newConversation">
             <BaseIcon name="plus" tone="ink-3" />
             <text>{{ t('learning.k34') }}</text>
           </BaseButton>
         </view>
-        <view v-if="learning.active.messages.length > 50" class="conversation-toolbar">
+        <view
+          v-if="conversationStopped"
+          id="learning-stop-state"
+          tabindex="-1"
+          role="region"
+          :aria-label="t('learning.keb')"
+          class="button-row"
+          ><YoziMascot pose="sleep" play="none" size="small" />
+          <text class="warning">{{ t('learning.keb') }}</text>
+          <BaseButton
+            :disabled="learning.busy"
+            :aria-disabled="learning.busy"
+            variant="primary"
+            @tap="sendDirective('继续当前任务')"
+            >{{ t('learning.kad') }}</BaseButton
+          >
+        </view>
+        <view v-if="conversationMessages.length > 50" class="conversation-toolbar">
           <BaseButton
             :disabled="messageStart === 0"
             :aria-disabled="messageStart === 0"
@@ -417,18 +312,18 @@
           >
           <text class="subtle"
             >{{ t('learning.kqd') }}{{ messageStart + 1 }}–{{
-              Math.min(messageStart + 50, learning.active.messages.length)
+              Math.min(messageStart + 50, conversationMessages.length)
             }}
-            / {{ learning.active.messages.length }}</text
+            / {{ conversationMessages.length }}</text
           >
           <BaseButton
-            :disabled="messageStart + 50 >= learning.active.messages.length"
-            :aria-disabled="messageStart + 50 >= learning.active.messages.length"
+            :disabled="messageStart + 50 >= conversationMessages.length"
+            :aria-disabled="messageStart + 50 >= conversationMessages.length"
             variant="quiet"
-            @tap="messageStart = Math.min(learning.active.messages.length - 50, messageStart + 50)"
+            @tap="messageStart = Math.min(conversationMessages.length - 50, messageStart + 50)"
             >{{ t('learning.ku5') }}</BaseButton
           >
-          <BaseButton variant="quiet" @tap="messageStart = Math.max(0, learning.active.messages.length - 50)">{{
+          <BaseButton variant="quiet" @tap="messageStart = Math.max(0, conversationMessages.length - 50)">{{
             t('learning.kaz')
           }}</BaseButton>
           <BaseButton v-if="learning.activeQuestion" variant="quiet" @tap="locateQuestionMessages">{{
@@ -454,7 +349,7 @@
               :disabled="learning.busy"
               :aria-disabled="learning.busy"
               variant="quiet"
-              @tap="learning.locateConversation(learning.active.id, chapter.day, group.id)"
+              @tap="learning.locateConversation(learning.active?.id, chapter.day, group.id)"
             >
               <text>{{ learningText(group.label) }}</text>
               <text class="chapter-module-count"
@@ -469,15 +364,29 @@
             :id="message.id"
             :key="message.id"
             class="message"
-            :class="message.role"
+            :class="[message.role, { 'sentence-hint-target': message.id === sentenceHintTargetId }]"
+            :tabindex="message.id === sentenceHintTargetId ? -1 : undefined"
             :author="message.role === 'user' ? 'user' : 'assistant'"
           >
+            <text v-if="sentenceAnswersByFeedback[message.id]" class="message-content sentence-saved-answer" selectable
+              >{{ t('learning.kcd') }}{{ sentenceAnswersByFeedback[message.id] }}</text
+            >
             <LearningMessage
               v-if="message.role !== 'user'"
               :content="message.role === 'notice' ? learningText(message.content) : message.content"
             />
             <text v-else class="message-content" selectable>{{ message.content }}</text>
           </BaseBubble>
+        </view>
+        <view id="learning-chat-latest" tabindex="-1" />
+        <view
+          v-if="learning.active && !learning.activeQuestion && !conversationStopped && chatTopics.length"
+          class="button-row chat-topics"
+          :aria-label="t('learning.chatTopics')"
+        >
+          <BaseButton v-for="topic in chatTopics" :key="topic" variant="quiet" @tap="draft = t(topic)">{{
+            t(topic)
+          }}</BaseButton>
         </view>
         <view v-if="learning.busy && !learning.error" class="reply-state" role="status"
           ><YoziMascot pose="think" play="loop" size="state" :decorative="false" /><text>{{
@@ -488,11 +397,18 @@
         <BaseCard
           v-if="learning.activeQuestion && !learning.batchTrainingActive"
           id="active-learning-question"
+          tabindex="-1"
           class="question-block"
           padding="none"
         >
           <text class="subtle">
-            {{ learning.activeQuestion.scope === 'generated' ? t('learning.kax') : t('learning.kil') }}
+            {{
+              learning.activeQuestion.source?.kind === 'user_input'
+                ? t('learning.chatProvidedQuestion')
+                : learning.activeQuestion.scope === 'generated'
+                  ? t('learning.kax')
+                  : t('learning.kil')
+            }}
             ·
             {{ learning.activeQuestion.validation ? t('learning.k1b') : t('learning.k4h') }}
           </text>
@@ -546,9 +462,9 @@
 
           <NumberLine
             v-if="
-              !learning.active.stopped &&
+              !conversationStopped &&
               learning.activeStrategy.method === 'diagram' &&
-              learning.active.messages.some(
+              conversationMessages.some(
                 (m) => m.method === 'diagram' && m.questionKey === learning.active.activeQuestionKey
               )
             "
@@ -565,14 +481,14 @@
               :model-value="multipleChoices ? selectedChoices : selectedChoices[0] || ''"
               :multiple="multipleChoices"
               :label="t('learning.answerOptions')"
-              :disabled="learning.busy || learning.active.stopped"
+              :disabled="learning.busy || conversationStopped"
               @update:model-value="updateChoiceDraft"
             />
             <BaseCheckbox
               v-if="!learning.activeQuestion.scienceExercise"
               data-test="multiple-answers"
               :model-value="multipleChoices"
-              :disabled="learning.busy || learning.active.stopped"
+              :disabled="learning.busy || conversationStopped"
               @update:model-value="toggleMultipleChoices"
               >{{ t('learning.multiple') }}</BaseCheckbox
             >
@@ -639,15 +555,24 @@
                 variant="quiet"
                 :disabled="learning.busy || learning.active?.stopped"
                 :aria-disabled="learning.busy || learning.active?.stopped"
-                @tap="sendDirective('提示')"
-                >{{ t('learning.hint') }}</BaseButton
+                @tap="sendDirective(learning.canReadChatWritingReference ? '读参考信件' : '提示')"
+                >{{
+                  learning.canReadChatWritingReference ? t('learning.readSampleEmail') : t('learning.hint')
+                }}</BaseButton
               ><BaseButton
+                v-if="showConnections || !learning.activeQuestion.validation"
                 small
                 variant="quiet"
                 :disabled="learning.busy || learning.active?.stopped"
                 :aria-disabled="learning.busy || learning.active?.stopped"
                 @tap="recordHint"
                 >{{ t('learning.k8') }}</BaseButton
+              ><BaseButton
+                small
+                variant="quiet"
+                :disabled="learning.busy || conversationStopped"
+                @tap="sendDirective('直接讲解')"
+                >{{ t('learning.chatExplain') }}</BaseButton
               ><template v-if="learning.activeQuestion.prerequisite"
                 ><BaseButton
                   small
@@ -658,8 +583,8 @@
                   >{{ t('learning.kpe') }}</BaseButton
                 ><BaseButton
                   small
-                  :disabled="learning.busy || learning.active.stopped"
-                  :aria-disabled="learning.busy || learning.active.stopped"
+                  :disabled="learning.busy || conversationStopped"
+                  :aria-disabled="learning.busy || conversationStopped"
                   variant="quiet"
                   @tap="sendDirective('独立检验原题')"
                   >{{ t('learning.k3z') }}</BaseButton
@@ -668,16 +593,16 @@
               <BaseButton
                 v-if="!learning.activeQuestion.prerequisite && learning.canDiagnose"
                 small
-                :disabled="learning.busy || learning.active.stopped"
-                :aria-disabled="learning.busy || learning.active.stopped"
+                :disabled="learning.busy || conversationStopped"
+                :aria-disabled="learning.busy || conversationStopped"
                 variant="quiet"
                 @tap="sendDirective('开始先修诊断')"
                 >{{ t('learning.kmm') }}</BaseButton
               ><template v-if="learning.questionImage"
                 ><BaseButton
                   small
-                  :disabled="learning.busy || learning.active.stopped"
-                  :aria-disabled="learning.busy || learning.active.stopped"
+                  :disabled="learning.busy || conversationStopped"
+                  :aria-disabled="learning.busy || conversationStopped"
                   variant="quiet"
                   @tap="interpretImage"
                   >{{ t('learning.k3r') }}</BaseButton
@@ -686,8 +611,8 @@
               <template v-if="learning.canComputeReference"
                 ><BaseButton
                   small
-                  :disabled="learning.busy || learning.active.stopped"
-                  :aria-disabled="learning.busy || learning.active.stopped"
+                  :disabled="learning.busy || conversationStopped"
+                  :aria-disabled="learning.busy || conversationStopped"
                   variant="quiet"
                   @tap="computeReference"
                   >{{ t('learning.ktu') }}</BaseButton
@@ -696,8 +621,8 @@
               <template v-if="learning.canCheckGrammar"
                 ><BaseButton
                   small
-                  :disabled="learning.busy || learning.active.stopped"
-                  :aria-disabled="learning.busy || learning.active.stopped"
+                  :disabled="learning.busy || conversationStopped"
+                  :aria-disabled="learning.busy || conversationStopped"
                   variant="quiet"
                   @tap="checkGrammar"
                   >{{ t('learning.kfw') }}</BaseButton
@@ -710,22 +635,22 @@
                 :aria-label="t('learning.kki')"
                 ><BaseButton
                   small
-                  :disabled="learning.busy || learning.active.stopped"
-                  :aria-disabled="learning.busy || learning.active.stopped"
+                  :disabled="learning.busy || conversationStopped"
+                  :aria-disabled="learning.busy || conversationStopped"
                   variant="quiet"
                   @tap="run(() => learning.requestWritingFeedback())"
                   >{{ t('learning.k72') }}</BaseButton
                 ><BaseButton
                   small
-                  :disabled="learning.busy || learning.active.stopped"
-                  :aria-disabled="learning.busy || learning.active.stopped"
+                  :disabled="learning.busy || conversationStopped"
+                  :aria-disabled="learning.busy || conversationStopped"
                   variant="quiet"
                   @tap="variant"
                   >{{ t('learning.khe') }}</BaseButton
                 ><BaseButton
                   small
-                  :disabled="learning.busy || learning.active.stopped || !!learning.writingRetest"
-                  :aria-disabled="learning.busy || learning.active.stopped || !!learning.writingRetest"
+                  :disabled="learning.busy || conversationStopped || !!learning.writingRetest"
+                  :aria-disabled="learning.busy || conversationStopped || !!learning.writingRetest"
                   variant="quiet"
                   @tap="planWritingRetest"
                 >
@@ -743,8 +668,8 @@
                 :aria-label="t('learning.kcl')"
                 ><BaseButton
                   small
-                  :disabled="learning.busy || learning.active.stopped"
-                  :aria-disabled="learning.busy || learning.active.stopped"
+                  :disabled="learning.busy || conversationStopped"
+                  :aria-disabled="learning.busy || conversationStopped"
                   variant="quiet"
                   @tap="run(() => learning.requestVocabularyFeedback())"
                   >{{ t('learning.k72') }}</BaseButton
@@ -757,8 +682,8 @@
                 :aria-label="t('learning.k4y')"
                 ><BaseButton
                   small
-                  :disabled="learning.busy || learning.active.stopped || !!learning.scienceRetest"
-                  :aria-disabled="learning.busy || learning.active.stopped || !!learning.scienceRetest"
+                  :disabled="learning.busy || conversationStopped || !!learning.scienceRetest"
+                  :aria-disabled="learning.busy || conversationStopped || !!learning.scienceRetest"
                   variant="quiet"
                   @tap="run(() => learning.scheduleScienceRetest())"
                 >
@@ -781,6 +706,7 @@
                 >{{ t('learning.k35') }}</BaseButton
               ><BaseButton
                 v-if="
+                  (showConnections || !learning.activeQuestion.validation) &&
                   !learning.activeQuestion.scienceExercise &&
                   !learning.activeQuestion.vocabularyReview &&
                   !learning.activeQuestion.sentenceExercise
@@ -809,7 +735,7 @@
               :disabled="
                 learning.busy ||
                 !draft.trim() ||
-                learning.active.stopped ||
+                conversationStopped ||
                 !learning.scienceCanSubmit() ||
                 !learning.writingCanSubmit() ||
                 !learning.vocabularyCanSubmit()
@@ -817,7 +743,7 @@
               :aria-disabled="
                 learning.busy ||
                 !draft.trim() ||
-                learning.active.stopped ||
+                conversationStopped ||
                 !learning.scienceCanSubmit() ||
                 !learning.writingCanSubmit() ||
                 !learning.vocabularyCanSubmit()
@@ -866,50 +792,16 @@
               <BaseButton variant="quiet" @tap="showRubric = false">{{ t('learning.knr') }}</BaseButton>
             </view>
           </view> </BaseCard
-        ><LearningOverview :show-navigation="false" :inline="true" :conversation-id="learning.active.id" /><view
-          id="learning-journey-workspace"
-          tabindex="-1"
-          ><LearningJourney :inline="true"
+        ><LearningOverview
+          v-if="hasConversationAttempts || learning.active?.journey"
+          :show-navigation="false"
+          :inline="true"
+          :conversation-id="learning.active?.id"
+        /><view v-if="learning.active?.journey || showJourney" id="learning-journey-workspace" tabindex="-1"
+          ><LearningJourney ref="journeyPanel" :inline="true"
         /></view>
-        <view v-if="learning.active.stopped" class="button-row"
-          ><YoziMascot pose="sleep" play="none" size="small" />
-          <text class="warning">{{ t('learning.keb') }}</text>
-          <BaseButton
-            :disabled="learning.busy"
-            :aria-disabled="learning.busy"
-            variant="quiet"
-            @tap="sendDirective('继续当前任务')"
-            >{{ t('learning.kad') }}</BaseButton
-          >
-        </view>
-        <view class="method-heading">
-          <BaseButton
-            class="quiet-button"
-            :aria-expanded="showMethods"
-            variant="quiet"
-            @tap="showMethods = !showMethods"
-          >
-            {{ showMethods ? t('learning.ktk') : t('learning.kdt') }}
-          </BaseButton>
-        </view>
-        <view class="button-row methods">
-          <BaseButton
-            :disabled="learning.busy"
-            :aria-disabled="learning.busy"
-            variant="quiet"
-            @tap="sendDirective('恢复自动教法')"
-            >{{ t('learning.knw') }}</BaseButton
-          >
-          <BaseButton
-            v-for="action in visibleActions"
-            :key="action"
-            :disabled="learning.busy && action !== '停止当前任务'"
-            :aria-disabled="learning.busy && action !== '停止当前任务'"
-            variant="quiet"
-            @tap="sendDirective(action)"
-          >
-            {{ learningText(action) }}
-          </BaseButton>
+        <view v-if="hasConversationAttempts && !learning.active?.journey && !showJourney" class="button-row">
+          <BaseButton variant="quiet" @tap="showJourney = true">{{ t('learning.chatPlanReview') }}</BaseButton>
         </view>
         <BaseBubble v-if="learning.streamPreview" class="stream-preview message notice" aria-live="polite">
           <text class="subtle">{{ t('learning.ki3') }}</text>
@@ -921,13 +813,16 @@
             t('learning.khs')
           }}</BaseButton>
         </view>
+        <view v-if="learning.error" id="learning-request-error" tabindex="-1">
+          <BaseEmpty state="error" :title="learningText(learning.error)" mascot-size="small" />
+        </view>
         <OatutorPractice
           v-if="learning.activeQuestion?.oatutorExercise?.role === 'main'"
           :question="learning.activeQuestion"
           :state="learning.state"
           :context="learning.oatutorContext()"
           :visible="labVisible"
-          :stopped="!!learning.active.stopped"
+          :stopped="!!conversationStopped"
           :busy="learning.busy || learning.materialBusy || learning.syncBusy || learning.historyBusy"
           :action="learning.oatutorAction"
           :start-task="learning.startOatutor"
@@ -938,7 +833,7 @@
           :state="learning.state"
           :context="labContext"
           :visible="labVisible"
-          :stopped="!!learning.active.stopped"
+          :stopped="!!conversationStopped"
           :busy="learning.busy || learning.materialBusy || learning.syncBusy || learning.historyBusy"
           :ready="learning.sentenceCanSubmit()"
           :retest="learning.sentenceRetest"
@@ -947,65 +842,82 @@
           :next-task="learning.startSentenceTask"
           :schedule-retest="learning.scheduleSentenceRetest"
         />
-        <BaseCard id="learning-composer" ref="composer" class="composer" surface="glass" padding="none"
-          ><BaseButton
+      </view>
+      <BaseCard id="learning-composer" ref="composer" class="composer" surface="glass" padding="none"
+        ><BaseButton
+          variant="quiet"
+          icon-only
+          icon="paperclip"
+          :label="t('learning.import')"
+          @tap="showMaterial = !showMaterial"
+        />
+        <BaseInput
+          :model-value="draft"
+          class="field"
+          auto-grow
+          :max-rows="5"
+          hide-label
+          :placeholder="
+            learning.batchTrainingActive
+              ? t('learning.kkk')
+              : learning.activeQuestion?.writingExercise
+                ? t('learning.ki2', { v0: learningText(activeWritingGenre.label) })
+                : learning.active
+                  ? t('learning.kqa')
+                  : t('learning.chatPlaceholder')
+          "
+          :maxlength="
+            learning.activeQuestion?.writingExercise || learning.activeQuestion?.vocabularyReview?.phase === 'usage'
+              ? writingAnswerLimit(learning.activeQuestion)
+              : 8000
+          "
+          :label="
+            learning.batchTrainingActive
+              ? t('learning.k95')
+              : learning.activeQuestion?.writingExercise
+                ? t('learning.kkv', { v0: learningText(activeWritingGenre.label) })
+                : t('learning.kai')
+          "
+          multiline
+          :disabled="!!learning.active?.stopped"
+          @input="draft = textInputValue($event)"
+        />
+        <view class="button-row">
+          <BaseButton
+            v-if="learning.active && !conversationStopped"
             variant="quiet"
             icon-only
-            icon="paperclip"
-            :label="t('learning.import')"
-            @tap="showMaterial = !showMaterial"
+            icon="pause"
+            :label="t('learning.chatStop')"
+            @tap="sendDirective('停止当前任务')"
           />
-          <BaseInput
-            :model-value="draft"
-            class="field"
-            auto-grow
-            :max-rows="5"
-            hide-label
-            :placeholder="
-              learning.batchTrainingActive
-                ? t('learning.kkk')
-                : learning.activeQuestion?.writingExercise
-                  ? t('learning.ki2', { v0: learningText(activeWritingGenre.label) })
-                  : t('learning.kqa')
-            "
-            :maxlength="
-              learning.activeQuestion?.writingExercise || learning.activeQuestion?.vocabularyReview?.phase === 'usage'
-                ? writingAnswerLimit(learning.activeQuestion)
-                : 8000
-            "
-            :label="
-              learning.batchTrainingActive
-                ? t('learning.k95')
-                : learning.activeQuestion?.writingExercise
-                  ? t('learning.kkv', { v0: learningText(activeWritingGenre.label) })
-                  : t('learning.kai')
-            "
-            multiline
-            @input="draft = textInputValue($event)"
+          <BaseButton
+            v-if="learning.busy"
+            variant="quiet"
+            icon-only
+            icon="square"
+            :label="t('learning.cancelRequest')"
+            @tap="learning.cancel()"
           />
-          <view class="button-row">
-            <BaseButton
-              v-if="learning.busy"
-              variant="quiet"
-              icon-only
-              icon="square"
-              :label="t('learning.cancelRequest')"
-              @tap="learning.cancel()"
-            />
-            <BaseButton
-              v-else
-              variant="primary"
-              icon-only
-              icon="arrow-up"
-              :label="t('learning.send')"
-              :disabled="!draft.trim()"
-              @tap="send"
-            />
-          </view>
-        </BaseCard>
+          <BaseButton
+            v-else
+            variant="primary"
+            icon-only
+            icon="arrow-up"
+            :label="t('learning.send')"
+            :disabled="!draft.trim() || !!learning.active?.stopped"
+            @tap="send"
+          />
+        </view>
+      </BaseCard>
+      <view v-if="!learning.active" class="starter-row chat-starters" :aria-label="t('learning.chatExamples')">
+        <BaseButton v-for="starter in chatStarters" :key="starter" variant="quiet" @tap="draft = t(starter)">{{
+          t(starter)
+        }}</BaseButton>
       </view>
       <LearningLab
         v-if="
+          learning.activeQuestion &&
           !learning.batchTrainingActive &&
           !learning.activeQuestion?.sentenceExercise &&
           !learning.activeQuestion?.oatutorExercise &&
@@ -1048,7 +960,7 @@
         :record-help="recordSciencePracticeHelp"
         @science="startIndependentScience"
       />
-      <view class="today-layout" :class="{ 'in-session': !!learning.active }">
+      <view v-if="showConnections && learning.active" class="today-layout in-session">
         <BaseCard class="rhythm-panel" padding="none">
           <view class="rhythm-heading">
             <text class="section-title">{{ t('learning.k7b') }}</text>
@@ -1072,10 +984,9 @@
           </view>
           <text v-if="rhythmFeedback" class="subtle" role="status">{{ learningText(rhythmFeedback) }}</text>
         </BaseCard>
-        <LearningOverview v-if="!learning.active" :show-navigation="false" />
       </view>
       <view class="workspace-tools">
-        <view class="button-row">
+        <view v-if="showConnections" class="button-row">
           <BaseButton :aria-expanded="showMaterial" variant="quiet" @tap="showMaterial = !showMaterial">
             <BaseIcon name="folder" tone="ink-3" />{{ t('learning.kkt') }}</BaseButton
           >
@@ -1932,12 +1843,10 @@
           </text>
         </BaseCard>
       </view>
-      <BaseEmpty v-if="learning.error" state="error" :title="learningText(learning.error)" mascot-size="small" /><text
-        v-else-if="feedback"
-        class="feedback"
-        role="status"
-        >{{ learningText(feedback) }}</text
-      >
+      <view v-if="learning.error && !learning.active" id="learning-request-error" tabindex="-1">
+        <BaseEmpty state="error" :title="learningText(learning.error)" mascot-size="small" />
+      </view>
+      <text v-if="!learning.error && feedback" class="feedback" role="status">{{ learningText(feedback) }}</text>
     </view>
     <CustomModal
       :key="dialogState.id"
@@ -2006,6 +1915,7 @@ import {
   PRESSURE_TRANSFER_CONTRACT
 } from '../../../laf-backend/functions/_shared/learning-science.js';
 import SentenceBuilder from '@/components/business/learning/sentence-builder.vue';
+import { SENTENCE_CONTRACT } from '../../../laf-backend/functions/_shared/learning-sentence.js';
 import OatutorPractice from '@/components/business/learning/oatutor-practice.vue';
 import NumberLine from '@/components/business/learning/number-line.vue';
 import VelocityTimeGraph from '@/components/business/learning/velocity-time-graph.vue';
@@ -2014,11 +1924,10 @@ import MaterialLayout from '@/components/business/learning/material-layout.vue';
 import { structureMaterialCandidate } from '@/services/learning/material-intake.js';
 import { quizOriginalReading } from '../../../laf-backend/functions/_shared/learning-quiz-original.js';
 import {
-  LEARNING_TRACKS,
   MATERIAL_LAYOUT_CONTRACT,
-  LEARNING_START_TOPICS,
   materialObjectiveFields,
-  createMaterialObjectiveQuestion
+  createMaterialObjectiveQuestion,
+  questionKey
 } from '@/services/learning/learning-domain.js';
 import { learningClientPlatform } from '@/services/learning/local-connector.js';
 import { chooseWeixinMaterialFile, readWeixinMaterialFile } from '@/services/learning/material-connector.js';
@@ -2028,6 +1937,7 @@ import {
   releaseAppMaterialFile
 } from '@/services/learning/app-material.js';
 import { useConversationLearningStore, learningId } from '@/stores/modules/conversation-learning.js';
+import { hasChatMathTopic } from '@/services/learning/learning-chat.js';
 import {
   writingGenre,
   writingGenreInfo,
@@ -2068,13 +1978,13 @@ function updateChoiceDraft(value) {
   } else chooseAnswer(value);
 }
 const connectionTone = computed(() => {
-  if (learning.modelListState.phase === 'error' || learning.error) return 'coral';
   if (learning.selectedMode === 'local')
     return learning.localConnection?.status === 'model_verified' ? 'mint' : 'apricot';
-  if (learning.selectedMode === 'cloud')
-    return learning.models.find((m) => m.id === learning.modelId)?.connectionStatus === 'connected'
-      ? 'mint'
-      : 'apricot';
+  if (learning.selectedMode === 'cloud') {
+    const status = learning.models.find((m) => m.id === learning.modelId)?.connectionStatus;
+    if (learning.modelListState.phase === 'error' || status === 'failed') return 'coral';
+    return status === 'connected' ? 'mint' : 'apricot';
+  }
   return 'neutral';
 });
 const quizOriginalView = computed(() => quizOriginalReading(learning.activeQuestion));
@@ -2284,23 +2194,45 @@ watch(
       ? 'learning-journey-workspace'
       : location.day
         ? `learning-day-${location.day}`
-        : 'learning-composer';
-    // #ifdef H5
-    const target = document.getElementById(id);
-    target?.scrollIntoView({ block: 'start', behavior: 'auto' });
-    target?.focus?.({ preventScroll: true });
-    // #endif
-    // #ifndef H5
-    const query = uni.createSelectorQuery();
-    query.select(`#${id}`).boundingClientRect();
-    query.selectViewport().scrollOffset();
-    query.exec(([rect, viewport]) => {
-      if (rect && learning.conversationLocation === location)
-        uni.pageScrollTo({ scrollTop: Math.max(0, rect.top + (viewport?.scrollTop || 0)), duration: 0 });
-    });
-    // #endif
+        : learning.active?.stopped
+          ? 'learning-stop-state'
+          : 'learning-composer';
+    revealLearningTarget(id, () => learning.conversationLocation === location);
   },
   { immediate: true }
+);
+function revealLearningTarget(id, isCurrent = () => true) {
+  if (!isCurrent()) return;
+  const selector = id.startsWith('.') ? id : `#${id}`;
+  // #ifdef H5
+  const target = id.startsWith('.') ? document.querySelector(selector) : document.getElementById(id);
+  target?.scrollIntoView?.({ block: 'start', behavior: 'auto' });
+  target?.focus?.({ preventScroll: true });
+  // #endif
+  // #ifndef H5
+  const query = uni.createSelectorQuery();
+  query.select(selector).boundingClientRect();
+  query.selectViewport().scrollOffset();
+  query.exec(([rect, viewport]) => {
+    if (rect && isCurrent())
+      uni.pageScrollTo({ scrollTop: Math.max(0, rect.top + (viewport?.scrollTop || 0)), duration: 0 });
+  });
+  // #endif
+}
+watch(
+  () => learning.error,
+  async (error) => {
+    if (!error) return;
+    const conversationId = learning.active?.id;
+    const isCurrent = () =>
+      labVisible.value &&
+      learning.error === error &&
+      learning.active?.id === conversationId &&
+      !(learning.active?.stopped && error === '请求已取消，费用状态请查看模型用量');
+    if (!isCurrent()) return;
+    await nextTick();
+    revealLearningTarget('learning-request-error', isCurrent);
+  }
 );
 function locateQuestionMessages() {
   const messages = learning.active?.messages || [];
@@ -2327,41 +2259,58 @@ onMounted(() => {
   unbindKeyboard = bindLearningKeyboard(learningRoot.value);
 });
 onUnmounted(() => unbindKeyboard());
-const goal = ref('');
-const taskTrack = ref('general'),
-  taskStage = ref(''),
-  taskEdition = ref('');
-const showTaskOptions = ref(false),
-  customStage = ref(false),
-  customEdition = ref(false);
-const stagesByTrack = {
-  general: ['入门', '基础', '进阶'],
-  primary: ['一年级', '二年级', '三年级', '四年级', '五年级', '六年级'],
-  junior: ['七年级', '八年级', '九年级'],
-  senior: ['高一', '高二', '高三'],
-  postgraduate: ['基础', '强化', '冲刺'],
-  civil: ['入门', '专项', '冲刺'],
-  ielts: ['入门', '基础', '进阶'],
-  toefl: ['入门', '基础', '进阶']
-};
-const editionsByTrack = {
-  primary: ['人教版', '北师大版', '苏教版', '外研版'],
-  junior: ['人教版', '北师大版', '苏教版', '外研版'],
-  senior: ['人教版', '北师大版', '苏教版', '外研版'],
-  postgraduate: ['英语一', '英语二', '数学一', '数学二', '数学三', '政治', '专业课'],
-  civil: ['国考', '省考'],
-  ielts: ['学术类', '培训类'],
-  toefl: ['iBT']
-};
-const taskStages = computed(() => ['', ...(stagesByTrack[taskTrack.value] || [])]);
-const taskEditions = computed(() => ['', ...(editionsByTrack[taskTrack.value] || [])]);
-function selectTaskTrack(track) {
-  if (taskTrack.value === track) return;
-  taskTrack.value = track;
-  taskStage.value = '';
-  taskEdition.value = '';
-  customStage.value = customEdition.value = false;
-}
+// Slot updates can run while the old conversation is being removed.
+const conversationMessages = computed(() => learning.active?.messages || []);
+const sentenceAnswersByFeedback = computed(() => {
+  const session = learning.active;
+  const answers = Object.create(null);
+  if (!session) return answers;
+  const questions = new Map(learning.state.questions.map((question) => [questionKey(question), question]));
+  const attempts = new Map(
+    learning.state.attempts
+      .filter((attempt) => attempt.conversationId === session.id)
+      .map((attempt) => [attempt.id, attempt])
+  );
+  for (const message of session.messages) {
+    const attempt = attempts.get(message.attemptId);
+    if (
+      message.role !== 'notice' ||
+      !attempt ||
+      message.id !== `${attempt.id}:feedback` ||
+      message.questionKey !== attempt.questionKey ||
+      typeof attempt.answer !== 'string'
+    )
+      continue;
+    const exercise = questions.get(attempt.questionKey)?.sentenceExercise;
+    if (exercise?.contract === SENTENCE_CONTRACT && exercise.conversationId === session.id)
+      answers[message.id] = attempt.answer;
+  }
+  return answers;
+});
+const sentenceHintTargetId = ref(null);
+const conversationStopped = computed(() => !learning.active || learning.active.stopped);
+const journeyPanel = ref(null);
+const showJourney = ref(false);
+const hasConversationAttempts = computed(() =>
+  learning.state.attempts.some((attempt) => attempt.conversationId === learning.active?.id)
+);
+const chatStarters = ['learning.chatStarterReview', 'learning.chatStarterQuestion'];
+const chatTopicGoal = computed(() => {
+  const messages = learning.active?.messages || [];
+  for (let index = messages.length - 1; index >= 0; index--) {
+    if (messages[index].role === 'user') return messages[index].content;
+  }
+  return learning.active?.goal || '';
+});
+const chatTopics = computed(() =>
+  /(?:英文|英语|English).*(?:写作|writing)|writing.*(?:English|emails?)/iu.test(chatTopicGoal.value)
+    ? ['learning.topic.englishEmail', 'learning.kho']
+    : /物理|physics/iu.test(chatTopicGoal.value)
+      ? ['learning.chatTopicDensity']
+      : hasChatMathTopic(chatTopicGoal.value)
+        ? ['learning.chatTopicEquation', 'learning.chatTopicInequality']
+        : []
+);
 const objectiveKind = ref('literal'),
   objectiveFrom = ref(''),
   objectiveTo = ref('');
@@ -2632,7 +2581,6 @@ async function prepareRecordPreview(kind) {
     }
   }
 }
-const showMethods = ref(false);
 const showRubric = ref(false);
 const rubricCriteria = ref([]);
 const rubricAttempt = computed(
@@ -2676,20 +2624,22 @@ const selectedRhythm = computed(() =>
     ? currentRhythm(learning.state.profile, learning.selectedConversationId, learning.activeStrategy.method)
     : null
 );
-const connectionLabel = computed(() =>
-  t(
-    connectionTone.value === 'coral'
-      ? 'learning.connectionError'
-      : connectionTone.value === 'mint'
-        ? learning.selectedMode === 'local'
-          ? 'learning.localConnected'
-          : 'learning.cloudConnected'
-        : learning.selectedMode === 'offline'
-          ? 'learning.offline'
+const connectionLabel = computed(() => {
+  if (learning.selectedMode === 'offline') return t('learning.offline');
+  if (learning.selectedMode === 'local') {
+    const status = learning.localConnection?.status;
+    return t(
+      status === 'model_verified'
+        ? 'learning.localConnected'
+        : status === 'connector_verified'
+          ? 'learning.localConnectorReady'
           : 'learning.notConnected'
-  )
-);
-const starters = LEARNING_START_TOPICS;
+    );
+  }
+  if (learning.modelListState.phase === 'error') return t('learning.modelListUnavailable');
+  const status = learning.models.find((m) => m.id === learning.modelId)?.connectionStatus;
+  return status && status !== 'untested' ? learningText(connectionStatusLabel(status)) : t('learning.notConnected');
+});
 const byokForm = ref(false);
 const localForm = ref(false);
 const profile = ref({
@@ -2901,10 +2851,7 @@ watch(
     guestPreview.value = null;
     draft.value = '';
     feedback.value = '';
-    goal.value = '';
-    taskTrack.value = 'general';
-    taskStage.value = taskEdition.value = '';
-    showTaskOptions.value = customStage.value = customEdition.value = false;
+    showJourney.value = false;
     profile.value = {
       id: '',
       provider: '',
@@ -2934,17 +2881,6 @@ watch(
     timezone.value = learning.state.timezone;
   }
 );
-const actions = [
-  '直接讲解',
-  '太简单了',
-  '换一个例子',
-  '用图示讲解',
-  '换方法',
-  '降低难度',
-  '今天只复习错题',
-  '停止当前任务'
-];
-const visibleActions = computed(() => (showMethods.value ? actions : ['直接讲解', '换一个例子', '停止当前任务']));
 async function chooseRhythm(id) {
   const result = await run(() => learning.setRhythm(id));
   if (result)
@@ -2987,29 +2923,102 @@ async function runMaterial(action, { connectionCheck = false } = {}) {
     notify(message, failure.code === 'CANCELLED' ? 'info' : 'error');
   }
 }
-function start() {
-  return run(() =>
-    learning.start(goal.value, { track: taskTrack.value, stage: taskStage.value, edition: taskEdition.value })
-  );
-}
 function newConversation() {
   learning.selectedConversationId = null;
+  showJourney.value = false;
+}
+let pendingSubmission = null;
+function submissionKey() {
+  return JSON.stringify([
+    learning.recordContext(),
+    learning.selectedConversationId,
+    learning.active?.activeQuestionKey,
+    learning.selectedMode,
+    learning.modelId
+  ]);
+}
+function prepareSubmission(kind, input) {
+  const key = submissionKey();
+  if (pendingSubmission?.kind === kind && pendingSubmission.input === input && pendingSubmission.key === key)
+    return pendingSubmission;
+  return (pendingSubmission = {
+    kind,
+    input,
+    key,
+    id: learningId(kind === 'send' ? 'turn' : 'answer'),
+    recordContext: learning.recordContext(),
+    conversationId: learning.selectedConversationId
+  });
+}
+function finishSubmission(ticket) {
+  const conversationId =
+    ticket.kind === 'send'
+      ? learning.state.events.find((event) => event.id === `${ticket.id}:message`)?.data?.conversationId ||
+        ticket.conversationId
+      : ticket.conversationId;
+  if (learning.recordContext() !== ticket.recordContext || learning.selectedConversationId !== conversationId)
+    return false;
+  if (feedback.value || (ticket.kind === 'send' && learning.error)) ticket.key = submissionKey();
+  else if (pendingSubmission === ticket) pendingSubmission = null;
+  return true;
 }
 async function send() {
   const input = draft.value.trim();
-  if (!input) return;
-  await run(() => learning.send(input, { discussionOnly: learning.batchTrainingActive }));
-  // Failed local writes must leave the answer available for retry; preserve new typing during a model request.
-  if (!feedback.value && draft.value.trim() === input) draft.value = '';
+  if (!input || learning.active?.stopped) return;
+  const ticket = prepareSubmission('send', input);
+  const previousQuestion = learning.active?.activeQuestionKey;
+  const result = await run(() =>
+    learning.send(input, { id: ticket.id, chatEntry: true, discussionOnly: learning.batchTrainingActive })
+  );
+  if (!finishSubmission(ticket)) return;
+  // A clarification keeps the draft for explicit submission; failed writes and newer typing stay available.
+  if (!feedback.value && !learning.error && !result?.clarification && draft.value.trim() === input) draft.value = '';
+  await nextTick();
+  if (!feedback.value && !learning.error)
+    revealLearningTarget(
+      learning.active?.activeQuestionKey && previousQuestion !== learning.active.activeQuestionKey
+        ? 'active-learning-question'
+        : 'learning-chat-latest'
+    );
 }
-function sendDirective(action) {
-  return run(() => learning.send(action));
+async function sendDirective(action) {
+  const conversationId = learning.selectedConversationId;
+  const originalQuestionKey = learning.active?.activeQuestionKey;
+  const result = await run(() => learning.send(action));
+  await nextTick();
+  if (learning.selectedConversationId !== conversationId) return result;
+  const sentenceHint =
+    action === '提示' &&
+    learning.selectedMode === 'offline' &&
+    !learning.batchTrainingActive &&
+    learning.activeQuestion?.sentenceExercise &&
+    learning.active?.activeQuestionKey === originalQuestionKey;
+  if (sentenceHint && !learning.error) {
+    sentenceHintTargetId.value = conversationMessages.value.at(-1)?.id || null;
+    messageStart.value = Math.max(0, conversationMessages.value.length - 50);
+    await nextTick();
+    revealLearningTarget(
+      '.sentence-hint-target',
+      () =>
+        learning.selectedConversationId === conversationId && learning.active?.activeQuestionKey === originalQuestionKey
+    );
+  } else if (action === '读参考信件' && !learning.error)
+    revealLearningTarget('learning-chat-latest', () => learning.selectedConversationId === conversationId);
+  if (action === '停止当前任务' && learning.active?.stopped)
+    revealLearningTarget('learning-stop-state', () => learning.selectedConversationId === conversationId);
+  if (action === '继续当前任务' && learning.active && !learning.active.stopped) {
+    if (learning.batchTrainingActive) journeyPanel.value?.revealCurrent();
+    else if (learning.activeQuestion) revealLearningTarget('active-learning-question');
+    else journeyPanel.value?.reveal();
+  }
+  return result;
 }
-function submitExplicit() {
-  return run(() => {
-    learning.submit(draft.value, true);
-    draft.value = '';
-  });
+async function submitExplicit() {
+  const input = draft.value;
+  const ticket = prepareSubmission('submit', input);
+  const result = await run(() => learning.submit(input, true, ticket.id, { chatEntry: true }));
+  if (finishSubmission(ticket) && !feedback.value && draft.value === input) draft.value = '';
+  return result;
 }
 function setMode(mode) {
   learning.cancel();
@@ -3748,12 +3757,7 @@ function structureObjective() {
     const input = objectiveInput();
     // 先用共享原文校验规则检查字段；失败不会留下空对话，也不会恢复已停止任务。
     createMaterialObjectiveQuestion('material-preview', currentEditorMaterial.value, input);
-    if (!learning.active)
-      learning.start('根据私人资料完成可校验练习', {
-        track: taskTrack.value,
-        stage: taskStage.value,
-        edition: taskEdition.value
-      });
+    if (!learning.active) learning.start('根据私人资料完成可校验练习');
     learning.structureObjective(selectedMaterial.value.id, input);
     showMaterial.value = false;
     feedback.value = '练习已准备好。';
@@ -4104,3 +4108,38 @@ onUnmounted(() => {
   learning.materialConnection = null;
 });
 </script>
+<style scoped>
+.sentence-saved-answer {
+  display: block;
+  margin-bottom: var(--s-2);
+}
+.chat-empty .welcome-copy {
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  margin: calc(var(--s-8) * 2) 0 var(--s-6);
+}
+.chat-empty .composer {
+  position: relative;
+  bottom: auto;
+  max-width: calc(var(--dialog-width) * 2);
+  margin-inline: auto;
+}
+.chat-starters {
+  justify-content: center;
+  margin: var(--s-5) auto;
+  max-width: calc(var(--dialog-width) * 2);
+}
+.chat-starters :deep(.base-button) {
+  white-space: normal;
+  text-align: start;
+}
+.composer .field {
+  min-width: 0;
+}
+#learning-stop-state,
+#active-learning-question,
+.sentence-hint-target {
+  scroll-margin-top: var(--s-6);
+}
+</style>

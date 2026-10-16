@@ -1,4 +1,13 @@
 import { defineStore } from 'pinia';
+import {
+  localChatOpening,
+  localChatQuestion,
+  localDensityQuestion,
+  localPressureQuestion,
+  chatQuestionMessage,
+  poetryEncouragement,
+  validatedPoetryReference
+} from '@/services/learning/learning-chat.js';
 import { WRITING_FEEDBACK_OUTPUT_CONTRACT } from '../../../laf-backend/functions/_shared/learning-rubric.js';
 import { createOatutorQuestion } from '../../../laf-backend/functions/_shared/learning-oatutor.js';
 import {
@@ -24,7 +33,6 @@ import { reminderJobs } from '../../../laf-backend/functions/_shared/learning-re
 import { createLearningCalendar } from '@/services/learning/learning-calendar.js';
 import { conversationStrategy } from '../../../laf-backend/functions/_shared/learning-strategy.js';
 import { ENERGY_VISUAL_CONTRACT, ENERGY_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-visual.js';
-import { DENSITY_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-density.js';
 import { PRESSURE_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-pressure.js';
 import {
   createScienceQuestion,
@@ -41,13 +49,15 @@ import {
 import {
   createNoticeQuestion,
   createWritingQuestion,
+  EMAIL_WRITING_CONTRACT,
   EXTENDED_WRITING_CONTRACTS,
   writingGenre,
   writingGenreInfo,
   nextWritingTask,
   writingRetestReady,
   nextNoticeDay,
-  publicWritingReference
+  publicWritingReference,
+  PUBLIC_WRITING_REFERENCES
 } from '../../../laf-backend/functions/_shared/learning-writing.js';
 import {
   VOCABULARY_REVIEW_CONTRACT,
@@ -128,6 +138,7 @@ import {
   fetchLearningResult,
   requestLearningComputation,
   requestLearningGrammar,
+  requestLearningPoetryReference,
   learningRequest
 } from '@/services/api/domains/learning.api.js';
 import { callLocalConnector, testLocalConnector, learningClientPlatform } from '@/services/learning/local-connector.js';
@@ -174,6 +185,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const busy = ref(false);
   const error = ref('');
   const models = ref([]);
+  const poetryReferenceEnabled = ref(false);
+  const poetryReference = shallowRef(null);
+  let poetryController = null;
   const modelPresets = ref([]);
   const modelId = ref('');
   const usage = ref(null);
@@ -238,6 +252,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
   }
   function resetModelResources() {
+    cancelPoetryReference();
+    poetryReferenceEnabled.value = false;
     cancelModelReads(undefined, 'CONTEXT_CHANGED');
     models.value = [];
     modelPresets.value = [];
@@ -339,6 +355,14 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const activeStrategy = computed(() => conversationStrategy(state.value, selectedConversationId.value));
   const activeQuestion = computed(() =>
     state.value.questions.find((q) => questionKey(q) === active.value?.activeQuestionKey)
+  );
+  const canReadChatWritingReference = computed(
+    () =>
+      selectedMode.value === 'offline' &&
+      !batchTrainingActive.value &&
+      activeQuestion.value?.writingExercise?.contract === EMAIL_WRITING_CONTRACT &&
+      writingGenre(activeQuestion.value) === 'email' &&
+      PUBLIC_WRITING_REFERENCES.some((reference) => reference.genreId === 'email')
   );
   const canComputeReference = computed(() => {
     try {
@@ -633,6 +657,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     return active.value.trainingGroups.find((g) => g.id === id);
   }
   function selectTraining(groupId) {
+    if (groupId === null) {
+      selectedTrainingId.value = 'question-only';
+      return;
+    }
     assert(
       active.value?.trainingGroups?.some((g) => g.id === groupId),
       'NOT_FOUND',
@@ -726,6 +754,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   function refresh() {
     const next = learningRepository.read();
     if (next.owner !== state.value.owner) {
+      cancelPoetryReference();
+      poetryReferenceEnabled.value = false;
       controller?.abort();
       pendingCloudCall = null;
       streamPreview.value = '';
@@ -782,6 +812,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   };
   if (typeof window !== 'undefined') window.addEventListener('storage', storageChanged);
   onScopeDispose(() => {
+    cancelPoetryReference();
     if (notificationRefreshTimer !== null) clearTimeout(notificationRefreshTimer);
     notificationObserver?.dispose();
     calendar.dispose();
@@ -843,23 +874,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
                 : null;
     const question =
       (/^函数运算带练[。.!]?$/u.test(goal.trim()) ? createOatutorQuestion(id, conversation.id) : null) ||
-      (/^压强(?:、压力与接触面积|与压力)?[。.!]?$/u.test(goal.trim())
-        ? createScienceQuestion(id, conversation.id, {
-            template: PRESSURE_TEMPLATE,
-            target: 'pressure',
-            uniformContact: true,
-            normalForceN: 72,
-            areaCm2: 24
-          })
-        : null) ||
-      (/^密度(?:、质量与体积|与质量)?[。.!]?$/u.test(goal.trim())
-        ? createScienceQuestion(id, conversation.id, {
-            template: DENSITY_TEMPLATE,
-            target: 'density',
-            massG: 120,
-            volumeCm3: 50
-          })
-        : null) ||
+      localPressureQuestion(id, conversation.id, goal) ||
+      localDensityQuestion(id, conversation.id, goal) ||
       (/^功与动能[。.!]?$/u.test(goal.trim())
         ? createScienceQuestion(id, conversation.id, {
             template: ENERGY_TEMPLATE,
@@ -971,19 +987,45 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     assert(typeof content === 'string' && content.length <= 500, 'RESOURCE_LIMIT', '写作提示过长');
     return commit('hint.add', { conversationId: selectedConversationId.value, content, level: 1 });
   }
-  function readWritingReference(expectedContext, referenceId, referenceVersion) {
+  function readWritingReference(expectedContext, referenceId, referenceVersion, operationId) {
     idleRecords();
     refresh();
     assert(expectedContext === writingContext(), 'CONTEXT_CHANGED', '学习已切换，请重新打开参考');
     assert(active.value && !active.value.stopped, 'STOPPED', '当前任务已停止');
     const reference = publicWritingReference(referenceId, referenceVersion);
-    const result = commit('hint.add', {
-      conversationId: selectedConversationId.value,
-      questionKey: active.value.activeQuestionKey,
-      referenceId,
-      referenceVersion
-    });
+    const result = commit(
+      'hint.add',
+      {
+        conversationId: selectedConversationId.value,
+        questionKey: active.value.activeQuestionKey,
+        referenceId,
+        referenceVersion
+      },
+      operationId
+    );
     return { hintId: result.hintId, reference };
+  }
+  function readChatWritingReference(id) {
+    const selected = PUBLIC_WRITING_REFERENCES.find((reference) => reference.genreId === 'email');
+    assert(canReadChatWritingReference.value && selected, 'CAPABILITY_UNAVAILABLE', '当前题目没有本地邮件参考');
+    const reference = publicWritingReference(selected.id, selected.version);
+    const content = [
+      '公开示例，仅供参考。',
+      reference.title,
+      reference.excerpt,
+      `${reference.copyright} · ${reference.author}`,
+      reference.publisher,
+      reference.changes,
+      reference.versionNote,
+      reference.url,
+      `${reference.license} · ${reference.licenseUrl}`
+    ]
+      .filter(Boolean)
+      .join('\n\n');
+    assert(content.length <= 8000, 'RESOURCE_LIMIT', '本地参考超出聊天长度限制');
+    const result = readWritingReference(writingContext(), reference.id, reference.version, `${id}:writing-reference`);
+    notice(content, `${id}:reply`);
+    return { localWritingReference: true, referenceId: reference.id, hintId: result.hintId };
   }
   function openVocabulary(expectedContext, word) {
     idleRecords();
@@ -1617,12 +1659,80 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       `${attempt.id}:review`
     );
   }
+  function cancelPoetryReference() {
+    poetryController?.abort();
+    poetryController = null;
+    poetryReference.value = null;
+  }
+  watch(
+    [
+      () => state.value.owner,
+      () => selectedConversationId.value,
+      () => active.value?.activeQuestionKey,
+      () => active.value?.stopped,
+      () => selectedMode.value,
+      () => modelId.value,
+      () => poetryReferenceEnabled.value
+    ],
+    cancelPoetryReference,
+    { flush: 'sync' }
+  );
+  function verifyPoetryReference(encouragement, attempt) {
+    if (!poetryReferenceEnabled.value) return;
+    const context = recordContext();
+    if (!context) return;
+    cancelPoetryReference();
+    const requestController = new AbortController();
+    poetryController = requestController;
+    const owner = state.value.owner,
+      conversationId = selectedConversationId.value;
+    let resolveCancelled;
+    const aborted = () => resolveCancelled(null);
+    const cancelled = new Promise((resolve) => {
+      resolveCancelled = resolve;
+    });
+    requestController.signal.addEventListener('abort', aborted, { once: true });
+    const timer = setTimeout(() => requestController.abort(), 1200);
+    // The already-published local encouragement is immediate; optional source metadata never writes learning facts.
+    void Promise.race([
+      requestLearningPoetryReference({ expectedOwner: owner, signal: requestController.signal }),
+      cancelled
+    ])
+      .then((result) => {
+        if (
+          poetryController !== requestController ||
+          requestController.signal.aborted ||
+          state.value.owner !== owner ||
+          selectedConversationId.value !== conversationId ||
+          active.value?.stopped ||
+          active.value?.activeQuestionKey !== attempt.questionKey ||
+          recordContext() !== context ||
+          !active.value?.messages.some((message) => message.id === encouragement.id)
+        )
+          return;
+        const reference = result?.success && validatedPoetryReference(result.data?.reference);
+        if (reference)
+          poetryReference.value = {
+            conversationId,
+            questionKey: attempt.questionKey,
+            attemptId: attempt.id,
+            reference
+          };
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        clearTimeout(timer);
+        requestController.signal.removeEventListener('abort', aborted);
+        if (poetryController === requestController) poetryController = null;
+      });
+  }
   function submit(answer, explicit = false, id = learningId('answer'), options = {}) {
+    const { chatEntry = false, poetry = true, ...attemptOptions } = options;
     const result = commit(
       explicit === true
         ? attemptSubmissionType(activeQuestion.value, state.value.events.find((event) => event.id === id)?.type)
         : 'attempt.submit',
-      { conversationId: selectedConversationId.value, answer, explicit, ...options },
+      { conversationId: selectedConversationId.value, answer, explicit, ...attemptOptions },
       id
     );
     if (result.clarification) {
@@ -1697,6 +1807,17 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         { conversationId: active.value.id, groupId: training.id, attemptIds: [result.id], explicit: true },
         `${training.id}:complete`
       );
+    if (chatEntry === true && poetry !== false) {
+      try {
+        const encouragement = poetryEncouragement(state.value, selectedConversationId.value, result.id);
+        if (encouragement) {
+          notice(encouragement.content, encouragement.id, { attemptId: result.id });
+          verifyPoetryReference(encouragement, result);
+        }
+      } catch {
+        // Optional decoration cannot turn an already saved answer into a failed submission.
+      }
+    }
     return result;
   }
   async function send(raw, options = {}) {
@@ -1741,7 +1862,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
     error.value = '';
     const id = options.id || learningId('turn');
-    if (!active.value) start(raw);
+    const startedFromMessage = !active.value;
+    if (startedFromMessage) start(raw);
     commit(
       'message.add',
       { conversationId: selectedConversationId.value, role: 'user', content: raw },
@@ -1758,6 +1880,41 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       ].includes(event.id)
     );
     if (completed) return completed.result;
+    if (
+      selectedMode.value === 'offline' &&
+      activeQuestion.value?.sentenceExercise &&
+      !batchTrainingActive.value &&
+      !options.visual &&
+      !options.feedbackAttemptId &&
+      !options.discussionOnly &&
+      /^(?:提示|给我提示|给点线索|带我一步步理解|句子提示|give me a hint|sentence hint)[。.!！]?$/iu.test(raw.trim())
+    ) {
+      if (active.value.stopped) {
+        notice('已停止，请先继续任务。', `${id}:offline`);
+        return;
+      }
+      const content = recordSentenceHelp(writingContext());
+      notice(content, `${id}:offline`);
+      return { sentenceHint: content };
+    }
+    if (
+      canReadChatWritingReference.value &&
+      !options.visual &&
+      !options.feedbackAttemptId &&
+      !options.discussionOnly &&
+      /^(?:提示|给我提示|给点线索|带我一步步理解|读参考信件|读信件正文|读邮件参考|give me a hint|read (?:the )?(?:full letter|email reference|sample email))[。.!！]?$/iu.test(
+        raw.trim()
+      )
+    ) {
+      if (active.value.stopped) {
+        notice('已停止，请先继续任务。', `${id}:offline`);
+        return;
+      }
+      return readChatWritingReference(id);
+    }
+    const unfinishedChatOpening = state.value.events.some(
+      (event) => event.id === `${id}:chat-ready` && event.data?.conversationId === selectedConversationId.value
+    );
     if (/^(?:先修诊断|开始先修诊断)[。！!]?$/u.test(raw.trim())) return diagnosePrerequisite(id);
     if (/^独立检验原题[。！!]?$/u.test(raw.trim())) {
       assert(!active.value.stopped, 'STOPPED', '当前任务已停止，请先明确继续');
@@ -1797,6 +1954,14 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         return;
       }
     }
+    const opening =
+      options.chatEntry === true &&
+      selectedMode.value === 'offline' &&
+      !options.visual &&
+      !options.feedbackAttemptId &&
+      !options.discussionOnly
+        ? localChatOpening(raw)
+        : null;
     const directive = options.visual ? null : userDirective(raw, state.value, selectedConversationId.value);
     if (directive) {
       commit(directive.type, directive.data, `${id}:directive`);
@@ -1820,16 +1985,73 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       return;
     } else if (
       activeQuestion.value &&
+      !(
+        options.chatEntry === true &&
+        (startedFromMessage ||
+          unfinishedChatOpening ||
+          opening?.replaceActive ||
+          activeQuestion.value.id === `${id}_chat`)
+      ) &&
       !options.visual &&
       !options.feedbackAttemptId &&
       !options.discussionOnly &&
       !activeQuestion.value.writingExercise
     ) {
-      const result = submit(raw, false, `${id}:answer`);
-      if (!result.clarification && (result.grade?.status === 'reliable' || selectedMode.value === 'offline'))
+      const result = submit(raw, false, `${id}:answer`, { chatEntry: options.chatEntry, poetry: options.poetry });
+      if (
+        (options.chatEntry === true && selectedMode.value === 'offline') ||
+        (!result.clarification && (result.grade?.status === 'reliable' || selectedMode.value === 'offline'))
+      )
         return result;
     }
     if (selectedMode.value === 'offline') {
+      if (
+        options.chatEntry === true &&
+        !options.visual &&
+        !options.feedbackAttemptId &&
+        !options.discussionOnly &&
+        (!activeQuestion.value ||
+          startedFromMessage ||
+          unfinishedChatOpening ||
+          opening?.replaceActive ||
+          activeQuestion.value.id === `${id}_chat`)
+      ) {
+        const finishOpening = () => {
+          const segment =
+            requestedTeachingMethod(state.value, selectedConversationId.value) === 'hint'
+              ? localTeaching(activeQuestion.value, 'hint', 1)
+              : null;
+          notice(chatQuestionMessage(activeQuestion.value), `${id}:${segment ? 'chat-ready' : 'offline'}`);
+          if (segment) deliverTeaching(segment, `${id}:local-teaching`);
+          return { chatOpening: 'question', questionKey: questionKey(activeQuestion.value) };
+        };
+        if ((startedFromMessage || unfinishedChatOpening) && activeQuestion.value) return finishOpening();
+        const question = localChatQuestion(`${id}_chat`, opening, selectedConversationId.value);
+        if (question) {
+          const added = commit('question.add', { question }, `${id}:chat-question`);
+          commit(
+            'question.focus',
+            { conversationId: selectedConversationId.value, questionKey: added.questionKey },
+            `${id}:chat-focus`
+          );
+          const tasks = currentPlan.value?.tasks || [];
+          if (!tasks.some((task) => task.questionKey === added.questionKey))
+            commit(
+              'plan.set',
+              {
+                tasks: [
+                  ...tasks.map((task) => ({ ...task })),
+                  { title: question.prompt, questionKey: added.questionKey, condition: 'submitted' }
+                ],
+                reason: '按聊天中明确选择的知识点开始练习'
+              },
+              `${id}:chat-plan`
+            );
+          return finishOpening();
+        }
+        notice(opening.message || '请把题目发来，或告诉我想练的知识点。', `${id}:offline`);
+        return { chatOpening: 'clarify' };
+      }
       if (directive?.type === 'strategy.set' && directive.data.method === 'challenge') {
         const challenge = createArithmeticChallenge(`${id}_challenge`, activeQuestion.value);
         if (challenge) {
@@ -2321,6 +2543,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
   }
   function cancel() {
+    cancelPoetryReference();
     visualRequest.value = null;
     const pending = pendingCloudCall;
     pendingCloudCall = null;
@@ -2407,6 +2630,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const apply = (result) => {
       if (kind === 'models') {
         models.value = result.success ? result.data.models : [];
+        poetryReferenceEnabled.value = result.success && result.data.poetryReferenceEnabled === true;
         modelPresets.value = result.success ? result.data.presets || [] : [];
       } else usage.value = result.success ? result.data : null;
       status.value = {
@@ -3304,6 +3528,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     state,
     active,
     activeQuestion,
+    canReadChatWritingReference,
     timeline,
     conversationLocation,
     locateConversation,
@@ -3382,6 +3607,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     busy,
     error,
     models,
+    poetryReferenceEnabled,
+    poetryReference,
     modelListState,
     modelUsageState,
     cancelModelReads,

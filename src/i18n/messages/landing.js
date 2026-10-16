@@ -16,7 +16,7 @@ export const landingMessages = {
     'topic.discussion': '英文学术讨论',
     'topic.narrative': '中文叙事写作',
     'topic.material': '中文材料论证',
-    headline: '从一个问题\n到真正理解',
+    headline: 'imagination\nmeets craft',
     space: 'Yozi AI 学习空间',
     navigation: '学习导航',
     learn: '学习',
@@ -30,7 +30,7 @@ export const landingMessages = {
     account: '我的账户',
     home: '首页',
     motion: '动效',
-    ticker: '学习 · 练习 · 复习 · '
+    ticker: 'BRANDING·PRODUCT·UI/UX·'
   },
   en: {
     'topic.function': 'Function practice',
@@ -46,7 +46,7 @@ export const landingMessages = {
     'topic.discussion': 'English academic discussion',
     'topic.narrative': 'Chinese narrative writing',
     'topic.material': 'Chinese source-based argument',
-    headline: 'From one question\nto real understanding',
+    headline: 'imagination\nmeets craft',
     space: 'Yozi AI learning space',
     navigation: 'Learning navigation',
     learn: 'Learn',
@@ -60,7 +60,10 @@ export const landingMessages = {
     account: 'My account',
     home: 'Home',
     motion: 'Motion',
-    ticker: 'LEARNING · PRACTICE · REVIEW · '
+    ticker: 'BRANDING·PRODUCT·UI/UX·'
   }
 };
 registerMessages('landing', landingMessages);
+
+// Original template presentation stays English; learning content follows the selected locale.
+export const landingPresentation = Object.freeze({ ...landingMessages.en, badge: 'have a fresh idea?' });

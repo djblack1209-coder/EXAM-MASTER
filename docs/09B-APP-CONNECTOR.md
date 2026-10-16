@@ -37,6 +37,12 @@ Android 适配器用 `invokeAndKeepAlive` 保留中间回调、终止用 `invoke
 
 ## 移动 SDK 编译
 
+**2026-10-14当前准备状态【未装配】**：本机Xcode路径 `/Applications/Xcode.app/Contents/Developer`、iPhoneOS SDK27.0可用；实际DCloud Android classpath和iOS头/框架路径均未配置，未发现已安装HBuilderX入口。现有 `npm run build:app:connector -- --ios` 新鲜预查仅因 `DCUniModule.h` 及依赖未配置退出2，未生成二进制、下载、改App配置或云打包。没有以基础Apple/Android SDK代替DCloud模块SDK，也没有新建模拟器代替真机验收。
+
+当前锁定DCloud系列为 `3.0.0-alpha-5030120260930001`；已安装vite-plugin-uni的 `uni-app.compilerVersion` 与当前App产物manifest均为 **5.31**。下方10月2日的5.08只属于历史准备记录，不能继续作为当前SDK装配基线。官方[iOS下载/升级说明](https://nativesupport.dcloud.net.cn/AppDocs/download/ios.html)与[Android下载说明](https://nativesupport.dcloud.net.cn/AppDocs/download/android.html)当前页面列5.26包，尚无本机包、完整来源摘要或与5.31资源组合的兼容验收；不能据“最新版”或单个头文件存在直接判定可装配。收到SDK本机路径后，由助手核对官方来源、完整包/版本、依赖库与资源，再沿现有build-only入口编译；不同版本须有对应平台兼容依据和实际验收，不以关闭版本提示代替。
+
+历史官方入口的浏览器安全拒绝继续保留，不换工具绕过。客户随后明确暂不处理iPhone端，优先网页/官网和macOS；SDK问题不再等待本轮回复，iPhone装配/设备留作后续待办，不继续下载、编译或安装。此项尚未闭环，不称App开发或设备验收完成。
+
 源码/元数据在 `nativeplugins/Wenli-Connector/`，对应 [DCloud Android](https://nativesupport.dcloud.net.cn/NativePlugin/course/android.html)、[iOS 模块](https://nativesupport.dcloud.net.cn/NativePlugin/course/ios.html)和[打包规范](https://nativesupport.dcloud.net.cn/NativePlugin/course/package.html)。不以模拟 SDK 声明或空二进制替代编译。
 
 `npm run build:app:connector` 默认要求两平台实际 SDK；单平台追加 `-- --android` 或 `-- --ios`。只本地编译，不下载、云打包、安装、部署或修改 App 配置。缺 SDK 退出 2，无二进制；失败清理本次目录，成功保留唯一 `tmp/app-connector-packages/build-*/Wenli-Connector/` 和 SDK 哈希报告，不覆盖旧包。
@@ -48,7 +54,7 @@ Android 适配器用 `invokeAndKeepAlive` 保留中间回调、终止用 `invoke
 
 编译后仍须审查二进制/许可，依官方流程装配本地插件、自定义基座，再做独立设备业务验收。当前未执行装配、云打包或生产动作，缺模块继续拒绝。
 
-2026-10-02 本机 Xcode 27.0 和 iOS 27.0 模拟器运行时已经准备，客户自行接受 Apple 许可，全局开发工具选择未改变。当前缺口是匹配项目编译器 5.08 的 DCloud 离线 SDK、原生插件装配与业务验收。官方历史下载入口被浏览器安全策略拒绝，待客户提供官方 SDK 本机解压路径，不能换工具绕过。独立 iOS Safari 已实际提交错答并得到判错回执；提示确认、更正、独立变式和退出恢复尚未完成，且它不证明原生 App。后续全部使用普通窗口，不进入全屏。
+2026-10-02 本机 Xcode 27.0 和 iOS 27.0 模拟器运行时已经准备，客户自行接受 Apple 许可，全局开发工具选择未改变。当时缺口是匹配项目编译器5.08的DCloud离线SDK、原生插件装配与业务验收；当前版本基线由上方10月14日记录取代。官方历史下载入口被浏览器安全策略拒绝，待客户提供官方SDK本机解压路径，不能换工具绕过。独立iOS Safari已实际提交错答并得到判错回执；提示确认、更正、独立变式和退出恢复尚未完成，且它不证明原生App。后续全部使用普通窗口，不进入全屏。
 
 本机已有Android SDK33/36。额外用SDK33的android.jar及官方Build Tools34 core-lambda-stubs.jar编译纯网络内核，再用已有Build Tools36 D8生成min-api21的dex，均通过；报告在tmp/app-connector-delivery/android-core-sdk-report.json，记录SDK/支持库/D8/dex哈希，临时产物清理。只拿android.jar编译缺Java8 lambda编译支持；旧D8 34处理当前JDK产物遇内部错误，改用已经安装的36通过，无下载/升级操作。此项不证明API21设备兼容或DCloud完整模块/插件装配，DCloud/iOS缺口仍保留。
 

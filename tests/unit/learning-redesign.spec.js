@@ -5,6 +5,7 @@ import LearningPage from '@/pages/learning/index.vue';
 import CustomModal from '@/components/common/CustomModal.vue';
 import JourneyReview from '@/components/business/learning/journey-review.vue';
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
+import LearningJourney from '@/components/business/learning/learning-journey.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseOptions from '@/components/base/base-options/base-options.vue';
@@ -37,6 +38,14 @@ beforeEach(() => {
   setActivePinia(createPinia());
   initI18n();
   setMascotReducedMotion(false, { persist: false });
+  const query = {
+    select: vi.fn().mockReturnThis(),
+    boundingClientRect: vi.fn().mockReturnThis(),
+    selectViewport: vi.fn().mockReturnThis(),
+    scrollOffset: vi.fn().mockReturnThis(),
+    exec: vi.fn((callback) => callback([null, { scrollTop: 0 }]))
+  };
+  vi.spyOn(uni, 'createSelectorQuery').mockReturnValue(query);
 });
 afterEach(() => {
   wrappers
@@ -50,6 +59,233 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe('learning interface states preserve learning facts', () => {
+  it.each([
+    ['offline', null, 'idle', '连接模型', 'neutral'],
+    ['offline', null, 'error', '连接模型', 'neutral'],
+    ['local', 'connector_verified', 'error', '本地连接就绪', 'apricot'],
+    ['local', 'model_verified', 'idle', '本机模型已连接', 'mint'],
+    ['cloud', 'connected', 'ready', '最近调用成功', 'mint'],
+    ['cloud', 'failed', 'ready', '最近调用失败', 'coral'],
+    ['cloud', 'stale', 'ready', '连接需重新验证', 'apricot'],
+    ['cloud', 'connected', 'error', '模型列表暂不可用', 'coral']
+  ])('operation errors preserve the %s connection evidence (%s, %s)', async (mode, status, phase, label, tone) => {
+    const store = useConversationLearningStore();
+    store.start('12 + 8');
+    store.submit('19', true);
+    store.selectedMode = mode;
+    store.modelListState = { phase, message: phase === 'error' ? '读取服务暂不可用' : '' };
+    if (mode === 'local') store.localConnection = { status };
+    if (mode === 'cloud') {
+      store.modelId = 'fixture-cloud';
+      store.models = [{ id: 'fixture-cloud', connectionStatus: status }];
+    }
+    const wrapper = render(),
+      before = store.exportData();
+    for (const error of ['请求已取消，费用状态请查看模型用量', '学习天数必须在 1 到 365 之间']) {
+      store.error = error;
+      await flushPromises();
+      expect(wrapper.get('.connection-pill').text()).toBe(label);
+      expect(wrapper.get('.connection-pill .base-tag').classes()).toContain(`base-tag--${tone}`);
+      expect(wrapper.get('#learning-request-error').text()).toContain(error);
+      expect(store.exportData()).toBe(before);
+    }
+    setLanguage('en');
+    await flushPromises();
+    expect(wrapper.get('.connection-pill').text()).not.toMatch(/[\u3400-\u9fff]/);
+    expect(store.exportData()).toBe(before);
+  });
+  it('model failure is visible and focused beside recovery without writing or changing an original answer', async () => {
+    const store = useConversationLearningStore();
+    store.start('12 + 8');
+    store.submit('19', true);
+    expect(store.state.attempts).toHaveLength(1);
+    const wrapper = render(),
+      before = store.exportData(),
+      scroll = vi.fn(),
+      originalScroll = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = scroll;
+    try {
+      store.error = messages['zh-CN']['learning.notice.networkNoReply'];
+      await flushPromises();
+      const error = wrapper.get('#learning-request-error');
+      expect(document.activeElement).toBe(error.element);
+      expect(scroll).toHaveBeenCalledWith({ block: 'start', behavior: 'auto' });
+      expect(error.get('[role="alert"]').text()).toContain('没有可恢复的回复');
+      expect(error.element.closest('.conversation-area')).not.toBeNull();
+      expect(store.exportData()).toBe(before);
+      setLanguage('en');
+      await flushPromises();
+      expect(error.text()).toContain('there is no reply to recover');
+      expect(store.exportData()).toBe(before);
+      store.error = '';
+      await flushPromises();
+      expect(wrapper.find('#learning-request-error').exists()).toBe(false);
+      expect(store.exportData()).toBe(before);
+    } finally {
+      Element.prototype.scrollIntoView = originalScroll;
+    }
+  });
+  it('a new goal locates its first-practice action without creating a route or answers', async () => {
+    const store = useConversationLearningStore(),
+      wrapper = render();
+    const scroll = vi.fn(),
+      originalScroll = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = scroll;
+    try {
+      const goalInput = wrapper.findAllComponents(BaseInput).find((input) => input.props('label') === '学习目标');
+      await goalInput.get('textarea').setValue('分数加减与乘除');
+      const start = wrapper.findAllComponents(BaseButton).find((button) => button.text().trim() === '开始学习');
+      await start.trigger('keydown', { key: 'Enter' });
+      await flushPromises();
+      const entry = wrapper.get('#learning-journey-panel');
+      expect(document.activeElement).toBe(entry.element);
+      expect(scroll).toHaveBeenCalledWith({ block: 'start', behavior: 'auto' });
+      expect(entry.text()).toContain(t('learning.firstGroup'));
+      expect(store.state.conversations).toHaveLength(1);
+      expect(store.state.attempts).toHaveLength(0);
+      expect(store.state.questions).toHaveLength(0);
+      expect(store.active.journey).toBeUndefined();
+    } finally {
+      Element.prototype.scrollIntoView = originalScroll;
+    }
+  });
+  it('route choices start empty, remain drafts when cancelled and save only the selected modules', async () => {
+    const store = useConversationLearningStore();
+    store.start('分数加减与乘除');
+    const before = store.exportData(),
+      wrapper = render(LearningJourney, { inline: true });
+    const button = (label) => wrapper.findAll('button').find((item) => item.text().trim() === label);
+    await button(t('learning.klc')).trigger('keydown', { key: 'Enter' });
+    expect(wrapper.get('[data-test="journey-save"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.findAll('.journey-module-options [aria-pressed="true"]')).toHaveLength(0);
+    await wrapper
+      .findAll('.journey-module-options button')
+      .find((item) => item.text().includes('分数加减'))
+      .trigger('keydown', { key: 'Enter' });
+    expect(store.exportData()).toBe(before);
+    await button(t('learning.k8s')).trigger('keydown', { key: 'Enter' });
+    expect(store.exportData()).toBe(before);
+    await button(t('learning.klc')).trigger('keydown', { key: 'Enter' });
+    expect(wrapper.findAll('.journey-module-options [aria-pressed="true"]')).toHaveLength(0);
+    for (const label of ['分数加减', '分数乘除'])
+      await wrapper
+        .findAll('.journey-module-options button')
+        .find((item) => item.text().includes(label))
+        .trigger('keydown', { key: 'Enter' });
+    await wrapper.get('[data-test="journey-save"]').trigger('keydown', { key: 'Enter' });
+    await flushPromises();
+    expect(store.active.journey.moduleIds).toEqual(['fraction-add-subtract', 'fraction-multiply-divide']);
+    expect(store.state.attempts).toHaveLength(0);
+    expect(document.activeElement).toBe(wrapper.get('#learning-journey-panel').element);
+    const saved = store.exportData();
+    await button(t('learning.k1m')).trigger('keydown', { key: 'Enter' });
+    expect(wrapper.findAll('.journey-module-options [aria-pressed="true"]')).toHaveLength(2);
+    await button(t('learning.k8s')).trigger('keydown', { key: 'Enter' });
+    expect(store.exportData()).toBe(saved);
+  });
+  it('stopping reveals a primary resume action before the question and preserves original answers', async () => {
+    const store = useConversationLearningStore();
+    store.start('12 + 8');
+    store.submit('20', true);
+    const originals = JSON.stringify(store.state.attempts),
+      wrapper = render(),
+      scroll = vi.fn(),
+      originalScroll = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = scroll;
+    try {
+      const stop = wrapper.findAllComponents(BaseButton).find((button) => button.text().trim() === '停止当前任务');
+      await stop.trigger('keydown', { key: 'Enter' });
+      await flushPromises();
+      const state = wrapper.get('#learning-stop-state');
+      expect(document.activeElement).toBe(state.element);
+      expect(
+        state.element.compareDocumentPosition(wrapper.get('#active-learning-question').element) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      ).toBeTruthy();
+      const resume = state.findComponent(BaseButton);
+      expect(resume.props('variant')).toBe('primary');
+      expect(store.active.stopped).toBe(true);
+      expect(JSON.stringify(store.state.attempts)).toBe(originals);
+      const stopped = store.exportData();
+      store.error = '请求已取消，费用状态请查看模型用量';
+      await flushPromises();
+      expect(document.activeElement).toBe(state.element);
+      expect(store.exportData()).toBe(stopped);
+      await resume.trigger('keydown', { key: 'Enter' });
+      await flushPromises();
+      expect(store.active.stopped).toBe(false);
+      expect(wrapper.find('#learning-stop-state').exists()).toBe(false);
+      expect(document.activeElement).toBe(wrapper.get('#active-learning-question').element);
+      expect(JSON.stringify(store.state.attempts)).toBe(originals);
+    } finally {
+      Element.prototype.scrollIntoView = originalScroll;
+    }
+  });
+  it('resuming a completed group locates its saved results without adding an answer', async () => {
+    const store = useConversationLearningStore();
+    store.start('分数练习');
+    store.configureJourney(store.journeyContext(), {
+      title: '分数练习',
+      startDay: store.todaySummary.day,
+      durationDays: 2,
+      minutes: 15,
+      mode: 'batch',
+      moduleIds: ['fraction-add-subtract']
+    });
+    const group = store.startTraining(store.journeyContext(), 'fraction-add-subtract', 1);
+    store.submitTraining(store.journeyContext(), group.id, ['11/12']);
+    await store.send('停止当前任务');
+    const originals = JSON.stringify(store.state.attempts),
+      wrapper = render();
+    const resume = wrapper.get('#learning-stop-state').findComponent(BaseButton);
+    await resume.trigger('keydown', { key: 'Enter' });
+    await flushPromises();
+    expect(store.active.stopped).toBe(false);
+    expect(document.activeElement).toBe(wrapper.get('#learning-training-panel').element);
+    expect(wrapper.get('#learning-training-panel').text()).toContain('11/12');
+    expect(JSON.stringify(store.state.attempts)).toBe(originals);
+  });
+  it('opening and reopening a module locates its results; revealing grading evidence preserves every fact', async () => {
+    const store = useConversationLearningStore();
+    store.start('分数练习');
+    store.configureJourney(store.journeyContext(), {
+      title: '分数练习',
+      startDay: new Date().toLocaleDateString('en-CA', { timeZone: store.state.timezone }),
+      durationDays: 2,
+      minutes: 15,
+      mode: 'batch',
+      moduleIds: ['fraction-add-subtract', 'fraction-multiply-divide']
+    });
+    const group = store.startTraining(store.journeyContext(), 'fraction-add-subtract', 1);
+    store.submitTraining(store.journeyContext(), group.id, ['22/24']);
+    store.selectTraining(null);
+    const before = store.exportData();
+    const wrapper = render(LearningJourney);
+    const scroll = vi.fn();
+    const originalScroll = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = scroll;
+    try {
+      await wrapper.get('[data-test="journey-module-fraction-add-subtract"]').trigger('keydown', { key: 'Enter' });
+      await flushPromises();
+      const panel = wrapper.get('#learning-training-panel');
+      expect(scroll).toHaveBeenCalledWith({ block: 'start', behavior: 'auto' });
+      expect(document.activeElement).toBe(panel.element);
+      expect(panel.text()).toContain('22/24');
+      expect(panel.text()).not.toContain('fraction-arithmetic-v1');
+      const basis = panel.findAll('button').find((button) => button.text() === t('learning.viewGradingBasis'));
+      await basis.trigger('keydown', { key: 'Enter' });
+      expect(basis.attributes('aria-expanded')).toBe('true');
+      expect(panel.text()).toContain('fraction-arithmetic-v1');
+      await basis.trigger('keydown', { key: 'Enter' });
+      expect(panel.text()).not.toContain('fraction-arithmetic-v1');
+      await wrapper.get('[data-test="journey-module-fraction-add-subtract"]').trigger('keydown', { key: 'Enter' });
+      await flushPromises();
+      expect(document.activeElement).toBe(panel.element);
+      expect(store.exportData()).toBe(before);
+    } finally {
+      Element.prototype.scrollIntoView = originalScroll;
+    }
+  });
   it('greets once, returns to a static idle pose, and does not create a conversation', async () => {
     const store = useConversationLearningStore(),
       wrapper = render();

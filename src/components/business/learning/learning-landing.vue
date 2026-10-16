@@ -1,143 +1,34 @@
 <template>
-  <view v-if="!showGoal">
+  <view>
     <FutureLanding v-if="theme.visualStyle === 'future'" @open="open" />
     <PlayfulLanding v-else @open="open" />
     <slot></slot>
   </view>
-  <LearningShell v-else active="learning" :title="t('learning.kms')" @materials="openMaterials">
-    <template #controls
-      ><BaseButton class="quiet-button" variant="quiet" @tap="showGoal = false">{{
-        t('learning.kh0')
-      }}</BaseButton></template
-    >
-    <view class="landing-welcome"
-      ><text class="landing-title">{{ t('learning.kht') }}</text></view
-    >
-    <BaseCard class="landing-start" surface="glass" padding="none">
-      <BaseInput
-        :model-value="goal"
-        class="field"
-        :placeholder="t('learning.kbo')"
-        maxlength="1000"
-        :label="t('learning.kfl')"
-        multiline
-        @input="goal = $event.detail?.value ?? $event.target?.value ?? ''"
-      />
-      <view class="button-row" :aria-label="t('learning.kqm')">
-        <BaseChip
-          v-for="topic in topics"
-          :key="topic"
-          :class="{ chosen: goal === topic }"
-          :model-value="goal === topic"
-          @update:model-value="goal = topic"
-        >
-          {{ translateRegisteredText('landing', topic) }}
-        </BaseChip>
-      </view>
-      <view class="landing-actions">
-        <BaseButton
-          class="primary"
-          :disabled="learning.busy || !goal.trim()"
-          :aria-disabled="learning.busy || !goal.trim()"
-          variant="primary"
-          @tap="start"
-          >{{ t('learning.kms') }}<BaseIcon name="arrow-right" tone="ink-3" />
-        </BaseButton>
-      </view>
-    </BaseCard>
-    <view class="landing-below" :class="{ 'landing-below-single': !latest }">
-      <BaseCard v-if="latest" class="continue-panel" padding="none">
-        <text class="section-title">{{ t('learning.k40') }}</text>
-        <BaseButton class="continue-session" variant="quiet" @tap="resume">
-          <view class="continue-copy">
-            <text class="continue-title">{{ latest.goal }}</text>
-          </view>
-          <BaseIcon name="arrow-right" tone="ink-3" />
-        </BaseButton>
-      </BaseCard>
-      <LearningOverview :show-navigation="false" />
-    </view>
-    <view class="landing-footer">
-      <BaseButton class="quiet-button" variant="quiet" @tap="emit('legacy')"
-        >{{ t('learning.k1j') }}<BaseIcon name="arrow-right" tone="ink-3" />
-      </BaseButton>
-    </view>
-    <BaseEmpty v-if="error" state="error" :title="learningText(error)" mascot-size="small" />
-
-    <slot></slot>
-  </LearningShell>
 </template>
 <script setup>
-import { learningText } from '@/i18n/learning.js';
-import { t, translateRegisteredText } from '@/i18n/index.js';
-import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
-import BaseCard from '@/components/base/base-card/base-card.vue';
-import BaseButton from '@/components/base/base-button/base-button.vue';
-import BaseInput from '@/components/base/base-input/base-input.vue';
-import BaseChip from '@/components/base/base-chip/base-chip.vue';
-
-import { computed, ref } from 'vue';
-import LearningShell from './learning-shell.vue';
-import LearningOverview from './learning-overview.vue';
-import PlayfulLanding from './playful-landing.vue';
 import FutureLanding from './future-landing.vue';
-import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+import PlayfulLanding from './playful-landing.vue';
 import { useThemeStore } from '@/stores/modules/theme.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
-import { LEARNING_START_TOPICS } from '@/services/learning/learning-domain.js';
-const emit = defineEmits(['legacy']);
-const learning = useConversationLearningStore();
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+import { safeNavigateTo } from '@/utils/safe-navigate.js';
+defineEmits(['legacy']);
 const theme = useThemeStore();
-const goal = ref('');
-const topics = LEARNING_START_TOPICS;
-const error = ref('');
-const showGoal = ref(false);
-const latest = computed(() => learning.state.conversations.at(-1));
-function openLearning() {
-  safeNavigateTo('/pages/learning/index');
-}
-function openMaterials() {
-  safeNavigateTo('/pages/learning/index?panel=materials');
-}
-function openAccount() {
-  safeNavigateTo('/pages/profile/index');
-}
+const learning = useConversationLearningStore();
 function open(target) {
   if (target === 'start') {
-    showGoal.value = true;
+    learning.selectedConversationId = null;
+    safeNavigateTo('/pages/learning/index');
     return;
   }
   if (target === 'desktop' || target === 'web') {
     theme.setVisualStyle(target === 'desktop' ? 'future' : 'playful');
     return;
   }
-  if (target === 'materials') {
-    openMaterials();
+  if (target === 'materials' || target === 'connections') {
+    safeNavigateTo('/pages/learning/index?panel=' + target);
     return;
   }
-  if (target === 'connections') {
-    safeNavigateTo('/pages/learning/index?panel=connections');
-    return;
-  }
-  if (target === 'account') {
-    openAccount();
-    return;
-  }
-  safeNavigateTo('/pages/' + target + '/index');
-}
-function start() {
-  if (learning.busy || !goal.value.trim()) return;
-  try {
-    learning.start(goal.value);
-    openLearning();
-  } catch (e) {
-    error.value = e.message;
-  }
-}
-function resume() {
-  if (learning.busy || !latest.value) return;
-  learning.selectedConversationId = latest.value.id;
-  openLearning();
+  safeNavigateTo(target === 'account' ? '/pages/profile/index' : '/pages/' + target + '/index');
 }
 </script>
 <style scoped>

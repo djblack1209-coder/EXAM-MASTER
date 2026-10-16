@@ -34,6 +34,128 @@ afterEach(() => {
   fixture = undefined;
 });
 describe('开发工具链升级的真实依赖兼容', () => {
+  it('真实Rollup模块图拒绝内部/外部braces，普通模块仍可产出', () => {
+    const probe = spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `
+import assert from 'node:assert/strict';
+import { rollup } from 'rollup';
+import { guardRuntimeBuildDependencies } from './vite.config.js';
+const guard = guardRuntimeBuildDependencies();
+assert.equal(guard.apply, 'build');
+const paths = [
+  'braces',
+  'braces/lib/compile.js',
+  '\\0braces?commonjs-external',
+  '/project/node_modules/braces/index.js',
+  '/project/node_modules/.pnpm/braces@3.0.3/node_modules/braces/lib/expand.js',
+  'C:\\\\project\\\\node_modules\\\\braces\\\\index.js'
+];
+for (const target of [...paths, 'external:braces', 'safe']) {
+  const external = target === 'external:braces';
+  const safe = target === 'safe';
+  let bundle;
+  try {
+    bundle = await rollup({
+      input: 'entry',
+      onwarn() {},
+      onLog() {},
+      plugins: [{
+        name: 'owned-runtime-fixture',
+        resolveId(id) {
+          if (id === 'entry') return id;
+          if (id === 'fixture') return external ? { id: 'braces', external: true } : target;
+        },
+        load(id) {
+          if (id === 'entry') return safe
+            ? 'export const original = "原答保持";'
+            : 'export { original } from "fixture";';
+          return 'export const original = "fixture";';
+        }
+      }, guard]
+    });
+    const result = bundle.generate({ format: 'es' });
+    if (safe) assert.match((await result).output[0].code, /原答保持/);
+    else await assert.rejects(result, /Unresolved braces dependency/);
+  } finally {
+    await bundle?.close();
+  }
+}
+process.stdout.write(JSON.stringify({ rejected: paths.length + 1, safe: true }));`
+      ],
+      {
+        timeout: 10000,
+        maxBuffer: 4096,
+        encoding: 'utf8',
+        env: { PATH: process.env.PATH, NODE_ENV: 'test', WENLI_ISOLATED_BUILD: '1' }
+      }
+    );
+    expect(probe.error).toBeUndefined();
+    expect(probe.status, probe.stderr).toBe(0);
+    expect(JSON.parse(probe.stdout.trim().split('\n').at(-1))).toEqual({ rejected: 7, safe: true });
+  });
+
+  it('真实H5动态插槽可更新、清空和重挂，旧只读标记错误可复现', () => {
+    const probe = spawnSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `
+import { Window } from 'happy-dom';
+import Module, { createRequire } from 'node:module';
+import path from 'node:path';
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import { adaptH5SlotFlags } from './vite.config.js';
+const require = createRequire(import.meta.url);
+const file = require.resolve('@dcloudio/uni-h5-vue/dist/vue.runtime.cjs.js');
+const original = fs.readFileSync(file, 'utf8');
+const patched = adaptH5SlotFlags(true).transform(original, file);
+assert.equal(adaptH5SlotFlags(false).transform(original, file), undefined);
+assert.equal(adaptH5SlotFlags(true).transform(original, '/other-runtime.js'), undefined);
+const results = [];
+for (const adapted of [false, true]) {
+  const window = new Window();
+  for (const key of ['window','document','Node','Element','HTMLElement','SVGElement','ShadowRoot','navigator'])
+    Object.defineProperty(globalThis, key, { value: window[key], configurable: true });
+  globalThis.__UNI_FEATURE_WXS__ = false;
+  const runtime = new Module(file);
+  runtime.filename = file;
+  runtime.paths = Module._nodeModulePaths(path.dirname(file));
+  runtime._compile(adapted ? patched : original, file);
+  const Vue = runtime.exports;
+  const View = { setup(_, ctx) { return () => Vue.h('div', null, [Vue.renderSlot(ctx.slots, 'default')]); } };
+  const root = document.createElement('div');
+  document.body.append(root);
+  const slots = value => ({ default: () => value ? [Vue.h('p', value)] : [], _: 2 });
+  Vue.render(Vue.h(View, null, slots('原答6/8')), root);
+  const update = () => Vue.render(Vue.h(View, null, slots('反馈与变式')), root);
+  if (!adapted) assert.throws(update, /read only property '_'/);
+  else {
+    update();
+    assert.equal(root.textContent, '反馈与变式');
+    Vue.render(Vue.h(View, null, slots('')), root);
+    assert.equal(root.textContent, '');
+    Vue.render(null, root);
+    Vue.render(Vue.h(View, null, slots('重开原答6/8')), root);
+    assert.equal(root.textContent, '重开原答6/8');
+    Vue.render(null, root);
+  }
+  await window.happyDOM.abort();
+  results.push({ adapted });
+}
+process.stdout.write(JSON.stringify(results));`
+      ],
+      { timeout: 10000, maxBuffer: 4096, encoding: 'utf8', env: { PATH: process.env.PATH, NODE_ENV: 'test' } }
+    );
+    expect(probe.error).toBeUndefined();
+    expect(probe.status, probe.stderr).toBe(0);
+    expect(JSON.parse(probe.stdout)).toHaveLength(2);
+  });
   it.each(['\r', '\n', '\t', '\f', ' '])('真实SSR拒绝%s拆分属性，合法中文与转义值保持', (space) => {
     const attributes = serverRenderer.ssrRenderAttrs({
       [`data-first${space}data-second`]: 'marker',

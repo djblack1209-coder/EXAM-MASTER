@@ -117,7 +117,7 @@ watch(
 }
 .density-heading {
   display: block;
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-ui-emphasis);
 }
 .density-actions {
   display: flex;
