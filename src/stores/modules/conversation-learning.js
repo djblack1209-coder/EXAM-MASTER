@@ -93,6 +93,10 @@ import {
 } from '../../../laf-backend/functions/_shared/learning-grammar-contract.js';
 import { HISTORY_PACKAGE } from '../../../laf-backend/functions/_shared/learning-history.js';
 import {
+  searchLearningRecords,
+  learningRecordTarget
+} from '../../../laf-backend/functions/_shared/learning-record-search.js';
+import {
   observeTeaching,
   requestedTeachingMethod
 } from '../../../laf-backend/functions/_shared/learning-teaching-observation.js';
@@ -109,7 +113,8 @@ import {
   dayKey,
   learningTaskContext,
   createMaterialObjectiveQuestion,
-  createMaterialObjectiveVariant
+  createMaterialObjectiveVariant,
+  emptyLearningState
 } from '@/services/learning/learning-domain.js';
 import {
   userDirective,
@@ -331,6 +336,51 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   );
   const active = computed(() => state.value.conversations.find((c) => c.id === selectedConversationId.value));
   const conversationLocation = shallowRef(null);
+  const recordSnapshotContext = ref(recordContext());
+  watch(
+    state,
+    () => {
+      recordSnapshotContext.value = recordContext();
+    },
+    { flush: 'sync' }
+  );
+  const recordLocation = shallowRef(null);
+  watch(
+    [() => recordContext(), selectedConversationId, () => active.value?.activeQuestionKey],
+    () => {
+      recordLocation.value = null;
+    },
+    { flush: 'sync' }
+  );
+  const locatedRecord = computed(() => {
+    if (!recordLocation.value || recordLocation.value.context !== recordContext()) return null;
+    try {
+      return learningRecordTarget(state.value, recordLocation.value.id);
+    } catch {
+      return null;
+    }
+  });
+  function searchRecords(query, options) {
+    const context = recordContext();
+    const current = context === recordSnapshotContext.value && state.value.owner === (getUserId() || 'guest');
+    return {
+      ...searchLearningRecords(current ? state.value : emptyLearningState(getUserId() || 'guest'), query, options),
+      context: current ? context : null
+    };
+  }
+  function openRecord(id, context) {
+    idleRecords();
+    refresh();
+    assert(context && context === recordContext(), 'CONTEXT_CHANGED', '学习记录已变化，请重新搜索');
+    const target = learningRecordTarget(state.value, id);
+    if (target.questionKey) focus(target.questionKey, target.conversationId);
+    locateConversation(target.conversationId);
+    recordLocation.value = { id: target.id, context };
+    return target;
+  }
+  function dismissLocatedRecord() {
+    recordLocation.value = null;
+  }
   const timeline = computed(() => conversationTimeline(state.value, selectedConversationId.value, { dayKey }));
   watch(
     [() => JSON.stringify([state.value.owner, recordContext()]), selectedConversationId],
@@ -3524,6 +3574,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     };
   }
   return {
+    searchRecords,
+    openRecord,
+    locatedRecord,
+    dismissLocatedRecord,
     state,
     active,
     activeQuestion,

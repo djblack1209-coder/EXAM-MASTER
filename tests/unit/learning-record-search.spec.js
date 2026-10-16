@@ -1,0 +1,218 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { createPinia, getActivePinia, setActivePinia } from 'pinia';
+import { flushPromises, mount } from '@vue/test-utils';
+import { emptyLearningState } from '@/services/learning/learning-domain.js';
+import {
+  searchLearningRecords,
+  learningRecordTarget
+} from '../../laf-backend/functions/_shared/learning-record-search.js';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+import { learningWriteLease } from '@/services/learning/learning-write-lease.js';
+import { initI18n, setLanguage } from '@/i18n/index.js';
+import LearningPage from '@/pages/learning/index.vue';
+import LearningShell from '@/components/business/learning/learning-shell.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import '@/pages/learning/messages.js';
+vi.mock('@dcloudio/uni-app', () => ({ onLoad: () => {}, onShow: () => {}, onHide: () => {}, onBackPress: () => {} }));
+const clone = (value) => JSON.parse(JSON.stringify(value));
+const wrappers = [];
+beforeEach(() => {
+  uni.clearStorageSync();
+  setActivePinia(createPinia());
+  initI18n();
+});
+afterEach(() => {
+  wrappers
+    .splice(0)
+    .reverse()
+    .forEach((wrapper) => wrapper.unmount());
+  for (const store of getActivePinia()?._s.values() || []) store.$dispose();
+  learningWriteLease.release();
+  setLanguage('zh-CN');
+  vi.restoreAllMocks();
+});
+function fixture() {
+  const state = emptyLearningState('search-owner');
+  state.conversations = [
+    { id: 'math', goal: '方程练习', at: 1000, activeQuestionKey: 'math-q@2' },
+    { id: 'writing', goal: 'English writing', at: 2000, activeQuestionKey: 'essay@1' }
+  ];
+  state.questions = [
+    { id: 'math-q', version: 1, prompt: '解方程 x+3=5', subject: '数学' },
+    { id: 'math-q', version: 2, prompt: '解方程 x+4=7', subject: '数学' },
+    { id: 'essay', version: 1, prompt: '说明阅读材料中的观点', subject: '语文' },
+    { id: 'unlinked', version: 1, prompt: '未关联题目不能被任意会话搜到' }
+  ];
+  state.attempts = [
+    {
+      id: 'old',
+      conversationId: 'math',
+      questionKey: 'math-q@1',
+      answer: ' x=2\n',
+      at: 3000,
+      hints: [],
+      grade: { status: 'reliable', outcome: 'correct' }
+    },
+    {
+      id: 'wrong',
+      conversationId: 'math',
+      questionKey: 'math-q@2',
+      answer: 'x=2',
+      at: 4000,
+      hints: [],
+      grade: { status: 'reliable', outcome: 'wrong' }
+    },
+    {
+      id: 'essay-answer',
+      conversationId: 'writing',
+      questionKey: 'essay@1',
+      answer: '开头\n' + '保留原文'.repeat(1000) + '\nUniqueEvidence 末尾  ',
+      at: 5000,
+      hints: [{ id: 'help' }],
+      grade: { status: 'pending', outcome: null }
+    }
+  ];
+  return state;
+}
+describe('owner-local learning record search', () => {
+  it('finds goals, exact question versions, subjects and full original answers across disciplines without mutation', () => {
+    const state = fixture(),
+      before = clone(state);
+    expect(searchLearningRecords(state, 'ENGLISH').items[0].kind).toBe('conversation');
+    expect(searchLearningRecords(state, 'x+3=5').items[0]).toMatchObject({ questionKey: 'math-q@1', attemptId: 'old' });
+    expect(searchLearningRecords(state, '语文').items[0].attemptId).toBe('essay-answer');
+    const result = searchLearningRecords(state, 'uniqueevidence');
+    expect(result.items[0].excerpt).toContain('UniqueEvidence');
+    expect(learningRecordTarget(state, result.items[0].id).answer).toBe(state.attempts[2].answer);
+    expect(state).toEqual(before);
+  });
+  it('normalizes width, case and whitespace for matching while treating regex and markup literally', () => {
+    const state = fixture();
+    expect(searchLearningRecords(state, 'Ｘ＝２').items).toHaveLength(2);
+    expect(searchLearningRecords(state, '开头 保留原文').items).toHaveLength(1);
+    for (const input of ['.*', '[x]', '<script>']) expect(searchLearningRecords(state, input).total).toBe(0);
+  });
+  it('paginates deterministically without losing or duplicating records', () => {
+    const state = fixture(),
+      all = searchLearningRecords(state, '').items;
+    const pages = all.map((_, offset) => searchLearningRecords(state, '', { offset, limit: 1 }));
+    expect(pages.flatMap((page) => page.items)).toEqual(all);
+    expect(new Set(all.map((row) => row.id)).size).toBe(all.length);
+    expect(pages.at(-1).hasMore).toBe(false);
+    expect(pages[0].hasMore).toBe(true);
+  });
+  it('includes unsubmitted linked questions but never invents an answer or shares unlinked questions', () => {
+    const state = fixture();
+    state.attempts = [];
+    state.events = [
+      { type: 'question.focus', at: 3000, data: { conversationId: 'math', questionKey: 'math-q@1' } },
+      { type: 'question.focus', at: 3000, data: { conversationId: 'missing', questionKey: 'unlinked@1' } }
+    ];
+    expect(searchLearningRecords(state, 'x+3=5').items[0]).toMatchObject({ kind: 'question', attemptId: null });
+    expect(searchLearningRecords(state, '未关联').items).toEqual([]);
+    expect(() => learningRecordTarget(state, '["other",null,null]')).toThrow();
+  });
+  it.each([{ limit: 0 }, { limit: 51 }, { offset: -1 }, { offset: 0.5 }])('rejects an invalid page %j', (options) => {
+    expect(() => searchLearningRecords(fixture(), '', options)).toThrow();
+  });
+  it('rejects invalid query types and lengths, and returns a real empty state', () => {
+    expect(searchLearningRecords(emptyLearningState('other-owner'), 'UniqueEvidence').total).toBe(0);
+    for (const query of [null, {}, 'x'.repeat(121)]) expect(() => searchLearningRecords(fixture(), query)).toThrow();
+  });
+});
+async function storeRecords() {
+  const store = useConversationLearningStore();
+  await store.send('题目：阅读这段文字并说明你的理由', { chatEntry: true });
+  const first = store.submit('第一稿\n保留完整理由与末尾空格  ', true, 'search-first');
+  store.submit('第二稿\n修订理由', true, 'search-second');
+  store.start('12 + 8');
+  store.submit('19', true, 'search-math');
+  return { store, first };
+}
+describe('record location uses canonical facts', () => {
+  it('rejects a pre-clear result even when a same-owner restore reuses its IDs, and supports a fresh search', async () => {
+    const { store } = await storeRecords(),
+      result = store.searchRecords('第一稿'),
+      backup = store.exportData();
+    store.openRecord(result.items[0].id, result.context);
+    store.deleteData();
+    expect(store.locatedRecord).toBeNull();
+    store.restoreData(backup, await store.previewRestore(backup));
+    const restored = store.exportData();
+    expect(() => store.openRecord(result.items[0].id, result.context)).toThrow();
+    expect(store.exportData()).toBe(restored);
+    const fresh = store.searchRecords('第一稿');
+    expect(fresh.items).toHaveLength(1);
+    store.openRecord(fresh.items[0].id, fresh.context);
+    expect(store.locatedRecord.answer).toContain('第一稿');
+  });
+  it('only navigates on explicit opening, keeps a selected old original and stopped status, and never requests a model', async () => {
+    const { store, first } = await storeRecords();
+    const session = store.state.conversations.find((row) => row.id === first.conversationId);
+    store.commit('task.stop', { conversationId: session.id });
+    const before = clone(store.state),
+      request = vi.spyOn(uni, 'request');
+    const result = store.searchRecords('第一稿');
+    expect(store.state).toEqual(before);
+    store.openRecord(result.items[0].id, result.context);
+    expect(store.active.id).toBe(first.conversationId);
+    expect(store.active.stopped).toBe(true);
+    expect(store.locatedRecord).toMatchObject({
+      attemptId: first.id,
+      answer: first.answer,
+      grade: { status: 'pending' }
+    });
+    for (const key of ['attempts', 'questions', 'profile', 'reviews', 'plans'])
+      expect(store.state[key]).toEqual(before[key]);
+    store.dismissLocatedRecord();
+    expect(store.locatedRecord).toBeNull();
+    expect(request).not.toHaveBeenCalled();
+  });
+  it('rejects stale account results before navigation and hides selected originals on account change', async () => {
+    const { store } = await storeRecords(),
+      result = store.searchRecords('第一稿');
+    store.openRecord(result.items[0].id, result.context);
+    uni.setStorageSync('EXAM_USER_ID', 'different-search-owner');
+    expect(store.searchRecords('第一稿').items).toEqual([]);
+    store.refresh();
+    const before = clone(store.state);
+    expect(store.locatedRecord).toBeNull();
+    expect(() => store.openRecord(result.items[0].id, result.context)).toThrow();
+    expect(store.state).toEqual(before);
+    expect(store.searchRecords('第一稿').items).toEqual([]);
+  });
+  it('renders the exact selected original as text and searching keeps facts unchanged in both languages', async () => {
+    const { store, first } = await storeRecords();
+    const wrapper = mount(LearningPage, {
+      attachTo: document.body,
+      global: {
+        stubs: {
+          view: { template: '<div><slot /></div>' },
+          text: { template: '<span><slot /></span>' },
+          BaseIcon: true,
+          PrivacyPopup: true,
+          LearningLab: true
+        }
+      }
+    });
+    wrappers.push(wrapper);
+    const shell = wrapper.findComponent(LearningShell),
+      input = shell.findAllComponents(BaseInput).find((row) => Number(row.props('maxlength')) === 120);
+    const before = store.exportData();
+    input.vm.$emit('update:modelValue', '第一稿');
+    await flushPromises();
+    expect(store.exportData()).toBe(before);
+    const row = shell.findAllComponents(BaseButton).find((button) => button.text().includes('第一稿'));
+    expect(row).toBeTruthy();
+    row.vm.$emit('tap');
+    await flushPromises();
+    expect(wrapper.get('[data-test="located-original-answer"]').element.textContent).toBe(first.answer);
+    const afterOpen = store.exportData();
+    setLanguage('en');
+    await flushPromises();
+    expect(wrapper.get('#learning-record-original').text()).toContain('Pending review');
+    expect(wrapper.get('[data-test="located-original-answer"]').element.textContent).toBe(first.answer);
+    expect(store.exportData()).toBe(afterOpen);
+  });
+});

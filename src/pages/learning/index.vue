@@ -389,6 +389,33 @@
         >
 
         <BaseCard
+          v-if="learning.locatedRecord?.attemptId"
+          id="learning-record-original"
+          tabindex="-1"
+          class="record-original"
+          :aria-label="t('learning.records.original')"
+          :title="t('learning.records.original')"
+          :subtitle="learning.locatedRecord.day"
+        >
+          <view class="form">
+            <text class="message-content" selectable>{{ learning.locatedRecord.prompt }}</text>
+            <text class="message-content" selectable data-test="located-original-answer">{{
+              learning.locatedRecord.answer
+            }}</text>
+            <view class="button-row">
+              <BaseTag :tone="learning.locatedRecord.grade?.status === 'reliable' ? 'violet' : 'neutral'">{{
+                t(
+                  `learning.records.${learning.locatedRecord.grade?.status === 'reliable' ? learning.locatedRecord.grade.outcome : 'pending'}`
+                )
+              }}</BaseTag>
+              <BaseTag v-if="learning.locatedRecord.helped" tone="neutral">{{ t('learning.records.helped') }}</BaseTag>
+              <BaseButton variant="quiet" @tap="learning.dismissLocatedRecord()">{{
+                t('learning.records.close')
+              }}</BaseButton>
+            </view>
+          </view>
+        </BaseCard>
+        <BaseCard
           v-if="learning.activeQuestion && !learning.batchTrainingActive"
           id="active-learning-question"
           tabindex="-1"
@@ -2194,6 +2221,17 @@ watch(
     revealLearningTarget(id, () => learning.conversationLocation === location);
   },
   { immediate: true }
+);
+watch(
+  () => learning.locatedRecord,
+  async (record) => {
+    if (!record?.questionKey) return;
+    await nextTick();
+    revealLearningTarget(
+      record.attemptId ? 'learning-record-original' : 'active-learning-question',
+      () => learning.locatedRecord?.id === record.id
+    );
+  }
 );
 function revealLearningTarget(id, isCurrent = () => true) {
   if (!isCurrent()) return;
@@ -4103,6 +4141,13 @@ onUnmounted(() => {
 });
 </script>
 <style scoped>
+.record-original {
+  margin-bottom: var(--s-5);
+  scroll-margin-top: var(--s-6);
+}
+.record-original .form {
+  margin-top: 0;
+}
 .sentence-saved-answer {
   display: block;
   margin-bottom: var(--s-2);
