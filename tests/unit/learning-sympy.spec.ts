@@ -19,6 +19,9 @@ const processes = vi.hoisted(() => ({ spawn: vi.fn(), execFile: vi.fn() }));
 vi.mock('node:child_process', () => ({ ...processes, default: processes }));
 const scope = { ownerId: 'sympy-owner', conversationId: 'task-a', questionKey: 'q@1', attemptId: 'answer-a' };
 const runtime = { python: '/trusted/python', packages: '/trusted/packages' };
+// This subprocess only checks rejection before the optional runtime loads. Allow OS startup contention;
+// the adapter's independent 5s wall/3s CPU limits remain covered below and are not changed.
+const validationProcessTimeoutMs = 10000;
 function context(goal = '解方程 x^2-2=0', answer = 'sqrt(2)') {
   let state = emptyLearningState(scope.ownerId);
   for (const op of [
@@ -105,50 +108,54 @@ describe.skipIf(process.platform === 'win32')(
           input.domain = 'complex';
         }
       ]
-    ])('rejects %s with no installed SymPy dependency', async (_label, errorCode, change) => {
-      const { spawnSync } = await vi.importActual<typeof import('node:child_process')>('node:child_process');
-      const packages = mkdtempSync(join(tmpdir(), 'yozi-sympy-validation-'));
-      const input = {
-        left: {
-          numerator: [
-            [-2, 1],
-            [0, 1],
-            [1, 1]
-          ],
-          denominator: [[1, 1]],
-          restrictions: []
-        },
-        right: { numerator: [[0, 1]], denominator: [[1, 1]], restrictions: [] },
-        domain: 'real'
-      };
-      (change as (value: any) => void)(input);
-      try {
-        const result = spawnSync(
-          '/usr/bin/python3',
-          [
-            '-I',
-            '-S',
-            '-B',
-            fileURLToPath(new URL('../../laf-backend/functions/_shared/learning-sympy-worker.py', import.meta.url)),
-            packages
-          ],
-          {
-            input: JSON.stringify(input),
-            encoding: 'utf8',
-            env: { PATH: '/usr/bin:/bin', LANG: 'C.UTF-8' },
-            timeout: 2000,
-            maxBuffer: 16384
-          }
-        );
-        expect(result.error).toBeUndefined();
-        expect(result.status).toBe(1);
-        expect(result.stdout).toBe('');
-        expect(result.stderr).toContain(`ValueError: ${errorCode}`);
-        expect(result.stderr).not.toContain('ModuleNotFoundError');
-      } finally {
-        rmSync(packages, { recursive: true });
-      }
-    });
+    ])(
+      'rejects %s with no installed SymPy dependency',
+      async (_label, errorCode, change) => {
+        const { spawnSync } = await vi.importActual<typeof import('node:child_process')>('node:child_process');
+        const packages = mkdtempSync(join(tmpdir(), 'yozi-sympy-validation-'));
+        const input = {
+          left: {
+            numerator: [
+              [-2, 1],
+              [0, 1],
+              [1, 1]
+            ],
+            denominator: [[1, 1]],
+            restrictions: []
+          },
+          right: { numerator: [[0, 1]], denominator: [[1, 1]], restrictions: [] },
+          domain: 'real'
+        };
+        (change as (value: any) => void)(input);
+        try {
+          const result = spawnSync(
+            '/usr/bin/python3',
+            [
+              '-I',
+              '-S',
+              '-B',
+              fileURLToPath(new URL('../../laf-backend/functions/_shared/learning-sympy-worker.py', import.meta.url)),
+              packages
+            ],
+            {
+              input: JSON.stringify(input),
+              encoding: 'utf8',
+              env: { PATH: '/usr/bin:/bin', LANG: 'C.UTF-8' },
+              timeout: validationProcessTimeoutMs,
+              maxBuffer: 16384
+            }
+          );
+          expect(result.error).toBeUndefined();
+          expect(result.status).toBe(1);
+          expect(result.stdout).toBe('');
+          expect(result.stderr).toContain(`ValueError: ${errorCode}`);
+          expect(result.stderr).not.toContain('ModuleNotFoundError');
+        } finally {
+          rmSync(packages, { recursive: true });
+        }
+      },
+      15000
+    );
   }
 );
 function child() {
