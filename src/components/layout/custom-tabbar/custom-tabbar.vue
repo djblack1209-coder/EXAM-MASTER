@@ -481,4 +481,9 @@ onBeforeUnmount(() => {
     background: var(--paper);
   }
 }
+@media (min-width: 768px) {
+  .tabbar-position-wrapper {
+    display: none;
+  }
+}
 </style>

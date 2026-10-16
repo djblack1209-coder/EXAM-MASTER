@@ -1,20 +1,15 @@
 <template>
-  <view
+  <LearningShell
     ref="keyboardRoot"
     class="yozi-page"
+    active="question-bank"
+    :title="$t('pages.bank')"
     :style="$yoziInsets"
     :class="['qb-page', { 'dark-mode': isDark, 'theme-light': !isDark }]"
   >
-    <view class="navbar">
-      <view class="navbar-inner" :style="{ paddingTop: statusBarHeight + 'px' }">
-        <BaseButton class="nav-back" :label="$t('ui.back')" data-learning-toggle variant="secondary" @tap="goBack"
-          ><BaseIcon name="arrow-left"
-        /></BaseButton>
-        <text class="nav-title">{{ t('quiz.copy102') }}</text>
-        <view class="nav-right" />
-      </view>
-    </view>
-
+    <template #controls
+      ><BaseButton icon="arrow-left" icon-only variant="quiet" :label="$t('ui.back')" @tap="goBack"
+    /></template>
     <scroll-view class="scroll-body" scroll-y>
       <view class="paper-hero">
         <text class="hero-title">{{ t('quiz.copy103') }}</text>
@@ -235,10 +230,11 @@
 
       <view class="bottom-spacer" />
     </scroll-view>
-  </view>
+  </LearningShell>
 </template>
 
 <script setup>
+import LearningShell from '@/components/business/learning/learning-shell.vue';
 import BaseStat from '@/components/base/base-stat/base-stat.vue';
 const uiText = (value) => translateRegisteredText('quiz', value);
 import '@/pages/practice-sub/messages.js';
@@ -254,7 +250,7 @@ import { safeNavigateBack, safeNavigateTo } from '@/utils/safe-navigate';
 import { getPracticeNavigationTree } from '@/config/bank-registry.js';
 import { loadBankData } from './bank-data-loader.js';
 import { importFlashcardsToBank } from '@/utils/flashcard-adapter.js';
-import { getStatusBarHeight } from '@/utils/core/system.js';
+
 import storageService from '@/services/storageService.js';
 import { getUserId, getToken } from '@/services/auth-storage.js';
 import { toast } from '@/utils/toast.js';
@@ -278,7 +274,6 @@ onBeforeUnmount(() => {
   uni.$off('themeUpdate', _themeHandler);
 });
 
-const statusBarHeight = ref(getStatusBarHeight());
 const loadingBankId = ref('');
 let pageActive = true;
 let loadSequence = 0;

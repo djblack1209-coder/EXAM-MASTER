@@ -1,5 +1,10 @@
 <template>
-  <view class="yozi-page container" :class="{ 'dark-mode': isDark, 'theme-light': !isDark, 'wot-theme-dark': isDark }">
+  <LearningShell
+    class="yozi-page container"
+    active="practice"
+    :title="$t('pages.quiz')"
+    :class="{ 'dark-mode': isDark, 'theme-light': !isDark, 'wot-theme-dark': isDark }"
+  >
     <view class="aurora-bg" />
 
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
@@ -598,7 +603,7 @@
 
     <!-- 离线状态指示器 -->
     <OfflineIndicator :auto-show="true" position="top" :auto-hide-delay="0" />
-  </view>
+  </LearningShell>
   <CustomModal
     v-if="pageDialog"
     :visible="true"
@@ -617,6 +622,7 @@
 </template>
 
 <script>
+import LearningShell from '@/components/business/learning/learning-shell.vue';
 import '@/pages/practice-sub/messages.js';
 import { t, translateRegisteredText } from '@/i18n/index.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
@@ -780,6 +786,7 @@ function rejectQuizResume(page) {
 
 export default {
   components: {
+    LearningShell,
     BaseButton,
     BaseChip,
     BaseOptions,
