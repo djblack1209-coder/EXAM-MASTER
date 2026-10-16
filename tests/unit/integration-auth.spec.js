@@ -328,11 +328,8 @@ describe('全链路: 启动 -> 登录 -> 首页', () => {
     it('restoreUserInfo - 从缓存恢复用户信息', async () => {
       // 预设缓存数据
       global.__mockStorage = {
-        _enc_EXAM_TOKEN: '',
         EXAM_TOKEN: 'cached_token_abc',
-        _enc_EXAM_USER_INFO: '',
         EXAM_USER_INFO: { _id: 'user_001', nickname: '考研人' },
-        _enc_EXAM_USER_ID: '',
         EXAM_USER_ID: 'user_001'
       };
 
@@ -349,7 +346,6 @@ describe('全链路: 启动 -> 登录 -> 首页', () => {
 
     it('restoreUserInfo - 仅有 userId 也能恢复基本信息', async () => {
       global.__mockStorage = {
-        _enc_EXAM_USER_ID: '',
         EXAM_USER_ID: 'user_002'
       };
 

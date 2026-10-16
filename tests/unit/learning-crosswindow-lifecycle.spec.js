@@ -286,7 +286,7 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
     'actual encrypted login revokes an in-flight read on %s and rejects its late result',
     async (change) => {
       const pending = requests();
-      storageService.save('EXAM_USER_ID', 'synthetic-second-owner', true);
+      storageService.saveLoginSession({ userId: 'synthetic-second-owner', token: 'fixture-peer', userInfo: {} });
       const peerIdentity = uni.getStorageSync('_enc_EXAM_USER_ID');
       storageService.save('EXAM_USER_ID', 'synthetic-crosswindow-owner', true);
       storageService.saveLoginSession({

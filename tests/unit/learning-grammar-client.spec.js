@@ -96,7 +96,7 @@ it('explicit computation saves one source-bound help message, preserves raw answ
 it('requires explicit consent and a logged-in owner', async () => {
   await expect(store.requestGrammarHelp(false)).rejects.toThrow('确认');
   expect(api.compute).not.toHaveBeenCalled();
-  uni.removeStorageSync('EXAM_TOKEN');
+  storageService.remove('EXAM_TOKEN', true);
   await expect(store.requestGrammarHelp(true)).rejects.toThrow('登录');
   expect(api.compute).not.toHaveBeenCalled();
 });
@@ -135,7 +135,7 @@ it.each(['stop', 'cancel', 'token', 'owner', 'new-answer', 'switch-task'])(
     await vi.waitFor(() => expect(resolve).toBeTypeOf('function'));
     if (kind === 'stop') store.commit('task.stop', { conversationId: store.active.id });
     if (kind === 'cancel') store.cancel();
-    if (kind === 'token') uni.setStorageSync('EXAM_TOKEN', 'changed');
+    if (kind === 'token') storageService.save('EXAM_TOKEN', 'changed', true);
     if (kind === 'owner') {
       storageService.saveLoginSession({ userId: 'other', token: 'fixture-peer-token', userInfo: {} });
       store.refresh();

@@ -225,7 +225,8 @@ describe('question bank start flow', () => {
     const wrapper = mountQuestionBank();
     await flushPromises();
     await wrapper.find('.slot-action').trigger('tap');
-    if (change === 'owner') uni.setStorageSync('EXAM_USER_ID', 'owner-b');
+    if (change === 'owner')
+      storageService.saveLoginSession({ userId: 'owner-b', token: 'session-b', userInfo: { id: 'owner-b' } });
     else storageService.save('EXAM_TOKEN', 'session-b');
     const before = JSON.stringify(global.__mockStorage);
     reply({ cards: [{ id: 0, question: '完整零号题目', options: ['A.甲', 'B.乙'], answer: 'B' }] });

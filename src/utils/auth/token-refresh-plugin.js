@@ -1,4 +1,4 @@
-import { captureSession, assertSession } from '@/services/auth-storage.js';
+import { captureSession, assertSession, checkSession } from '@/services/auth-storage.js';
 /**
  * Token 刷新插件
  * 管理 Token 的存取、过期检测、自动刷新和并发去重
@@ -43,19 +43,22 @@ class TokenRefreshPlugin {
   /**
    * 保存 Token（通过 storageService 加密存储）
    */
-  saveTokens(accessToken, refreshToken, expiresIn, session = captureSession()) {
+  async saveTokens(accessToken, refreshToken, expiresIn, session = captureSession()) {
     assertSession(session);
     try {
-      storageService.save(TOKEN_KEY, accessToken, true, session);
+      if (!(await storageService.save(TOKEN_KEY, accessToken, true, session))) throw new Error('登录状态未保存');
       if (refreshToken) {
-        storageService.save(REFRESH_TOKEN_KEY, refreshToken, true, session);
+        if (!(await storageService.save(REFRESH_TOKEN_KEY, refreshToken, true, session)))
+          throw new Error('登录状态未保存');
       }
       if (expiresIn) {
         const expireTime = Date.now() + expiresIn * 1000;
-        storageService.save(TOKEN_EXPIRE_KEY, expireTime, true, session);
+        if (!(await storageService.save(TOKEN_EXPIRE_KEY, expireTime, true, session)))
+          throw new Error('登录状态未保存');
       }
+      return true;
     } catch (_e) {
-      // 静默
+      return false;
     }
   }
 
@@ -159,11 +162,13 @@ class TokenRefreshPlugin {
         const newRefreshToken = result.refreshToken || result.refresh_token;
         const expiresIn = result.expiresIn || result.expires_in || 3600;
 
-        this.saveTokens(newAccessToken, newRefreshToken, expiresIn, session);
+        if (!(await this.saveTokens(newAccessToken, newRefreshToken, expiresIn, session)))
+          throw Object.assign(new Error('登录状态未保存，请重试'), { code: 'STORAGE_UNAVAILABLE' });
         this.refreshRetryCount = 0;
         return newAccessToken;
       } catch (err) {
-        this.refreshRetryCount++;
+        if (!['SESSION_UNAVAILABLE', 'STORAGE_UNAVAILABLE'].includes(err.code) && checkSession(session) === 'current')
+          this.refreshRetryCount++;
         throw err;
       } finally {
         this._refreshPromise = null;

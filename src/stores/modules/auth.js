@@ -1,4 +1,4 @@
-import { captureSession, assertSession, sessionForRequest } from '@/services/auth-storage.js';
+import { captureSession, assertSession, checkSession, sessionForRequest } from '@/services/auth-storage.js';
 /**
  * 认证状态管理
  * 管理 token、登录状态、登录/登出流程
@@ -47,10 +47,15 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const setToken = (newToken, session = captureSession()) => {
     assertSession(session);
-    authLifecycle++;
-    token.value = newToken;
-    syncLoginStatus();
-    storageService.save(APP_CONFIG.cacheKeys.token, newToken, true, session);
+    const finish = (saved) => {
+      if (saved !== true || checkSession(session) !== 'current') return false;
+      authLifecycle++;
+      token.value = newToken;
+      syncLoginStatus();
+      return true;
+    };
+    const saved = storageService.save(APP_CONFIG.cacheKeys.token, newToken, true, session);
+    return saved?.then ? saved.then(finish) : finish(saved);
   };
 
   /**
@@ -105,7 +110,7 @@ export const useAuthStore = defineStore('auth', () => {
           isLogin.value = true;
 
           if (res.data.token) {
-            setToken(res.data.token, session);
+            if (!(await setToken(res.data.token, session))) throw new Error('登录状态未保存，请重试');
           }
 
           logger.log('✅ Laf 登录成功');

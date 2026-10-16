@@ -32,9 +32,14 @@ export const useProfileStore = defineStore('profile', () => {
     assertSession(origin);
     const owner = info?.uid || info?.userId || info?._id || info?.id;
     if (owner && origin.owner !== 'guest' && owner !== origin.owner) return false;
-    session = origin;
-    userInfo.value = info;
-    storageService.save(APP_CONFIG.cacheKeys.userInfo, info, true, origin);
+    const finish = (saved) => {
+      if (saved !== true || checkSession(origin) !== 'current') return false;
+      session = origin;
+      userInfo.value = info;
+      return true;
+    };
+    const saved = storageService.save(APP_CONFIG.cacheKeys.userInfo, info, true, origin);
+    return saved?.then ? saved.then(finish) : finish(saved);
   };
 
   /**
@@ -42,11 +47,7 @@ export const useProfileStore = defineStore('profile', () => {
    */
   const updateUserInfo = (info) => {
     assertSession(session);
-    if (!userInfo.value) {
-      userInfo.value = {};
-    }
-    userInfo.value = { ...userInfo.value, ...info };
-    storageService.save(APP_CONFIG.cacheKeys.userInfo, userInfo.value, true, session);
+    return setUserInfo({ ...userInfo.value, ...info }, session);
   };
 
   /**
@@ -74,7 +75,9 @@ export const useProfileStore = defineStore('profile', () => {
   if (!uni.__profileStoreUserdataBound__) {
     uni.$on('auth:userdata', (userData, origin) => {
       if (!origin) return;
-      setUserInfo(userData, origin);
+      if (checkSession(origin) !== 'current') return;
+      session = origin;
+      userInfo.value = userData;
     });
     uni.__profileStoreUserdataBound__ = true;
   }

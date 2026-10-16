@@ -125,7 +125,7 @@ describe('auth-storage', () => {
       expect(getUserId()).toBe('ls_uid');
     });
 
-    it('uni 抛异常时回退到 localStorage', () => {
+    it('uni 抛异常时返回暂不可用且不读取另一运行时', () => {
       globalThis.uni = {
         getStorageSync: vi.fn(() => {
           throw new Error('storage error');
@@ -135,7 +135,8 @@ describe('auth-storage', () => {
       };
       mockLocalStorage({ EXAM_USER_ID: 'ls_fallback' });
 
-      expect(getUserId()).toBe('ls_fallback');
+      expect(getUserId).toThrow(/暂不可读/);
+      expect(globalThis.localStorage.getItem).not.toHaveBeenCalled();
     });
 
     it('H5 的不完整 uni 对象不遮蔽兼容存储中的登录身份', () => {
