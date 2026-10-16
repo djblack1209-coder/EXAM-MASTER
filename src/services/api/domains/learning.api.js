@@ -1,5 +1,5 @@
 import config from '../../../config/index.js';
-import { getToken, getUserId } from '../../auth-storage.js';
+import { getToken, getUserId, getLoginSessionEpoch } from '../../auth-storage.js';
 import { generateLearningTurnStream } from '../../learning/learning-stream.js';
 import poetryCache from '../../learning/poetry-cache.json';
 
@@ -9,13 +9,14 @@ export function learningRequest(path, body, options = {}) {
   if (options.expectedOwner && getUserId() !== options.expectedOwner)
     return Promise.resolve({ success: false, code: 409, message: '用户已切换，未发送旧账户记录' });
   const token = getToken();
+  const session = getLoginSessionEpoch();
   if (!token) return Promise.resolve({ success: false, code: 401, message: '登录后可连接云模型；本地学习无需登录' });
   return new Promise((resolve) => {
     let abort;
     const finish = (value) => {
       if (abort) options.signal?.removeEventListener('abort', abort);
       resolve(
-        options.expectedOwner && getUserId() !== options.expectedOwner
+        getLoginSessionEpoch() !== session || (options.expectedOwner && getUserId() !== options.expectedOwner)
           ? { success: false, code: 409, message: '账户已切换，未读取旧账户响应' }
           : options.signal?.aborted
             ? { success: false, code: 499, message: '请求已取消，未读取旧响应' }
@@ -60,14 +61,15 @@ export const requestLearningGrammar = (body, options) => learningRequest('/learn
 export const requestLearningPoetryReference = (options) =>
   learningRequest('/learning-models', { action: 'poetry', context: poetryCache.context }, options);
 export const fetchLearningUsage = (options) => learningRequest('/learning-models', { action: 'usage' }, options);
-export const testLearningModel = (modelId, requestId) =>
-  learningRequest('/learning-models', { action: 'test', modelId, requestId, shareConsent: true });
+export const testLearningModel = (modelId, requestId, options) =>
+  learningRequest('/learning-models', { action: 'test', modelId, requestId, shareConsent: true }, options);
 export const cancelLearningTurn = (requestId, options) =>
   learningRequest('/learning-models', { action: 'cancel', requestId }, options);
 export const fetchLearningResult = (requestId, options) =>
   learningRequest('/learning-models', { action: 'result', requestId }, options);
-export const saveLearningModel = (profile, shareConsent) =>
-  learningRequest('/learning-models', { action: 'save', profile, shareConsent });
-export const deleteLearningModel = (profileId) => learningRequest('/learning-models', { action: 'delete', profileId });
+export const saveLearningModel = (profile, shareConsent, options) =>
+  learningRequest('/learning-models', { action: 'save', profile, shareConsent }, options);
+export const deleteLearningModel = (profileId, options) =>
+  learningRequest('/learning-models', { action: 'delete', profileId }, options);
 export const generateLearningTurn = (body, options) =>
   options?.stream ? generateLearningTurnStream(body, options) : learningRequest('/proxy-ai', body, options);

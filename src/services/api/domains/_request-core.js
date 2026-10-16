@@ -12,7 +12,7 @@
 
 import { logger } from '@/utils/logger.js';
 import config from '../../../config/index.js';
-import { getUserId, getToken } from '../../auth-storage.js';
+import { getUserId, getToken, getLoginSessionEpoch } from '../../auth-storage.js';
 import { perfMonitor } from '@/utils/core/performance.js';
 
 // ==================== 双服务器自动切换 ====================
@@ -393,8 +393,14 @@ function _getAuthCacheScope(options = {}) {
   try {
     const userId = getUserId();
     const token = getToken();
-    if (!_authIdentity || _authIdentity.userId !== userId || _authIdentity.token !== token) {
-      _authIdentity = { userId, token };
+    const session = getLoginSessionEpoch();
+    if (
+      !_authIdentity ||
+      _authIdentity.userId !== userId ||
+      _authIdentity.token !== token ||
+      _authIdentity.session !== session
+    ) {
+      _authIdentity = { userId, token, session };
       _authGeneration++;
       _cache.clear();
     }

@@ -109,3 +109,11 @@ export const getUserId = () => getStoredAuthValue('EXAM_USER_ID');
  * 获取当前用户Token（统一入口）
  */
 export const getToken = () => getStoredAuthValue('EXAM_TOKEN');
+
+export const LOGIN_SESSION_EPOCH_KEY = 'EXAM_SESSION_EPOCH';
+
+// Read only: revocation checks must never recreate a deleted login session.
+export const getLoginSessionEpoch = () => {
+  const value = getStoredAuthValue(LOGIN_SESSION_EPOCH_KEY);
+  return typeof value === 'string' && /^[a-zA-Z0-9_-]{8,120}$/.test(value) ? value : null;
+};

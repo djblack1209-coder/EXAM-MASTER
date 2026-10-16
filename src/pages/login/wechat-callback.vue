@@ -68,9 +68,7 @@ const saveLoginInfo = (data) => {
     avatarUrl: data.userInfo?.avatar_url || data.avatar_url || ''
   };
 
-  storageService.save('userInfo', userInfo);
-  storageService.save('EXAM_TOKEN', data.token, true);
-  storageService.save('EXAM_USER_ID', userInfo.uid, true);
+  storageService.saveLoginSession({ userId: userInfo.uid, token: data.token, userInfo });
 
   // ✅ 用户隔离：登录后迁移无前缀的旧数据到 u_${userId}_ 前缀
   storageService.migrateUserKeys();

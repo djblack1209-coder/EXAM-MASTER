@@ -1,5 +1,5 @@
 import config from '../../config/index.js';
-import { getToken, getUserId } from '../auth-storage.js';
+import { getToken, getUserId, getLoginSessionEpoch } from '../auth-storage.js';
 import { appLearningStreamSupported, streamAppConnector } from './app-connector.js';
 import {
   createEventStreamParser,
@@ -112,8 +112,10 @@ export function createLearningStreamConsumer(
 export async function generateLearningTurnStream(body, options = {}) {
   const owner = options.expectedOwner || body.learningContext?.owner || getUserId();
   const token = getToken();
+  const session = getLoginSessionEpoch();
   const assertCurrent = () => {
     check(!options.signal?.aborted, 'CANCELLED', '请求已取消');
+    check(getLoginSessionEpoch() === session, 'CONTEXT_CHANGED', '登录会话已变化，拒绝旧模型流');
     check(getUserId() === owner, 'OWNER_MISMATCH', '账户已切换，拒绝旧模型流');
     options.assertCurrent?.();
   };

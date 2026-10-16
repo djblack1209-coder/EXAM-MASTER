@@ -14,6 +14,8 @@ import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseCheckbox from '@/components/base/base-checkbox/base-checkbox.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
+import { storageService } from '@/services/storageService.js';
+import { getLoginSessionEpoch } from '@/services/auth-storage.js';
 const mocks = vi.hoisted(() => ({ api: vi.fn(), email: vi.fn(), sendEmail: vi.fn(), show: [], hide: [] }));
 vi.mock('@dcloudio/uni-app', () => ({ onShow: (fn) => mocks.show.push(fn), onHide: (fn) => mocks.hide.push(fn) }));
 vi.mock('@/stores/modules/auth', () => ({
@@ -154,6 +156,27 @@ describe('age privacy and local session latch', () => {
   });
 });
 describe('login page explicit actions', () => {
+  it('邮箱成功登录相同账户也生成新会话代号', async () => {
+    uni.setStorageSync('yozi_login_region', 'CN');
+    storageService.saveLoginSession({ userId: 'email-epoch-user', token: 'synthetic-email-token', userInfo: {} });
+    const oldEpoch = getLoginSessionEpoch();
+    const wrapper = open();
+    await flushPromises();
+    await agree(wrapper);
+    await action(wrapper, '使用邮箱登录').vm.$emit('tap');
+    await flushPromises();
+    const fields = wrapper.findAllComponents(BaseInput);
+    await fields[0].vm.$emit('update:modelValue', 'fixture@example.invalid');
+    await fields[1].vm.$emit('update:modelValue', 'SyntheticPassword123');
+    mocks.email.mockResolvedValueOnce({
+      code: 0,
+      data: { userId: 'email-epoch-user', token: 'synthetic-email-token' }
+    });
+    await action(wrapper, '登录').vm.$emit('tap');
+    await flushPromises();
+    expect(getLoginSessionEpoch()).toBeTruthy();
+    expect(getLoginSessionEpoch()).not.toBe(oldEpoch);
+  });
   it.each(
     ['US', 'CN'].flatMap((region) =>
       ['zh-CN', 'en'].flatMap((language) => [false, true].map((sms) => [region, language, sms]))

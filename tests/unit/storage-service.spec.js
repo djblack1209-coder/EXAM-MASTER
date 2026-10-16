@@ -4,6 +4,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as practiceApi from '@/services/api/domains/practice.api.js';
+import { getLoginSessionEpoch, getToken, getUserId } from '@/services/auth-storage.js';
 
 // Mock logger
 vi.mock('@/utils/logger.js', () => ({
@@ -43,6 +44,7 @@ describe('storageService', () => {
     it.each([
       'EXAM_USER_ID',
       'EXAM_TOKEN',
+      'EXAM_SESSION_EPOCH',
       'userInfo',
       'EXAM_USER_INFO',
       'access_token',
@@ -90,13 +92,120 @@ describe('storageService', () => {
         expect(listener).toHaveBeenCalledTimes(5);
         window.dispatchEvent(new StorageEvent('storage', { key: null }));
         expect(listener).toHaveBeenCalledTimes(6);
-        expect(listener).toHaveBeenLastCalledWith({ type: 'records' });
+        expect(listener).toHaveBeenLastCalledWith({ type: 'logout' });
         storageService.clear(true, { preserveGlobal: false });
         expect(listener).toHaveBeenCalledTimes(7);
       } finally {
         stop();
       }
     });
+  });
+
+  describe('登录会话代号', () => {
+    const identity = { userId: 'epoch-upgrade-owner', token: 'synthetic-epoch-token', userInfo: { nickname: '合成' } };
+    it('成功登录原子通知并加密保存；同账户同令牌再次登录也换代', () => {
+      const snapshots = [];
+      const stop = storageService.onIdentityChange(() => snapshots.push([getUserId(), getLoginSessionEpoch()]));
+      try {
+        storageService.saveLoginSession(identity);
+        const first = getLoginSessionEpoch();
+        expect(first).toBeTruthy();
+        expect(snapshots).toEqual([[identity.userId, first]]);
+        expect(uni.getStorageSync('EXAM_SESSION_EPOCH')).toBe('');
+        expect(uni.getStorageSync('_enc_EXAM_SESSION_EPOCH')).not.toContain(first);
+        storageService.saveLoginSession(identity);
+        expect(getLoginSessionEpoch()).not.toBe(first);
+        expect(snapshots).toHaveLength(2);
+        expect(snapshots[1]).toEqual([identity.userId, getLoginSessionEpoch()]);
+      } finally {
+        stop();
+      }
+    });
+    it('已有无代号身份首次读取升级，不强制退出或重写身份，再读复用', () => {
+      uni.setStorageSync('EXAM_USER_ID', identity.userId);
+      uni.setStorageSync('EXAM_TOKEN', identity.token);
+      expect(getLoginSessionEpoch()).toBeNull();
+      const epoch = storageService.getSessionEpoch();
+      expect(epoch).toBeTruthy();
+      expect(storageService.getSessionEpoch()).toBe(epoch);
+      expect(getUserId()).toBe(identity.userId);
+      expect(getToken()).toBe(identity.token);
+      expect(uni.getStorageSync('EXAM_TOKEN')).toBe(identity.token);
+    });
+    it('访客或身份不完整不生成代号', () => {
+      expect(storageService.getSessionEpoch()).toBeNull();
+      storageService.save('EXAM_USER_ID', identity.userId, true);
+      expect(storageService.getSessionEpoch()).toBeNull();
+      expect(uni.getStorageSync('_enc_EXAM_SESSION_EPOCH')).toBe('');
+    });
+    it('续期、重复保存、资料更新和保留全局的清理均不换代', () => {
+      storageService.saveLoginSession(identity);
+      const epoch = getLoginSessionEpoch();
+      for (const [key, value] of [
+        ['EXAM_TOKEN', 'synthetic-refreshed-token'],
+        ['EXAM_USER_ID', identity.userId],
+        ['userInfo', { nickname: '更新' }],
+        ['access_token', 'synthetic-access-token'],
+        ['refresh_token', 'synthetic-refresh-token'],
+        ['token_expire_time', 1234567890]
+      ]) {
+        storageService.save(key, value, true);
+        expect(getLoginSessionEpoch()).toBe(epoch);
+      }
+      storageService.clear(true);
+      expect(getLoginSessionEpoch()).toBe(epoch);
+    });
+    it.each(['EXAM_TOKEN', 'EXAM_USER_ID', 'access_token', 'refresh_token', 'EXAM_SESSION_EPOCH'])(
+      '删除%s同时撤销代号，只读核对不得重新创建',
+      (key) => {
+        storageService.saveLoginSession(identity);
+        storageService.remove(key, true);
+        expect(getLoginSessionEpoch()).toBeNull();
+        expect(storageService.getSessionEpoch({ migrateLegacy: false })).toBeNull();
+        expect(uni.getStorageSync('_enc_EXAM_SESSION_EPOCH')).toBe('');
+      }
+    );
+    it.each(['empty-token', 'account', 'clear'])('%s撤销已保存代号', (kind) => {
+      storageService.saveLoginSession(identity);
+      if (kind === 'empty-token') storageService.save('EXAM_TOKEN', '', true);
+      else if (kind === 'account') storageService.save('EXAM_USER_ID', 'other-epoch-owner', true);
+      else storageService.clear(true, { preserveGlobal: false });
+      expect(getLoginSessionEpoch()).toBeNull();
+    });
+    it('代号保存失败不宣称登录成功，并只发撤销通知', () => {
+      storageService.saveLoginSession(identity);
+      const write = uni.setStorageSync;
+      const spy = vi.spyOn(uni, 'setStorageSync').mockImplementation((key, value) => {
+        if (key === '_enc_EXAM_SESSION_EPOCH') throw new Error('SYNTHETIC_QUOTA_FAILURE');
+        write(key, value);
+      });
+      const listener = vi.fn(),
+        stop = storageService.onIdentityChange(listener);
+      try {
+        expect(() => storageService.saveLoginSession(identity)).toThrow('登录状态未保存');
+        expect(getLoginSessionEpoch()).toBeNull();
+        expect(listener).toHaveBeenCalledExactlyOnceWith({ type: 'logout' });
+      } finally {
+        stop();
+        spy.mockRestore();
+      }
+    });
+    it.each(['EXAM_USER_ID', 'EXAM_TOKEN', 'EXAM_SESSION_EPOCH'])(
+      '积压的%s删除事件只通知撤销类型，不泄露oldValue/newValue',
+      (key) => {
+        storageService.saveLoginSession(identity);
+        const listener = vi.fn(),
+          stop = storageService.onIdentityChange(listener);
+        try {
+          window.dispatchEvent(
+            new StorageEvent('storage', { key: `_enc_${key}`, oldValue: 'synthetic-old-ciphertext', newValue: null })
+          );
+          expect(listener).toHaveBeenCalledExactlyOnceWith({ type: 'logout' });
+        } finally {
+          stop();
+        }
+      }
+    );
   });
 
   describe('旧错题请求的账户与保存边界', () => {
