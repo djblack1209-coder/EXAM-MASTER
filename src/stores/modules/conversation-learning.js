@@ -77,7 +77,7 @@ import {
 import { computed, ref, shallowRef, onScopeDispose, watch } from 'vue';
 import { pendingUploadJournal } from '@/services/learning/pending-upload-journal.js';
 import { learningRepository, LEARNING_KEY } from '@/services/learning/learning-repository.js';
-import { getUserId, getToken, captureSession, checkSession, readSessionSnapshot } from '@/services/auth-storage.js';
+import { getUserId, getToken, checkSession, readSessionSnapshot } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import {
   COMPUTE_CONTRACT,
@@ -174,15 +174,19 @@ export function learningId(prefix = 'learn') {
 }
 export const useConversationLearningStore = defineStore('conversation-learning', () => {
   storageService.getSessionEpoch();
-  let boundSession = captureSession();
+  const initialSnapshot = readSessionSnapshot();
+  let boundSession = initialSnapshot.status === 'current' ? initialSnapshot.session : null;
   let sessionEpoch = boundSession?.epoch || null;
   let sessionRevision = 0;
   let sessionRevocation = new AbortController();
   const operationSessions = [];
   let sessionReady = false;
-  let resettingSession = false;
+  let resettingSession = 0;
   let lastRecordContext = null;
-  let observedIdentity = { owner: getUserId(), token: getToken() };
+  let observedIdentity = {
+    owner: boundSession?.owner === 'guest' ? null : boundSession?.owner || null,
+    token: initialSnapshot.token
+  };
   const state = ref(boundSession ? learningRepository.read() : emptyLearningState('guest'));
   let notificationObserver = null,
     notificationRefreshTimer = null;
@@ -286,6 +290,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
     const snapshot = readSessionSnapshot();
     if (snapshot.status === 'unavailable') {
+      if (sessionReady) for (const operation of modelReads.values()) operation.unavailable = true;
       const changed = checkSession(boundSession) === 'changed';
       if (changed) reloadRecords({ identityChanged: true });
       else {
@@ -449,10 +454,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       recordReadState.value === 'ready' &&
       context !== null &&
       context === recordSnapshotContext.value &&
-      state.value.owner === (getUserId() || 'guest');
+      state.value.owner === (boundSession?.owner || 'guest');
     return {
       ...recordSearch.search(
-        current ? state.value : emptyLearningState(getUserId() || 'guest'),
+        current ? state.value : emptyLearningState(boundSession?.owner || 'guest'),
         query,
         options,
         current ? context : null
@@ -902,9 +907,13 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     storageService.getSessionEpoch({ migrateLegacy: false });
     sessionRevocation.abort();
     sessionRevocation = new AbortController();
-    boundSession = captureSession();
+    const snapshot = readSessionSnapshot();
+    boundSession = snapshot.status === 'current' ? snapshot.session : null;
     sessionEpoch = boundSession?.epoch || null;
-    observedIdentity = { owner: getUserId(), token: getToken() };
+    observedIdentity = {
+      owner: boundSession?.owner === 'guest' ? null : boundSession?.owner || null,
+      token: snapshot.token
+    };
     sessionRevision++;
     cancelModelActions();
     localConnectionController?.abort();
@@ -1003,6 +1012,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
   }
   function reloadRecords({ identityChanged = false } = {}) {
+    if (resettingSession) return state.value;
     if (readSessionSnapshot().status === 'unavailable' && checkSession(boundSession) !== 'changed') {
       error.value = '登录状态暂不可读，请重试';
       return state.value;
@@ -1015,17 +1025,17 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     recordSearch.clear();
     recordLocation.value = null;
     conversationLocation.value = null;
-    if (identityChanged) {
-      resettingSession = true;
-      lastRecordContext = null;
-      recordReadState.value = 'loading';
-      recordSnapshotContext.value = null;
-      resetAccountResources();
-      resetModelResources();
-      cancelSync({ clearFeedback: true });
-      cancelHistory();
-    }
+    if (identityChanged) resettingSession++;
     try {
+      if (identityChanged) {
+        lastRecordContext = null;
+        recordReadState.value = 'loading';
+        recordSnapshotContext.value = null;
+        resetAccountResources();
+        resetModelResources();
+        cancelSync({ clearFeedback: true });
+        cancelHistory();
+      }
       const result = refresh();
       if (
         !identityChanged &&
@@ -1049,7 +1059,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       materialConnection.value = null;
       error.value = '本机记录已变化且暂不可读，请重新核对；旧资料动作已取消。';
     } finally {
-      resettingSession = false;
+      if (identityChanged) resettingSession--;
     }
   }
   const stopIdentityChanges = storageService.onIdentityChange(
@@ -2924,7 +2934,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     try {
       refresh();
     } catch (failure) {
-      resetModelResources();
+      if (failure.code !== 'SESSION_UNAVAILABLE') resetModelResources();
       throw failure;
     }
     const context = recordContext();
@@ -3012,6 +3022,13 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           }),
           cancelled
         ]);
+        if (
+          operation.unavailable ||
+          result.errorCode === 'SESSION_UNAVAILABLE' ||
+          result.code === 'SESSION_UNAVAILABLE'
+        )
+          throw Object.assign(new Error('登录状态暂不可读，请重试'), { code: 'SESSION_UNAVAILABLE' });
+        ensureSessionCurrent(session, operation.controller.signal);
         refresh();
         assert(recordContext() === context, 'CONTEXT_CHANGED', '用户已切换或本机记录已更换，未读取旧模型结果');
         if (modelReads.get(kind) !== operation) throw operation.cancelReason;
@@ -3025,6 +3042,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         return apply(result);
       } catch (failure) {
         if (modelReads.get(kind) !== operation) throw operation.cancelReason || failure;
+        if (failure.code === 'SESSION_UNAVAILABLE' || failure.errorCode === 'SESSION_UNAVAILABLE') {
+          status.value = { phase: 'error', code: 'SESSION_UNAVAILABLE', message: '登录状态暂不可读，请重试' };
+          return { success: false, code: 'SESSION_UNAVAILABLE' };
+        }
         if (recordContext() !== context || failure.code === 'CONTEXT_CHANGED') {
           cancelModelReads(kind, 'CONTEXT_CHANGED');
           throw operation.cancelReason;

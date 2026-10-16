@@ -8,59 +8,31 @@ import { getComprehensiveReport, getStreakData } from '../practice-sub/utils/lea
 
 class IntelligentPlanManager {
   constructor() {
-    this._session = captureSession();
+    this._session = null;
     this.plans = [];
     this.learningData = {};
     this.reminders = [];
-    this.init();
   }
 
-  init() {
-    if (this.isInitialized && checkSession(this._session) === 'changed')
-      Object.assign(this, new IntelligentPlanManager());
-    if (!this.isInitialized) this._session = captureSession();
-    assertSession(this._session);
-    this.loadPlans();
-    this.loadLearningData();
-    this.loadReminders();
+  init(session = captureSession()) {
+    assertSession(session);
+    const options = { session, throwOnError: true, migrateLegacy: false };
+    const plans = storageService.get('study_plans', [], options);
+    const learningData = storageService.get('learning_data', {}, options);
+    const reminders = storageService.get('study_reminders', [], options);
+    assertSession(session);
+    this._session = session;
+    this.plans = JSON.parse(JSON.stringify(plans));
+    this.learningData = learningData;
+    this.reminders = reminders;
+    return session;
   }
 
-  // 加载学习计划
-  loadPlans() {
+  _begin(session = captureSession()) {
     try {
-      this.plans = storageService.get('study_plans', []);
-      this.enrichPlansWithAnalytics();
-    } catch (error) {
-      logger.error('[IntelligentPlanManager] 加载计划失败:', error);
-      this.plans = [];
-    }
-  }
-
-  // 加载学习数据
-  async loadLearningData() {
-    const originSession = this._session;
-    assertSession(originSession);
-    try {
-      const report = getComprehensiveReport();
-      const streakData = getStreakData();
-      this.learningData = {
-        report,
-        streakData,
-        lastUpdated: Date.now()
-      };
-    } catch (error) {
-      logger.error('[IntelligentPlanManager] 加载学习数据失败:', error);
-      this.learningData = {};
-    }
-  }
-
-  // 加载提醒设置
-  loadReminders() {
-    try {
-      this.reminders = storageService.get('study_reminders', []);
-    } catch (error) {
-      logger.error('[IntelligentPlanManager] 加载提醒失败:', error);
-      this.reminders = [];
+      return this.init(session);
+    } catch {
+      return null;
     }
   }
 
@@ -150,6 +122,7 @@ class IntelligentPlanManager {
 
   // 创建多维度学习计划
   createMultiDimensionPlan(options) {
+    if (!this._begin()) return null;
     const {
       name,
       goal,
@@ -194,8 +167,7 @@ class IntelligentPlanManager {
     plan.tasks = this.generateTasks(plan);
 
     // 保存计划
-    this.plans.unshift(plan);
-    this.savePlans();
+    if (!this.savePlans([plan, ...this.plans])) return null;
 
     // 设置提醒
     if (reminderTime) {
@@ -372,7 +344,8 @@ class IntelligentPlanManager {
   }
 
   // 动态调整计划
-  adjustPlan(planId, learningProgress) {
+  adjustPlan(planId, learningProgress, session = captureSession()) {
+    if (!this._begin(session)) return null;
     const planIndex = this.plans.findIndex((p) => p.id === planId);
     if (planIndex === -1) {
       logger.warn('[IntelligentPlanManager] 计划不存在:', planId);
@@ -382,7 +355,7 @@ class IntelligentPlanManager {
     const plan = this.plans[planIndex];
     const adjustedPlan = {
       ...plan,
-      progress: learningProgress || plan.progress,
+      progress: learningProgress ?? plan.progress,
       updatedAt: Date.now(),
       tasks: this.adjustTasks(plan, learningProgress),
       analytics: {
@@ -393,15 +366,13 @@ class IntelligentPlanManager {
       }
     };
 
-    this.plans[planIndex] = adjustedPlan;
-    this.savePlans();
-
-    return adjustedPlan;
+    const plans = this.plans.map((p, i) => (i === planIndex ? adjustedPlan : p));
+    return this.savePlans(plans) ? adjustedPlan : null;
   }
 
   // 调整任务
   adjustTasks(plan, learningProgress) {
-    const tasks = [...plan.tasks];
+    const tasks = JSON.parse(JSON.stringify(plan.tasks));
     const completionRate = learningProgress || this.calculateCompletionRate(plan);
 
     // 根据完成率调整任务难度和数量
@@ -427,6 +398,7 @@ class IntelligentPlanManager {
 
   // 设置提醒
   setReminder(plan) {
+    if (!this._begin()) return null;
     const reminder = {
       id: `reminder_${Date.now()}`,
       planId: plan.id,
@@ -436,8 +408,7 @@ class IntelligentPlanManager {
       createdAt: Date.now()
     };
 
-    this.reminders.push(reminder);
-    this.saveReminders();
+    if (!this.saveReminders([...this.reminders, reminder])) return null;
 
     // 这里可以集成系统提醒 API
     this.scheduleSystemReminder(reminder);
@@ -446,9 +417,9 @@ class IntelligentPlanManager {
   }
 
   // 调度系统提醒
-  scheduleSystemReminder(reminder) {
+  scheduleSystemReminder(_reminder) {
     // 模拟系统提醒设置
-    logger.log('[IntelligentPlanManager] 设置提醒:', reminder);
+    logger.log('[IntelligentPlanManager] 设置提醒');
 
     // 实际项目中，这里可以使用:
     // - 微信小程序的订阅消息
@@ -458,8 +429,7 @@ class IntelligentPlanManager {
 
   // 获取智能提醒
   async getIntelligentReminders() {
-    const originSession = this._session;
-    assertSession(originSession);
+    if (!this._begin()) return [];
     const intelligentReminders = [];
     const learningReport = getComprehensiveReport();
     const streakData = getStreakData();
@@ -538,133 +508,54 @@ class IntelligentPlanManager {
     }
   }
 
-  // 保存计划
-  savePlans() {
-    try {
-      storageService.save('study_plans', this.plans, true, this._session);
-      logger.log('[IntelligentPlanManager] 计划保存成功:', this.plans.length);
-    } catch (error) {
-      logger.error('[IntelligentPlanManager] 计划保存失败:', error);
-    }
+  // Only confirmed writes publish the draft into singleton memory.
+  _save(key, field, value) {
+    if (storageService.save(key, value, true, this._session) !== true) return false;
+    this[field] = value;
+    return true;
+  }
+  savePlans(plans = this.plans) {
+    return this._save('study_plans', 'plans', plans);
+  }
+  saveLearningData(data = this.learningData) {
+    return this._save('learning_data', 'learningData', data);
+  }
+  saveReminders(reminders = this.reminders) {
+    return this._save('study_reminders', 'reminders', reminders);
   }
 
-  // 保存学习数据
-  saveLearningData() {
-    try {
-      storageService.save('learning_data', this.learningData, true, this._session);
-    } catch (error) {
-      logger.error('[IntelligentPlanManager] 学习数据保存失败:', error);
-    }
-  }
-
-  // 保存提醒
-  saveReminders() {
-    try {
-      storageService.save('study_reminders', this.reminders, true, this._session);
-    } catch (error) {
-      logger.error('[IntelligentPlanManager] 提醒保存失败:', error);
-    }
-  }
-
-  // 加载学习数据
-  loadLearningData() {
-    try {
-      this.learningData = storageService.get('learning_data', {});
-    } catch (error) {
-      logger.error('[IntelligentPlanManager] 学习数据加载失败:', error);
-      this.learningData = {};
-    }
-  }
-
-  // 加载提醒
-  loadReminders() {
-    try {
-      this.reminders = storageService.get('study_reminders', []);
-    } catch (error) {
-      logger.error('[IntelligentPlanManager] 提醒加载失败:', error);
-      this.reminders = [];
-    }
-  }
-
-  // 获取计划列表
   getPlans() {
-    return this.plans;
+    this._begin();
+    return checkSession(this._session) !== 'changed' ? this.plans : [];
   }
-
-  // 获取计划详情
   getPlan(planId) {
-    return this.plans.find((p) => p.id === planId);
+    return this.getPlans().find((p) => p.id === planId);
   }
 
-  // 更新计划状态
   updatePlanStatus(planId, status) {
-    const planIndex = this.plans.findIndex((p) => p.id === planId);
-    if (planIndex === -1) {
-      return false;
-    }
-
-    this.plans[planIndex] = {
-      ...this.plans[planIndex],
-      status,
-      updatedAt: Date.now()
-    };
-
-    this.savePlans();
-    return true;
+    if (!this._begin() || !this.plans.some((p) => p.id === planId)) return false;
+    return this.savePlans(this.plans.map((p) => (p.id === planId ? { ...p, status, updatedAt: Date.now() } : p)));
   }
 
-  // 标记任务完成
   completeTask(planId, taskId) {
-    const planIndex = this.plans.findIndex((p) => p.id === planId);
-    if (planIndex === -1) {
-      return false;
-    }
-
-    const plan = this.plans[planIndex];
-    const taskIndex = plan.tasks.findIndex((t) => t.id === taskId);
-    if (taskIndex === -1) {
-      return false;
-    }
-
-    plan.tasks[taskIndex] = {
-      ...plan.tasks[taskIndex],
-      completed: true,
-      completedAt: Date.now()
-    };
-
-    // 更新计划进度
-    const completedTasks = plan.tasks.filter((t) => t.completed).length;
-    plan.progress = Math.round((completedTasks / plan.tasks.length) * 100);
+    if (!this._begin()) return false;
+    const plans = JSON.parse(JSON.stringify(this.plans));
+    const plan = plans.find((p) => p.id === planId);
+    const task = plan?.tasks.find((t) => t.id === taskId);
+    if (!task) return false;
+    Object.assign(task, { completed: true, completedAt: Date.now() });
+    const count = plan.tasks.filter((t) => t.completed).length;
+    plan.progress = Math.round((count / plan.tasks.length) * 100);
     plan.updatedAt = Date.now();
-
-    // 检查是否完成所有任务
-    if (completedTasks === plan.tasks.length) {
-      plan.status = 'completed';
-    } else if (plan.status === 'not_started') {
-      plan.status = 'in_progress';
-    }
-
-    this.plans[planIndex] = plan;
-    this.savePlans();
-
-    return true;
+    plan.status = count === plan.tasks.length ? 'completed' : 'in_progress';
+    return this.savePlans(plans);
   }
 
-  // 删除计划
-  deletePlan(planId) {
-    const planIndex = this.plans.findIndex((p) => p.id === planId);
-    if (planIndex === -1) {
-      return false;
-    }
-
-    this.plans.splice(planIndex, 1);
-    this.savePlans();
-
-    // 同时删除相关提醒
-    this.reminders = this.reminders.filter((r) => r.planId !== planId);
-    this.saveReminders();
-
-    return true;
+  deletePlan(planId, session = captureSession()) {
+    if (!this._begin(session) || !this.plans.some((p) => p.id === planId)) return false;
+    // Plan is the authority; stale reminders are ignored until their own confirmed cleanup.
+    if (!this.savePlans(this.plans.filter((p) => p.id !== planId))) return false;
+    return this.saveReminders(this.reminders.filter((r) => r.planId !== planId));
   }
 
   // 获取计划分析报告

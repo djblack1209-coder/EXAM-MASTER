@@ -199,7 +199,7 @@ class NetworkMonitor {
           this._handleStatusChange(wasConnected);
         }
 
-        logger.log(`[NetworkMonitor] 当前网络: ${this.status.networkType} (${this.status.quality})`);
+        logger.log('[NetworkMonitor] 当前网络: [省略] ([省略])');
       },
       fail: (err) => {
         logger.error('[NetworkMonitor] 获取网络状态失败:', err);
@@ -221,7 +221,7 @@ class NetworkMonitor {
       this.status.networkType = res.networkType || NETWORK_TYPES.UNKNOWN;
       this.status.quality = this._evaluateQuality(this.status.networkType);
 
-      logger.log(`[NetworkMonitor] 网络变化: ${res.networkType} (连接: ${res.isConnected})`);
+      logger.log('[NetworkMonitor] 网络变化: [省略] (连接: [省略])');
 
       this._handleStatusChange(wasConnected, oldQuality);
     };
@@ -245,7 +245,7 @@ class NetworkMonitor {
         this.status.offlineDuration = this.status.lastOfflineTime ? now - this.status.lastOfflineTime : 0;
         this.status.lastOnlineTime = now;
 
-        logger.log(`[NetworkMonitor] 🌐 网络已恢复 (离线时长: ${Math.round(this.status.offlineDuration / 1000)}s)`);
+        logger.log('[NetworkMonitor] 🌐 网络已恢复 (离线时长: [省略]s)');
 
         this._emit('online', {
           ...this.getStatus(),
@@ -421,7 +421,7 @@ class NetworkMonitor {
         try {
           callback(data);
         } catch (error) {
-          logger.error(`[NetworkMonitor] 事件处理错误 (${event}):`, error);
+          logger.error('[NetworkMonitor] 事件处理错误 ([省略]):', error);
         }
       });
     }
@@ -438,7 +438,7 @@ class NetworkMonitor {
       this.listeners[event].add(callback);
       return () => this.listeners[event].delete(callback);
     }
-    logger.warn(`[NetworkMonitor] 未知事件: ${event}`);
+    logger.warn('[NetworkMonitor] 未知事件: [省略]');
     return () => {
       /* noop */
     };

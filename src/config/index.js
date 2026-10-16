@@ -663,15 +663,15 @@ const config = {
  * 开发环境输出配置信息
  */
 if (config.debug.enabled) {
-  logger.log('\n' + '='.repeat(50));
+  logger.log('[App] 诊断事件');
   logger.log('Yozi AI config');
-  logger.log('='.repeat(50));
+  logger.log('[App] 诊断事件');
   logger.log('env:', config.env);
   logger.log('wxAppId:', config.wx.appId, `(${config._source.wxAppId})`);
   logger.log('API:', config.api.baseUrl, `(${config._source.apiBaseUrl})`);
   logger.log('debug:', config.debug.enabled);
   logger.log('features:', JSON.stringify(config.features, null, 2));
-  logger.log('='.repeat(50) + '\n');
+  logger.log('[App] 诊断事件');
 }
 
 /**
@@ -690,11 +690,11 @@ if (config.debug.enabled) {
     return !CLIENT_ENV[k.key];
   });
   if (missing.length > 0) {
-    logger.error(`[Config] ❌ 缺少必需的环境变量: ${missing.map((k) => `${k.key}(${k.label})`).join(', ')}`);
+    logger.error('[Config] ❌ 缺少必需的环境变量: [省略]');
   }
 
   if (config.isProd && warnings.length > 0) {
-    logger.warn(`[Config] ⚠️ 生产环境建议配置: ${warnings.map((k) => `${k.key}(${k.label})`).join(', ')}。`);
+    logger.warn('[Config] ⚠️ 生产环境建议配置: [省略]。');
   }
 }
 

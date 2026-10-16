@@ -44,6 +44,10 @@ export const useFavoriteStore = defineStore('favorite', {
         this.stats = getLocalFavoriteStats();
         this.lastError = null;
       } catch (error) {
+        if (error.code === 'SESSION_UNAVAILABLE') {
+          this.lastError = error;
+          return { favorites: this.favorites, folders: this.folders, stats: this.stats };
+        }
         this.favorites = [];
         this.folders = [];
         this.stats = { totalCount: 0, reviewedCount: 0, needReviewCount: 0, withNoteCount: 0 };
@@ -60,7 +64,7 @@ export const useFavoriteStore = defineStore('favorite', {
         return this.favorites;
       } catch (error) {
         this.lastError = error;
-        this.favorites = [];
+        if (error.code !== 'SESSION_UNAVAILABLE') this.favorites = [];
         return this.favorites;
       } finally {
         this.loading = false;

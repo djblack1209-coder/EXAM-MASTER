@@ -139,7 +139,7 @@ export function useDynamicMixin() {
       mixinLoaded.value = true;
       logger.log('[practice] 分包模块加载完成');
     } catch (e) {
-      logger.error('[practice] 分包模块加载失败 (尝试 ' + (retryCount + 1) + '):', e);
+      logger.error('[App] 诊断事件', e);
       if (retryCount < MAX_RETRIES) {
         const delay = 500 * Math.pow(2, retryCount);
         await new Promise((resolve) => setTimeout(resolve, delay));

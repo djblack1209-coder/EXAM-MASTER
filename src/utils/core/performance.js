@@ -54,7 +54,7 @@ export class PerformanceMonitor {
         : Date.now();
 
     if (startTime === undefined) {
-      logger.warn(`Mark "${startMark}" not found`);
+      logger.warn('Mark "[省略]" not found');
       return 0;
     }
 
@@ -76,7 +76,7 @@ export class PerformanceMonitor {
       this.apiMetrics = this.apiMetrics.slice(-this.maxMetrics);
     }
     if (duration > this.slowApiThreshold) {
-      logger.warn(`[PerfMonitor] 慢请求: ${url} ${duration.toFixed(0)}ms (status=${status})`);
+      logger.warn('[PerfMonitor] 慢请求: [省略] [省略]ms (status=[省略])');
     }
   }
 
@@ -91,7 +91,7 @@ export class PerformanceMonitor {
       this.pageMetrics = this.pageMetrics.slice(-this.maxMetrics);
     }
     if (duration > this.slowPageThreshold) {
-      logger.warn(`[PerfMonitor] 慢页面: ${page} ${duration.toFixed(0)}ms`);
+      logger.warn('[PerfMonitor] 慢页面: [省略] [省略]ms');
     }
   }
 
@@ -130,12 +130,17 @@ export class PerformanceMonitor {
    */
   report() {
     logger.log('--- Performance Report ---');
-    this.measures.forEach(({ name, duration }) => {
-      logger.log(`${name}: ${duration.toFixed(2)}ms`);
+    this.measures.forEach(({ duration }) => {
+      logger.log('[PerfMonitor] 耗时（毫秒）', duration);
     });
     const apiSummary = this.getApiSummary();
     if (apiSummary.total > 0) {
-      logger.log(`API: avg=${apiSummary.avgDuration}ms, slow=${apiSummary.slowCount}/${apiSummary.total}`);
+      logger.log(
+        '[PerfMonitor] 请求平均耗时、慢请求数、总数',
+        apiSummary.avgDuration,
+        apiSummary.slowCount,
+        apiSummary.total
+      );
     }
     logger.log('--- End Report ---');
   }

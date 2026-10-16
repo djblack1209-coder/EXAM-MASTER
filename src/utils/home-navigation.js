@@ -66,7 +66,7 @@ export function openHomeTab(options = {}) {
 
     if (!fallbackStarted) {
       fallbackStarted = true;
-      logger.warn(`[home-navigation] ${source} did not land on home, trying reLaunch`, error);
+      logger.warn('[home-navigation] [省略] did not land on home, trying reLaunch', error);
       uni.reLaunch({
         url: destination,
         success: () => scheduleVerification('reLaunch'),
@@ -100,7 +100,7 @@ export function openHomeTab(options = {}) {
     success: () => scheduleVerification(learningEntry ? 'redirectTo' : 'switchTab'),
     fail: (err1) => {
       if (cancelled()) return;
-      logger.warn(`[home-navigation] ${learningEntry ? 'redirectTo' : 'switchTab'} failed, trying reLaunch`, err1);
+      logger.warn('[home-navigation] [省略] failed, trying reLaunch', err1);
       uni.reLaunch({
         url: destination,
         success: () => scheduleVerification('reLaunch'),

@@ -103,9 +103,14 @@ export default {
         // 公开页面放行
         if (PUBLIC_PAGES.some((p) => path.startsWith(p))) return;
         // 已登录放行
-        if (isUserLoggedIn()) return;
+        const loginState = isUserLoggedIn();
+        if (loginState === null) {
+          toast.info('登录状态暂不可读，请重试');
+          return false;
+        }
+        if (loginState) return;
         // 未登录：阻止跳转，弹窗引导登录
-        logger.log(`[RouteGuard] 拦截未登录访问: ${path}`);
+        logger.log('[RouteGuard] 拦截未登录访问: [省略]');
         toast.info('请先登录后使用此功能');
         setTimeout(() => {
           safeNavigateTo('/pages/login/index');
@@ -219,8 +224,8 @@ export default {
       // [Phase5] 启动保护：前 3 秒内不触发 authFailure 导航，避免 webviewId 竞态
       const appReadyTime = Date.now() + 3000;
 
-      uni.$on('authFailure', ({ statusCode, path }) => {
-        logger.log(`[App] 认证失败拦截: statusCode=${statusCode}, path=${path}`);
+      uni.$on('authFailure', () => {
+        logger.log('[App] 认证失败拦截: statusCode=[省略], path=[省略]');
 
         // 防止重复跳转
         if (isRedirecting) return;

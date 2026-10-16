@@ -273,7 +273,7 @@ function saveReport() {
     },
     fail: (err) => {
       if (!isReportCurrent()) return;
-      logger.error(err);
+      logger.error('[App] 诊断事件');
       if (err.errMsg && err.errMsg.includes('auth')) {
         modal.show({
           title: t('mistake.copy76'),

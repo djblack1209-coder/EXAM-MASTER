@@ -1,4 +1,4 @@
-import { captureSession, checkSession } from '@/services/auth-storage.js';
+import { captureSession, checkSession, sessionUnavailable } from '@/services/auth-storage.js';
 /**
  * 题目收藏模块 - 收藏重要题目，方便复习
  *
@@ -77,17 +77,25 @@ class QuestionFavoriteManager {
   }
 
   init() {
-    const expected = owner();
+    const session = captureSession();
+    const expected = session?.owner === 'guest' ? '' : session?.owner;
     try {
+      if (!session) throw sessionUnavailable();
       // 每次读取当前账户的真实保存值，返回独立副本，不认领访客或别人的缓存。
-      const rows = storageService.get(STORAGE_KEYS.FAVORITES, [], { migrateLegacy: false, throwOnError: true });
+      const rows = storageService.get(STORAGE_KEYS.FAVORITES, [], {
+        migrateLegacy: false,
+        throwOnError: true,
+        session
+      });
       const folders = storageService.get(STORAGE_KEYS.FAVORITE_FOLDERS, null, {
         migrateLegacy: false,
-        throwOnError: true
+        throwOnError: true,
+        session
       });
       const settings = storageService.get(STORAGE_KEYS.FAVORITE_SETTINGS, null, {
         migrateLegacy: false,
-        throwOnError: true
+        throwOnError: true,
+        session
       });
       if (
         !Array.isArray(rows) ||
@@ -109,6 +117,10 @@ class QuestionFavoriteManager {
       this.lastError = null;
       return true;
     } catch (error) {
+      if (error.code === 'SESSION_UNAVAILABLE') {
+        this.lastError = error;
+        return false;
+      }
       this.favorites = [];
       this.folders = clone(DEFAULT_FOLDERS);
       this.ownerId = expected;
@@ -119,10 +131,17 @@ class QuestionFavoriteManager {
   }
 
   _edit(field, key, change, expectedOwner) {
+    const session = expectedOwner && typeof expectedOwner === 'object' ? expectedOwner : captureSession();
+    if (checkSession(session) !== 'current') return failed('登录状态已变化或暂不可读，请重试', 'CONTEXT_CHANGED');
+    const expectedId =
+      expectedOwner && typeof expectedOwner === 'object'
+        ? expectedOwner.owner === 'guest'
+          ? ''
+          : expectedOwner.owner
+        : expectedOwner;
     if (!this.init()) return failed(this.lastError.message, 'FAVORITE_UNAVAILABLE');
-    if (expectedOwner !== undefined && expectedOwner !== this.ownerId)
+    if (expectedId !== undefined && expectedId !== this.ownerId)
       return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
-    const session = captureSession();
     const context = this.ownerId;
     try {
       const next = clone(this[field]);
@@ -406,7 +425,11 @@ class QuestionFavoriteManager {
       if (storageService.save('temp_practice_question', handoff, true, session) !== true)
         return failed('练习未保存，请重试');
       if (owner() !== expectedOwner) return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
-      const saved = storageService.get('temp_practice_question', null, { migrateLegacy: false, throwOnError: true });
+      const saved = storageService.get('temp_practice_question', null, {
+        migrateLegacy: false,
+        throwOnError: true,
+        session
+      });
       if (
         !readSinglePracticeHandoff(saved, handoff.id, expectedOwner) ||
         quizOriginalIdentity(saved) !== quizOriginalIdentity(handoff)

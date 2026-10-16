@@ -295,7 +295,7 @@ export const aiGenerationMixin = {
       // 防止无限循环：连续失败超过阈值时自动暂停
       const MAX_CONSECUTIVE_FAILURES = 5;
       if (this._consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
-        logger.warn(`[practice] 连续 ${this._consecutiveFailures} 次生成失败，自动暂停`);
+        logger.warn('[practice] 连续 [省略] 次生成失败，自动暂停');
         this.pauseGeneration();
         uni.showModal({
           title: '智能生成暂停',
@@ -565,7 +565,7 @@ export const aiGenerationMixin = {
                 this._consecutiveFailures = 0; // 二次解析成功，重置
                 const merged = [...old, ...uniqueQs];
                 if (this._saveQuestionBank(merged, uniqueQs.length)?.success !== true) return;
-                logger.log(`[practice] 二次解析成功，生成 ${uniqueQs.length} 道题目`);
+                logger.log('[practice] 二次解析成功，生成 [省略] 道题目');
                 return;
               }
             }

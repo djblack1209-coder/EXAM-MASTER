@@ -174,7 +174,7 @@ class OfflineQueue {
     // 监听网络状态
     this._setupNetworkListener();
 
-    logger.log(`[OfflineQueue] 初始化完成，队列中有 ${this.queue.length} 个待处理请求`);
+    logger.log('[OfflineQueue] 初始化完成，队列中有 [省略] 个待处理请求');
   }
 
   /**
@@ -198,7 +198,7 @@ class OfflineQueue {
         });
 
         if (this.queue.length !== stored.length) {
-          logger.log(`[OfflineQueue] 已清理 ${stored.length - this.queue.length} 个过期请求`);
+          logger.log('[OfflineQueue] 已清理 [省略] 个过期请求');
           this._saveToStorage();
         }
       }
@@ -242,7 +242,7 @@ class OfflineQueue {
       uni.getNetworkType({
         success: (res) => {
           this.isOnline = res.networkType !== 'none';
-          logger.log(`[OfflineQueue] 当前网络状态: ${res.networkType}`);
+          logger.log('[OfflineQueue] 当前网络状态: [省略]');
         }
       });
     }
@@ -253,7 +253,7 @@ class OfflineQueue {
         const wasOffline = !this.isOnline;
         this.isOnline = res.isConnected;
 
-        logger.log(`[OfflineQueue] 网络状态变化: ${res.isConnected ? '在线' : '离线'} (${res.networkType})`);
+        logger.log('[OfflineQueue] 网络状态变化: [省略] ([省略])');
 
         // 从离线恢复到在线，自动处理队列
         if (wasOffline && this.isOnline && this.queue.length > 0) {
@@ -314,8 +314,8 @@ class OfflineQueue {
       const lowPriorityIndex = this.queue.findIndex((item) => item.priority === 'low' || item.priority === 'normal');
 
       if (lowPriorityIndex !== -1) {
-        const removed = this.queue.splice(lowPriorityIndex, 1)[0];
-        logger.log(`[OfflineQueue] 队列已满，移除旧请求: ${removed.id}`);
+        this.queue.splice(lowPriorityIndex, 1);
+        logger.log('[OfflineQueue] 队列已满，移除旧请求: [省略]');
       } else {
         logger.warn('[OfflineQueue] 队列已满，无法添加新请求');
         return null;
@@ -340,7 +340,7 @@ class OfflineQueue {
           this.requestFnMap.set(existing.id, requestFn);
         }
 
-        logger.log(`[OfflineQueue] 更新已存在的请求: ${dedupeKey}`);
+        logger.log('[OfflineQueue] 更新已存在的请求: [省略]');
         this._saveToStorage();
         return existing.id;
       }
@@ -377,7 +377,7 @@ class OfflineQueue {
       this.queue.splice(insertIndex, 0, queueItem);
     }
 
-    logger.log(`[OfflineQueue] 📥 请求已入队: ${id} (优先级: ${priority}, 队列长度: ${this.queue.length})`);
+    logger.log('[OfflineQueue] 📥 请求已入队: [省略] (优先级: [省略], 队列长度: [省略])');
 
     this._saveToStorage();
     this._notifyListeners({
@@ -401,7 +401,7 @@ class OfflineQueue {
       this.requestFnMap.delete(id);
       this._saveToStorage();
 
-      logger.log(`[OfflineQueue] 📤 请求已出队: ${id}`);
+      logger.log('[OfflineQueue] 📤 请求已出队: [省略]');
       this._notifyListeners({
         type: 'dequeue',
         request: removed,
@@ -421,7 +421,7 @@ class OfflineQueue {
   async processQueue(options = {}) {
     void options;
     if (this.processing || this.paused) {
-      logger.log(`[OfflineQueue] 队列${this.paused ? '已暂停' : '正在处理中'}...`);
+      logger.log('[OfflineQueue] 队列[省略]...');
       return { success: false, reason: this.paused ? 'paused' : 'already_processing' };
     }
 
@@ -436,7 +436,7 @@ class OfflineQueue {
     }
 
     this.processing = true;
-    logger.log(`[OfflineQueue] 🔄 开始处理队列，共 ${this.queue.length} 个请求`);
+    logger.log('[OfflineQueue] 🔄 开始处理队列，共 [省略] 个请求');
 
     const results = {
       processed: 0,
@@ -467,22 +467,22 @@ class OfflineQueue {
         // ✅ 问题清单修复：函数引用丢失时，尝试从 requestData 重建
         if (!requestFn && item.requestData && this._rebuilder) {
           try {
-            logger.log(`[OfflineQueue] 🔧 尝试从 requestData 重建请求: ${item.id}`);
+            logger.log('[OfflineQueue] 🔧 尝试从 requestData 重建请求: [省略]');
             requestFn = () => this._rebuilder(item.requestData, { session: item.session });
           } catch (rebuildErr) {
-            logger.log(`[OfflineQueue] ⚠️ 请求重建失败: ${item.id}`, rebuildErr);
+            logger.log('[OfflineQueue] ⚠️ 请求重建失败: [省略]', rebuildErr);
           }
         }
 
         if (!requestFn) {
           // 无法执行也无法重建，跳过
-          logger.log(`[OfflineQueue] ⚠️ 请求 ${item.id} 无法执行（函数引用丢失且无法重建），跳过`);
+          logger.log('[OfflineQueue] ⚠️ 请求 [省略] 无法执行（函数引用丢失且无法重建），跳过');
           this.dequeue(item.id);
           results.failed++;
           continue;
         }
 
-        logger.log(`[OfflineQueue] 📡 处理请求: ${item.id}`);
+        logger.log('[OfflineQueue] 📡 处理请求: [省略]');
 
         // 执行请求
         assertSession(item.session);
@@ -493,10 +493,10 @@ class OfflineQueue {
         this.dequeue(item.id);
         results.processed++;
 
-        logger.log(`[OfflineQueue] ✅ 请求成功: ${item.id}`);
+        logger.log('[OfflineQueue] ✅ 请求成功: [省略]');
       } catch (error) {
         if (error.code === 'SESSION_UNAVAILABLE') break;
-        logger.error(`[OfflineQueue] ❌ 请求失败: ${item.id}`, error);
+        logger.error('[OfflineQueue] ❌ 请求失败: [省略]', error);
 
         item.retryCount++;
         results.errors.push({
@@ -506,7 +506,7 @@ class OfflineQueue {
 
         // 超过重试次数，移除
         if (item.retryCount >= 3) {
-          logger.log(`[OfflineQueue] 🗑️ 请求超过重试次数，移除: ${item.id}`);
+          logger.log('[OfflineQueue] 🗑️ 请求超过重试次数，移除: [省略]');
           this.dequeue(item.id);
           results.failed++;
         } else {
@@ -521,7 +521,7 @@ class OfflineQueue {
 
     this.processing = false;
 
-    logger.log(`[OfflineQueue] 📊 队列处理完成: 成功 ${results.processed}, 失败 ${results.failed}`);
+    logger.log('[OfflineQueue] 📊 队列处理完成: 成功 [省略], 失败 [省略]');
 
     this._notifyListeners({
       type: 'processComplete',

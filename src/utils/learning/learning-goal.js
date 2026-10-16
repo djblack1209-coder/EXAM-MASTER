@@ -706,7 +706,7 @@ class LearningGoalManager {
 
       if (changed) {
         storageService.save(STORAGE_KEYS.GOALS, this.goals, true, this._session);
-        logger.log(`[LearningGoal] 从后端合并了新目标，当前共 ${this.goals.length} 个`);
+        logger.log('[LearningGoal] 从后端合并了新目标，当前共 [省略] 个');
       }
     } catch (e) {
       // 拉取失败不影响本地使用

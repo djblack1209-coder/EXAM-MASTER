@@ -585,7 +585,7 @@ export async function request(path, data = {}, options = {}) {
     for (let attempt = 0; attempt <= maxRetryLoop; attempt++) {
       try {
         if (attempt > 0) {
-          logger.warn(`[LafService] 🔄 第 ${attempt} 次重试: ${path}`);
+          logger.warn('[LafService] 🔄 第 [省略] 次重试: [省略]');
           await delay(attempt - 1);
         }
         assertActive();
@@ -624,7 +624,7 @@ export async function request(path, data = {}, options = {}) {
                     responseData = JSON.parse(responseData);
                   } catch (parseErr) {
                     logger.error(
-                      `[LafService] 响应数据解析失败: ${path}`,
+                      '[LafService] 响应数据解析失败: [省略]',
                       options.redactErrors ? { errorType: 'parse' } : parseErr
                     );
                     reject({ message: '服务器返回数据格式异常', statusCode: 200, parseError: true });
@@ -634,7 +634,7 @@ export async function request(path, data = {}, options = {}) {
                 markPrimarySuccess();
                 resolve(responseData);
               } else if (res.statusCode === 401 || res.statusCode === 403) {
-                logger.warn(`[LafService] 认证失败 (${res.statusCode}): ${path}`);
+                logger.warn('[LafService] 认证失败 ([省略]): [省略]');
                 if (res.statusCode === 401 && !options.suppressAuthFailure) {
                   uni.$emit('authFailure', { statusCode: res.statusCode, path });
                 }
@@ -710,7 +710,7 @@ export async function request(path, data = {}, options = {}) {
         const retryBudget = err.retryPolicy === 'laf_cold_start' ? coldStartRetries : maxRetries;
         if (!err.retryable || attempt >= retryBudget) {
           logger.error(
-            `[LafService] ❌ 请求最终失败 (${attempt + 1}次尝试): ${path}`,
+            '[LafService] ❌ 请求最终失败 ([省略]次尝试): [省略]',
             options.redactErrors ? { code: requestError(err).code } : err
           );
           throw requestError(err);

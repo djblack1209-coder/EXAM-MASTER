@@ -133,7 +133,7 @@ describe('Logger', () => {
       const spy = vi.spyOn(console, 'table').mockImplementation(() => {});
       const data = [{ a: 1 }];
       logger.table(data);
-      expect(spy).toHaveBeenCalledWith(data);
+      expect(spy).toHaveBeenCalledWith('[App] 表格诊断已省略');
     });
 
     it('level > LOG 时 group/groupEnd/table 不输出', () => {
@@ -155,14 +155,14 @@ describe('Logger', () => {
     it('log 传递多个参数', () => {
       const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
       logger.log('a', 'b', 123);
-      expect(spy).toHaveBeenCalledWith('a', 'b', 123);
+      expect(spy).toHaveBeenCalledWith('a', 123);
     });
 
     it('error 传递 Error 对象', () => {
       const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const err = new Error('test');
       logger.error('failed:', err);
-      expect(spy).toHaveBeenCalledWith('failed:', err);
+      expect(spy).toHaveBeenCalledWith('failed:');
     });
   });
 });

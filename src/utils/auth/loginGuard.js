@@ -6,6 +6,7 @@
 import { useUserStore } from '../../stores';
 import { safeNavigateTo } from '../safe-navigate';
 import { storageService, getUserId } from '../../services/storageService.js';
+import { readSessionSnapshot } from '@/services/auth-storage.js';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
 
@@ -33,6 +34,7 @@ function buildCurrentPageFullPath(page) {
  * @returns {boolean} 是否已登录
  */
 export function isUserLoggedIn() {
+  if (readSessionSnapshot().status === 'unavailable') return null;
   const userStore = useUserStore();
 
   // 优先检查 Pinia store 状态（单一数据源）
@@ -95,7 +97,12 @@ export function requireLogin(callback, options = {}) {
     useModal = true
   } = options;
 
-  if (isUserLoggedIn()) {
+  const loginState = isUserLoggedIn();
+  if (loginState === null) {
+    toast.info('登录状态暂不可读，请重试');
+    return null;
+  }
+  if (loginState) {
     // 已登录，执行回调（安全处理同步/异步异常）
     if (typeof callback === 'function') {
       try {
@@ -183,6 +190,10 @@ export function requireLoginAsync(options = {}) {
       }
     );
 
+    if (isLoggedIn === null) {
+      reject(Object.assign(new Error('登录状态暂不可读，请重试'), { code: 'SESSION_UNAVAILABLE' }));
+      return;
+    }
     if (!isLoggedIn) {
       reject(new Error('用户未登录'));
     }
@@ -197,6 +208,10 @@ export function requireLoginAsync(options = {}) {
  */
 export function pageRequireLogin(pageInstance, options = {}) {
   const isLoggedIn = isUserLoggedIn();
+  if (isLoggedIn === null) {
+    toast.info('登录状态暂不可读，请重试');
+    return null;
+  }
 
   if (!isLoggedIn) {
     const {
@@ -273,17 +288,8 @@ export function loginRequired(message = '请先登录') {
     const originalMethod = descriptor.value;
 
     descriptor.value = function (...args) {
-      if (isUserLoggedIn()) {
-        return originalMethod.apply(this, args);
-      } else {
-        toast.info(message);
-
-        setTimeout(() => {
-          safeNavigateTo('/pages/login/index');
-        }, 1500);
-
-        return false;
-      }
+      const allowed = requireLogin(undefined, { message, useModal: false });
+      return allowed === true ? originalMethod.apply(this, args) : allowed;
     };
 
     return descriptor;

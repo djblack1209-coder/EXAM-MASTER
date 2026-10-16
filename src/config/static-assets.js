@@ -164,13 +164,13 @@ const LOCAL_ONLY_CATEGORIES = ['tabbar'];
 export function getAssetUrl(category, name) {
   const categoryMap = ASSET_REGISTRY[category];
   if (!categoryMap) {
-    logger.warn(`[static-assets] 未知的资源分类: ${category}`);
+    logger.warn('[static-assets] 未知的资源分类: [省略]');
     return '';
   }
 
   const relativePath = categoryMap[name];
   if (!relativePath) {
-    logger.warn(`[static-assets] 未找到资源: ${category}/${name}`);
+    logger.warn('[static-assets] 未找到资源: [省略]/[省略]');
     return '';
   }
 
@@ -234,7 +234,7 @@ export function getStaticAssetUrl(relativePath) {
 export function getAssetUrls(category) {
   const categoryMap = ASSET_REGISTRY[category];
   if (!categoryMap) {
-    logger.warn(`[static-assets] 未知的资源分类: ${category}`);
+    logger.warn('[static-assets] 未知的资源分类: [省略]');
     return {};
   }
 
