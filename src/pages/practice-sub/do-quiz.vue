@@ -7,7 +7,7 @@
   >
     <view class="aurora-bg" />
 
-    <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
+    <view v-if="questions.length" class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px' }">
         <view class="back-area"
           ><BaseButton
@@ -17,7 +17,7 @@
             :label="t('quiz.copy46')"
             @tap="handleExit"
           /><BaseButton id="e2e-quiz-progress" variant="quiet" :label="t('quiz.copy39')" @tap="handleOpenAnswerSheet">{{
-            quizProgressLabel
+            t('quiz.copy39')
           }}</BaseButton></view
         >
         <QuizProgress :total="questions.length" :current="currentIndex" :answered="answeredQuestions" />
@@ -504,12 +504,14 @@
       :visible="showEmptyBankModal"
       type="upload"
       :title="resumeUnavailable ? t('quiz.copy42') : t('quiz.copy43')"
-      :content="resumeUnavailable ? t('quiz.copy44') : t('quiz.copy45')"
-      :confirm-text="resumeUnavailable ? t('quiz.copy46') : t('quiz.copy47')"
+      :content="resumeUnavailable ? t('quiz.copy44') : ''"
+      :confirm-text="resumeUnavailable ? t('quiz.copy46') : t('pages.practice')"
       :show-cancel="false"
       :is-dark="isDark"
       @confirm="handleEmptyBankConfirm"
-    />
+      ><template #title
+        ><BaseEmpty :title="resumeUnavailable ? t('quiz.copy42') : t('quiz.copy43')" mascot-size="state" /></template
+    ></CustomModal>
 
     <!-- ✅ 自定义弹窗：恢复进度 -->
     <CustomModal

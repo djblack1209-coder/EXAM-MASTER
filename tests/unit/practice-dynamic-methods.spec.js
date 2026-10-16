@@ -60,31 +60,27 @@ function mountPractice({ hasBank = false, hasQuizResume = false } = {}) {
 }
 
 describe('practice template mode entry', () => {
-  it('selects weakness as a draft, then opens review through both start buttons without a bank', async () => {
+  it('selects weakness as a draft, then explicitly starts review without a bank', async () => {
     const wrapper = mountPractice();
     const before = JSON.stringify(global.__mockStorage);
-    expect(wrapper.find('.action-btn.primary-btn').exists()).toBe(false);
+    expect(wrapper.find('.practice-new').exists()).toBe(false);
     await wrapper.get('.mode-row').findAll('button')[2].trigger('tap');
     expect(uni.navigateTo).not.toHaveBeenCalled();
     expect(JSON.stringify(global.__mockStorage)).toBe(before);
     expect(wrapper.get('.practice-command.primary').text()).toContain('错题强化');
     await wrapper.get('.practice-command.primary').trigger('tap');
-    await wrapper.get('.action-btn.primary-btn').trigger('tap');
-    expect(uni.navigateTo.mock.calls.map(([options]) => options.url)).toEqual([
-      '/pages/mistake/index?mode=review',
-      '/pages/mistake/index?mode=review'
-    ]);
+    expect(uni.navigateTo.mock.calls.map(([options]) => options.url)).toEqual(['/pages/mistake/index?mode=review']);
     expect(uni.showToast).not.toHaveBeenCalled();
     expect(JSON.stringify(global.__mockStorage)).toBe(before);
   });
 
   it('exposes independent review without a bank and keeps ordinary/timed entry in the directory', async () => {
     const wrapper = mountPractice();
-    await wrapper.get('.action-btn.secondary-btn').trigger('tap');
+    await wrapper.get('.practice-review').trigger('tap');
     expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/mistake/index?mode=review');
     for (const index of [0, 1]) {
       await wrapper.get('.mode-row').findAll('button')[index].trigger('tap');
-      expect(wrapper.find('.action-btn.primary-btn').exists()).toBe(false);
+      expect(wrapper.find('.practice-new').exists()).toBe(false);
       await wrapper.get('.practice-command.primary').trigger('tap');
       expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/practice-sub/question-bank');
     }
@@ -109,7 +105,7 @@ describe('practice template mode entry', () => {
     await wrapper.get('.mode-row').findAll('button')[2].trigger('tap');
     await wrapper.get('.practice-command.primary').trigger('tap');
     expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/practice-sub/do-quiz?resume=true');
-    await wrapper.get('.action-btn.primary-btn').trigger('tap');
+    await wrapper.get('.practice-new').trigger('tap');
     expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe('/pages/mistake/index?mode=review');
     expect(JSON.stringify(global.__mockStorage)).toBe(before);
   });
@@ -120,11 +116,11 @@ describe('practice template mode entry', () => {
   ])('keeps %s start checking the bank after the button was rendered', async (_mode, index, query) => {
     const wrapper = mountPractice({ hasBank: true });
     await wrapper.get('.mode-row').findAll('button')[index].trigger('tap');
-    await wrapper.get('.action-btn.primary-btn').trigger('tap');
+    await wrapper.get('.practice-command.primary').trigger('tap');
     expect(uni.navigateTo.mock.calls.at(-1)[0].url).toBe(`/pages/practice-sub/do-quiz${query}`);
     uni.navigateTo.mockClear();
     storageService.save('v30_bank', []);
-    await wrapper.get('.action-btn.primary-btn').trigger('tap');
+    await wrapper.get('.practice-command.primary').trigger('tap');
     expect(uni.navigateTo).not.toHaveBeenCalled();
     expect(uni.showToast).toHaveBeenCalledWith(expect.objectContaining({ title: '请先加载题库' }));
   });

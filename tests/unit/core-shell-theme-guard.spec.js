@@ -21,17 +21,7 @@ const CORE_THEME_PAGES = [
   },
   {
     file: 'src/pages/practice/index.vue',
-    required: [
-      "'dark-mode': isDark",
-      "'theme-light': !isDark",
-      "uni.$on('themeUpdate'",
-      "uni.$on('updateTheme'",
-      "uni.$off('themeUpdate'",
-      "uni.$off('updateTheme'",
-      '.page.dark-mode',
-      '.dark-mode .nav-bar',
-      '.dark-mode .card'
-    ]
+    required: ['<LearningShell', 'active="practice"']
   },
   {
     file: 'src/pages/profile/index.vue',
@@ -56,5 +46,8 @@ describe('core shell theme guard', () => {
       expect(page).toContain('useThemeStore');
       expect(page).toContain('@/styles/yozi-pages.scss');
     }
+    const shell = readFileSync(resolve(ROOT, 'src/components/business/learning/learning-shell.vue'), 'utf8');
+    expect(shell).toContain('useThemeStore');
+    expect(shell).toContain("'space-dark': theme.isDark");
   });
 });

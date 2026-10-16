@@ -1,61 +1,30 @@
-import { createPinia, setActivePinia } from 'pinia';
-import { beforeEach } from 'vitest';
-beforeEach(() => setActivePinia(createPinia()));
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { mount } from '@vue/test-utils';
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
+import { mount, enableAutoUnmount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { describe, expect, it, vi } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
 import QuestionBankPage from '@/pages/practice-sub/question-bank.vue';
 import storageService from '@/services/storageService.js';
-
 vi.mock('@dcloudio/uni-app', () => ({ onHide: vi.fn(), onShow: vi.fn(), onUnload: vi.fn() }));
-
-const source = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/question-bank.vue'), 'utf8');
-
-describe('question bank slot readiness detail', () => {
-  it('keeps selected year slots explicit about status and next action', () => {
-    for (const field of ['buildYearSlotReadiness', 'selectedYearSlotReadiness', 'slot-action-disabled'])
-      expect(source).toContain(field);
-    const copy = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/messages.js'), 'utf8');
-    expect(copy).toContain('整理中，暂不可开始');
-    expect(copy).toContain('待入库后开放');
-  });
-
-  it('keeps the readiness copy user-facing instead of exposing backend workflow terms', () => {
-    expect(source).not.toContain('题库发布校验');
-    expect(source).not.toContain('答案 hash');
-    expect(source).not.toContain('SourceEvidence');
-    expect(source).not.toContain('发布链路');
-    expect(source).not.toContain('题源');
-    expect(source).not.toContain('复核');
-  });
-
-  it('shows a blocked but intentional state for unavailable year slots', async () => {
-    storageService.save('exam_profile', { tracks: ['politics'] });
-
-    const wrapper = mount(QuestionBankPage, {
-      global: {
-        stubs: {
-          BaseIcon: true
-        }
-      }
-    });
+enableAutoUnmount(afterEach);
+beforeEach(() => setActivePinia(createPinia()));
+function open(tracks = ['politics']) {
+  storageService.save('exam_profile', { tracks });
+  return mount(QuestionBankPage, { global: { stubs: { BaseIcon: true } } });
+}
+describe('unavailable paper recovery', () => {
+  it('blocks start for an unavailable year and returns to a real available year without importing', async () => {
+    const wrapper = open();
     await nextTick();
-
+    const before = JSON.stringify(storageService.get('v30_bank', []));
     await wrapper.findAll('.year-slot')[0].trigger('tap');
     await nextTick();
-
-    expect(wrapper.find('.year-slot.active .slot-year').text()).toBe('2026');
-    expect(wrapper.find('.slot-readiness-panel').exists()).toBe(false);
-    expect(wrapper.find('.slot-caution').text()).toBe('资料入库后开放');
-    expect(wrapper.text()).toContain('资料暂未入库');
-    expect(wrapper.text()).toContain('资料入库后开放');
-    expect(wrapper.text()).toContain('待入库后开放');
-    expect(wrapper.find('.slot-action-disabled').exists()).toBe(true);
-    expect(wrapper.find('.slot-action-disabled').attributes('aria-disabled')).toBe('true');
-    expect(wrapper.find('.slot-action-disabled').classes()).toContain('muted');
-
-    wrapper.unmount();
+    expect(wrapper.get('.year-slot.active .slot-year').text()).toBe('2026');
+    expect(wrapper.find('.slot-action').exists()).toBe(false);
+    expect(wrapper.get('.slot-detail').text()).toContain('这套试题暂未开放');
+    await wrapper.get('.slot-detail .base-state .base-button').trigger('tap');
+    await nextTick();
+    expect(wrapper.get('.year-slot.active .slot-year').text()).toBe('2025');
+    expect(wrapper.get('.slot-action').text()).toBe('开始练习');
+    expect(JSON.stringify(storageService.get('v30_bank', []))).toBe(before);
   });
 });

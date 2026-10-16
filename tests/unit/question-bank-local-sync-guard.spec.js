@@ -1,76 +1,29 @@
-import { createPinia, setActivePinia } from 'pinia';
-import { beforeEach } from 'vitest';
-beforeEach(() => setActivePinia(createPinia()));
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { mount } from '@vue/test-utils';
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
+import { mount, enableAutoUnmount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { describe, expect, it, vi } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
 import QuestionBankPage from '@/pages/practice-sub/question-bank.vue';
 import storageService from '@/services/storageService.js';
-
 vi.mock('@dcloudio/uni-app', () => ({ onHide: vi.fn(), onShow: vi.fn(), onUnload: vi.fn() }));
-
-const source = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/question-bank.vue'), 'utf8');
-
-function mountQuestionBank() {
-  storageService.save('exam_profile', { tracks: ['politics'] });
-  return mount(QuestionBankPage, {
-    global: {
-      stubs: {
-        BaseIcon: true
-      }
-    }
-  });
+enableAutoUnmount(afterEach);
+beforeEach(() => setActivePinia(createPinia()));
+function open(tracks = ['politics']) {
+  storageService.save('exam_profile', { tracks });
+  return mount(QuestionBankPage, { global: { stubs: { BaseIcon: true } } });
 }
-
-describe('question bank local sync status', () => {
-  it('shows local sync state and usable question count for loaded papers', async () => {
-    storageService.save('loaded_flashcard_banks', ['politics-2025', 'politics-2024']);
-    storageService.save('v30_bank', [
-      { id: 'politics-2025-001', paperId: 'politics-2025', question: '第一题题干内容足够长' },
-      { id: 'politics-2025-002', paperId: 'politics-2025', question: '第二题题干内容足够长' },
-      { id: 'politics-2024-001', paperId: 'politics-2024', question: '2024第一题题干内容足够长' }
-    ]);
-
-    const wrapper = mountQuestionBank();
+describe('question bank preserves local records without workflow labels', () => {
+  it.each([true, false])('opening a paper with loaded=%s does not mutate its bank or sync markers', async (loaded) => {
+    const records = loaded ? [{ id: 'keep', paperId: 'politics-2025', question: '原题保持' }] : [];
+    const ids = loaded ? ['politics-2025'] : [];
+    storageService.save('v30_bank', records);
+    storageService.save('loaded_flashcard_banks', ids);
+    const wrapper = open();
     await nextTick();
-
-    expect(wrapper.find('.local-sync-strip').exists()).toBe(true);
-    expect(wrapper.find('.local-sync-strip').text()).toContain('本地状态');
-    expect(wrapper.find('.local-sync-strip').text()).toContain('已同步');
-    expect(wrapper.find('.local-sync-strip').text()).toContain('可练题目');
-    expect(wrapper.find('.local-sync-strip').text()).toContain('2 题');
-    expect(wrapper.find('.paper-local-pill').classes()).toContain('synced');
-    expect(wrapper.find('.paper-list').text()).toContain('1 题');
-    expect(wrapper.text()).toContain('2 题');
-
-    wrapper.unmount();
-  });
-
-  it('shows unsynced papers as explicit pending local sync', async () => {
-    const wrapper = mountQuestionBank();
-    await nextTick();
-
-    expect(wrapper.find('.local-sync-strip').text()).toContain('未同步');
-    expect(wrapper.find('.local-sync-strip').text()).toContain('待同步');
-    expect(wrapper.find('.paper-local-row').text()).toContain('未同步');
-    expect(wrapper.find('.paper-local-row').text()).toContain('待同步');
-
-    wrapper.unmount();
-  });
-
-  it('guards local sync state wiring and dark-mode styling', () => {
-    for (const field of [
-      'localPaperStats',
-      'buildLocalPaperStats',
-      'refreshLocalPaperStats',
-      'getPaperLocalState',
-      'local-sync-strip',
-      'paper-local-row'
-    ])
-      expect(source).toContain(field);
-    expect(source).toContain('useThemeStore');
-    expect(source).toContain('@/styles/yozi-pages.scss');
+    expect(wrapper.get('.slot-action').text()).toBe('开始练习');
+    expect(wrapper.text()).not.toContain('未同步');
+    expect(wrapper.text()).not.toContain('已同步');
+    expect(wrapper.text()).not.toContain('待同步');
+    expect(storageService.get('v30_bank')).toEqual(records);
+    expect(storageService.get('loaded_flashcard_banks')).toEqual(ids);
   });
 });

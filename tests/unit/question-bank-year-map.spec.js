@@ -20,11 +20,10 @@ describe('question bank public-course year map', () => {
     expect(source).toContain('selectedYearSlots');
     expect(source).toContain('selectedYearSlot.clickable');
     expect(source).toContain('loadAndStartSlot');
-    expect(source).toContain('uiText(slot.statusLabel)');
+    expect(source).toContain("slot.clickable ? 'ui.paperOpen' : 'ui.paperClosed'");
     expect(source).toContain(':model-value="selectedYearSlot?.id === slot.id"');
-    expect(source).toContain('selectedYearSlot.disabledReason');
-    expect(source).toContain('const organizingCount');
-    expect(source).toContain("t('quiz.copy117'");
+    expect(source).toContain("t('ui.paperUnavailable')");
+    expect(source).toContain('chooseAvailablePaper');
   });
 
   it('keeps every track on its real release-scope year map and marks verified banks as clickable', () => {
@@ -305,7 +304,7 @@ describe('question bank public-course year map', () => {
 
     expect(wrapper.text()).toContain('2025考研英语二真题');
     expect(wrapper.text()).toContain('2010-2026');
-    expect(wrapper.text()).toContain('正式 16 · 整理中 0 · 待入库 1');
+    expect(wrapper.text()).toContain('已开放 16/17 套');
     expect(wrapper.find('.year-slot.active .slot-year').text()).toBe('2025');
 
     wrapper.unmount();
@@ -454,12 +453,10 @@ describe('question bank public-course year map', () => {
     });
     await nextTick();
 
-    expect(wrapper.text()).toContain('11');
-    expect(wrapper.text()).toContain('正式');
-    expect(wrapper.text()).toContain('0');
-    expect(wrapper.text()).toContain('整理中');
-    expect(wrapper.text()).toContain('正式 21 · 整理中 0 · 待入库 1');
-
+    expect(wrapper.text()).toContain('已开放 21/22 套');
+    expect(wrapper.findAll('.year-slot')).toHaveLength(22);
+    expect(wrapper.text()).not.toContain('整理中');
+    expect(wrapper.text()).not.toContain('待入库');
     wrapper.unmount();
   });
 });

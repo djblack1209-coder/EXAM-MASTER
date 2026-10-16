@@ -31,13 +31,7 @@
       <text v-if="!learningWriteProtectionSupported" class="warning">{{ t('learning.k59') }}</text>
       <!-- #endif -->
       <view v-if="!learning.active" class="welcome-copy"
-        ><YoziMascot
-          v-if="!welcomeIdle"
-          pose="wave"
-          play="once"
-          size="state"
-          @complete="welcomeIdle = true"
-        /><YoziMascot v-else pose="idle" play="none" size="state" />
+        ><YoziMascot pose="think" play="loop" size="medium" />
         <text class="welcome-title">{{ t('learning.ks3') }}</text>
       </view>
       <BaseCard v-if="showConnections" class="panel" padding="none">
@@ -843,7 +837,12 @@
           :schedule-retest="learning.scheduleSentenceRetest"
         />
       </view>
-      <BaseCard id="learning-composer" ref="composer" class="composer" surface="glass" padding="none"
+      <view
+        id="learning-composer"
+        ref="composer"
+        class="composer"
+        role="group"
+        :aria-label="t('learning.chatPlaceholder')"
         ><BaseButton
           variant="quiet"
           icon-only
@@ -905,13 +904,14 @@
             icon-only
             icon="arrow-up"
             :label="t('learning.send')"
+            :title="!draft.trim() ? t('learning.chatPlaceholder') : t('learning.send')"
             :disabled="!draft.trim() || !!learning.active?.stopped"
             @tap="send"
           />
         </view>
-      </BaseCard>
+      </view>
       <view v-if="!learning.active" class="starter-row chat-starters" :aria-label="t('learning.chatExamples')">
-        <BaseButton v-for="starter in chatStarters" :key="starter" variant="quiet" @tap="draft = t(starter)">{{
+        <BaseButton v-for="starter in chatStarters" :key="starter" variant="secondary" @tap="draft = t(starter)">{{
           t(starter)
         }}</BaseButton>
       </view>
@@ -1948,13 +1948,7 @@ import { getUserId, getToken } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 const learning = useConversationLearningStore();
-const welcomeIdle = ref(false);
-watch(
-  () => learning.selectedConversationId,
-  () => {
-    welcomeIdle.value = false;
-  }
-);
+
 const latestAnswer = computed(
   () =>
     learning.state.attempts
@@ -4117,7 +4111,7 @@ onUnmounted(() => {
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  margin: calc(var(--s-8) * 2) 0 var(--s-6);
+  margin: 0 0 var(--s-8);
 }
 .chat-empty .composer {
   position: relative;
@@ -4141,5 +4135,73 @@ onUnmounted(() => {
 #active-learning-question,
 .sentence-hint-target {
   scroll-margin-top: var(--s-6);
+}
+</style>
+
+<style scoped>
+.chat-empty {
+  min-height: calc(100svh - 176px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.chat-empty .welcome-title {
+  width: 100%;
+  max-width: 640px;
+  text-wrap: balance;
+  white-space: normal;
+}
+.chat-empty .composer {
+  width: 100%;
+}
+.composer {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-2);
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: var(--border-control) solid var(--control-line);
+  box-shadow: var(--lift-2);
+}
+.composer:focus-within {
+  outline: var(--border-selected) solid var(--focus);
+  outline-offset: var(--focus-offset);
+}
+.composer .field {
+  flex: 1;
+}
+.composer :deep(.base-field__group) {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.composer :deep(.base-field__input) {
+  padding-inline: var(--s-1);
+}
+.composer .button-row {
+  margin: 0;
+  gap: var(--s-1);
+  flex-wrap: nowrap;
+}
+.chat-starters {
+  gap: var(--s-3);
+}
+.chat-starters :deep(.base-button) {
+  border-radius: var(--r-pill);
+  background: var(--glass);
+  font-size: var(--size-small);
+}
+@media (max-width: 767px) {
+  .chat-empty {
+    min-height: calc(100svh - 230px);
+  }
+  .chat-empty .welcome-title {
+    max-width: 320px;
+    font-size: var(--size-title-2);
+    line-height: var(--leading-title-2);
+  }
+  .chat-starters {
+    margin-bottom: var(--s-5);
+  }
 }
 </style>

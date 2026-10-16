@@ -51,9 +51,9 @@ export const MOBILE_ROUTE_READY_SELECTORS = {
   '/pages/learning/index':
     '.learning-page .goal-panel textarea, .learning-page #learning-composer textarea, .learning-page #learning-composer input',
   '/pages/practice/index': '.practice-command.primary',
-  '/pages/practice-sub/question-bank': '.qb-page .paper-hero .hero-title',
-  '/pages/practice-sub/do-quiz': '#e2e-quiz-progress',
-  '/pages/mistake/index': '.learning-overview .overview-title',
+  '/pages/practice-sub/question-bank': '.learning-space .paper-hero .hero-title',
+  '/pages/practice-sub/do-quiz': '#e2e-quiz-progress, .custom-modal-container .base-state',
+  '/pages/mistake/index': '.learning-overview .overview-title, .learning-overview .overview-empty',
   '/pages/profile/index': '.profile-command-card .user-name'
 };
 

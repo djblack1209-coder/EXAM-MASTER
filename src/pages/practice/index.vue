@@ -1,256 +1,119 @@
 <template>
-  <LearningShell
-    ref="keyboardRoot"
-    class="yozi-page"
-    active="practice"
-    :title="$t('pages.practice')"
-    :style="[tabBarStyle, $yoziInsets]"
-    :class="{ 'dark-mode': isDark, 'theme-light': !isDark }"
-  >
-    <!-- 自定义导航栏 -->
-    <!-- 主内容 -->
+  <LearningShell ref="keyboardRoot" class="yozi-page" active="practice" :title="$t('pages.practice')">
     <scroll-view scroll-y class="main-scroll">
-      <!-- 可用题库列表 -->
-      <view class="section practice-hero-section">
-        <view class="practice-hero">
-          <text class="practice-title">{{ uiText(practiceHeroTitle) }}</text>
-          <view class="practice-signal-row">
-            <BaseStat :label="t('dashboard.copy55')" :value="Number(loadedBankCount) || 0" />
-            <BaseStat :label="t('dashboard.copy56')" :value="Number(totalQuestions) || 0" />
-            <BaseStat :label="t('dashboard.copy57')" :value="Number(trackCount) || 0" />
-          </view>
-
+      <view class="practice-hero">
+        <view class="practice-intro">
+          <text class="practice-title">{{ t('ui.todayPractice') }}</text>
+          <text class="section-hint">{{ t('ui.practicePrompt') }}</text>
           <view class="practice-command-row">
             <BaseButton
               class="practice-command primary"
-              data-learning-toggle
               variant="primary"
+              icon="arrow-right"
               @tap="
                 hasBank || hasQuizResume || selectedModeId === 'weakness'
                   ? goDoQuiz({ resume: true })
                   : chooseImportSource()
               "
-              ><text>{{
+              >{{
                 hasQuizResume
-                  ? t('dashboard.copy58')
-                  : hasBank || selectedModeId === 'weakness'
+                  ? t('ui.resumePractice')
+                  : selectedModeId === 'weakness'
                     ? uiText(selectedModeLabel)
-                    : t('dashboard.copy60')
-              }}</text></BaseButton
+                    : t('ui.startPractice')
+              }}</BaseButton
             >
             <BaseButton
-              class="practice-command secondary"
-              data-learning-toggle
+              v-if="hasQuizResume && (hasBank || selectedModeId === 'weakness')"
+              class="practice-new"
               variant="secondary"
-              @tap="chooseImportSource"
-              ><text>{{ t('dashboard.copy61') }}</text></BaseButton
+              @tap="goDoQuiz"
+              >{{ t('ui.newPractice') }}</BaseButton
             >
+            <BaseButton variant="secondary" icon="books" @tap="chooseImportSource">{{
+              t('dashboard.copy61')
+            }}</BaseButton>
           </view>
         </view>
+        <YoziMascot pose="point" play="auto" size="medium" />
       </view>
-
-      <!-- #ifdef H5 -->
-      <view v-if="guestDemoEnabled && !hasBank" class="section">
-        <view class="card demo-entry">
-          <text class="section-title">{{ t('dashboard.copy62') }}</text>
-          <BaseButton
-            class="demo-start"
-            :loading="startingDemo"
-            :disabled="startingDemo"
-            variant="primary"
-            @tap="startDemo"
-            >{{ t('dashboard.copy63') }}</BaseButton
-          >
-        </view>
-      </view>
-      <!-- #endif -->
-
       <view class="section">
-        <view class="section-head navigator-head">
-          <view>
-            <text class="section-title">{{ t('dashboard.copy16') }}</text>
-          </view>
-          <text class="section-meta">{{ uiText(bankAvailabilityText) }}</text>
-        </view>
-
-        <view class="readiness-card">
-          <view class="readiness-head">
-            <view>
-              <text class="readiness-title">{{ uiText(readinessTitle) }}</text>
-            </view>
-            <BaseStat
-              :label="t('dashboard.copy64')"
-              :value="readinessSummary.publishedSlots"
-              :denominator="
-                readinessSummary.publishedSlots + readinessSummary.pendingSlots + readinessSummary.missingSlots
-              "
-            />
-          </view>
-          <view class="readiness-progress">
-            <view class="readiness-progress-fill" :style="{ width: readinessPercent + '%' }" />
-          </view>
-          <view class="readiness-metrics">
-            <BaseStat :label="t('dashboard.copy64')" :value="Number(readinessSummary.publishedSlots) || 0" />
-            <BaseStat :label="t('dashboard.copy65')" :value="Number(readinessSummary.pendingSlots) || 0" />
-            <BaseStat :label="t('dashboard.copy66')" :value="Number(readinessSummary.missingSlots) || 0" />
-          </view>
-          <view class="readiness-track-line">
-            <text>{{ uiText(selectedTrackReadinessText) }}</text>
-          </view>
-        </view>
-
         <view class="subject-tabs">
           <BaseChip
             v-for="subject in navigationTree"
             :key="subject.id"
-            data-learning-toggle
             :model-value="selectedSubject?.id === subject.id"
             @update:model-value="selectSubject(subject.id)"
-            ><text>{{ uiText(subject.label) }}</text></BaseChip
+            >{{ uiText(subject.label) }}</BaseChip
           >
         </view>
-
-        <view class="track-rail">
+        <view v-if="(selectedSubject?.tracks?.length || 0) > 1" class="track-rail">
           <BaseChip
             v-for="track in selectedSubject?.tracks || []"
             :key="track.id"
-            data-learning-toggle
             :model-value="selectedTrack?.id === track.id"
             @update:model-value="selectTrack(track.id)"
-            ><text class="track-code">{{ track.code }}</text
-            ><text class="track-label">{{ uiText(track.label) }}</text
-            ><text class="track-count">{{ track.banks.length }}</text></BaseChip
+            >{{ uiText(track.label) }}</BaseChip
           >
         </view>
-
+        <text v-if="selectedTrack" class="bank-availability">{{
+          t('ui.bankAvailability', {
+            name: uiText(selectedTrack.label),
+            ready: selectedTrack.slotSummary?.ready || 0,
+            total: selectedTrack.yearSlots?.length || 0
+          })
+        }}</text>
         <view class="mode-row">
           <BaseChip
             v-for="mode in selectedModes"
             :key="mode.id"
-            data-learning-toggle
             :model-value="selectedModeId === mode.id"
             @update:model-value="selectMode(mode.id)"
-            ><text>{{ uiText(mode.label) }}</text></BaseChip
+            >{{ uiText(mode.label) }}</BaseChip
           >
         </view>
       </view>
-
-      <view class="section">
-        <view class="section-head">
-          <view>
-            <text class="section-title">{{ uiText(selectedTrack?.label || t('dashboard.copy67')) }}</text>
-            <text class="section-hint">{{ uiText(selectedModeLabel) }}</text>
-          </view>
-          <text class="section-meta">{{ uiText(selectedTrackReleaseLabel) }}</text>
+      <view v-if="selectedBanks.length" class="bank-list">
+        <view v-for="bank in selectedBanks" :key="bank.id" class="card bank-card">
+          <view class="bank-info"
+            ><text class="bank-name">{{ uiText(bank.name) }}</text></view
+          >
+          <BaseButton
+            :loading="loadingBankId === bank.id"
+            :disabled="!!loadingBankId"
+            variant="secondary"
+            @tap="openBankDetail(bank.id)"
+            >{{ t('ui.startPractice') }}</BaseButton
+          >
         </view>
-
-        <view v-if="selectedBanks.length > 0" class="bank-list">
-          <view v-for="bank in selectedBanks" :key="bank.id" class="card bank-card">
-            <view class="bank-info">
-              <text class="bank-track">{{ t('dashboard.copy68', { v0: bank.year }) }}</text>
-              <text class="bank-name">{{ uiText(bank.name) }}</text>
-              <text v-if="bank.releaseLabel" class="bank-release-label">{{ uiText(bank.releaseLabel) }}</text>
-            </view>
-            <BaseButton
-              v-if="!isBankLoaded(bank.id)"
-              class="bank-btn detail-btn"
-              :disabled="loadingBankId === bank.id"
-              data-learning-toggle
-              variant="secondary"
-              @tap="openBankDetail(bank.id)"
-              ><text class="bank-btn-text">{{
-                loadingBankId === bank.id ? t('dashboard.copy69') : t('dashboard.copy70')
-              }}</text></BaseButton
-            >
-            <BaseButton
-              v-else
-              class="bank-btn continue-btn"
-              :disabled="loadingBankId === bank.id"
-              data-learning-toggle
-              variant="secondary"
-              @tap="openBankDetail(bank.id)"
-              ><text class="bank-btn-text">{{ t('dashboard.copy71') }}</text></BaseButton
-            >
-          </view>
-        </view>
-
-        <BaseEmpty
-          v-else
-          :title="emptyTrackTitle"
-          :desc="emptyTrackDesc"
-          show-button
-          :button-text="t('dashboard.directory')"
-          @action="chooseImportSource"
-        />
       </view>
-
-      <!-- 已加载统计 + 操作按钮 -->
-      <view class="section">
-        <view class="training-plan-card">
-          <view class="training-plan-head">
-            <view>
-              <text class="training-title"
-                >{{ uiText(todayTraining.trackLabel) }} · {{ uiText(todayTraining.focus) }}</text
-              >
-            </view>
-            <text class="training-minutes">{{ todayTraining.minutes }}min</text>
-          </view>
-          <view class="training-status-row">
-            <text class="training-status" :class="`status-${todayTraining.status}`">
-              {{ uiText(trainingStatusLabel(todayTraining.status)) }}
-            </text>
-            <text class="training-meta">{{ uiText(trainingCoverageText) }}</text>
-          </view>
-          <view class="training-week-row">
-            <view
-              v-for="task in weeklyTrainingTasks"
-              :key="task.day"
-              class="training-day"
-              :class="[{ active: task.day === todayTraining.day }, `status-${task.status}`]"
-            >
-              <text class="training-day-label">{{ uiText(task.label) }}</text>
-              <text class="training-day-track">{{ uiText(task.trackLabel) }}</text>
-            </view>
-          </view>
-        </view>
-
-        <view v-if="hasBank" class="card status-card">
-          <text class="status-text">{{ t('dashboard.copy72', { v0: totalQuestions }) }}</text>
-          <view class="progress-mini">
-            <view class="progress-bar-sm">
-              <view class="progress-fill-sm" :style="{ width: progressPercent + '%' }" />
-            </view>
-            <text class="progress-label">{{ t('dashboard.copy73', { v0: progressPercent }) }}</text>
-          </view>
-        </view>
-
-        <!-- 开始刷题 -->
-        <BaseButton
-          v-if="hasBank || selectedModeId === 'weakness'"
-          class="action-btn primary-btn"
-          variant="primary"
-          @tap="goDoQuiz"
-          ><text class="action-btn-text">{{ uiText(selectedModeLabel) }}</text></BaseButton
-        >
-
-        <!-- 智能复习 -->
-        <BaseButton class="action-btn secondary-btn" variant="secondary" @tap="goSmartReview"
-          ><text class="action-btn-text secondary-text">{{ t('dashboard.copy75') }}</text></BaseButton
-        >
+      <BaseEmpty
+        v-else
+        :title="emptyTrackTitle"
+        show-button
+        :button-text="t('ui.choosePaper')"
+        @action="chooseImportSource"
+      />
+      <view class="hero-actions"
+        ><BaseButton class="practice-review" variant="quiet" @tap="goSmartReview">{{
+          t('dashboard.copy75')
+        }}</BaseButton></view
+      >
+      <!-- #ifdef H5 -->
+      <view v-if="guestDemoEnabled && !hasBank" class="section">
+        <BaseButton :loading="startingDemo" :disabled="startingDemo" variant="quiet" @tap="startDemo">{{
+          t('dashboard.copy63')
+        }}</BaseButton>
       </view>
-
-      <!-- 底部占位 -->
-      <view class="yozi-tabbar-space" aria-hidden="true" />
+      <!-- #endif -->
     </scroll-view>
-
-    <!-- 底部导航栏 -->
   </LearningShell>
 </template>
 
 <script>
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import { getTabbarSafeAreaStyle } from '@/utils/core/system.js';
-import BaseStat from '@/components/base/base-stat/base-stat.vue';
+import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import '@/i18n/messages/dashboard.js';
 import { t, translateRegisteredText } from '@/i18n/index.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
@@ -275,7 +138,7 @@ import { isGuestDemoEnabled, startGuestDemoPractice } from '@/utils/practice/dem
 import { getRecoverableQuizProgress } from '@/composables/useQuizAutoSave.js';
 
 export default {
-  components: { LearningShell, BaseStat, BaseButton, BaseChip, BaseEmpty },
+  components: { LearningShell, YoziMascot, BaseButton, BaseChip, BaseEmpty },
 
   setup() {
     const dynamicMixinHelper = useDynamicMixin();
@@ -664,3 +527,50 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.practice-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-5);
+  padding: var(--s-8);
+}
+.practice-intro {
+  display: grid;
+  gap: var(--s-3);
+}
+.practice-command-row {
+  margin-bottom: 0;
+}
+.bank-availability {
+  display: block;
+  margin-block: var(--s-5);
+  color: var(--ink-2);
+}
+.bank-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+}
+.bank-card .bank-info {
+  min-width: 0;
+}
+@media (max-width: 767px) {
+  .practice-hero {
+    padding: var(--s-5);
+    align-items: flex-start;
+  }
+  .practice-hero .yozi-mascot {
+    width: 80px;
+    height: 80px;
+  }
+  .practice-title {
+    font-size: var(--size-title-2);
+  }
+  .bank-card {
+    flex-wrap: wrap;
+  }
+}
+</style>

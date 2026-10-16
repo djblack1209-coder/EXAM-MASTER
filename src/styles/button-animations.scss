@@ -79,7 +79,8 @@
 .btn-disabled,
 [disabled] {
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 1;
+  color: var(--ink-disabled);
   cursor: not-allowed;
 
   &:active {

@@ -107,6 +107,7 @@ describe('question bank start flow', () => {
       await wrapper.find('.slot-action').trigger('tap');
       pageHooks.hide();
       pageHooks.show();
+      await flushPromises();
       expect(loadBankData).toHaveBeenCalledTimes(1);
       await wrapper.find('.slot-action').trigger('tap');
       expect(loadBankData).toHaveBeenCalledTimes(2);

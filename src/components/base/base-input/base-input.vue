@@ -338,7 +338,7 @@ onBeforeUnmount(() => {
 }
 .base-field__group.is-disabled {
   background: var(--paper-sunk);
-  color: var(--ink-4);
+  color: var(--ink-disabled);
 }
 .base-field__group.focus-visible-only {
   border-color: var(--line);

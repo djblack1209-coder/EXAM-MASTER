@@ -50,18 +50,14 @@ describe('question bank recommended start entry', () => {
     const wrapper = mountQuestionBank();
     await nextTick();
 
-    const panel = wrapper.find('.recommended-panel');
+    const panel = wrapper.find('.slot-detail');
     expect(panel.exists()).toBe(true);
     expect(panel.text()).not.toContain('推荐开练');
     expect(panel.text()).toContain('2025考研政治真题');
     expect(panel.text()).not.toContain('当前方向最近可练整卷');
-    expect(panel.text()).toContain('方向');
-    expect(panel.text()).toContain('101');
-    expect(panel.text()).toContain('年份');
-    expect(panel.text()).toContain('2025');
-    expect(panel.text()).toContain('未同步');
-    expect(panel.text()).toContain('待同步');
-    expect(panel.text()).toContain('同步并开始');
+    expect(panel.text()).toContain('开始练习');
+    expect(panel.text()).not.toContain('未同步');
+    expect(panel.text()).not.toContain('待同步');
 
     wrapper.unmount();
   });
@@ -76,11 +72,10 @@ describe('question bank recommended start entry', () => {
     const wrapper = mountQuestionBank();
     await nextTick();
 
-    const panel = wrapper.find('.recommended-panel');
-    expect(panel.text()).toContain('已同步');
-    expect(panel.text()).toContain('2 题');
-    expect(panel.text()).not.toContain('可直接继续训练');
-    expect(panel.text()).toContain('继续本卷');
+    const panel = wrapper.find('.slot-detail');
+    expect(panel.text()).toContain('开始练习');
+    expect(panel.text()).not.toContain('已同步');
+    expect(storageService.get('v30_bank')).toHaveLength(2);
 
     wrapper.unmount();
   });
@@ -105,7 +100,7 @@ describe('question bank recommended start entry', () => {
     const wrapper = mountQuestionBank();
     await flushPromises();
 
-    await wrapper.find('.recommended-action').trigger('tap');
+    await wrapper.find('.slot-action').trigger('tap');
     await flushPromises();
 
     expect(loadBankData).toHaveBeenCalledWith('politics-2025');
@@ -123,15 +118,8 @@ describe('question bank recommended start entry', () => {
   });
 
   it('guards recommendation wiring, dark-mode coverage, and user-facing wording', () => {
-    for (const field of [
-      'recommendedSlot',
-      'recommendedLocalState',
-      'recommendedSlot.name',
-      'recommendedActionText',
-      '@tap="loadAndStartSlot(recommendedSlot)"'
-    ])
-      expect(source).toContain(field);
-    expect(source).toContain('useThemeStore');
+    expect(source).toContain('@tap="loadAndStartSlot(selectedYearSlot)"');
+    expect(source).toContain('<LearningShell');
     expect(source).toContain('<BaseButton');
     for (const word of ['题库发布校验', 'SourceEvidence', '答案 hash', '复核']) expect(source).not.toContain(word);
   });
