@@ -32,7 +32,6 @@ import { assertSession } from '@/services/auth-storage.js';
 import { ref, computed, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { storageService } from '@/services/storageService.js';
-import { getUserId, getToken } from '@/services/auth-storage.js';
 import { logger } from '@/utils/logger.js';
 import './messages.js';
 import { publicError, t } from '@/i18n/index.js';
@@ -59,7 +58,7 @@ let requestStarted = false;
 let redirectTimer;
 
 // 保存登录信息
-const saveLoginInfo = async (data) => {
+const saveLoginInfo = async (data, attempt) => {
   if (!data.token || !(data.userId || data._id)) throw new Error('登录结果不完整，请重新登录');
   const userInfo = {
     uid: data.userId || data._id,
@@ -69,11 +68,11 @@ const saveLoginInfo = async (data) => {
     avatarUrl: data.userInfo?.avatar_url || data.avatar_url || ''
   };
 
-  const session = await storageService.saveLoginSession({ userId: userInfo.uid, token: data.token, userInfo });
+  const session = await storageService.saveLoginSession({ userId: userInfo.uid, token: data.token, userInfo }, attempt);
   assertSession(session);
 
   // ✅ 用户隔离：登录后迁移无前缀的旧数据到 u_${userId}_ 前缀
-  storageService.migrateUserKeys();
+  storageService.migrateUserKeys(session);
 
   uni.$emit('loginStatusChanged', true);
   uni.$emit('userInfoUpdated', userInfo);
@@ -100,8 +99,8 @@ const navigateAfterLogin = () => {
 const handleWeChatCallback = async (options = {}) => {
   if (requestStarted) return;
   requestStarted = true;
-  const account = { userId: getUserId(), token: getToken() };
   try {
+    const attempt = storageService.beginLoginAttempt();
     // #ifdef H5
     const desktop = consumeDesktopOAuth('wechat', options);
     if (desktop) {
@@ -118,12 +117,12 @@ const handleWeChatCallback = async (options = {}) => {
     const res =
       wechatMode === 'website' ? await authStore.loginByWechatWeb(code) : await authStore.loginByWechatH5(code);
     if (!active) return;
-    if (account.userId !== getUserId() || account.token !== getToken()) {
+    if (!storageService.isLoginAttemptCurrent(attempt)) {
       throw new Error('账户已变化，请重新登录');
     }
 
     if (res.code === 0 && res.data) {
-      await saveLoginInfo(res.data);
+      await saveLoginInfo(res.data, attempt);
 
       isLoading.value = false;
       loginSuccess.value = true;

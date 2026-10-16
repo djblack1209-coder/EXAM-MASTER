@@ -60,6 +60,7 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const login = async (silent = true) => {
     try {
+      const attempt = storageService.beginLoginAttempt();
       // #ifdef APP-PLUS
       logger.warn('[AuthStore] App 端不支持微信静默登录，请使用登录页面');
       return { success: false, error: new Error('请通过登录页面登录') };
@@ -93,7 +94,10 @@ export const useAuthStore = defineStore('auth', () => {
             userId: userId,
             ...res.data
           };
-          const session = await storageService.saveLoginSession({ userId, token: res.data.token, userInfo: userData });
+          const session = await storageService.saveLoginSession(
+            { userId, token: res.data.token, userInfo: userData },
+            attempt
+          );
           assertSession(session);
 
           // 通过事件通知 profile store 设置用户信息
@@ -107,7 +111,7 @@ export const useAuthStore = defineStore('auth', () => {
           logger.log('✅ Laf 登录成功');
 
           // ✅ 用户隔离：登录后迁移无前缀的旧数据到 u_${userId}_ 前缀
-          storageService.migrateUserKeys();
+          storageService.migrateUserKeys(session);
 
           // 登录成功后，将本地收藏同步到云端
           try {

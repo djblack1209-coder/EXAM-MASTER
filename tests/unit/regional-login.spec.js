@@ -289,3 +289,31 @@ describe('login page explicit actions', () => {
     expect(wrapper.findAllComponents(BaseInput)).toHaveLength(0);
   });
 });
+
+it('inflight-2: old response is rejected after logout and identical-account relogin', async () => {
+  uni.setStorageSync('yozi_login_region', 'CN');
+  storageService.saveLoginSession({ userId: 'email-epoch-user', token: 'synthetic-email-token', userInfo: {} });
+  const wrapper = open();
+  await flushPromises();
+  await agree(wrapper);
+  await action(wrapper, '使用邮箱登录').vm.$emit('tap');
+  await flushPromises();
+  const fields = wrapper.findAllComponents(BaseInput);
+  await fields[0].vm.$emit('update:modelValue', 'fixture@example.invalid');
+  await fields[1].vm.$emit('update:modelValue', 'SyntheticPassword123');
+  let resolve;
+  mocks.email.mockImplementationOnce(
+    () =>
+      new Promise((r) => {
+        resolve = r;
+      })
+  );
+  await action(wrapper, '登录').vm.$emit('tap');
+  await flushPromises();
+  storageService._clearRevokedCredentials();
+  storageService.saveLoginSession({ userId: 'email-epoch-user', token: 'synthetic-email-token', userInfo: {} });
+  const epoch = getLoginSessionEpoch();
+  resolve({ code: 0, data: { userId: 'other-fixture', token: 'other-fixture-token' } });
+  await flushPromises();
+  expect(getLoginSessionEpoch()).toBe(epoch);
+});

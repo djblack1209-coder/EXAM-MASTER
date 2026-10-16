@@ -86,12 +86,20 @@ function createUniCompat() {
   const writeLocal = (key, value) => {
     try {
       if (typeof localStorage === 'undefined') return true;
-      const migrating = isIdentityStorageKey(key) && localStorage.getItem(key) !== null;
+      const source = isIdentityStorageKey(key) ? localStorage.getItem(key) : null;
+      const migrating = source !== null;
       migrateIdentityKeys(migrating ? [key] : [], () => {
         const serialized = JSON.stringify({ value });
         localStorage.setItem(`${keyPrefix}${key}`, serialized);
         if (localStorage.getItem(`${keyPrefix}${key}`) !== serialized) throw new Error('兼容存储未确认，旧副本保留');
-        if (isIdentityStorageKey(key)) localStorage.removeItem(key);
+        if (migrating) {
+          if (localStorage.getItem(key) !== source) {
+            if (localStorage.getItem(`${keyPrefix}${key}`) === serialized)
+              localStorage.removeItem(`${keyPrefix}${key}`);
+            throw new Error('迁移源已变化，未采用旧副本');
+          }
+          localStorage.removeItem(key);
+        }
       });
       return true;
     } catch {
@@ -121,7 +129,11 @@ function createUniCompat() {
       // Identity, learning roots and revocation markers must observe other windows.
       if (
         typeof localStorage !== 'undefined' &&
-        (isIdentityStorageKey(key) || /(?:^|_)conversation_learning_v1(?:_|$)/.test(key))
+        (isIdentityStorageKey(key) ||
+          key === LOGIN_ATTEMPT_KEY ||
+          key === SESSION_REVOCATION_KEY ||
+          key === SESSION_ENABLED_KEY ||
+          /(?:^|_)conversation_learning_v1(?:_|$)/.test(key))
       ) {
         const current = readLocal(key);
         if (current === undefined) memoryStore.delete(key);
@@ -265,10 +277,18 @@ function identityWasRemoved(event) {
   }
 }
 function removeLoginEpoch() {
+  // Invalidate both queued commits and responses that have not reached storage yet.
+  const revocation = newIdentityId();
+  uni.setStorageSync(SESSION_REVOCATION_KEY, revocation);
+  uni.setStorageSync(LOGIN_ATTEMPT_KEY, revocation);
   uni.removeStorageSync(LOGIN_SESSION_EPOCH_KEY);
   uni.removeStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`);
 }
 
+const newIdentityId = () =>
+  globalThis.crypto?.randomUUID?.() || `session_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
+const guestWrites = new Map();
+const loginGuestSources = new Map();
 const identityListeners = new Set();
 let identityWriteDepth = 0;
 let pendingIdentityChange;
@@ -304,6 +324,8 @@ import {
   getLoginSessionEpoch,
   LOGIN_SESSION_EPOCH_KEY,
   SESSION_ENABLED_KEY,
+  LOGIN_ATTEMPT_KEY,
+  SESSION_REVOCATION_KEY,
   captureSession,
   checkSession,
   assertSession,
@@ -319,6 +341,8 @@ const GLOBAL_KEYS = new Set([
   'EXAM_TOKEN',
   'EXAM_SESSION_EPOCH',
   'EXAM_SESSION_ENABLED',
+  'EXAM_LOGIN_ATTEMPT',
+  'EXAM_SESSION_REVOCATION',
   'EXAM_USER_ID',
   'EXAM_USER_INFO',
   'userInfo',
@@ -364,6 +388,10 @@ function migratePlainSensitiveKey(key) {
       return false;
     }
 
+    const origin = JSON.stringify(plainValue);
+    const attempt = uni.getStorageSync(LOGIN_ATTEMPT_KEY);
+    const unchanged = () =>
+      JSON.stringify(uni.getStorageSync(key)) === origin && uni.getStorageSync(LOGIN_ATTEMPT_KEY) === attempt;
     return migrateIdentityKeys([key, `${LOCAL_COMPAT_PREFIX}${key}`], () => {
       const existingEncrypted = uni.getStorageSync(`_enc_${key}`);
       if (existingEncrypted === '' || existingEncrypted === null || existingEncrypted === undefined) {
@@ -371,13 +399,19 @@ function migratePlainSensitiveKey(key) {
         if (encrypted === null || deobfuscate(encrypted) === null) {
           return false;
         }
+        if (!unchanged()) return false;
         uni.setStorageSync(`_enc_${key}`, encrypted);
+        if (!unchanged()) {
+          if (uni.getStorageSync(`_enc_${key}`) === encrypted) uni.removeStorageSync(`_enc_${key}`);
+          return false;
+        }
       } else if (deobfuscate(existingEncrypted) === null) {
         return false;
       }
 
       if (deobfuscate(uni.getStorageSync(`_enc_${key}`)) === null) return false;
 
+      if (!unchanged()) return false;
       uni.removeStorageSync(key);
       return true;
     });
@@ -536,6 +570,8 @@ class StorageService {
   }
 
   _newSessionEpoch(existing, expected) {
+    const originAttempt = uni.getStorageSync(LOGIN_ATTEMPT_KEY);
+    const originRevocation = uni.getStorageSync(SESSION_REVOCATION_KEY) || null;
     const epoch =
       existing ||
       globalThis.crypto?.randomUUID?.() ||
@@ -545,37 +581,108 @@ class StorageService {
     if (expected && (getUserId() !== owner || getToken() !== token || getLoginSessionEpoch() !== expected.epoch))
       throw new Error('登录会话已变化，凭据未重新绑定');
     if (!owner || !token) throw new Error('登录结果不完整，请重新登录');
-    const record = { version: 1, epoch, owner, proof: sessionCredentialProof(owner, token) };
+    const record = {
+      version: 1,
+      epoch,
+      owner,
+      proof: sessionCredentialProof(owner, token),
+      revocation: originRevocation
+    };
     if (!this.save(LOGIN_SESSION_EPOCH_KEY, record, true)) throw new Error('登录状态未保存，请重新登录');
+    if (uni.getStorageSync(LOGIN_ATTEMPT_KEY) !== originAttempt || getUserId() !== owner || getToken() !== token) {
+      const saved = uni.getStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`);
+      if (JSON.stringify(deobfuscate(saved)) === JSON.stringify(record))
+        uni.removeStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`);
+      throw new Error('迁移期间登录状态已变化，旧代号未采用');
+    }
     uni.setStorageSync(SESSION_ENABLED_KEY, true);
     if (checkSession(Object.freeze({ owner, epoch })) !== 'current') throw new Error('登录状态未保存，请重新登录');
     return epoch;
   }
 
-  saveLoginSession({ userId, token, userInfo }) {
+  beginLoginAttempt() {
+    const snapshot = readSessionSnapshot();
+    if (snapshot.status === 'unavailable') throw new Error('登录状态暂不可读，请重试');
+    const session = snapshot.session;
+    const id = newIdentityId();
+    uni.setStorageSync(LOGIN_ATTEMPT_KEY, id);
+    return Object.freeze({
+      id,
+      session,
+      revocation: uni.getStorageSync(SESSION_REVOCATION_KEY) || null,
+      revoked: snapshot.status === 'changed',
+      guestSources: session.owner === 'guest' ? new Map(guestWrites) : new Map()
+    });
+  }
+
+  isLoginAttemptCurrent(attempt) {
+    try {
+      return (
+        !!attempt &&
+        uni.getStorageSync(LOGIN_ATTEMPT_KEY) === attempt.id &&
+        (uni.getStorageSync(SESSION_REVOCATION_KEY) || null) === attempt.revocation &&
+        (checkSession(attempt.session) === 'current' || (attempt.revoked && readSessionSnapshot().status === 'changed'))
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  saveLoginSession({ userId, token, userInfo }, attempt = this.beginLoginAttempt()) {
     if (typeof userId !== 'string' || !userId.trim() || typeof token !== 'string' || !token.trim())
       throw new Error('登录结果不完整，请重新登录');
     userInfo = userInfo === undefined ? null : JSON.parse(JSON.stringify(userInfo));
     const write = () => {
+      if (!this.isLoginAttemptCurrent(attempt)) throw new Error('登录尝试已失效，请重试');
+      const current = () =>
+        uni.getStorageSync(LOGIN_ATTEMPT_KEY) === attempt.id &&
+        (uni.getStorageSync(SESSION_REVOCATION_KEY) || null) === attempt.revocation;
+      let written;
       identityWriteDepth++;
       try {
+        const record = {
+          version: 1,
+          epoch: newIdentityId(),
+          owner: userId,
+          token,
+          userInfo,
+          proof: sessionCredentialProof(userId, token),
+          revocation: attempt.revocation
+        };
         uni.setStorageSync(SESSION_ENABLED_KEY, true);
-        removeLoginEpoch();
-        if (
-          !this.save('EXAM_USER_ID', userId, true) ||
-          !this.save('userInfo', userInfo, true) ||
-          !this.save('EXAM_TOKEN', token, true)
-        )
-          throw new Error('登录状态未保存，请重新登录');
-        // Never bless a foreign owner's credentials after an interleaved write.
-        if (getUserId() !== userId || getToken() !== token) throw new Error('登录状态未保存，请重新登录');
-        this._newSessionEpoch(undefined, { owner: userId, token, epoch: null });
-        return captureSession();
+        written = obfuscate(record);
+        uni.setStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`, written);
+        const session = Object.freeze({ owner: userId, epoch: record.epoch });
+        if (uni.getStorageSync(LOGIN_ATTEMPT_KEY) !== attempt.id || checkSession(session) !== 'current')
+          throw new Error('登录尝试已失效，请重试');
+        // Mirror aliases only after the complete identity is visible. They are never read as the commit.
+        for (const [key, value] of [
+          ['EXAM_USER_ID', userId],
+          ['userInfo', userInfo],
+          ['EXAM_TOKEN', token]
+        ]) {
+          if (!current() || !this.save(key, value, true)) throw new Error('登录尝试已失效，请重试');
+        }
+        if (!current()) throw new Error('登录尝试已失效，请重试');
+        loginGuestSources.clear();
+        loginGuestSources.set(record.epoch, attempt.guestSources);
+        guestWrites.clear();
+        pendingIdentityChange = undefined;
+        return session;
       } catch (failure) {
-        removeLoginEpoch();
-        pendingIdentityChange = { type: 'logout' };
+        try {
+          if (
+            (uni.getStorageSync(SESSION_REVOCATION_KEY) || null) !== attempt.revocation &&
+            written &&
+            uni.getStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`) === written
+          )
+            uni.removeStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`);
+        } catch {
+          /* A read failure cannot authorize cleanup of another writer. */
+        }
         throw new Error('登录状态未保存，请重新登录', { cause: failure });
       } finally {
+        // A losing transaction must never revoke or delete the winner's complete commit.
         identityWriteDepth--;
         if (!identityWriteDepth) {
           const change = pendingIdentityChange;
@@ -771,9 +878,31 @@ class StorageService {
     try {
       if (session !== undefined) assertSession(session);
       else if (!isUnscopedKey(key)) session = assertSession(captureSession());
-      const previous = key === 'EXAM_TOKEN' && value && !identityWriteDepth ? readSessionSnapshot() : null;
+      const previous =
+        !identityWriteDepth && ['EXAM_TOKEN', 'userInfo', 'EXAM_USER_INFO'].includes(key) && value
+          ? readSessionSnapshot()
+          : null;
+      const updateIdentity = () => {
+        if (previous?.record) {
+          assertSession(previous.session);
+          const record = { ...previous.record };
+          if (key === 'EXAM_TOKEN') {
+            record.token = value;
+            record.proof = sessionCredentialProof(record.owner, value);
+          } else record.userInfo = value;
+          uni.setStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`, obfuscate(record));
+        } else if (
+          key === 'EXAM_TOKEN' &&
+          previous?.status === 'current' &&
+          previous.token &&
+          previous.session.epoch &&
+          previous.token !== value
+        ) {
+          this._newSessionEpoch(previous.session.epoch, { ...previous.session, token: value });
+        }
+      };
       if (
-        (key === 'EXAM_USER_ID' && value !== getUserId()) ||
+        (!identityWriteDepth && key === 'EXAM_USER_ID' && value !== getUserId()) ||
         (['EXAM_TOKEN', 'access_token', 'refresh_token'].includes(key) && !value)
       )
         removeLoginEpoch();
@@ -796,15 +925,14 @@ class StorageService {
             } catch {
               /* ignore */
             }
-            if (previous?.status === 'current' && previous.token && previous.session.epoch && previous.token !== value)
-              this._newSessionEpoch(previous.session.epoch, { ...previous.session, token: value });
+            updateIdentity();
             return true;
           });
         }
       }
       uni.setStorageSync(rk, value);
-      if (previous?.status === 'current' && previous.token && previous.session.epoch && previous.token !== value)
-        this._newSessionEpoch(previous.session.epoch, { ...previous.session, token: value });
+      updateIdentity();
+      if (session?.owner === 'guest' && !isUnscopedKey(key)) guestWrites.set(key, JSON.stringify(value));
       return true;
     } catch (error) {
       logger.error(`[StorageService] 保存失败: ${key}`, error);
@@ -860,6 +988,12 @@ class StorageService {
     try {
       if (session === undefined && !isUnscopedKey(key)) session = captureSession();
       if (session !== undefined) assertSession(session);
+      const snapshot = isSensitiveKey(key) && key !== LOGIN_SESSION_EPOCH_KEY ? readSessionSnapshot() : null;
+      if (snapshot?.record) {
+        if (key === 'userInfo' || key === 'EXAM_USER_INFO') return snapshot.record.userInfo ?? defaultValue;
+        if (key === 'EXAM_USER_ID') return snapshot.record.owner;
+        if (key === 'EXAM_TOKEN') return snapshot.record.token;
+      }
       const rk = resolveKey(key, session);
       const read = (name) => {
         const runtime = getRuntimeUni();
@@ -879,11 +1013,11 @@ class StorageService {
         const plainValue = read(rk);
         if (plainValue !== '' && plainValue !== null && plainValue !== undefined) {
           // 自动迁移：将明文数据加密后重新存储
-          if (migrateLegacy) this.save(key, plainValue, true, session);
+          if (migrateLegacy) migratePlainSensitiveKey(key);
           return plainValue;
         }
         // 二次回退：读取无前缀的旧数据（用户隔离迁移期间）
-        if (rk !== key && migrateLegacy) {
+        if (rk !== key && migrateLegacy && session?.owner === 'guest') {
           const legacyEnc = read(`_enc_${key}`);
           if (legacyEnc && legacyEnc !== '') {
             const dec = deobfuscate(legacyEnc);
@@ -908,7 +1042,7 @@ class StorageService {
         // 新学习事实显式绑定 owner，不从游客命名空间回退或自动迁移。
         if (isDurableLearningKey(key) || PRIVATE_QUIZ_KEYS.has(key) || !migrateLegacy) return defaultValue;
         // 回退：读取无前缀的旧数据（用户隔离迁移期间）
-        if (rk !== key && migrateLegacy) {
+        if (rk !== key && migrateLegacy && session?.owner === 'guest') {
           const legacyValue = read(key);
           if (legacyValue !== '' && legacyValue !== null && legacyValue !== undefined) {
             // 自动迁移到带前缀的 key
@@ -994,13 +1128,15 @@ class StorageService {
       if (!preserveGlobal && preserveKeys.length === 0) {
         const enabled = uni.getStorageSync(SESSION_ENABLED_KEY);
         removeLoginEpoch();
+        const revocation = uni.getStorageSync(SESSION_REVOCATION_KEY);
         uni.clearStorageSync();
+        uni.setStorageSync(SESSION_REVOCATION_KEY, revocation);
         if (enabled) uni.setStorageSync(SESSION_ENABLED_KEY, true);
         clearPendingWrites();
         return true;
       }
 
-      const keep = new Set([SESSION_ENABLED_KEY]);
+      const keep = new Set([SESSION_ENABLED_KEY, SESSION_REVOCATION_KEY]);
 
       if (preserveGlobal) {
         SENSITIVE_KEYS.forEach((key) => {
@@ -1076,61 +1212,35 @@ class StorageService {
    * 应在登录成功、userId 已写入后调用一次
    * @returns {number} 迁移的 key 数量
    */
-  migrateUserKeys() {
-    const uid = getUserId();
-    if (!uid) return 0;
-
+  migrateUserKeys(session = captureSession()) {
+    if (!session || session.owner === 'guest' || checkSession(session) !== 'current') return 0;
+    const sources = loginGuestSources.get(session.epoch);
+    if (!sources) return 0;
     let migrated = 0;
-    try {
-      const allKeys = uni.getStorageInfoSync().keys || [];
-      for (const rawKey of allKeys) {
-        // 对话事实有显式 owner；不能把游客或其他人的记录静默搬到登录账户。
-        if (isOwnedLearningKey(rawKey) || PRIVATE_QUIZ_KEYS.has(rawKey)) continue;
-        // 跳过已有前缀的、全局的、加密前缀的
-        if (rawKey.startsWith('u_')) continue;
-        if (isUnscopedKey(rawKey)) continue;
-
-        const prefixedKey = `u_${uid}_${rawKey}`;
-        // 如果带前缀的 key 已存在，不覆盖（用户可能已有新数据）
-        const existing = uni.getStorageSync(prefixedKey);
-        if (existing !== '' && existing !== null && existing !== undefined) continue;
-
-        const value = uni.getStorageSync(rawKey);
-        if (value === '' || value === null || value === undefined) continue;
-
-        uni.setStorageSync(prefixedKey, value);
-        try {
-          uni.removeStorageSync(rawKey);
-        } catch {
-          /* ignore */
+    for (const [key, serialized] of sources) {
+      if (isOwnedLearningKey(key) || PRIVATE_QUIZ_KEYS.has(key) || isUnscopedKey(key)) continue;
+      const target = resolveKey(key, session);
+      try {
+        assertSession(session);
+        const value = uni.getStorageSync(key);
+        if (JSON.stringify(value) !== serialized || uni.getStorageSync(target)) continue;
+        assertSession(session);
+        if (JSON.stringify(uni.getStorageSync(key)) !== serialized) continue;
+        uni.setStorageSync(target, value);
+        assertSession(session);
+        if (
+          JSON.stringify(uni.getStorageSync(key)) === serialized &&
+          JSON.stringify(uni.getStorageSync(target)) === serialized
+        ) {
+          uni.removeStorageSync(key);
+          migrated++;
         }
-        migrated++;
+      } catch {
+        // No unproven source is deleted; a retry cannot move newly written global data.
+        break;
       }
-
-      // 同样迁移 _enc_ 前缀的敏感数据
-      for (const sKey of SENSITIVE_KEYS) {
-        if (GLOBAL_KEYS.has(sKey)) continue;
-        const oldEncKey = `_enc_${sKey}`;
-        const newEncKey = `_enc_u_${uid}_${sKey}`;
-        const encVal = uni.getStorageSync(oldEncKey);
-        if (encVal === '' || encVal === null || encVal === undefined) continue;
-        const existingEnc = uni.getStorageSync(newEncKey);
-        if (existingEnc !== '' && existingEnc !== null && existingEnc !== undefined) continue;
-        uni.setStorageSync(newEncKey, encVal);
-        try {
-          uni.removeStorageSync(oldEncKey);
-        } catch {
-          /* ignore */
-        }
-        migrated++;
-      }
-
-      if (migrated > 0) {
-        logger.log(`[StorageService] 用户隔离迁移完成: ${migrated} 个 key 已迁移到 u_${uid}_ 前缀`);
-      }
-    } catch (error) {
-      logger.error('[StorageService] 用户隔离迁移失败:', error);
     }
+    loginGuestSources.delete(session.epoch);
     return migrated;
   }
 
@@ -1679,24 +1789,25 @@ class StorageService {
       return { success: false, error: '错题ID不能为空' };
     return this._withMistakeBookLock(async (current) => {
       const userId = getUserId();
-      if (!userId) return this._removeMistakeLocal(id);
+      if (!userId) return this._removeMistakeLocal(id, current);
       try {
         const res = await apiRemoveMistake(userId, id, { session: current.session });
         if (!current() || this._mistakeRequestCancelled(res)) return this._mistakeContextChanged();
         const receipt = res?.ok === true ? res : res?.code === 0 && res?.data?.ok === true ? res.data : null;
-        const local = this._removeMistakeLocal(id);
+        const local = this._removeMistakeLocal(id, current);
         if (!receipt) return local;
         if (!local.success && local.code !== 'NOT_FOUND') return { ...local, source: 'cloud', localPending: true };
         return { success: true, source: 'cloud', deleted: receipt.deleted || 0 };
       } catch (error) {
         if (!current()) return this._mistakeContextChanged();
         logger.warn('[StorageService] 远端移除未确认，仅处理本机指定条目', error);
-        return this._removeMistakeLocal(id);
+        return this._removeMistakeLocal(id, current);
       }
     });
   }
 
-  _removeMistakeLocal(id) {
+  _removeMistakeLocal(id, current) {
+    if (!current()) return this._mistakeContextChanged();
     try {
       const rows = this.get('mistake_book', [], { migrateLegacy: false });
       if (!Array.isArray(rows)) return { success: false, error: '本机条目格式异常，原记录保留' };

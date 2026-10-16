@@ -151,7 +151,7 @@
   </view>
 </template>
 <script setup>
-import { assertSession } from '@/services/auth-storage.js';
+import { assertSession, captureSession, checkSession } from '@/services/auth-storage.js';
 import { loginPresentation } from './messages.js';
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { onShow, onHide } from '@dcloudio/uni-app';
@@ -245,9 +245,13 @@ const methods = computed(() =>
   }).sort((a, b) => Number(!isMethodAvailable(a)) - Number(!isMethodAvailable(b)))
 );
 const current = () => {
-  const captured = { version, userId: getUserId(), token: getToken() };
+  const captured = { version, session: captureSession(), userId: getUserId(), token: getToken() };
   return () =>
-    active && captured.version === version && captured.userId === getUserId() && captured.token === getToken();
+    active &&
+    checkSession(captured.session) === 'current' &&
+    captured.version === version &&
+    captured.userId === getUserId() &&
+    captured.token === getToken();
 };
 onShow(() => {
   active = true;
@@ -394,6 +398,7 @@ async function run(action, accept = false) {
   busy.value = true;
   error.value = '';
   try {
+    const attempt = accept ? storageService.beginLoginAttempt() : null;
     const response = await action();
     if (!valid() || !response) return;
     if (response.code !== 0) {
@@ -405,7 +410,7 @@ async function run(action, accept = false) {
         month.value = '';
         step.value = 'age';
       }
-    } else if (accept && response.data) await saveLoginInfo(response.data);
+    } else if (accept && response.data) await saveLoginInfo(response.data, attempt);
     return response;
   } catch {
     if (valid()) error.value = t('login.retry');
@@ -545,7 +550,7 @@ async function wechat() {
     return null;
   }, true);
 }
-async function saveLoginInfo(data) {
+async function saveLoginInfo(data, attempt) {
   if (!data.token || !data.userId) {
     error.value = t('login.retry');
     return;
@@ -557,9 +562,9 @@ async function saveLoginInfo(data) {
     nickName: data.userInfo?.nickname || t('login.learner'),
     avatarUrl: data.userInfo?.avatar_url || ''
   };
-  const session = await storageService.saveLoginSession({ userId: data.userId, token: data.token, userInfo });
+  const session = await storageService.saveLoginSession({ userId: data.userId, token: data.token, userInfo }, attempt);
   assertSession(session);
-  storageService.migrateUserKeys();
+  storageService.migrateUserKeys(session);
   const userStore = useUserStore();
   userStore.setUserInfo?.(userInfo, session);
   userStore.setToken?.(data.token, session);

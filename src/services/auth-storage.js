@@ -87,6 +87,13 @@ function safeGetStorageSync(key, strict = false) {
 
 function getStoredAuthValue(key) {
   try {
+    const record = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
+    if (record && typeof record === 'object' && typeof record.token === 'string') {
+      if ('revocation' in record && record.revocation !== (safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null))
+        return null;
+      if (key === 'EXAM_USER_ID') return record.owner;
+      if (key === 'EXAM_TOKEN') return record.token;
+    }
     const encrypted = normalizeStringValue(safeGetStorageSync(`_enc_${key}`));
     if (encrypted) {
       const decrypted = deobfuscate(encrypted);
@@ -113,6 +120,8 @@ export const getToken = () => getStoredAuthValue('EXAM_TOKEN');
 export const LOGIN_SESSION_EPOCH_KEY = 'EXAM_SESSION_EPOCH';
 
 export const SESSION_ENABLED_KEY = 'EXAM_SESSION_ENABLED';
+export const LOGIN_ATTEMPT_KEY = 'EXAM_LOGIN_ATTEMPT';
+export const SESSION_REVOCATION_KEY = 'EXAM_SESSION_REVOCATION';
 
 // Synchronous SHA-256: supported by uni/wx as well as browsers, with no async credential gap.
 // This digest detects torn identity writes; it is never an authorization credential or logged.
@@ -181,17 +190,30 @@ function strictAuthValue(key) {
 const validEpoch = (value) => typeof value === 'string' && /^[a-zA-Z0-9_-]{8,120}$/.test(value);
 export const getLoginSessionEpoch = () => {
   const value = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
+  if (
+    value &&
+    typeof value === 'object' &&
+    'revocation' in value &&
+    value.revocation !== (safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null)
+  )
+    return null;
   return validEpoch(value?.epoch) ? value.epoch : validEpoch(value) ? value : null;
 };
 
 export function readSessionSnapshot() {
   try {
     for (let attempt = 0; attempt < 3; attempt++) {
+      const revocation = safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null;
       const before = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
-      const owner = normalizeStringValue(strictAuthValue('EXAM_USER_ID')) || 'guest';
-      const token = normalizeStringValue(strictAuthValue('EXAM_TOKEN')) || null;
+      // New commits carry the complete identity in one encrypted value. Aliases are compatibility only.
+      const complete = before && typeof before.token === 'string';
+      const owner = normalizeStringValue(complete ? before.owner : strictAuthValue('EXAM_USER_ID')) || 'guest';
+      const token = normalizeStringValue(complete ? before.token : strictAuthValue('EXAM_TOKEN')) || null;
       const enabled = !!safeGetStorageSync(SESSION_ENABLED_KEY, true);
       const after = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
+      if (revocation !== (safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null)) continue;
+      if (before && typeof before === 'object' && 'revocation' in before && before.revocation !== revocation)
+        return { status: 'changed', session: Object.freeze({ owner, epoch: null }), token, enabled };
       if (before !== after && JSON.stringify(before) !== JSON.stringify(after)) continue;
       const epoch = validEpoch(before?.epoch) ? before.epoch : validEpoch(before) ? before : null;
       if (
@@ -208,7 +230,8 @@ export function readSessionSnapshot() {
         status: enabled && token && !epoch ? 'changed' : 'current',
         session: Object.freeze({ owner, epoch }),
         token,
-        enabled
+        enabled,
+        record: complete ? before : null
       };
     }
   } catch {

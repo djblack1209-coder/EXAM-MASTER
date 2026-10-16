@@ -37,6 +37,26 @@ export default [
       sourceType: 'module',
       globals: {
         __YOZI_TOKENS__: 'readonly',
+        __YOZI_PREVIEW__: 'readonly',
+        __wxConfig: 'readonly',
+        plus: 'readonly',
+        Component: 'readonly',
+        AbortController: 'readonly',
+        TextDecoder: 'readonly',
+        localStorage: 'readonly',
+        location: 'readonly',
+        history: 'readonly',
+        performance: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
+        fetch: 'readonly',
+        atob: 'readonly',
+        btoa: 'readonly',
+        getComputedStyle: 'readonly',
+        IntersectionObserver: 'readonly',
+        ResizeObserver: 'readonly',
+        queueMicrotask: 'readonly',
+        structuredClone: 'readonly',
         // 浏览器全局变量
         window: 'readonly',
         document: 'readonly',
@@ -262,6 +282,11 @@ export default [
       // 关闭 require-prop-types（允许简写）
       'vue/require-prop-types': 'off'
     }
+  },
+
+  {
+    files: ['src/**/*.{js,vue}'],
+    rules: { 'no-undef': 'error' }
   },
 
   // ==================== 测试文件特殊规则 ====================

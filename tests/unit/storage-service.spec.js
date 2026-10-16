@@ -5,7 +5,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as practiceApi from '@/services/api/domains/practice.api.js';
 import { getLoginSessionEpoch, getToken, getUserId } from '@/services/auth-storage.js';
-import { obfuscate } from '@/utils/crypto/cipher.js';
+import { obfuscate, deobfuscate } from '@/utils/crypto/cipher.js';
 
 // Mock logger
 vi.mock('@/utils/logger.js', () => ({
@@ -254,9 +254,10 @@ describe('storageService', () => {
       else storageService.clear(true, { preserveGlobal: false });
       expect(getLoginSessionEpoch()).toBeNull();
     });
-    it('代号保存失败不宣称登录成功，并只发撤销通知', () => {
+    it('代号保存失败不宣称新登录成功，并保留之前完整身份', () => {
       storageService.saveLoginSession(identity);
-      const write = uni.setStorageSync;
+      const epoch = getLoginSessionEpoch();
+      const write = uni.setStorageSync.getMockImplementation();
       const spy = vi.spyOn(uni, 'setStorageSync').mockImplementation((key, value) => {
         if (key === '_enc_EXAM_SESSION_EPOCH') throw new Error('SYNTHETIC_QUOTA_FAILURE');
         write(key, value);
@@ -265,8 +266,8 @@ describe('storageService', () => {
         stop = storageService.onIdentityChange(listener);
       try {
         expect(() => storageService.saveLoginSession(identity)).toThrow('登录状态未保存');
-        expect(getLoginSessionEpoch()).toBeNull();
-        expect(listener).toHaveBeenCalledExactlyOnceWith({ type: 'logout' });
+        expect(getLoginSessionEpoch()).toBe(epoch);
+        expect(listener).toHaveBeenCalledExactlyOnceWith(undefined);
       } finally {
         stop();
         spy.mockRestore();
@@ -904,7 +905,7 @@ describe('storageService', () => {
       storageService.clear(false, { preserveGlobal: false });
 
       expect(uni.clearStorageSync).toHaveBeenCalled();
-      expect(global.__mockStorage).toEqual({});
+      expect(global.__mockStorage).toEqual({ EXAM_SESSION_REVOCATION: expect.any(String) });
     });
   });
 
@@ -996,10 +997,11 @@ describe('阶段5一致会话与存储入口', () => {
     });
     Object.defineProperty(navigator, 'locks', { configurable: true, value: { request } });
     try {
-      await Promise.all([
+      const receipts = await Promise.allSettled([
         storageService.saveLoginSession({ userId: 'lock-A', token: 'fixture-token-A', userInfo: {} }),
         storageService.saveLoginSession({ userId: 'lock-B', token: 'fixture-token-B', userInfo: {} })
       ]);
+      expect(receipts.map((item) => item.status)).toEqual(['rejected', 'fulfilled']);
       const session = captureSession();
       expect(Object.isFrozen(session)).toBe(true);
       expect(Object.keys(session)).toEqual(['owner', 'epoch']);
@@ -1025,6 +1027,10 @@ describe('阶段5一致会话与存储入口', () => {
     await storageService.saveLoginSession({ userId: 'snapshot-A', token: 'fixture-token-A', userInfo: {} });
     const session = captureSession();
     uni.setStorageSync('_enc_EXAM_TOKEN', obfuscate('fixture-token-B'));
+    expect(checkSession(session)).toBe('current');
+    expect(getToken()).toBe('fixture-token-A');
+    const record = deobfuscate(uni.getStorageSync('_enc_EXAM_SESSION_EPOCH'));
+    uni.setStorageSync('_enc_EXAM_SESSION_EPOCH', obfuscate({ ...record, token: 'fixture-token-B' }));
     expect(captureSession()).toBeNull();
     expect(checkSession(session)).toBe('unavailable');
   });
