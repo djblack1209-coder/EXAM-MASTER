@@ -45,7 +45,7 @@ Android 适配器用 `invokeAndKeepAlive` 保留中间回调、终止用 `invoke
 
 源码/元数据在 `nativeplugins/Yozi-Connector/`，对应 [DCloud Android](https://nativesupport.dcloud.net.cn/NativePlugin/course/android.html)、[iOS 模块](https://nativesupport.dcloud.net.cn/NativePlugin/course/ios.html)和[打包规范](https://nativesupport.dcloud.net.cn/NativePlugin/course/package.html)。不以模拟 SDK 声明或空二进制替代编译。
 
-`npm run build:app:connector` 默认要求两平台实际 SDK；单平台追加 `-- --android` 或 `-- --ios`。只本地编译，不下载、云打包、安装、部署或修改 App 配置。缺 SDK 退出 2，无二进制；失败清理本次目录，成功保留唯一 `tmp/app-connector-packages/build-*/Wenli-Connector/` 和 SDK 哈希报告，不覆盖旧包。输出目录取插件元数据 `metadata.id`，源码目录和类名保持 Yozi 品牌。输出目录取插件元数据 `metadata.id`（当前 `Wenli-Connector`），源码目录和类名保持 Yozi 品牌。
+`npm run build:app:connector` 默认要求两平台实际 SDK；单平台追加 `-- --android` 或 `-- --ios`。只本地编译，不下载、云打包、安装、部署或修改 App 配置。缺 SDK 退出 2，无二进制；失败清理本次目录，成功保留唯一 `tmp/app-connector-packages/build-*/Wenli-Connector/` 和 SDK 哈希报告，不覆盖旧包。输出目录取插件元数据 `metadata.id`（当前 `Wenli-Connector`），源码目录和类名保持 Yozi 品牌。
 
 - Android：`YOZI_ANDROID_JAVA_HOME` 指向实际 JDK，`YOZI_ANDROID_SDK_CLASSPATH` 用系统路径分隔符列出 android.jar、官方 DCloud 模块 SDK 和 FastJSON 等实际依赖。完整适配器按 Java 8 字节码编译为 jar。
 - iOS：`YOZI_IOS_SDK_INCLUDE_PATHS` 列出官方 `DCUniModule.h` 与依赖头目录，`YOZI_IOS_SDK_FRAMEWORK_PATHS` 可列实际 framework 目录。要求 `xcrun --sdk iphoneos` 成功，完整模块/内核编译为 arm64/iOS 11 静态库。
