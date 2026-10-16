@@ -37,15 +37,15 @@ defineProps({
   icon: { type: String, default: '' }
 });
 const emit = defineEmits(['action']);
-const poses = { empty: 'idle', loading: 'think', error: 'curious' };
+const poses = { empty: 'think', loading: 'idle', error: 'encourage' };
 </script>
 <style scoped>
 .base-state {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--s-2);
-  padding: var(--s-3);
+  gap: var(--s-4);
+  padding: var(--s-8) var(--s-4);
   text-align: center;
   font-family: var(--font-ui);
 }
@@ -56,7 +56,7 @@ const poses = { empty: 'idle', loading: 'think', error: 'curious' };
   width: var(--mascot-halo);
   height: var(--mascot-halo);
   border-radius: var(--r-pill);
-  background: radial-gradient(closest-side, var(--violet-soft-2), transparent);
+  background: transparent;
 }
 .base-state__title {
   color: var(--ink);

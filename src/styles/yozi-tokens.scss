@@ -150,8 +150,15 @@
   --glass-blur: 20px;
   --glass-saturate: 160%;
   --dialog-width: 380px;
-  --page-content-width: calc(var(--dialog-width) * 3);
-  --reading-measure: 72ch;
+  --page-content-width: 1120px;
+  --sidebar-width: 240px;
+  --ink-disabled: var(--ink-3);
+  --secondary-edge: var(--line-strong);
+  --secondary-shadow:
+    inset 0 0 0 var(--border-control) var(--control-line), 0 4px 0 var(--secondary-edge),
+    0 10px 16px -12px var(--clay-glow);
+  --secondary-shadow-press: inset 0 0 0 var(--border-control) var(--control-line), 0 1px 0 var(--secondary-edge);
+  --reading-measure: 720px;
   --account-width: 420px;
   --account-header-width: 960px;
   --tabbar-height: calc(var(--control-height) + var(--s-4));
@@ -217,6 +224,10 @@
   --coral-soft: #3d1726;
   --apricot: #ffc067;
   --apricot-soft: #3a2a10;
+  --playful-canvas: var(--canvas);
+  --playful-mobile-canvas: var(--canvas);
+  --playful-ink: var(--ink);
+  --playful-badge: var(--paper);
   --clay-face: #a08bff;
   --clay-face-hover: #ae9cff;
   --clay-edge: #6447d6;

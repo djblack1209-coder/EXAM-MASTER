@@ -25,7 +25,7 @@
     @keydown="keydown"
   >
     <view v-if="loading" class="base-button__spinner" aria-hidden="true" />
-    <BaseIcon v-else-if="icon" :name="icon" :tone="tone" />
+    <BaseIcon v-else-if="icon" :name="icon" :tone="blocked ? 'ink-disabled' : tone" />
     <view v-if="!iconOnly" class="base-button__content"
       >{{ loading ? loadingText || t('ui.loading') : '' }}<slot v-if="!loading"></slot
     ></view>
@@ -163,7 +163,11 @@ function keydown(event) {
 .base-button--secondary {
   background: var(--paper);
   color: var(--ink);
-  box-shadow: inset 0 0 0 var(--border-control) var(--control-line);
+  box-shadow: var(--secondary-shadow);
+}
+.base-button--secondary:active:not([disabled]) {
+  transform: translateY(var(--press-y));
+  box-shadow: var(--secondary-shadow-press);
 }
 .base-button--secondary:hover {
   background: var(--paper-sunk);
@@ -237,8 +241,10 @@ function keydown(event) {
 }
 .base-button[disabled] {
   background: var(--paper-sunk);
-  color: var(--ink-4);
-  box-shadow: inset 0 0 0 var(--border-control) var(--line);
+  color: var(--ink-disabled);
+  box-shadow:
+    inset 0 0 0 var(--border-control) var(--control-line),
+    0 3px 0 var(--secondary-edge);
   transform: none;
   cursor: not-allowed;
 }
