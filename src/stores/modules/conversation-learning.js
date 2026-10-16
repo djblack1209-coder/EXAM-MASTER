@@ -337,6 +337,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   );
   const active = computed(() => state.value.conversations.find((c) => c.id === selectedConversationId.value));
   const conversationLocation = shallowRef(null);
+  const recordReadState = ref('ready');
   const recordSnapshotContext = ref(recordContext());
   watch(
     state,
@@ -354,7 +355,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     { flush: 'sync' }
   );
   const locatedRecord = computed(() => {
-    if (!recordLocation.value || recordLocation.value.context !== recordContext()) return null;
+    if (recordReadState.value !== 'ready' || !recordLocation.value || recordLocation.value.context !== recordContext())
+      return null;
     try {
       return learningRecordTarget(state.value, recordLocation.value.id);
     } catch {
@@ -363,7 +365,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   });
   function searchRecords(query, options) {
     const context = recordContext();
-    const current = context === recordSnapshotContext.value && state.value.owner === (getUserId() || 'guest');
+    const current =
+      recordReadState.value === 'ready' &&
+      context !== null &&
+      context === recordSnapshotContext.value &&
+      state.value.owner === (getUserId() || 'guest');
     return {
       ...searchLearningRecords(current ? state.value : emptyLearningState(getUserId() || 'guest'), query, options),
       context: current ? context : null
@@ -805,42 +811,76 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const diagnosticProgress = computed(() => prerequisiteProgress(state.value, activeQuestion.value));
   const teachingProgress = computed(() => observeTeaching(state.value));
   const currentPlan = computed(() => state.value.plans.find((p) => p.id === summary.value.tasks.planId));
+  function resetAccountResources() {
+    cancelPoetryReference();
+    poetryReferenceEnabled.value = false;
+    controller?.abort();
+    pendingCloudCall = null;
+    streamPreview.value = '';
+    streamEnabled.value = false;
+    materialController?.abort();
+    materialConnectionController?.abort();
+    syncController?.abort();
+    historyController?.abort();
+    historyProgress.value = null;
+    sharingAllowed.value = false;
+    localConnection.value = null;
+    materialConnection.value = null;
+    models.value = [];
+    modelPresets.value = [];
+    usage.value = null;
+    modelId.value = '';
+    selectedMode.value = 'offline';
+    error.value = '';
+    materialProgress.value = null;
+    materialImportState.value = null;
+    materialImportContext = null;
+  }
   function refresh() {
-    const next = learningRepository.read();
-    if (next.owner !== state.value.owner) {
-      cancelPoetryReference();
-      poetryReferenceEnabled.value = false;
-      controller?.abort();
-      pendingCloudCall = null;
-      streamPreview.value = '';
-      streamEnabled.value = false;
-      materialController?.abort();
-      materialConnectionController?.abort();
-      syncController?.abort();
-      historyController?.abort();
-      historyProgress.value = null;
-      sharingAllowed.value = false;
-      localConnection.value = null;
-      materialConnection.value = null;
-      models.value = [];
-      modelPresets.value = [];
-      usage.value = null;
-      modelId.value = '';
-      selectedMode.value = 'offline';
-      error.value = '';
-      materialProgress.value = null;
-      materialImportState.value = null;
-      materialImportContext = null;
-      selectedConversationId.value = next.conversations.at(-1)?.id || null;
+    // Invalidate reactive projections before a read can throw or notify a subscriber.
+    recordReadState.value = 'loading';
+    recordSnapshotContext.value = null;
+    try {
+      const next = learningRepository.read();
+      if (next.owner !== state.value.owner) {
+        resetAccountResources();
+        selectedConversationId.value = next.conversations.at(-1)?.id || null;
+      }
+      state.value = next;
+      calendar.read();
+      pendingUploads.value = pendingUploadJournal.list();
+      syncConflict.value = learningRepository.previewSyncConflict();
+      recordSnapshotContext.value = recordContext();
+      recordReadState.value = 'ready';
+      return state.value;
+    } catch (cause) {
+      resetAccountResources();
+      recordLocation.value = null;
+      conversationLocation.value = null;
+      state.value = emptyLearningState(getUserId() || 'guest');
+      selectedConversationId.value = null;
+      recordSnapshotContext.value = null;
+      recordReadState.value = 'error';
+      throw cause;
     }
-    state.value = next;
-    calendar.read();
-    pendingUploads.value = pendingUploadJournal.list();
-    syncConflict.value = learningRepository.previewSyncConflict();
-    return state.value;
+  }
+  function reloadRecords() {
+    recordLocation.value = null;
+    conversationLocation.value = null;
+    try {
+      return refresh();
+    } catch {
+      resetModelResources();
+      cancelSync({ clearFeedback: true });
+      cancelHistory();
+      controller?.abort();
+      materialController?.abort();
+      materialConnection.value = null;
+      error.value = '本机记录已变化且暂不可读，请重新核对；旧资料动作已取消。';
+    }
   }
   const authEvents = ['user:logout', 'loginStatusChanged', 'auth:userdata'];
-  for (const event of authEvents) uni.$on?.(event, refresh);
+  for (const event of authEvents) uni.$on?.(event, reloadRecords);
   const storageChanged = (event) => {
     const prefix = state.value.owner === 'guest' ? '' : `u_${state.value.owner}_`;
     const keys = [
@@ -853,16 +893,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     keys.push('EXAM_USER_ID', '__exam_storage__:EXAM_USER_ID');
     if (event.key !== null && !keys.includes(event.key)) return;
     if (event.storageArea && event.storageArea !== window.localStorage) return;
-    try {
-      refresh();
-    } catch {
-      resetModelResources();
-      cancelSync({ clearFeedback: true });
-      cancelHistory();
-      materialController?.abort();
-      materialConnection.value = null;
-      error.value = '本机记录已变化且暂不可读，请重新核对；旧资料动作已取消。';
-    }
+    reloadRecords();
   };
   if (typeof window !== 'undefined') window.addEventListener('storage', storageChanged);
   onScopeDispose(() => {
@@ -871,7 +902,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     notificationObserver?.dispose();
     calendar.dispose();
     if (typeof window !== 'undefined') window.removeEventListener('storage', storageChanged);
-    for (const event of authEvents) uni.$off?.(event, refresh);
+    for (const event of authEvents) uni.$off?.(event, reloadRecords);
     controller?.abort();
     cancelModelReads();
     materialController?.abort();
@@ -3581,6 +3612,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     };
   }
   return {
+    recordReadState,
+    reloadRecords,
     searchRecords,
     recordFilters: RECORD_SEARCH_FILTERS,
     openRecord,

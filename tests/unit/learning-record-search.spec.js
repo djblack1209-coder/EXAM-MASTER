@@ -14,6 +14,9 @@ import LearningShell from '@/components/business/learning/learning-shell.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import { computed } from 'vue';
+import { learningRepository, LEARNING_KEY } from '@/services/learning/learning-repository.js';
+import { storageService } from '@/services/storageService.js';
 import '@/pages/learning/messages.js';
 vi.mock('@dcloudio/uni-app', () => ({ onLoad: () => {}, onShow: () => {}, onHide: () => {}, onBackPress: () => {} }));
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -132,6 +135,100 @@ async function storeRecords() {
   return { store, first };
 }
 describe('record location uses canonical facts', () => {
+  it.each(['user:logout', 'loginStatusChanged', 'auth:userdata', 'storage-account', 'storage-lifecycle'])(
+    'synchronously hides cached search, filters and the open answer before a failed %s read, then recovers',
+    async (event) => {
+      const { store } = await storeRecords();
+      const result = store.searchRecords('第一稿');
+      store.openRecord(result.items[0].id, result.context);
+      const search = computed(() => store.searchRecords('第一稿'));
+      const filtered = computed(() => store.searchRecords('', { filter: 'pending' }));
+      const original = computed(() => store.locatedRecord);
+      expect(search.value.items).toHaveLength(1);
+      expect(filtered.value.total).toBe(2);
+      expect(original.value.answer).toContain('第一稿');
+      const oldOwner = store.state.owner;
+      if (event !== 'storage-lifecycle') uni.setStorageSync('EXAM_USER_ID', 'incompatible-search-owner');
+      const broken = emptyLearningState(event === 'storage-lifecycle' ? oldOwner : 'incompatible-search-owner');
+      broken.version = 2;
+      storageService.save(LEARNING_KEY, broken, true);
+      const read = learningRepository.read;
+      const reading = vi.spyOn(learningRepository, 'read').mockImplementation(() => {
+        expect(store.recordReadState).toBe('loading');
+        expect(search.value.items).toEqual([]);
+        expect(filtered.value.items).toEqual([]);
+        expect(original.value).toBeNull();
+        return read();
+      });
+      if (event.startsWith('storage-')) {
+        window.dispatchEvent(
+          new StorageEvent('storage', {
+            key: event === 'storage-account' ? 'EXAM_USER_ID' : `${LEARNING_KEY}_lifecycle`
+          })
+        );
+      } else {
+        const handler = uni.$on.mock.calls.findLast(([name]) => name === event)?.[1];
+        expect(handler).toBeTypeOf('function');
+        expect(() => handler()).not.toThrow();
+      }
+      expect(reading).toHaveBeenCalled();
+      expect(store.recordReadState).toBe('error');
+      expect(store.state.conversations).toEqual([]);
+      expect(search.value.items).toEqual([]);
+      expect(filtered.value.items).toEqual([]);
+      expect(original.value).toBeNull();
+      await flushPromises();
+      expect(search.value.items).toEqual([]);
+      expect(original.value).toBeNull();
+      expect(() => store.openRecord(result.items[0].id, result.context)).toThrow();
+      reading.mockRestore();
+      storageService.save(LEARNING_KEY, { ...broken, version: 1 }, true);
+      store.reloadRecords();
+      expect(store.recordReadState).toBe('ready');
+      expect(store.searchRecords('第一稿').items).toEqual([]);
+      expect(store.locatedRecord).toBeNull();
+    }
+  );
+  it('removes rendered results and the full answer on an incompatible account and offers a short retry state', async () => {
+    const { store } = await storeRecords();
+    const result = store.searchRecords('第一稿');
+    store.openRecord(result.items[0].id, result.context);
+    const wrapper = mount(LearningPage, {
+      attachTo: document.body,
+      global: {
+        stubs: {
+          view: { template: '<div><slot /></div>' },
+          text: { template: '<span><slot /></span>' },
+          BaseIcon: true,
+          PrivacyPopup: true,
+          LearningLab: true
+        }
+      }
+    });
+    wrappers.push(wrapper);
+    const shell = wrapper.findComponent(LearningShell);
+    shell
+      .findAllComponents(BaseInput)
+      .find((row) => Number(row.props('maxlength')) === 120)
+      .vm.$emit('update:modelValue', '第一稿');
+    await flushPromises();
+    expect(shell.get('[aria-label="学习记录搜索结果"]').text()).toContain('第一稿');
+    expect(wrapper.get('[data-test="located-original-answer"]').text()).toContain('第一稿');
+    uni.setStorageSync('EXAM_USER_ID', 'incompatible-render-owner');
+    storageService.save(LEARNING_KEY, { ...emptyLearningState('incompatible-render-owner'), version: 2 }, true);
+    const notify = uni.$on.mock.calls.findLast(([name]) => name === 'loginStatusChanged')[1];
+    notify();
+    await flushPromises();
+    expect(wrapper.find('[data-test="located-original-answer"]').exists()).toBe(false);
+    expect(shell.find('[aria-label="学习记录搜索结果"]').exists()).toBe(false);
+    expect(wrapper.text()).not.toContain('第一稿');
+    expect(wrapper.text()).not.toContain('第二稿');
+    expect(wrapper.text()).toContain('学习记录暂不可读，请重试。');
+    setLanguage('en');
+    await flushPromises();
+    expect(wrapper.text()).toContain('Learning records are unavailable. Try again.');
+    expect(wrapper.text()).not.toContain('第一稿');
+  });
   it('rejects a pre-clear result even when a same-owner restore reuses its IDs, and supports a fresh search', async () => {
     const { store } = await storeRecords(),
       result = store.searchRecords('第一稿'),

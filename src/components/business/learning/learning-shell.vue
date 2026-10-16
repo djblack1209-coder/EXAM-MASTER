@@ -113,7 +113,7 @@
           />
         </view>
         <view
-          v-if="learning.state.attempts.length"
+          v-if="learning.recordReadState === 'ready' && learning.state.attempts.length"
           class="button-row record-filters"
           role="group"
           :aria-label="t('learning.records.filter')"
@@ -126,7 +126,10 @@
             >{{ t(`learning.records.${filter}`) }}</BaseChip
           >
         </view>
-        <view v-if="recordSearch" class="recent-list" :aria-label="t('learning.records.results')">
+        <view v-if="learning.recordReadState !== 'ready'" class="recent-list" role="status">
+          <text class="sidebar-caption">{{ recordReadMessage }}</text>
+        </view>
+        <view v-else-if="recordSearch" class="recent-list" :aria-label="t('learning.records.results')">
           <text class="sidebar-caption" role="status">{{
             t('learning.records.count', { count: recordSearch.total })
           }}</text>
@@ -264,9 +267,20 @@
             <text class="space-title">{{ title || t('pages.learning') }}</text>
             <BaseTag tone="neutral">{{ dateLabel }}</BaseTag>
           </view>
-          <view class="space-header-actions"><slot name="controls"></slot></view>
+          <view v-if="learning.recordReadState === 'ready'" class="space-header-actions"
+            ><slot name="controls"></slot
+          ></view>
         </view>
-        <view class="space-content"><slot></slot></view>
+        <view class="space-content">
+          <slot v-if="learning.recordReadState === 'ready'"></slot>
+          <BaseEmpty
+            v-else
+            :state="learning.recordReadState === 'error' ? 'error' : 'loading'"
+            :title="recordReadMessage"
+            :show-button="learning.recordReadState === 'error'"
+            @action="learning.reloadRecords()"
+          />
+        </view>
       </view>
     </view>
     <BaseCard
@@ -330,8 +344,11 @@ const reducedMotion = ref(true);
 const query = ref('');
 const recordFilter = ref('all');
 const recordPage = ref(0);
+const recordReadMessage = computed(() =>
+  t(`learning.records.${learning.recordReadState === 'error' ? 'unavailable' : 'loading'}`)
+);
 const recordSearch = computed(() =>
-  query.value.trim() || recordFilter.value !== 'all'
+  learning.recordReadState === 'ready' && (query.value.trim() || recordFilter.value !== 'all')
     ? learning.searchRecords(query.value, { offset: recordPage.value * 8, limit: 8, filter: recordFilter.value })
     : null
 );
