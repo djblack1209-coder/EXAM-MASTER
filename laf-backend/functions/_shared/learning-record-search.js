@@ -1,6 +1,7 @@
 import { assert, dayKey, effectiveGrade, questionKey } from './learning-domain.js';
 
 export const RECORD_SEARCH_CONTRACT = 'learning-record-search-v1';
+export const RECORD_SEARCH_FILTERS = Object.freeze(['all', 'wrong', 'partial', 'pending', 'helped']);
 const normalized = (value) =>
   String(value || '')
     .normalize('NFKC')
@@ -69,19 +70,28 @@ function snippet(value, query) {
   return `${start ? '…' : ''}${text.slice(start, start + 100)}${text.length > start + 100 ? '…' : ''}`;
 }
 
-export function searchLearningRecords(state, query, { offset = 0, limit = 20 } = {}) {
+export function searchLearningRecords(state, query, { offset = 0, limit = 20, filter = 'all' } = {}) {
   assert(typeof query === 'string' && query.length <= 120, 'INVALID_INPUT', '搜索词限120字符');
   assert(
     Number.isInteger(offset) && offset >= 0 && Number.isInteger(limit) && limit > 0 && limit <= 50,
     'INVALID_INPUT',
     '搜索分页不合法'
   );
+  assert(RECORD_SEARCH_FILTERS.includes(filter), 'INVALID_INPUT', '学习记录筛选不合法');
   const term = normalized(query);
-  const matches = records(state).filter((row) =>
-    (row.kind === 'conversation' ? [row.goal] : [row.prompt, row.subject, row.knowledgePoint, row.answer]).some(
+  const matches = records(state).filter((row) => {
+    if (filter !== 'all') {
+      if (row.kind !== 'answer') return false;
+      const reliable = row.grade?.status === 'reliable';
+      if (
+        filter === 'pending' ? reliable : filter === 'helped' ? !row.helped : !reliable || row.grade.outcome !== filter
+      )
+        return false;
+    }
+    return (row.kind === 'conversation' ? [row.goal] : [row.prompt, row.subject, row.knowledgePoint, row.answer]).some(
       (value) => normalized(value).includes(term)
-    )
-  );
+    );
+  });
   return {
     contract: RECORD_SEARCH_CONTRACT,
     total: matches.length,
@@ -95,7 +105,10 @@ export function searchLearningRecords(state, query, { offset = 0, limit = 20 } =
       goal: row.goal,
       label: snippet(row.prompt || row.goal, ''),
       excerpt: snippet(row.answer && normalized(row.answer).includes(term) ? row.answer : row.prompt || row.goal, term),
-      day: row.day
+      day: row.day,
+      gradeStatus: row.grade?.status || null,
+      outcome: row.grade?.status === 'reliable' ? row.grade.outcome : null,
+      helped: row.helped
     }))
   };
 }

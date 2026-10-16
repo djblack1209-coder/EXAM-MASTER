@@ -1,5 +1,7 @@
 # 源码导航
 
+跨学科记录查找：[当前账户规范事实的只读查询/筛选](../laf-backend/functions/_shared/learning-record-search.js)，由现有Store连接侧栏搜索和学习页旧稿呈现。复用原题定位、生命周期与有效判分，无新端点、模型或持久化索引；[查找/更正/筛选/账户/恢复专项](../tests/unit/learning-record-search.spec.js)。
+
 学习路线与整批训练：[共享路线/复盘/两日证据](../laf-backend/functions/_shared/learning-journey.js)、[提醒日期与资格](../laf-backend/functions/_shared/learning-reminders.js)、[受限题目工厂适配](../src/services/learning/journey-training.js)，沿原reducer、Store和repository保存。界面为[路线](../src/components/business/learning/learning-journey.vue)、[题组](../src/components/business/learning/training-group.vue)、[复盘与巩固](../src/components/business/learning/journey-review.vue)、[提醒](../src/components/business/learning/journey-reminders.vue)和[安全消息排版](../src/components/business/learning/learning-message.vue)。
 
 物理路线扩展沿上述模块和[既有科学规则](../laf-backend/functions/_shared/learning-science.js)；跨目标绑定在共享路线校验，普通重开题目/题组选择在[对话Store](../src/stores/modules/conversation-learning.js)。没有增加服务、判分体系或运行依赖；实际原答、恢复及隔离后端证据见[12](12-CHANGELOG.md#2026-10-12物理整批路线归属与重开接续)。

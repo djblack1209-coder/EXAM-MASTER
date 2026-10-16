@@ -94,7 +94,8 @@ import {
 import { HISTORY_PACKAGE } from '../../../laf-backend/functions/_shared/learning-history.js';
 import {
   searchLearningRecords,
-  learningRecordTarget
+  learningRecordTarget,
+  RECORD_SEARCH_FILTERS
 } from '../../../laf-backend/functions/_shared/learning-record-search.js';
 import {
   observeTeaching,
@@ -3575,6 +3576,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   }
   return {
     searchRecords,
+    recordFilters: RECORD_SEARCH_FILTERS,
     openRecord,
     locatedRecord,
     dismissLocatedRecord,
