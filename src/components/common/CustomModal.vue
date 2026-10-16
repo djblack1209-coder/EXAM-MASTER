@@ -217,7 +217,6 @@ onUnmounted(() => {
   position: relative;
   width: 100%;
   max-height: calc(100vh - var(--s-10));
-  max-height: calc(100dvh - var(--s-10));
   padding: var(--s-6);
   overflow-y: auto;
   background: var(--paper);
@@ -228,6 +227,13 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: var(--s-3);
+  overflow-wrap: anywhere;
+  overscroll-behavior: contain;
+}
+@supports (height: 100dvh) {
+  .custom-modal-container {
+    max-height: calc(100dvh - var(--s-10));
+  }
 }
 .custom-modal-container.is-bottom {
   border-radius: var(--r-xl) var(--r-xl) 0 0;

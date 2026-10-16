@@ -238,10 +238,7 @@ async function page(platform = 'h5') {
   observeLearningDialogs(wrapper, (state) => {
     modal = state;
   });
-  await wrapper
-    .findAll('button')
-    .find((w) => w.text().trim() === '资料')
-    .trigger('tap');
+  await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
 }
 const choose = () =>
   wrapper

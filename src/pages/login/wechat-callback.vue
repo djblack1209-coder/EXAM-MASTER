@@ -11,7 +11,7 @@
         v-else-if="loginError"
         state="error"
         :title="t('login.failed')"
-        :desc="errorMessage"
+        :desc="errorMessage === '安全验证失败或授权已过期，请重新登录' ? t('login.authorizationExpired') : errorMessage"
         show-button
         :button-text="t('login.signInAgain')"
         @action="handleRetry"

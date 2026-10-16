@@ -4,7 +4,7 @@
       <view class="onboarding-stack">
         <YoziMascot pose="wave" play="once" size="medium" />
         <text class="onboarding-title">{{
-          !legacyMode ? t('login.onboard') : t(`login.${['direction', 'subjects', 'daily', 'summary'][step]}`)
+          !legacyMode ? BRAND.name : t(`login.${['direction', 'subjects', 'daily', 'summary'][step]}`)
         }}</text>
         <BaseTag v-if="legacyMode">{{ step + 1 }} / 4</BaseTag>
         <BaseTag v-if="legacyMode && step === 0">{{ t('login.exam') }}</BaseTag>
@@ -49,6 +49,7 @@
 </template>
 <script setup>
 import { useThemeStore } from '@/stores/modules/theme.js';
+import { BRAND } from '@/config/brand.js';
 const themeStore = useThemeStore();
 import './messages.js';
 import { t } from '@/i18n/index.js';

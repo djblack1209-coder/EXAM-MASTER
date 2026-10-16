@@ -377,10 +377,7 @@ it('实际页面核对需逐次确认，取消或确认前上下文变化不执�
     modal = state;
   });
   try {
-    await wrapper
-      .findAll('button')
-      .find((b) => b.text().trim() === '资料')
-      .trigger('tap');
+    await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
     await wrapper
       .findAll('button')
       .find((b) => b.text().trim() === '导入记录')
@@ -414,7 +411,7 @@ it('明确恢复开始时清除上一动作的取消提示，成功后只显示�
   });
   const button = (name) => wrapper.findAll('button').find((b) => b.text().trim() === name);
   try {
-    await button('资料').trigger('tap');
+    await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
     await button('解析设置').trigger('tap');
     await button('授权并连接').trigger('tap');
     await flushPromises();

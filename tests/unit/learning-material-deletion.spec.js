@@ -384,7 +384,7 @@ describe('原件删除回执和真实状态', () => {
       modal = o;
     });
     try {
-      await button('资料').trigger('tap');
+      await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
       await button('用此资料练习').trigger('tap');
       await button('预览并删除资料').trigger('tap');
       expect(modal.content).toContain('1 次');

@@ -142,7 +142,7 @@ function goBack() {
   height: calc(100vh - env(safe-area-inset-top, 0px) - var(--control-height) - var(--s-4));
 }
 .content-section {
-  max-width: 72ch;
+  max-width: var(--reading-measure);
   margin: 0 auto;
   padding: var(--s-6) var(--s-4);
 }

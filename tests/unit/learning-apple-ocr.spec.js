@@ -104,10 +104,7 @@ describe('Apple识别选择与私人资料合同', () => {
     const before = JSON.stringify(store.state);
     const wrapper = mount(LearningPage);
     try {
-      await wrapper
-        .findAll('button')
-        .find((w) => w.text() === '资料')
-        .trigger('tap');
+      await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
       await wrapper
         .findAll('button')
         .find((w) => w.text() === '解析设置')
@@ -139,10 +136,7 @@ describe('Apple识别选择与私人资料合同', () => {
     );
     const wrapper = mount(LearningPage);
     try {
-      await wrapper
-        .findAll('button')
-        .find((w) => w.text() === '资料')
-        .trigger('tap');
+      await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
       await store.importFile(input);
       await flushPromises();
       expect(wrapper.text()).toContain('已处理 1 / 1 页');
@@ -307,10 +301,7 @@ describe('Apple识别选择与私人资料合同', () => {
     const wrapper = mount(LearningPage);
     const imported = vi.spyOn(store, 'importFile').mockResolvedValue({ nextPage: null });
     try {
-      await wrapper
-        .findAll('button')
-        .find((w) => w.text().trim() === '资料')
-        .trigger('tap');
+      await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
       await wrapper
         .findAll('button')
         .find((w) => w.text().trim() === '重试未解析页')
@@ -331,10 +322,7 @@ describe('Apple识别选择与私人资料合同', () => {
     const wrapper = mount(LearningPage);
     const imported = vi.spyOn(store, 'importFile').mockResolvedValue({ nextPage: null });
     try {
-      await wrapper
-        .findAll('button')
-        .find((w) => w.text().trim() === '资料')
-        .trigger('tap');
+      await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
       await wrapper
         .findAll('button')
         .find((w) => w.text().trim() === '解析设置')

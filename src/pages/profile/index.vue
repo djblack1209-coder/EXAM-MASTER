@@ -35,9 +35,6 @@
               <text v-else class="login-hint">{{ t('dashboard.copy99') }}</text>
             </view>
           </view>
-          <view class="profile-pulse">
-            <text class="pulse-title">{{ t('dashboard.copy100') }}</text>
-          </view>
         </view>
       </view>
 

@@ -45,10 +45,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
         }
       });
       try {
-        await wrapper
-          .findAll('button')
-          .find((b) => b.text().trim() === '资料')
-          .trigger('tap');
+        await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
         await wrapper
           .findAll('button')
           .find((b) => b.text().trim() === '用此资料练习')
@@ -81,10 +78,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
       }
     });
     try {
-      await wrapper
-        .findAll('button')
-        .find((b) => b.text().trim() === '资料')
-        .trigger('tap');
+      await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
       await wrapper
         .findAll('button')
         .find((b) => b.text().trim() === '用此资料练习')
@@ -107,10 +101,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
       expect(wrapper.find('[data-test="material-objective"]').exists()).toBe(false);
       expect(uni.pageScrollTo).toHaveBeenCalledWith({ selector: '#active-learning-question', duration: 0 });
       store.commit('task.stop', { conversationId: store.active.id, source: 'self_report' });
-      await wrapper
-        .findAll('button')
-        .find((b) => b.text().trim() === '资料')
-        .trigger('tap');
+      await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
       await wrapper
         .findAll('button')
         .find((b) => b.text().trim() === '用此资料练习')
@@ -143,10 +134,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
       }
     });
     try {
-      await wrapper
-        .findAll('button')
-        .find((b) => b.text().trim() === '资料')
-        .trigger('tap');
+      await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
       await wrapper
         .findAll('button')
         .find((b) => b.text().trim() === '用此资料练习')
@@ -245,10 +233,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
       }
     });
     try {
-      await wrapper
-        .findAll('button')
-        .find((b) => b.text().trim() === '资料')
-        .trigger('tap');
+      await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
       await wrapper
         .findAll('button')
         .find((b) => b.text().trim() === '用此资料练习')
@@ -769,10 +754,7 @@ describe('资料重试、来源版本与真正取消', () => {
     const stopDialogs = observeLearningDialogs(wrapper, modal);
     const upload = vi.spyOn(store, 'importFile');
     try {
-      await wrapper
-        .findAll('button')
-        .find((button) => button.text().trim() === '资料')
-        .trigger('tap');
+      await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
       await wrapper
         .findAll('button')
         .find((button) => button.text().trim() === '选择 PDF / 作答图片')
