@@ -129,6 +129,9 @@
         <view v-if="learning.recordReadState !== 'ready'" class="recent-list" role="status">
           <text class="sidebar-caption">{{ recordReadMessage }}</text>
         </view>
+        <view v-else-if="queryPending" class="recent-list" role="status">
+          <text class="sidebar-caption">{{ t('learning.records.loading') }}</text>
+        </view>
         <view v-else-if="recordSearch" class="recent-list" :aria-label="t('learning.records.results')">
           <text class="sidebar-caption" role="status">{{
             t('learning.records.count', { count: recordSearch.total })
@@ -342,20 +345,37 @@ const menuOpen = ref(false);
 const menuLeaving = ref(false);
 const reducedMotion = ref(true);
 const query = ref('');
+const searchQuery = ref('');
+const queryPending = computed(() => query.value !== searchQuery.value);
+let searchTimer = null;
 const recordFilter = ref('all');
 const recordPage = ref(0);
 const recordReadMessage = computed(() =>
   t(`learning.records.${learning.recordReadState === 'error' ? 'unavailable' : 'loading'}`)
 );
 const recordSearch = computed(() =>
-  learning.recordReadState === 'ready' && (query.value.trim() || recordFilter.value !== 'all')
-    ? learning.searchRecords(query.value, { offset: recordPage.value * 8, limit: 8, filter: recordFilter.value })
+  learning.recordReadState === 'ready' &&
+  !queryPending.value &&
+  (searchQuery.value.trim() || recordFilter.value !== 'all')
+    ? learning.searchRecords(searchQuery.value, { offset: recordPage.value * 8, limit: 8, filter: recordFilter.value })
     : null
 );
 watch(
   [query, recordFilter],
   () => {
     recordPage.value = 0;
+  },
+  { flush: 'sync' }
+);
+watch(
+  query,
+  (value) => {
+    clearTimeout(searchTimer);
+    if (!value.trim()) searchQuery.value = value;
+    else
+      searchTimer = setTimeout(() => {
+        searchQuery.value = value;
+      }, 180);
   },
   { flush: 'sync' }
 );
@@ -521,6 +541,7 @@ onMounted(() => {
   }
 });
 onUnmounted(() => {
+  clearTimeout(searchTimer);
   clearTimeout(menuExitTimer);
   releaseMotion();
   unbind();

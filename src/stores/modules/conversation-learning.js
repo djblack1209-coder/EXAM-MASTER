@@ -93,8 +93,7 @@ import {
 } from '../../../laf-backend/functions/_shared/learning-grammar-contract.js';
 import { HISTORY_PACKAGE } from '../../../laf-backend/functions/_shared/learning-history.js';
 import {
-  searchLearningRecords,
-  learningRecordTarget,
+  createLearningRecordSearch,
   RECORD_SEARCH_FILTERS
 } from '../../../laf-backend/functions/_shared/learning-record-search.js';
 import {
@@ -337,6 +336,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   );
   const active = computed(() => state.value.conversations.find((c) => c.id === selectedConversationId.value));
   const conversationLocation = shallowRef(null);
+  const recordSearch = createLearningRecordSearch();
   const recordReadState = ref('ready');
   const recordSnapshotContext = ref(recordContext());
   watch(
@@ -358,7 +358,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     if (recordReadState.value !== 'ready' || !recordLocation.value || recordLocation.value.context !== recordContext())
       return null;
     try {
-      return learningRecordTarget(state.value, recordLocation.value.id);
+      return recordSearch.target(state.value, recordLocation.value.id, recordSnapshotContext.value);
     } catch {
       return null;
     }
@@ -371,7 +371,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       context === recordSnapshotContext.value &&
       state.value.owner === (getUserId() || 'guest');
     return {
-      ...searchLearningRecords(current ? state.value : emptyLearningState(getUserId() || 'guest'), query, options),
+      ...recordSearch.search(
+        current ? state.value : emptyLearningState(getUserId() || 'guest'),
+        query,
+        options,
+        current ? context : null
+      ),
       context: current ? context : null
     };
   }
@@ -379,7 +384,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     idleRecords();
     refresh();
     assert(context && context === recordContext(), 'CONTEXT_CHANGED', '学习记录已变化，请重新搜索');
-    const target = learningRecordTarget(state.value, id);
+    const target = recordSearch.target(state.value, id, recordSnapshotContext.value);
     if (target.questionKey) focus(target.questionKey, target.conversationId);
     locateConversation(target.conversationId);
     recordLocation.value = { id: target.id, context };
@@ -854,6 +859,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       recordReadState.value = 'ready';
       return state.value;
     } catch (cause) {
+      recordSearch.clear();
       resetAccountResources();
       recordLocation.value = null;
       conversationLocation.value = null;
@@ -865,6 +871,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
   }
   function reloadRecords() {
+    recordSearch.clear();
     recordLocation.value = null;
     conversationLocation.value = null;
     try {
@@ -897,6 +904,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   };
   if (typeof window !== 'undefined') window.addEventListener('storage', storageChanged);
   onScopeDispose(() => {
+    recordSearch.clear();
     cancelPoetryReference();
     if (notificationRefreshTimer !== null) clearTimeout(notificationRefreshTimer);
     notificationObserver?.dispose();

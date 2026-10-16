@@ -9,9 +9,12 @@ const normalized = (value) =>
     .replace(/\s+/gu, ' ')
     .trim();
 const identity = (conversationId, key = null, attemptId = null) => JSON.stringify([conversationId, key, attemptId]);
+const projections = new WeakMap();
 
 // Read only the current owner's canonical state. Search never replays events or trusts an imported index.
 function records(state) {
+  const cached = projections.get(state);
+  if (cached?.revision === state.revision && cached.owner === state.owner) return cached;
   const sessions = new Map(state.conversations.map((session) => [session.id, session]));
   const questions = new Map(state.questions.map((question) => [questionKey(question), question]));
   const links = new Map();
@@ -33,7 +36,7 @@ function records(state) {
   }
   const rows = [];
   const append = (session, question = null, attempt = null, at = session.at) => {
-    rows.push({
+    const row = Object.freeze({
       id: identity(session.id, question && questionKey(question), attempt?.id || null),
       kind: attempt ? 'answer' : question ? 'question' : 'conversation',
       conversationId: session.id,
@@ -44,11 +47,21 @@ function records(state) {
       subject: question?.subject || '',
       knowledgePoint: question?.knowledgePoint || '',
       answer: attempt?.answer || '',
-      grade: attempt ? effectiveGrade(attempt) : null,
+      grade: attempt ? Object.freeze({ ...effectiveGrade(attempt) }) : null,
       helped: Boolean(attempt?.hints?.length),
-      at,
-      day: dayKey(at, session.journey?.timezone || state.timezone)
+      at
     });
+    rows.push(
+      Object.freeze({
+        row,
+        timezone: session.journey?.timezone || state.timezone,
+        terms: Object.freeze(
+          (row.kind === 'conversation' ? [row.goal] : [row.prompt, row.subject, row.knowledgePoint, row.answer]).map(
+            normalized
+          )
+        )
+      })
+    );
   };
   for (const session of sessions.values()) append(session);
   for (const entry of links.values()) {
@@ -58,7 +71,10 @@ function records(state) {
     else append(session, question, null, entry.at);
   }
   // Stable ties keep pagination deterministic without interpreting activity as mastery.
-  return rows.sort((a, b) => b.at - a.at || a.id.localeCompare(b.id));
+  rows.sort((a, b) => b.row.at - a.row.at || a.row.id.localeCompare(b.row.id));
+  const projection = Object.freeze({ owner: state.owner, revision: state.revision, rows: Object.freeze(rows) });
+  projections.set(state, projection);
+  return projection;
 }
 
 function snippet(value, query) {
@@ -70,7 +86,7 @@ function snippet(value, query) {
   return `${start ? '…' : ''}${text.slice(start, start + 100)}${text.length > start + 100 ? '…' : ''}`;
 }
 
-export function searchLearningRecords(state, query, { offset = 0, limit = 20, filter = 'all' } = {}) {
+function searchProjection(read, query, { offset = 0, limit = 20, filter = 'all' } = {}) {
   assert(typeof query === 'string' && query.length <= 120, 'INVALID_INPUT', '搜索词限120字符');
   assert(
     Number.isInteger(offset) && offset >= 0 && Number.isInteger(limit) && limit > 0 && limit <= 50,
@@ -79,7 +95,7 @@ export function searchLearningRecords(state, query, { offset = 0, limit = 20, fi
   );
   assert(RECORD_SEARCH_FILTERS.includes(filter), 'INVALID_INPUT', '学习记录筛选不合法');
   const term = normalized(query);
-  const matches = records(state).filter((row) => {
+  const matches = read().rows.filter(({ row, terms }) => {
     if (filter !== 'all') {
       if (row.kind !== 'answer') return false;
       const reliable = row.grade?.status === 'reliable';
@@ -88,15 +104,13 @@ export function searchLearningRecords(state, query, { offset = 0, limit = 20, fi
       )
         return false;
     }
-    return (row.kind === 'conversation' ? [row.goal] : [row.prompt, row.subject, row.knowledgePoint, row.answer]).some(
-      (value) => normalized(value).includes(term)
-    );
+    return terms.some((value) => value.includes(term));
   });
   return {
     contract: RECORD_SEARCH_CONTRACT,
     total: matches.length,
     hasMore: offset + limit < matches.length,
-    items: matches.slice(offset, offset + limit).map((row) => ({
+    items: matches.slice(offset, offset + limit).map(({ row, timezone, terms }) => ({
       id: row.id,
       kind: row.kind,
       conversationId: row.conversationId,
@@ -104,8 +118,8 @@ export function searchLearningRecords(state, query, { offset = 0, limit = 20, fi
       attemptId: row.attemptId,
       goal: row.goal,
       label: snippet(row.prompt || row.goal, ''),
-      excerpt: snippet(row.answer && normalized(row.answer).includes(term) ? row.answer : row.prompt || row.goal, term),
-      day: row.day,
+      excerpt: snippet(row.answer && terms.at(-1).includes(term) ? row.answer : row.prompt || row.goal, term),
+      day: dayKey(row.at, timezone),
       gradeStatus: row.grade?.status || null,
       outcome: row.grade?.status === 'reliable' ? row.grade.outcome : null,
       helped: row.helped
@@ -113,8 +127,42 @@ export function searchLearningRecords(state, query, { offset = 0, limit = 20, fi
   };
 }
 
+export function searchLearningRecords(state, query, options) {
+  return searchProjection(() => records(state), query, options);
+}
+
+function projectionTarget(projection, id) {
+  const entry = projection.rows.find(({ row }) => row.id === id);
+  assert(entry, 'NOT_FOUND', '学习记录不存在，请重新搜索');
+  return { ...entry.row, day: dayKey(entry.row.at, entry.timezone) };
+}
+
 export function learningRecordTarget(state, id) {
-  const row = records(state).find((record) => record.id === id);
-  assert(row, 'NOT_FOUND', '学习记录不存在，请重新搜索');
-  return row;
+  return projectionTarget(records(state), id);
+}
+
+// A store may reread an equivalent snapshot. Keep one projection until its revision or lifecycle changes.
+export function createLearningRecordSearch() {
+  let projection = null,
+    lifecycle = null;
+  const read = (state, context) => {
+    if (
+      !projection ||
+      projection.owner !== state.owner ||
+      projection.revision !== state.revision ||
+      lifecycle !== context
+    ) {
+      projection = records(state);
+      lifecycle = context;
+    }
+    return projection;
+  };
+  return {
+    search: (state, query, options, context) => searchProjection(() => read(state, context), query, options),
+    target: (state, id, context) => projectionTarget(read(state, context), id),
+    clear() {
+      projection = null;
+      lifecycle = null;
+    }
+  };
 }
