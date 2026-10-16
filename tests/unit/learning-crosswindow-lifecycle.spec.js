@@ -274,6 +274,39 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
     await rejected;
     expect(store.models).toEqual([]);
   });
+  it.each(['same-window', 'encrypted-storage', 'compat-encrypted-storage', 'token-removal'])(
+    'actual encrypted login revokes an in-flight read on %s and rejects its late result',
+    async (change) => {
+      const pending = requests();
+      storageService.save('EXAM_USER_ID', 'synthetic-second-owner', true);
+      const peerIdentity = uni.getStorageSync('_enc_EXAM_USER_ID');
+      storageService.save('EXAM_USER_ID', 'synthetic-crosswindow-owner', true);
+      storageService.save('EXAM_TOKEN', 'synthetic-encrypted-lifecycle-token', true);
+      expect(uni.getStorageSync('EXAM_USER_ID')).toBe('');
+      const before = store.exportData();
+      const promise = store.loadModels();
+      const rejected = expect(promise).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      if (change === 'same-window') storageService.save('EXAM_USER_ID', 'synthetic-second-owner', true);
+      else if (change === 'token-removal') storageService.remove('EXAM_TOKEN', true);
+      else {
+        uni.setStorageSync('_enc_EXAM_USER_ID', peerIdentity);
+        window.dispatchEvent(
+          new StorageEvent('storage', {
+            key: change === 'encrypted-storage' ? '_enc_EXAM_USER_ID' : '__exam_storage__:_enc_EXAM_USER_ID'
+          })
+        );
+      }
+      expect(pending[0].abort).toHaveBeenCalledOnce();
+      await rejected;
+      // Even an A -> B -> A change and an adapter that ignores abort cannot revive the old read.
+      storageService.save('EXAM_USER_ID', 'synthetic-crosswindow-owner', true);
+      pending[0].success({ data: modelResult('late-old-account') });
+      await Promise.resolve();
+      expect(store.models).toEqual([]);
+      expect(store.modelListState.phase).toBe('idle');
+      expect(store.exportData()).toBe(before);
+    }
+  );
   it('普通学习写入保持读取许可；列表和用量互不取消，取消列表后用量仍可完成', async () => {
     const pending = requests(),
       list = store.loadModels(),

@@ -45,13 +45,20 @@ import {
   quizOriginalIdentity
 } from '../../laf-backend/functions/_shared/learning-quiz-original.js';
 
+const LOCAL_COMPAT_PREFIX = '__exam_storage__:';
+
 function createUniCompat() {
   const memoryStore = new Map();
-  const keyPrefix = '__exam_storage__:';
+  const keyPrefix = LOCAL_COMPAT_PREFIX;
 
   const readLocal = (key, throwOnError = false) => {
     try {
       if (typeof localStorage === 'undefined') return undefined;
+      // Match auth-storage's precedence for legacy browser identities.
+      if (isIdentityStorageKey(key)) {
+        const direct = localStorage.getItem(key);
+        if (direct !== null) return direct;
+      }
       const raw = localStorage.getItem(`${keyPrefix}${key}`);
       if (raw === null) return undefined;
       const parsed = JSON.parse(raw);
@@ -66,6 +73,7 @@ function createUniCompat() {
     try {
       if (typeof localStorage === 'undefined') return true;
       localStorage.setItem(`${keyPrefix}${key}`, JSON.stringify({ value }));
+      if (isIdentityStorageKey(key)) localStorage.removeItem(key);
       return true;
     } catch {
       return false;
@@ -76,6 +84,7 @@ function createUniCompat() {
     try {
       if (typeof localStorage === 'undefined') return;
       localStorage.removeItem(`${keyPrefix}${key}`);
+      if (isIdentityStorageKey(key)) localStorage.removeItem(key);
     } catch {
       /* ignore */
     }
@@ -90,8 +99,11 @@ function createUniCompat() {
       return current === undefined ? '' : current;
     },
     getStorageSync(key) {
-      // Learning roots and their revocation markers must observe other windows.
-      if (typeof localStorage !== 'undefined' && /(?:^|_)conversation_learning_v1(?:_|$)/.test(key)) {
+      // Identity, learning roots and revocation markers must observe other windows.
+      if (
+        typeof localStorage !== 'undefined' &&
+        (isIdentityStorageKey(key) || /(?:^|_)conversation_learning_v1(?:_|$)/.test(key))
+      ) {
         const current = readLocal(key);
         if (current === undefined) memoryStore.delete(key);
         else memoryStore.set(key, current);
@@ -123,7 +135,7 @@ function createUniCompat() {
           const keys = [];
           for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
-            if (key && key.startsWith(keyPrefix)) {
+            if (key && (key.startsWith(keyPrefix) || isIdentityStorageKey(key))) {
               keys.push(key);
             }
           }
@@ -139,8 +151,8 @@ function createUniCompat() {
         if (typeof localStorage !== 'undefined') {
           for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
-            if (!key || !key.startsWith(keyPrefix)) continue;
-            keys.add(key.slice(keyPrefix.length));
+            if (key?.startsWith(keyPrefix)) keys.add(key.slice(keyPrefix.length));
+            else if (isIdentityStorageKey(key)) keys.add(key);
           }
         }
       } catch {
@@ -212,6 +224,24 @@ const SENSITIVE_KEYS = [
   'refresh_token',
   'token_expire_time'
 ];
+
+function isIdentityStorageKey(key) {
+  if (typeof key !== 'string') return false;
+  const unprefixed = key.startsWith(LOCAL_COMPAT_PREFIX) ? key.slice(LOCAL_COMPAT_PREFIX.length) : key;
+  return SENSITIVE_KEYS.includes(unprefixed.startsWith('_enc_') ? unprefixed.slice(5) : unprefixed);
+}
+
+const identityListeners = new Set();
+function notifyIdentityChange() {
+  for (const listener of identityListeners) {
+    try {
+      listener();
+    } catch {
+      // A subscriber must never turn a successful identity write into a failure.
+      logger.warn('[StorageService] 身份变化订阅处理失败');
+    }
+  }
+}
 
 // ✅ 加密/解密逻辑已提取到 utils/crypto/cipher.js 共享模块
 import { obfuscate, deobfuscate } from '../utils/crypto/cipher.js';
@@ -377,6 +407,26 @@ class StorageService {
     this._guestMistakeReadWarned = false;
   }
 
+  /** Subscribe without exposing identity values; dispose with the consumer's scope. */
+  onIdentityChange(listener, eventBus = uni) {
+    identityListeners.add(listener);
+    const authEvents = ['user:logout', 'loginStatusChanged', 'auth:userdata', 'auth:restore'];
+    const changed = () => {
+      if (identityListeners.has(listener)) listener();
+    };
+    for (const event of authEvents) eventBus.$on?.(event, changed);
+    const storageChanged = (event) => {
+      if (event.storageArea && event.storageArea !== window.localStorage) return;
+      if (event.key === null || isIdentityStorageKey(event.key)) changed();
+    };
+    if (typeof window !== 'undefined') window.addEventListener('storage', storageChanged);
+    return () => {
+      identityListeners.delete(listener);
+      for (const event of authEvents) eventBus.$off?.(event, changed);
+      if (typeof window !== 'undefined') window.removeEventListener('storage', storageChanged);
+    };
+  }
+
   prepareQuizReview({ ids, expectedOwner, paperId = '' } = {}) {
     const owner = getUserId() || '',
       token = getToken() || '';
@@ -526,6 +576,9 @@ class StorageService {
         toast.info('保存失败，请检查存储空间');
       }
       return false;
+    } finally {
+      // Also revoke old work if a write only partially succeeded.
+      if (isIdentityStorageKey(key)) notifyIdentityChange();
     }
   }
 
@@ -674,6 +727,8 @@ class StorageService {
         toast.info('删除失败');
       }
       return false;
+    } finally {
+      if (isIdentityStorageKey(key)) notifyIdentityChange();
     }
   }
 
@@ -729,6 +784,8 @@ class StorageService {
         toast.info('清空失败');
       }
       return false;
+    } finally {
+      notifyIdentityChange();
     }
   }
 
@@ -860,6 +917,8 @@ class StorageService {
       }
     } catch (error) {
       logger.error('[StorageService] 清理用户数据失败:', error);
+    } finally {
+      if (cleared > 0 && userId === getUserId()) notifyIdentityChange();
     }
     return cleared;
   }
