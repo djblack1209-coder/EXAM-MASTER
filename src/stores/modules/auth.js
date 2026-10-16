@@ -82,10 +82,8 @@ export const useAuthStore = defineStore('auth', () => {
       try {
         const res = await apiLogin({ region: readLoginRegion(), type: 'wechat', code });
 
-        if (res.code === 0 && res.data && res.data.userId) {
+        if (res.code === 0 && res.data && res.data.userId && res.data.token) {
           const userId = res.data.userId;
-
-          storageService.save('EXAM_USER_ID', userId, true);
 
           const userData = {
             _id: userId,
@@ -93,6 +91,7 @@ export const useAuthStore = defineStore('auth', () => {
             userId: userId,
             ...res.data
           };
+          storageService.saveLoginSession({ userId, token: res.data.token, userInfo: userData });
 
           // 通过事件通知 profile store 设置用户信息
           uni.$emit('auth:userdata', userData);
@@ -218,6 +217,15 @@ export const useAuthStore = defineStore('auth', () => {
     restoreUserInfo();
 
     if (isLogin.value) {
+      try {
+        storageService.saveLoginSession({
+          userId: storageService.get('EXAM_USER_ID', null),
+          token: token.value,
+          userInfo: _userInfoRef?.value
+        });
+      } catch (error) {
+        return { success: false, error };
+      }
       return { success: true, userInfo: _userInfoRef ? _userInfoRef.value : null };
     }
 

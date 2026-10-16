@@ -474,56 +474,62 @@ it.each(['incomplete', 'binding', 'model'])('App %s回执不能执行工具或�
     store.$dispose();
   }
 });
-it.each(['owner', 'model', 'stop', 'withdraw', 'hide'])('App预览后%s变化拒绝迟到工具与事实', async (change) => {
-  const harness = setup('app'),
-    { store, bridge } = harness;
-  let wrapper;
-  vi.spyOn(uni, 'request').mockImplementation((options) => {
-    options.success({ data: { success: true, data: { cancellationRecorded: true, status: 'reserved' } } });
-    return { abort: vi.fn() };
-  });
-  if (change === 'hide')
-    wrapper = mount(LearningPage, {
-      global: {
-        stubs: {
-          view: { template: '<div><slot /></div>' },
-          text: { template: '<span><slot /></span>' },
-          LearningShell: { template: '<div><slot /></div>' },
-          NumberLine: true,
-          BaseIcon: true,
-          LearningOverview: true
-        }
-      }
+it.each(['owner', 'epoch', 'model', 'stop', 'withdraw', 'hide'])(
+  'App预览后%s变化拒绝迟到工具与事实',
+  async (change) => {
+    const harness = setup('app'),
+      { store, bridge } = harness;
+    let wrapper;
+    vi.spyOn(uni, 'request').mockImplementation((options) => {
+      options.success({ data: { success: true, data: { cancellationRecorded: true, status: 'reserved' } } });
+      return { abort: vi.fn() };
     });
-  if (wrapper) wrappers.push(wrapper);
-  try {
-    const send = store.send('请讲解观点与依据');
-    await flushPromises();
-    harness.preview();
-    await flushPromises();
-    expect(store.streamPreview).toContain('观点');
-    if (change === 'owner') uni.setStorageSync('EXAM_USER_ID', 'other-synthetic-owner');
-    else if (change === 'model') store.modelId = 'other-model';
-    else if (change === 'stop') await store.send('请停止当前任务');
-    else if (change === 'withdraw') store.sharingAllowed = false;
-    else onHide.mock.calls.at(-1)[0]();
-    await flushPromises();
-    harness.complete();
-    await send;
-    expect(store.state.plans).toHaveLength(0);
-    expect(store.state.attempts).toHaveLength(0);
-    expect(store.streamPreview).toBe('');
-    expect(store.summary.first.denominator).toBe(0);
-    expect(bridge.cancel).toHaveBeenCalledOnce();
-    expect(bridge.stream).toHaveBeenCalledOnce();
-    expect(harness.fetch).not.toHaveBeenCalled();
-    if (change === 'stop') expect(store.activeStrategy.stopped).toBe(true);
-    if (change === 'hide') expect(store.sharingAllowed).toBe(false);
-  } finally {
-    wrapper?.unmount();
-    store.$dispose();
+    if (change === 'hide')
+      wrapper = mount(LearningPage, {
+        global: {
+          stubs: {
+            view: { template: '<div><slot /></div>' },
+            text: { template: '<span><slot /></span>' },
+            LearningShell: { template: '<div><slot /></div>' },
+            NumberLine: true,
+            BaseIcon: true,
+            LearningOverview: true
+          }
+        }
+      });
+    if (wrapper) wrappers.push(wrapper);
+    try {
+      const send = store.send('请讲解观点与依据');
+      await flushPromises();
+      harness.preview();
+      await flushPromises();
+      expect(store.streamPreview).toContain('观点');
+      if (change === 'owner') uni.setStorageSync('EXAM_USER_ID', 'other-synthetic-owner');
+      else if (change === 'epoch') {
+        uni.removeStorageSync('_enc_EXAM_SESSION_EPOCH');
+        uni.setStorageSync('EXAM_SESSION_EPOCH', 'synthetic-changed-epoch');
+      } else if (change === 'model') store.modelId = 'other-model';
+      else if (change === 'stop') await store.send('请停止当前任务');
+      else if (change === 'withdraw') store.sharingAllowed = false;
+      else onHide.mock.calls.at(-1)[0]();
+      await flushPromises();
+      harness.complete();
+      await send;
+      expect(store.state.plans).toHaveLength(0);
+      expect(store.state.attempts).toHaveLength(0);
+      expect(store.streamPreview).toBe('');
+      expect(store.summary.first.denominator).toBe(0);
+      expect(bridge.cancel).toHaveBeenCalledOnce();
+      expect(bridge.stream).toHaveBeenCalledOnce();
+      expect(harness.fetch).not.toHaveBeenCalled();
+      if (change === 'stop') expect(store.activeStrategy.stopped).toBe(true);
+      if (change === 'hide') expect(store.sharingAllowed).toBe(false);
+    } finally {
+      wrapper?.unmount();
+      store.$dispose();
+    }
   }
-});
+);
 it.each(['stop', 'hide'])('取消后的迟到错误不抢走%s页面焦点，原答与预算事实保持', async (change) => {
   const harness = setup('app'),
     { store, bridge } = harness;

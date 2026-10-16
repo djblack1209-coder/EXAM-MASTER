@@ -9,7 +9,7 @@ import {
   loginNativeWechat
 } from '@/pages/login/oauth-utils.js';
 import { storageService } from '@/services/storageService.js';
-import { getToken, getUserId } from '@/services/auth-storage.js';
+import { getToken, getUserId, getLoginSessionEpoch } from '@/services/auth-storage.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { logger } from '@/utils/logger.js';
 import { readFileSync } from 'node:fs';
@@ -81,6 +81,8 @@ for (const [provider, component, call, key, wechatMode = 'h5'] of [
 ]) {
   describe(`${provider} ${wechatMode} 网页授权回调`, () => {
     it.each(['hash', 'search', 'router'])('实际页面读取 %s 参数并沿现有 Store 登录', async (queryLocation) => {
+      storageService.saveLoginSession({ userId: 'oauth-isolated-user', token: 'isolated-session', userInfo: {} });
+      const previousEpoch = getLoginSessionEpoch();
       const params = request(provider, { queryLocation, wechatMode });
       const { wrapper, load } = openCallback(component);
       await load(queryLocation === 'router' ? { code: params.code, state: params.state } : {});
@@ -93,6 +95,8 @@ for (const [provider, component, call, key, wechatMode = 'h5'] of [
       expect(wrapper.text()).toContain('登录成功');
       expect(getUserId()).toBe('oauth-isolated-user');
       expect(getToken()).toBe('isolated-session');
+      expect(getLoginSessionEpoch()).toBeTruthy();
+      expect(getLoginSessionEpoch()).not.toBe(previousEpoch);
       expect(storageService.get(key)).toBeFalsy();
       expect(location.href).not.toContain(params.code);
       expect(location.href).not.toContain(params.state);

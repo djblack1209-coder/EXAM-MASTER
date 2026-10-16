@@ -556,9 +556,7 @@ function saveLoginInfo(data) {
     nickName: data.userInfo?.nickname || t('login.learner'),
     avatarUrl: data.userInfo?.avatar_url || ''
   };
-  storageService.save('userInfo', userInfo);
-  storageService.save('EXAM_TOKEN', data.token, true);
-  storageService.save('EXAM_USER_ID', data.userId, true);
+  storageService.saveLoginSession({ userId: data.userId, token: data.token, userInfo });
   storageService.migrateUserKeys();
   const userStore = useUserStore();
   userStore.setUserInfo?.(userInfo);

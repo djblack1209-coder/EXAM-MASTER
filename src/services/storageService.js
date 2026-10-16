@@ -217,6 +217,7 @@ const uni = new Proxy(
 // 需要加密存储的键名列表
 const SENSITIVE_KEYS = [
   'EXAM_TOKEN',
+  'EXAM_SESSION_EPOCH',
   'userInfo',
   'EXAM_USER_ID',
   'EXAM_USER_INFO',
@@ -225,14 +226,38 @@ const SENSITIVE_KEYS = [
   'token_expire_time'
 ];
 
-function isIdentityStorageKey(key) {
-  if (typeof key !== 'string') return false;
+function identityStorageKey(key) {
+  if (typeof key !== 'string') return '';
   const unprefixed = key.startsWith(LOCAL_COMPAT_PREFIX) ? key.slice(LOCAL_COMPAT_PREFIX.length) : key;
-  return SENSITIVE_KEYS.includes(unprefixed.startsWith('_enc_') ? unprefixed.slice(5) : unprefixed);
+  return unprefixed.startsWith('_enc_') ? unprefixed.slice(5) : unprefixed;
+}
+function isIdentityStorageKey(key) {
+  return SENSITIVE_KEYS.includes(identityStorageKey(key));
+}
+function identityWasRemoved(event) {
+  if (event.oldValue === null) return false;
+  if (event.newValue === null || event.newValue === '') return true;
+  try {
+    let value = JSON.parse(event.newValue);
+    if (value && typeof value === 'object') value = 'value' in value ? value.value : value.data;
+    return value === null || value === '';
+  } catch {
+    return false;
+  }
+}
+function removeLoginEpoch() {
+  uni.removeStorageSync(LOGIN_SESSION_EPOCH_KEY);
+  uni.removeStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`);
 }
 
 const identityListeners = new Set();
+let identityWriteDepth = 0;
+let pendingIdentityChange;
 function notifyIdentityChange(change) {
+  if (identityWriteDepth) {
+    if (pendingIdentityChange?.type !== 'logout') pendingIdentityChange = change;
+    return;
+  }
   for (const listener of identityListeners) {
     try {
       listener(change);
@@ -254,7 +279,7 @@ function isSensitiveKey(key) {
 }
 
 // ✅ 从独立模块导入认证函数（打破循环依赖）
-import { getUserId, getToken } from './auth-storage.js';
+import { getUserId, getToken, getLoginSessionEpoch, LOGIN_SESSION_EPOCH_KEY } from './auth-storage.js';
 import { toast } from '@/utils/toast.js';
 
 // ✅ 用户隔离：全局键（不加 userId 前缀）
@@ -262,6 +287,7 @@ import { toast } from '@/utils/toast.js';
 const GLOBAL_KEYS = new Set([
   // 认证/身份 — 标识当前登录用户，必须全局
   'EXAM_TOKEN',
+  'EXAM_SESSION_EPOCH',
   'EXAM_USER_ID',
   'EXAM_USER_INFO',
   'userInfo',
@@ -407,6 +433,49 @@ class StorageService {
     this._guestMistakeReadWarned = false;
   }
 
+  getSessionEpoch({ migrateLegacy = true } = {}) {
+    const epoch = getLoginSessionEpoch();
+    if (epoch || !migrateLegacy || !getUserId()?.trim?.() || !getToken()) return epoch;
+    // Upgrade once at the first session read; ordinary request checks stay read only.
+    return this._newSessionEpoch();
+  }
+
+  _newSessionEpoch() {
+    const epoch =
+      globalThis.crypto?.randomUUID?.() ||
+      `session_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}_${Math.random().toString(36).slice(2)}`;
+    if (!this.save(LOGIN_SESSION_EPOCH_KEY, epoch, true) || getLoginSessionEpoch() !== epoch)
+      throw new Error('登录状态未保存，请重新登录');
+    return epoch;
+  }
+
+  saveLoginSession({ userId, token, userInfo }) {
+    if (typeof userId !== 'string' || !userId.trim() || typeof token !== 'string' || !token.trim())
+      throw new Error('登录结果不完整，请重新登录');
+    identityWriteDepth++;
+    try {
+      if (
+        !this.save('EXAM_USER_ID', userId, true) ||
+        !this.save('userInfo', userInfo, true) ||
+        !this.save('EXAM_TOKEN', token, true)
+      )
+        throw new Error('登录状态未保存，请重新登录');
+      this._newSessionEpoch();
+      return true;
+    } catch (failure) {
+      removeLoginEpoch();
+      pendingIdentityChange = { type: 'logout' };
+      throw failure;
+    } finally {
+      identityWriteDepth--;
+      if (!identityWriteDepth) {
+        const change = pendingIdentityChange;
+        pendingIdentityChange = undefined;
+        notifyIdentityChange(change);
+      }
+    }
+  }
+
   /** Subscribe without exposing identity values; dispose with the consumer's scope. */
   onIdentityChange(listener, eventBus = uni) {
     identityListeners.add(listener);
@@ -416,13 +485,16 @@ class StorageService {
     };
     const authListeners = authEvents.map((event) => [
       event,
-      () => changed(event === 'user:logout' ? { type: 'logout' } : undefined)
+      () => {
+        if (event === 'user:logout') removeLoginEpoch();
+        changed(event === 'user:logout' ? { type: 'logout' } : undefined);
+      }
     ]);
     for (const [event, handler] of authListeners) eventBus.$on?.(event, handler);
     const storageChanged = (event) => {
       if (event.storageArea && event.storageArea !== window.localStorage) return;
-      if (event.key === null) changed({ type: 'records' });
-      else if (isIdentityStorageKey(event.key)) changed();
+      if (event.key === null) changed({ type: 'logout' });
+      else if (isIdentityStorageKey(event.key)) changed(identityWasRemoved(event) ? { type: 'logout' } : undefined);
     };
     if (typeof window !== 'undefined') window.addEventListener('storage', storageChanged);
     return () => {
@@ -558,6 +630,11 @@ class StorageService {
    */
   save(key, value, silent = false) {
     try {
+      if (
+        (key === 'EXAM_USER_ID' && value !== getUserId()) ||
+        (['EXAM_TOKEN', 'access_token', 'refresh_token'].includes(key) && !value)
+      )
+        removeLoginEpoch();
       const rk = resolveKey(key);
       // ✅ B021: 敏感数据加密后存储
       if (isSensitiveKey(key)) {
@@ -700,6 +777,7 @@ class StorageService {
    */
   remove(key, silent = false) {
     try {
+      if (isIdentityStorageKey(key)) removeLoginEpoch();
       const rk = resolveKey(key);
       uni.removeStorageSync(rk);
       // ✅ B021: 同时清理加密存储

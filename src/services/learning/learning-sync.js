@@ -1,4 +1,5 @@
 import { learningRequest } from '../api/domains/learning.api.js';
+import { getLoginSessionEpoch } from '../auth-storage.js';
 import {
   HISTORY_LIMITS,
   validateHistoryManifest,
@@ -83,10 +84,12 @@ function checkedPush(repository, result, operations, owner) {
 
 // 保持服务端 30 次/分钟限制；本次最多 512 请求/10 分钟，不无界重试。
 function syncTransport(request, owner, signal, assertContext, onProgress) {
+  const session = getLoginSessionEpoch();
   const began = Date.now(),
     recent = [];
   let calls = 0;
   const check = () => {
+    assert(getLoginSessionEpoch() === session, 'CONTEXT_CHANGED', '登录会话已变化，旧同步结果未写入');
     assertContext();
     assert(
       Date.now() - began < 600000 && calls < 512,

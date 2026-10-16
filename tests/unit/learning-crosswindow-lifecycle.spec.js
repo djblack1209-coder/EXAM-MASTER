@@ -3,6 +3,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { createLearningRepository, learningRepository, LEARNING_KEY } from '@/services/learning/learning-repository.js';
 import { storageService, StorageService } from '@/services/storageService.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+import { getLoginSessionEpoch } from '@/services/auth-storage.js';
+import { obfuscate } from '@/utils/crypto/cipher.js';
 const epochKey = `${LEARNING_KEY}_lifecycle`;
 function pair() {
   const map = new Map();
@@ -440,6 +442,158 @@ describe('加密同账户会话与凭据请求边界', () => {
     else if (kind === 'same-token') storageService.save('EXAM_TOKEN', originalToken, true);
     else storageService.save('userInfo', { nickname: '同账户资料' }, true);
   }
+  function peerLogin(epoch = 'synthetic-peer-login-epoch', owner = 'synthetic-crosswindow-owner') {
+    // The other window has completed all writes, but none of its events have arrived.
+    for (const [key, value] of [
+      ['EXAM_USER_ID', owner],
+      ['EXAM_TOKEN', originalToken],
+      ['EXAM_SESSION_EPOCH', epoch]
+    ])
+      uni.setStorageSync(`_enc_${key}`, obfuscate(value));
+  }
+  function expectReset() {
+    expect(store.locatedRecord).toBeNull();
+    expect(store.conversationLocation).toBeNull();
+    expect(store.models).toEqual([]);
+    expect(store.modelPresets).toEqual([]);
+    expect(store.usage).toBeNull();
+    expect(store.modelId).toBe('');
+    expect(store.selectedMode).toBe('offline');
+    expect(store.localConnection).toBeNull();
+    expect(store.materialConnection).toBeNull();
+    expect(store.sharingAllowed).toBe(false);
+  }
+  it.each(['epoch-first', 'removed-first', 'restored-first'])(
+    '跨窗口退出再登同账户的积压事件%s完整撤销所有旧读取',
+    async (order) => {
+      session();
+      const originalEpoch = getLoginSessionEpoch();
+      const pending = requests(),
+        list = store.loadModels(),
+        readUsage = store.loadUsage();
+      const rejectedList = expect(list).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      const rejectedUsage = expect(readUsage).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      const facts = store.exportData();
+      const removed = { key: '_enc_EXAM_TOKEN', oldValue: 'synthetic-old-ciphertext', newValue: null };
+      const restored = { key: '_enc_EXAM_USER_ID', oldValue: null, newValue: 'synthetic-restored-ciphertext' };
+      const epoch = {
+        key: '_enc_EXAM_SESSION_EPOCH',
+        oldValue: 'synthetic-old-epoch',
+        newValue: 'synthetic-new-epoch'
+      };
+      peerLogin();
+      expect(getLoginSessionEpoch()).not.toBe(originalEpoch);
+      for (const event of order === 'epoch-first'
+        ? [epoch, restored, removed]
+        : order === 'removed-first'
+          ? [removed, epoch, restored]
+          : [restored, removed, epoch])
+        window.dispatchEvent(new StorageEvent('storage', event));
+      await Promise.all([rejectedList, rejectedUsage]);
+      expect(pending.every((request) => request.abort.mock.calls.length === 1)).toBe(true);
+      expectReset();
+      pending[0].success({ data: models('late-revoked-model') });
+      pending[1].success({ data: usage });
+      await Promise.resolve();
+      expectReset();
+      expect(store.exportData()).toBe(facts);
+      expect(pending).toHaveLength(2);
+    }
+  );
+  it.each(
+    ['EXAM_USER_ID', 'EXAM_TOKEN', 'EXAM_SESSION_EPOCH'].flatMap((key) => [
+      key,
+      `_enc_${key}`,
+      `__exam_storage__:${key}`,
+      `__exam_storage__:_enc_${key}`
+    ])
+  )('积压%s删除在当前代号已恢复相同时仍撤销，拒绝迟到本地正文', async (key) => {
+    session();
+    store.selectedMode = 'local';
+    let resolve;
+    const transport = vi.fn(() => new Promise((done) => (resolve = done)));
+    vi.stubGlobal('fetch', transport);
+    const promise = store.send('请再解释一下');
+    const facts = store.exportData(),
+      epoch = getLoginSessionEpoch();
+    window.dispatchEvent(new StorageEvent('storage', { key, oldValue: 'synthetic-deleted-value', newValue: null }));
+    expect(getLoginSessionEpoch()).toBe(epoch);
+    expect(transport.mock.calls[0][1].signal.aborted).toBe(true);
+    expectReset();
+    resolve({ ok: true, text: async () => JSON.stringify({ success: true, data: { message: '撤销前的迟到正文' } }) });
+    await promise;
+    expect(store.exportData()).toBe(facts);
+    expect(store.active.messages.some((m) => m.content === '撤销前的迟到正文')).toBe(false);
+    expect(store.busy).toBe(false);
+  });
+  it.each(['changed', 'removed'])('跨窗口代号%s但尚无事件时结果核对仍拒绝正文', async (kind) => {
+    session();
+    store.selectedMode = 'local';
+    let resolve;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise((done) => (resolve = done)))
+    );
+    const promise = store.send('请再解释一下'),
+      facts = store.exportData();
+    if (kind === 'changed') peerLogin();
+    else uni.removeStorageSync('_enc_EXAM_SESSION_EPOCH');
+    resolve({ ok: true, text: async () => JSON.stringify({ success: true, data: { message: '事件未达的迟到正文' } }) });
+    await promise;
+    expect(store.exportData()).toBe(facts);
+    expect(store.active.messages.some((m) => m.content === '事件未达的迟到正文')).toBe(false);
+    expect(getLoginSessionEpoch()).toBe(kind === 'removed' ? null : 'synthetic-peer-login-epoch');
+  });
+  it('代号换代取消资料连接和历史读取，不采纳忽略取消的迟到结果', async () => {
+    session();
+    let resolveMaterial, resolveHistory, historySignal;
+    const transport = vi.fn(() => new Promise((done) => (resolveMaterial = done)));
+    vi.stubGlobal('fetch', transport);
+    vi.spyOn(learningRepository, 'previewGuestMigration').mockImplementation(({ signal }) => {
+      historySignal = signal;
+      return new Promise((done) => (resolveHistory = done));
+    });
+    const material = store.checkMaterialConnection(),
+      history = store.previewGuestMigration();
+    const materialRejected = expect(material).rejects.toThrow();
+    const historyRejected = expect(history).rejects.toThrow();
+    const facts = store.exportData();
+    peerLogin();
+    window.dispatchEvent(new StorageEvent('storage', { key: '_enc_EXAM_SESSION_EPOCH' }));
+    expect(transport.mock.calls[0][1].signal.aborted).toBe(true);
+    expect(historySignal.aborted).toBe(true);
+    expectReset();
+    resolveMaterial({ ok: true, text: async () => JSON.stringify({ ok: true, ocrEngines: {} }) });
+    resolveHistory({ owner: 'synthetic-crosswindow-owner', fixture: 'old-preview' });
+    await Promise.all([materialRejected, historyRejected]);
+    expect(store.exportData()).toBe(facts);
+  });
+  it('同账户成功重新登录换代并重置；正常刷新保持新代号', () => {
+    session();
+    const oldEpoch = getLoginSessionEpoch(),
+      facts = store.exportData();
+    storageService.saveLoginSession({ userId: 'synthetic-crosswindow-owner', token: originalToken, userInfo: {} });
+    expect(getLoginSessionEpoch()).not.toBe(oldEpoch);
+    expectReset();
+    const epoch = getLoginSessionEpoch();
+    change('refresh');
+    change('profile');
+    expect(getLoginSessionEpoch()).toBe(epoch);
+    expect(store.exportData()).toBe(facts);
+  });
+  it('老用户Store首次读取补代号，既有原答和登录保持', () => {
+    session();
+    const facts = store.exportData();
+    store.$dispose();
+    uni.removeStorageSync('_enc_EXAM_SESSION_EPOCH');
+    expect(getLoginSessionEpoch()).toBeNull();
+    setActivePinia(createPinia());
+    store = useConversationLearningStore();
+    expect(getLoginSessionEpoch()).toBeTruthy();
+    expect(store.state.owner).toBe('synthetic-crosswindow-owner');
+    expect(store.state.attempts.at(-1).answer).toBe('19');
+    expect(store.exportData()).toBe(facts);
+  });
   it.each(['same-window', 'encrypted-storage', 'compat-encrypted-storage'])(
     '%s续期只取消绑定旧令牌的列表/用量读取，保留配置原答并以新令牌显式重试',
     async (source) => {

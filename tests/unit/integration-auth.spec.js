@@ -4,6 +4,7 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
+import { ref } from 'vue';
 
 // Mock 依赖模块（必须在 import store 之前）
 vi.mock('@/utils/logger.js', () => ({
@@ -94,6 +95,28 @@ describe('全链路: 启动 -> 登录 -> 首页', () => {
   });
 
   describe('Phase 2: 用户认证流程', () => {
+    it('静默登录成功换代，普通缓存恢复及设置续期令牌保留代号', async () => {
+      const { storageService } = await import('@/services/storageService.js');
+      const { getLoginSessionEpoch } = await import('@/services/auth-storage.js');
+      const { useAuthStore } = await import('@/stores/modules/auth.js');
+      storageService.saveLoginSession({
+        userId: 'silent-epoch-user',
+        token: 'synthetic-silent-token',
+        userInfo: { _id: 'silent-epoch-user' }
+      });
+      const auth = useAuthStore();
+      auth._setUserInfoRef(ref({ _id: 'silent-epoch-user' }));
+      const first = getLoginSessionEpoch();
+      auth.restoreUserInfo();
+      expect(getLoginSessionEpoch()).toBe(first);
+      expect(auth.silentLogin().success).toBe(true);
+      const second = getLoginSessionEpoch();
+      expect(second).not.toBe(first);
+      auth.setToken('synthetic-silent-refresh');
+      expect(getLoginSessionEpoch()).toBe(second);
+      expect(auth.silentLogin().success).toBe(true);
+      expect(getLoginSessionEpoch()).not.toBe(second);
+    });
     async function localProgressFixture() {
       const { storageService } = await import('@/services/storageService.js');
       const { useStudyStore } = await import('@/stores/modules/study.js');

@@ -104,6 +104,28 @@ describe('request core', () => {
     expect((await second).data.owner).toBe('user_456');
   });
 
+  it('same-account same-token relogin separates in-flight requests without relying on events', async () => {
+    const callbacks = [];
+    uni.request.mockImplementation((options) => {
+      callbacks.push(options);
+      return { abort: vi.fn() };
+    });
+    global.__mockStorage.EXAM_TOKEN = 'synthetic-same-token';
+    global.__mockStorage.EXAM_SESSION_EPOCH = 'synthetic-first-epoch';
+    const { request } = await import('@/services/api/domains/_request-core.js');
+    const options = { skipNetworkCheck: true, skipRateLimit: true };
+    const first = request('/user-profile', { action: 'get' }, options).catch((error) => error);
+    global.__mockStorage.EXAM_SESSION_EPOCH = 'synthetic-second-epoch';
+    const second = request('/user-profile', { action: 'get' }, options);
+    expect(callbacks).toHaveLength(2);
+    callbacks[0].success({ statusCode: 200, data: { code: 0, data: { stale: true } } });
+    callbacks[1].success({ statusCode: 200, data: { code: 0, data: { current: true } } });
+    expect(await first).toMatchObject({ success: false, error: { errorType: 'account_changed' } });
+    expect((await second).data).toEqual({ current: true });
+    expect((await request('/user-profile', { action: 'get' }, options)).data).toEqual({ current: true });
+    expect(callbacks).toHaveLength(2);
+  });
+
   it('does not send after account changes during network preflight or emit stale auth failures', async () => {
     let network;
     uni.getNetworkType.mockImplementation((options) => {
