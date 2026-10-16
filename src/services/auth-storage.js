@@ -1,7 +1,7 @@
 /**
  * 认证信息存储工具（独立模块）
  *
- * 从 storageService.js 中提取，解决 storageService ↔ lafService 循环依赖问题。
+ * 从 storageService.js 中提取，避免 storageService 与 API 请求层循环依赖。
  * 两个模块都可以安全地导入此文件，不会产生循环引用。
  *
  * ✅ 加密/解密逻辑已提取到 utils/crypto/cipher.js 共享模块

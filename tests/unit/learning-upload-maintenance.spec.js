@@ -339,7 +339,7 @@ it('实际页面要求定位移除勾选和再次确认，取消保留、确认�
     modal = state;
   });
   try {
-    await findButton(wrapper, '资料').trigger('tap');
+    await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
     await findButton(wrapper, '导入记录').trigger('tap');
     await findButton(wrapper, '导出定位与移除待办').trigger('tap');
     await flushPromises();
@@ -374,7 +374,7 @@ it('实际页面维护取消零整理，批准才沿当前预览执行', async (
     modal = state;
   });
   try {
-    await findButton(wrapper, '资料').trigger('tap');
+    await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
     await findButton(wrapper, '导入记录').trigger('tap');
     await findButton(wrapper, '预览登记整理').trigger('tap');
     await flushPromises();
@@ -401,7 +401,7 @@ it('实际页面维护取消零整理，批准才沿当前预览执行', async (
 it('账户切换清空页面定位文本与移除预览', async () => {
   const wrapper = mountPage();
   try {
-    await findButton(wrapper, '资料').trigger('tap');
+    await wrapper.get('#learning-composer [aria-label="导入资料"]').trigger('tap');
     await findButton(wrapper, '导入记录').trigger('tap');
     await findButton(wrapper, '导出定位与移除待办').trigger('tap');
     await flushPromises();

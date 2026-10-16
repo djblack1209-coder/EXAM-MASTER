@@ -37,7 +37,7 @@
     "audit:mobile:inventory": "node scripts/build/mobile-module-inventory.mjs --output data/mobile-module-inventory.json",
     "audit:mobile:baseline": "npm run build:app && npm run audit:app:artifacts && npm run audit:mobile:inventory && npm run build:h5 && npm run audit:mobile:h5-viewports",
     "test": "vitest run",
-    "test:baidu:pipeline": ".venv-baidu/bin/python -m unittest tests.unit.test_private_material_parser tests.unit.test_material_upload_recovery tests.unit.test_material_upload_maintenance tests.unit.test_material_upload_maintenance tests.unit.test_english_answer_key_verify tests.unit.test_english_passage_repair tests.unit.test_english_writing_prompt_verify tests.unit.test_flashcard_quality",
+    "test:baidu:pipeline": ".venv-baidu/bin/python -m unittest tests.unit.test_private_material_parser tests.unit.test_material_upload_recovery tests.unit.test_material_upload_maintenance tests.unit.test_english_answer_key_verify tests.unit.test_english_passage_repair tests.unit.test_english_writing_prompt_verify tests.unit.test_flashcard_quality",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint --cache --cache-location node_modules/.cache/eslint/ src/",

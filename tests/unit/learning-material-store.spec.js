@@ -51,7 +51,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
           .find((b) => b.text().trim() === '用此资料练习')
           .trigger('tap');
         expect(wrapper.findAll('[data-test="objective-field-from"]')).toHaveLength(0);
-        expect(wrapper.get('[data-test="objective-unavailable"]').text()).toMatch(/不能自动|非空行/);
+        expect(wrapper.get('[data-test="objective-unavailable"]').text()).toMatch(/不能用作练习资料|非空行/);
         expect(wrapper.get('[data-test="start-objective"]').attributes('disabled')).toBeDefined();
         expect(store.exportData()).toBe(original);
         expect(store.state.questions).toHaveLength(0);
@@ -168,7 +168,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
         .find((b) => b.text().trim() === '片段 1')
         .trigger('tap');
       expect(wrapper.findAll('[data-test="objective-field-from"]')).toHaveLength(0);
-      expect(wrapper.get('[data-test="objective-unavailable"]').text()).toContain('不能自动');
+      expect(wrapper.get('[data-test="objective-unavailable"]').text()).toContain('不能用作练习资料');
       expect(store.state.conversations).toHaveLength(0);
       expect(store.state.materials[0].extractions).toHaveLength(3);
     } finally {
@@ -239,14 +239,14 @@ describe('私人资料和实际 Store 纵向闭环', () => {
         .find((b) => b.text().trim() === '用此资料练习')
         .trigger('tap');
       await wrapper.get('[data-test="objective-kind-share_percent"]').trigger('tap');
-      expect(wrapper.find('input[aria-label="部分字段"]').exists()).toBe(false);
-      expect(wrapper.text()).toContain('部分字段');
-      expect(wrapper.find('input[aria-label="整体字段"]').exists()).toBe(false);
-      expect(wrapper.text()).toContain('整体字段');
+      expect(wrapper.find('input[aria-label="部分数据"]').exists()).toBe(false);
+      expect(wrapper.text()).toContain('部分数据');
+      expect(wrapper.find('input[aria-label="整体数据"]').exists()).toBe(false);
+      expect(wrapper.text()).toContain('整体数据');
       await wrapper.findAll('[data-test="objective-field-from"]')[1].trigger('tap');
       await wrapper.findAll('[data-test="objective-field-to"]')[0].trigger('tap');
       expect(wrapper.get('[data-test="start-objective"]').attributes('disabled')).toBeDefined();
-      expect(wrapper.get('[data-test="objective-unavailable"]').text()).toContain('部分不能大于整体');
+      expect(wrapper.get('[data-test="objective-unavailable"]').text()).toContain('部分不能为负数或大于整体');
       expect(store.state.conversations).toHaveLength(0);
       await wrapper.findAll('[data-test="objective-field-from"]')[0].trigger('tap');
       await wrapper.findAll('[data-test="objective-field-to"]')[1].trigger('tap');
@@ -431,7 +431,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
       await send.trigger('tap');
       await flushPromises();
       expect(input.element.value).toBe('19');
-      expect(wrapper.text()).toContain('另一窗口正在保存');
+      expect(wrapper.text()).toContain('保留输入后重试');
       expect(store.state.attempts).toHaveLength(0);
       await send.trigger('tap');
       await flushPromises();

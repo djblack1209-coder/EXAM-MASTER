@@ -102,7 +102,7 @@ for (const [provider, component, call, key, wechatMode = 'h5'] of [
       location.hash = `#/pages/login/${provider === 'qq' ? 'qq' : 'wechat'}-callback?code=unknown123&state=unknown`;
       const { wrapper, load } = openCallback(component);
       await load({});
-      expect(wrapper.text()).toContain('安全验证失败');
+      expect(wrapper.text()).toContain('登录未完成，请重试。');
       expect(call).not.toHaveBeenCalled();
       expect(getToken()).toBeNull();
     });
@@ -161,7 +161,7 @@ for (const [provider, component, call, key, wechatMode = 'h5'] of [
       storageService.save('EXAM_TOKEN', 'new-session');
       resolve({ code: 0, data: { token: 'old-session', userId: 'old-user' } });
       await pending;
-      expect(wrapper.text()).toContain('账户已变化');
+      expect(wrapper.text()).toContain('登录未完成，请重试。');
       expect(getUserId()).toBe('new-user');
       expect(getToken()).toBe('new-session');
     });
@@ -174,7 +174,7 @@ for (const [provider, component, call, key, wechatMode = 'h5'] of [
       const second = openCallback(component);
       await second.load({ code: params.code, state: params.state });
       expect(call).toHaveBeenCalledTimes(1);
-      expect(second.wrapper.text()).toContain('安全验证失败');
+      expect(second.wrapper.text()).toContain('登录未完成，请重试。');
       const retry = second.wrapper.find('[role="button"]');
       await retry.trigger('keydown', { key: 'Enter' });
       expect(uni.redirectTo).toHaveBeenCalledWith({ url: '/pages/login/index' });
@@ -233,7 +233,7 @@ describe('桌面系统浏览器回调', () => {
         state,
         error: 'access_denied'
       });
-      expect(wrapper.text()).toContain('用户取消授权');
+      expect(wrapper.text()).toContain('登录未完成，请重试。');
       expect(wrapper.text()).not.toContain('private-description');
       expect(getToken()).toBeNull();
     });
@@ -282,7 +282,7 @@ describe('授权发起边界', () => {
     storageService.save('wx_oauth_state', { ...storageService.get('wx_oauth_state'), wechatMode: 'unknown' }, true);
     const { wrapper, load } = openCallback(WechatCallback);
     await load({});
-    expect(wrapper.text()).toContain('安全验证失败');
+    expect(wrapper.text()).toContain('登录未完成，请重试。');
     expect(mocks.wechat).not.toHaveBeenCalled();
     expect(mocks.wechatWeb).not.toHaveBeenCalled();
     expect(storageService.get('wx_oauth_state')).toBeFalsy();
@@ -368,7 +368,7 @@ describe('平台返回到真实静态入口再进入现有页面', () => {
       relay(provider, '&code=duplicate-code');
       const { wrapper, load } = openCallback(component);
       await load({});
-      expect(wrapper.text()).toContain('授权参数不明确');
+      expect(wrapper.text()).toContain('登录未完成，请重试。');
       expect(call).not.toHaveBeenCalled();
     });
   }

@@ -66,7 +66,7 @@ it('history sync keeps failure/partial results visible and blocks repeated sends
     global: {
       stubs: {
         ...stubs,
-        LearningShell: { template: '<main><slot /></main>' },
+        LearningShell: { template: '<main><slot name="controls"/><slot /></main>' },
         LearningOverview: true,
         OfflineIndicator: true,
         MistakeReport: true,
@@ -148,7 +148,7 @@ it('filtered removal binds the displayed identity, and merely opening history se
     global: {
       stubs: {
         ...stubs,
-        LearningShell: { template: '<main><slot /></main>' },
+        LearningShell: { template: '<main><slot name="controls"/><slot /></main>' },
         LearningOverview: true,
         OfflineIndicator: true,
         MistakeReport: true,

@@ -415,14 +415,14 @@ it('明确恢复开始时清除上一动作的取消提示，成功后只显示�
     await button('解析设置').trigger('tap');
     await button('授权并连接').trigger('tap');
     await flushPromises();
-    expect(wrapper.text()).toContain('上一请求已取消');
+    expect(wrapper.text()).toContain('操作已取消，输入已保留。');
     await button('导入记录').trigger('tap');
     await button('恢复已收原件').trigger('tap');
     dialog.success({ confirm: true });
     await flushPromises();
     expect(recover).toHaveBeenCalledOnce();
-    expect(wrapper.text()).toContain('已从解析器原件恢复私人资料');
-    expect(wrapper.text()).not.toContain('上一请求已取消');
+    expect(wrapper.text()).toContain('已从识别服务中的原件恢复私人资料');
+    expect(wrapper.text()).not.toContain('操作已取消，输入已保留。');
   } finally {
     stop();
     wrapper.unmount();

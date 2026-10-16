@@ -176,7 +176,7 @@ it('越权图片响应未执行计划/判分；共享撤销后旧响应不写入
     }
   });
   await store.interpretQuestionImage(true);
-  expect(store.error).toContain('不执行');
+  expect(store.error).toContain('未执行');
   let resolve;
   api.generate.mockImplementationOnce(
     () =>

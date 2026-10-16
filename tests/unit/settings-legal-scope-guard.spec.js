@@ -1,10 +1,22 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { createPinia } from 'pinia';
+import PrivacyPage from '@/pages/settings/privacy.vue';
+import TermsPage from '@/pages/settings/terms.vue';
+import { setLanguage } from '@/i18n/index.js';
 
 const profileSource = readFileSync(resolve(process.cwd(), 'src/pages/profile/index.vue'), 'utf8');
-const privacySource = readFileSync(resolve(process.cwd(), 'src/pages/settings/privacy.vue'), 'utf8');
-const termsSource = readFileSync(resolve(process.cwd(), 'src/pages/settings/terms.vue'), 'utf8');
+function policyText(page) {
+  setLanguage('zh-CN');
+  const wrapper = mount(page, { global: { plugins: [createPinia()], stubs: { BaseIcon: true } } });
+  try {
+    return wrapper.text();
+  } finally {
+    wrapper.unmount();
+  }
+}
 
 describe('settings legal and privacy scope', () => {
   it('exposes direct profile entries for privacy policy and user agreement', () => {
@@ -15,6 +27,7 @@ describe('settings legal and privacy scope', () => {
   });
 
   it('keeps privacy policy aligned with the lightweight quiz product scope', () => {
+    const privacySource = policyText(PrivacyPage);
     expect(privacySource).toContain('刷题记录、错题本、收藏和题库同步状态');
     expect(privacySource).toContain('刷题、复习和结果回顾');
     expect(privacySource).toContain('账号注销流程申请删除账号相关数据');
@@ -25,6 +38,7 @@ describe('settings legal and privacy scope', () => {
   });
 
   it('keeps user agreement aligned with current mini-program capabilities', () => {
+    const termsSource = policyText(TermsPage);
     expect(termsSource).toContain('公共课真题练习、错题复习、收藏和学习进度管理');
     expect(termsSource).toContain('学习辅助');
     expect(termsSource).toContain('考试通过承诺');

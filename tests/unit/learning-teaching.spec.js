@@ -354,7 +354,7 @@ describe('动态调整的任务、证据和范围', () => {
       store.focus('second-q@1');
       respond({ data: { success: true, data: { message: '旧题答案20', tools: [] } } });
       await request;
-      expect(store.error).toContain('切换');
+      expect(store.error).toContain('已变化');
       expect(store.active.pendingHints).toHaveLength(0);
       expect(store.active.messages.some((m) => m.role === 'assistant')).toBe(false);
       expect(store.state.executions.filter((e) => e.tool === 'teaching')).toHaveLength(0);

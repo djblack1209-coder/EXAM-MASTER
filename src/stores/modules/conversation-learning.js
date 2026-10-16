@@ -1,4 +1,4 @@
-import { publicError, currentLanguage } from '@/i18n/index.js';
+import { publicError, currentLanguage, t } from '@/i18n/index.js';
 import { defineStore } from 'pinia';
 import {
   localChatOpening,
@@ -2364,7 +2364,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           ['hint.add', 'strategy.set', 'assessment.assist', 'plan.set'].includes(event.type)
       ).length;
       // 只从实际保存的事件说明部分成功，不能显示模型事先声称的整体成功。
-      if (saved) e.message = `已保存${saved}项操作，后续操作未完成：${e.message}`;
+      if (saved) {
+        // The original failure code is already in the tool receipt; show only verified saved facts.
+        e.code = 'PARTIAL_OPERATION';
+        e.message = t('ui.partialOperations', { v0: saved });
+      }
       throw e;
     }
     // 不信任工具执行前生成的成功宣称；教学文本仅表达建议，实际状态在固定进度视图显示。

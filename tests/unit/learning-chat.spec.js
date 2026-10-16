@@ -856,7 +856,7 @@ it.each(['提示', '读参考信件', 'give me a hint', 'Read sample email'])(
       id: 'mcmurrey-inquiry-letter-body-en-v1',
       scoringAuthority: false
     });
-    expect(store.active.messages.at(-1).content).toContain('公开示例，仅供参考。');
+    expect(store.active.messages.at(-1).content).toContain('公开参考内容，不计入学习记录。');
     expect(store.active.messages.at(-1).content).toContain('Dear Technical Support Department:');
     expect(store.active.messages.at(-1).content).toContain('W. Gary NNNNN');
     expect(store.active.messages.at(-1).content).toContain(
@@ -998,7 +998,7 @@ it('直接题目不当成原答，停止时不能暗中出题，旧入口继续�
   expect(store.state.questions).toHaveLength(1);
   store.selectedConversationId = null;
   await store.send('我想复习初二数学', { id: 'old-entry' });
-  expect(store.active.messages.at(-1).content).toBe('尚未连接模型，请先连接。');
+  expect(store.active.messages.at(-1).content).toBe('请选择 AI 助手后继续。');
 });
 
 it('诗词不可用或写入失败保留原答与判分，错误/部分/待核对/已帮助不触发独立赞语', async () => {

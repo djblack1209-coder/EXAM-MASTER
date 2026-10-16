@@ -313,14 +313,14 @@ const stubs = {
   text: { template: '<span><slot /></span>' },
   BaseIcon: true
 };
-const button = (w, text) => w.findAll('button').find((b) => b.text() === text);
+const button = (w, text) => w.findAll('button, [role="button"], [role="tab"]').find((b) => b.text() === text);
 const press = async (w, text) => {
   const b = button(w, text);
   expect(b).toBeTruthy();
   await b.trigger('tap');
 };
 async function fillForce(w) {
-  await press(w, '按原图演示');
+  await press(w, '按原图观察');
   await press(w, '合力与加速度');
   await w.get('[aria-label="原图质量"]').setValue('2');
   await press(w, 'kg');
@@ -372,10 +372,10 @@ describe('条件选择、动作与生命周期', () => {
         global: { stubs }
       });
     await fillForce(w);
-    await press(w, '确认条件并演示');
+    await press(w, '确认条件并观察');
     expect(w.emitted('confirm')).toBeUndefined();
     saved.mockReturnValue(true);
-    const old = button(w, '确认条件并演示');
+    const old = button(w, '确认条件并观察');
     await old.trigger('tap');
     await old.trigger('tap');
     expect(saved).toHaveBeenCalledTimes(2);
@@ -397,13 +397,13 @@ describe('条件选择、动作与生命周期', () => {
     await press(w, '互动学习');
     await fillForce(w);
     expect(w.find('.scene').exists()).toBe(false);
-    expect(button(w, '播放演示')).toBeUndefined();
-    await press(w, '确认条件并演示');
+    expect(button(w, '播放动画')).toBeUndefined();
+    await press(w, '确认条件并观察');
     expect(w.text()).toContain('原图条件已确认');
     await press(w, '互动学习');
     await press(w, '互动学习');
     expect(w.text()).not.toContain('原图条件已确认');
-    expect(w.text()).toContain('示例');
+    expect(w.text()).toContain('参考内容');
     await w.setProps({
       request: {
         id: 'small-a',
@@ -414,7 +414,7 @@ describe('条件选择、动作与生命周期', () => {
         questionKey: `${s.questions[0].id}@${s.questions[0].version}`
       }
     });
-    await press(w, '查看新演示');
+    await press(w, '查看新动画');
     expect(w.text()).not.toContain('m/s²');
     await press(w, '减半');
     await press(w, '下一步');
@@ -429,7 +429,7 @@ describe('条件选择、动作与生命周期', () => {
         questionKey: `${s.questions[0].id}@${s.questions[0].version}`
       }
     });
-    await press(w, '查看新演示');
+    await press(w, '查看新动画');
     expect(w.text()).not.toContain('m/s²');
     await press(w, '减半');
     await press(w, '下一步');
@@ -446,10 +446,10 @@ describe('条件选择、动作与生命周期', () => {
     try {
       await press(w, '互动学习');
       await fillForce(w);
-      await press(w, '确认条件并演示');
+      await press(w, '确认条件并观察');
       const before = JSON.stringify(s);
       expect(w.findAll('.force-lane')).toHaveLength(2);
-      await press(w, '动态演示');
+      await press(w, '互动观察');
       expect(w.text()).toContain('原图条件已确认');
       expect(w.findAll('.force-lane')).toHaveLength(2);
       expect(w.find('.scene').exists()).toBe(false);
@@ -478,7 +478,7 @@ describe('条件选择、动作与生命周期', () => {
       await press(w, '互动学习');
       if (concept === '合力与加速度') await fillForce(w);
       else {
-        await press(w, '按原图演示');
+        await press(w, '按原图观察');
         await press(w, '功与动能');
         await w.get('[aria-label="原图质量"]').setValue('500');
         await press(w, 'g');
@@ -487,23 +487,23 @@ describe('条件选择、动作与生命周期', () => {
         for (const label of ['已有速度', '恒定合力', '可视为质点', '惯性系', '不变', '直线']) await press(w, label);
         await w.get('[aria-label="初速度大小"]').setValue('200');
         await press(w, 'cm/s');
-        await w.get('[aria-label="初速度方向"]').findAll('button')[1].trigger('tap');
+        await w.get('[aria-label="初速度方向"]').findAll('button, [role="button"], [role="tab"]')[1].trigger('tap');
         await w.get('[aria-label="持续时间"]').setValue('2');
         await press(w, 's');
         await w
-          .findAll('button')
+          .findAll('button, [role="button"], [role="tab"]')
           .filter((b) => b.text() === '向左')
           .at(-1)
           .trigger('tap');
       }
-      await press(w, '确认条件并演示');
+      await press(w, '确认条件并观察');
       await press(w, concept === '功与动能' ? '我猜不会' : '减半');
       for (let i = 0; i < 12; i++) await press(w, '下一步');
       const beforeFacts = JSON.stringify(s),
         beforeReadout = w.get('.lab-content').text(),
         selected = w
-          .get('[aria-label="动态演示概念"]')
-          .findAll('button')
+          .get('[aria-label="用动画理解概念"]')
+          .findAll('button, [role="button"], [role="tab"]')
           .find((b) => b.text() === concept);
       expect(w.text()).toContain('原图条件已确认');
       if (concept === '功与动能') expect(beforeReadout).toContain('合力总功 -1 J');
@@ -535,10 +535,10 @@ describe('条件选择、动作与生命周期', () => {
     });
     try {
       await press(w, '互动学习');
-      expect(w.text()).toContain('当前题目演示未就绪');
+      expect(w.text()).toContain('这道题的动画暂不可用');
       expect(w.find('.scene').exists()).toBe(false);
       await press(w, '路程与位移');
-      expect(w.text()).not.toContain('当前题目演示未就绪');
+      expect(w.text()).not.toContain('这道题的动画暂不可用');
       expect(w.find('.scene').exists()).toBe(true);
     } finally {
       w.unmount();
@@ -559,7 +559,7 @@ describe('条件选择、动作与生命周期', () => {
       });
     await press(w, '互动学习');
     await fillForce(w);
-    await press(w, '确认条件并演示');
+    await press(w, '确认条件并观察');
     expect(w.text()).toContain('原图条件已确认');
     const before = JSON.stringify(s);
     await w.setProps({
@@ -574,7 +574,7 @@ describe('条件选择、动作与生命周期', () => {
     });
     expect(w.text()).toContain('原图条件已确认');
     expect(recordHelp).toHaveBeenCalledTimes(1);
-    await press(w, '查看新演示');
+    await press(w, '查看新动画');
     expect(w.text()).not.toContain('原图条件已确认');
     expect(w.text()).toContain('20 kg');
     expect(JSON.stringify(s)).toBe(before);
@@ -588,14 +588,14 @@ describe('条件选择、动作与生命周期', () => {
         props: { state: s, question: s.questions[0], conversationId: 'c1', context: 'ctx', recordHelp: saved },
         global: { stubs }
       });
-    await press(w, '按原图演示');
-    await press(w, '确认条件并演示');
+    await press(w, '按原图观察');
+    await press(w, '确认条件并观察');
     expect(saved).not.toHaveBeenCalled();
     expect(w.emitted('confirm')).toBeUndefined();
-    await press(w, '按原图演示');
+    await press(w, '按原图观察');
     await fillForce(w);
     expect(saved).not.toHaveBeenCalled();
-    await press(w, '确认条件并演示');
+    await press(w, '确认条件并观察');
     expect(saved).toHaveBeenCalledTimes(1);
     expect(w.emitted('confirm')[0][0]).toMatchObject({ massKg: 2, netForceN: 4 });
     await press(w, '修改原图条件');
@@ -612,11 +612,11 @@ describe('条件选择、动作与生命周期', () => {
         global: { stubs }
       });
     await fillForce(w);
-    await press(w, '确认条件并演示');
+    await press(w, '确认条件并观察');
     expect(w.emitted('confirm')).toBeUndefined();
     expect(w.text()).toContain('未保存');
     await w.setProps({ stopped: true });
-    expect(button(w, '确认条件并演示').attributes('disabled')).toBeDefined();
+    expect(button(w, '确认条件并观察').attributes('disabled')).toBeDefined();
     const next = clone(s);
     next.materials[0].segments[0].preview = png(102);
     await w.setProps({ state: next, stopped: false });
@@ -630,9 +630,9 @@ describe('条件选择、动作与生命周期', () => {
       w = mount(LearningLab, { props: { state: s, conversationId: 'c1', context: 'ctx' }, global: { stubs } });
     await press(w, '互动学习');
     await press(w, '合力与加速度');
-    expect(button(w, '播放演示').attributes('disabled')).toBeDefined();
+    expect(button(w, '播放动画').attributes('disabled')).toBeDefined();
     await press(w, '减半');
-    await press(w, '播放演示');
+    await press(w, '播放动画');
     await vi.advanceTimersByTimeAsync(3000);
     expect(w.text()).toContain('时间 1 s / 2 s');
     await w.setProps({ busy: true });
@@ -640,9 +640,9 @@ describe('条件选择、动作与生命周期', () => {
     await vi.advanceTimersByTimeAsync(3000);
     expect(w.text()).toBe(text);
     await w.setProps({ busy: false });
-    await press(w, '播放演示');
+    await press(w, '播放动画');
     await w.setProps({ stopped: true });
-    expect(button(w, '播放演示').attributes('disabled')).toBeDefined();
+    expect(button(w, '播放动画').attributes('disabled')).toBeDefined();
     await w.setProps({ visible: false });
     expect(w.find('.lab-content').exists()).toBe(false);
     expect(JSON.stringify(s)).toBe(before);

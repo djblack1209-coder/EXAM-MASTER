@@ -9,7 +9,7 @@
  * 5. 请求去重和合并
  *
  * 使用示例：
- * import { offlineQueue } from '@/utils/offline-queue.js'
+ * import { offlineQueue } from '@/utils/core/offline-queue.js'
  *
  * // 添加请求到队列
  * offlineQueue.enqueue({
@@ -25,8 +25,7 @@
 import { logger } from '@/utils/logger.js';
 
 /**
- * 延迟获取 storageService，避免循环依赖：
- * storageService -> lafService -> ai.service -> offline-queue -> storageService
+ * 队列直接使用 uni 存储，避免与 storageService 的请求同步链循环依赖。
  *
  * 使用 uni 原生存储 API 替代 storageService，因为 offline-queue 的存储需求简单，
  * 不需要 storageService 的云同步能力。
@@ -147,7 +146,7 @@ class OfflineQueue {
     this.isOnline = true;
     this.listeners = new Set();
     this.requestFnMap = new Map(); // 存储请求函数引用
-    this._rebuilder = null; // ✅ 请求重建函数（由 lafService 注册）
+    this._rebuilder = null; // ✅ 请求重建函数（由请求调用方注册）
 
     // 初始化
     this._init();
@@ -155,7 +154,7 @@ class OfflineQueue {
 
   /**
    * ✅ 问题清单修复：注册请求重建函数
-   * 允许 lafService 注册一个函数，用于从持久化的 requestData 重建请求
+   * 允许请求调用方注册一个函数，用于从持久化的 requestData 重建请求
    * @param {Function} rebuilderFn - (requestData) => Promise<any>
    */
   registerRebuilder(rebuilderFn) {

@@ -83,6 +83,9 @@ export function publicError(error, fallback = t('ui.operationFailed')) {
     DELETE_INCOMPLETE: 'ui.contentDeleteUnconfirmed',
     AUTH_REQUIRED: 'ui.signInRequired',
     UNAUTHORIZED: 'ui.signInRequired',
+    CONTEXT_CHANGED: 'ui.contextChanged',
+    USER_PREFERENCE: 'ui.methodLocked',
+    FORBIDDEN: 'ui.actionForbidden',
     401: 'ui.signInRequired',
     429: 'ui.rateLimited'
   })[error?.code];
@@ -104,7 +107,15 @@ export function publicError(error, fallback = t('ui.operationFailed')) {
     '登录后可连接云模型；本地学习无需登录': 'ui.signInRequired',
     '学习天数必须在 1 到 365 之间': 'ui.invalidDuration',
     计划周期须为1至365天: 'ui.invalidPlanDuration',
-    '请求已取消，费用状态请查看模型用量': 'ui.modelCancelled'
+    '请求已取消，费用状态请查看模型用量': 'ui.modelCancelled',
+    另一窗口正在保存学习记录: 'ui.storageBusy',
+    '答案、作答或批注区域不能自动用作独立校验资料': 'ui.materialAnswerRegion',
+    '每个非空行都须是完整的“字段：值”；请先核对标题、说明或缺失内容，不会忽略原文行': 'ui.materialFormat',
+    '当前资料分析仅支持九位以内整数，不猜单位或舍入': 'ui.materialInteger',
+    '请选择九位以内整数或最多六位小数的纯数值字段，不猜单位、分组符号或舍入': 'ui.materialNumber',
+    增长率需要正基期和非负现期: 'ui.materialGrowth',
+    '占比需要正的整体和非负的部分，部分不能大于整体': 'ui.materialShare',
+    '精确运算超出范围，请选较小的纯数值字段；不会改用近似判分': 'ui.materialRange'
   })[value.trim()];
   if (knownKey) return t(knownKey);
   for (const index of [
