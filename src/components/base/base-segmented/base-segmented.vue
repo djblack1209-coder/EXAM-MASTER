@@ -116,7 +116,7 @@ function keydown(event) {
   box-shadow: var(--lift-1);
 }
 .base-segmented [disabled] {
-  color: var(--ink-4);
+  color: var(--ink-disabled);
 }
 .base-segmented button:focus-visible {
   outline: var(--border-selected) solid var(--focus);

@@ -76,7 +76,7 @@ const messages = {
     'learning.attemptKind.variant': '变式',
     'learning.attemptKind.review': '复习',
     'learning.k59': ' 本浏览器缺少多窗口写入保护；请仅保留一个学习窗口。 ',
-    'learning.ks3': '今天，想把什么\n学明白？',
+    'learning.ks3': '今天，想把什么学明白？',
     'learning.kif': '模型',
     'learning.k3v': ' 当前：',
     'learning.kp6': '仅保存到本设备',

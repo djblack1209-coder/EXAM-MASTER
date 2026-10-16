@@ -286,14 +286,12 @@ describe('learning interface states preserve learning facts', () => {
       Element.prototype.scrollIntoView = originalScroll;
     }
   });
-  it('greets once, returns to a static idle pose, and does not create a conversation', async () => {
+  it('thinks in the chat empty state without creating a conversation', async () => {
     const store = useConversationLearningStore(),
       wrapper = render();
-    expect(pose(wrapper, 'wave').props('play')).toBe('once');
-    pose(wrapper, 'wave').vm.$emit('complete', 'wave');
+    expect(pose(wrapper.find('.welcome-copy'), 'think').props('play')).toBe('loop');
     await flushPromises();
-    expect(pose(wrapper, 'wave')).toBeUndefined();
-    expect(pose(wrapper.find('.welcome-copy'), 'idle').props('play')).toBe('none');
+    expect(wrapper.find('.composer textarea').exists()).toBe(true);
     expect(store.state.conversations).toHaveLength(0);
   });
   it('thinking loops while replying, pauses for answer input, and stops on reply or error', async () => {
@@ -390,13 +388,39 @@ describe('learning interface states preserve learning facts', () => {
     expect(wrapper.emitted('update:modelValue')).toEqual([[['A', 'B']]]);
     expect(wrapper.emitted('submit')).toBeUndefined();
   });
-  it('statistics do not contain a mascot; reduced motion prevents the greeting from moving', async () => {
+  it('keeps earlier answers reachable from an otherwise empty daily statistics view', async () => {
+    const now = Date.now();
+    vi.useFakeTimers({ toFake: ['Date'] });
+    try {
+      vi.setSystemTime(now - 2 * 86400000);
+      const store = useConversationLearningStore();
+      store.start('12 + 8');
+      store.submit('19', true);
+      vi.setSystemTime(now);
+      store.refresh();
+      const before = store.exportData();
+      const wrapper = render(LearningOverview, { view: 'study-detail', initialExpanded: true, showNavigation: false });
+      expect(wrapper.get('.overview-empty').text()).toContain(t('learning.history'));
+      expect(wrapper.find('.base-stat').exists()).toBe(false);
+      await wrapper.get('.overview-empty .base-button').trigger('keydown', { key: 'Enter' });
+      await flushPromises();
+      expect(wrapper.find('.overview-empty').exists()).toBe(false);
+      await wrapper.setProps({ view: 'mistake' });
+      expect(wrapper.text()).toContain('19');
+      expect(store.exportData()).toBe(before);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+  it('empty statistics have one action; reduced motion stops the thinking pose', async () => {
     const overview = render(LearningOverview);
-    expect(overview.findComponent(YoziMascot).exists()).toBe(false);
+    expect(overview.findComponent(YoziMascot).exists()).toBe(true);
+    expect(overview.findAll('.overview-empty .base-button')).toHaveLength(1);
+    expect(overview.find('.base-stat').exists()).toBe(false);
     setMascotReducedMotion(true, { persist: false });
     const wrapper = render();
     await flushPromises();
-    expect(pose(wrapper, 'wave').attributes('data-moving')).toBe('false');
+    expect(pose(wrapper, 'think').attributes('data-moving')).toBe('false');
   });
   it('confirmed daily recap celebrates once without changing the saved original answers', async () => {
     const store = useConversationLearningStore();

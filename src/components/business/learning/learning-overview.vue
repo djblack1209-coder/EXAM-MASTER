@@ -16,14 +16,8 @@
         {{ t({ 对话: 'ui.navChat', 错题: 'ui.navMistake', 计划: 'ui.navPlan', 统计: 'ui.navStats' }[item]) }}
       </BaseButton>
     </view>
-    <view class="overview-heading">
-      <text class="overview-title">{{
-        inline ? t('learning.k2p') : range === 'day' ? t('learning.kn5') : t('learning.kmz')
-      }}</text>
-      <text class="overview-date">{{ stats.day.slice(5).replace('-', ' / ') }}</text>
-    </view>
     <BaseSegmented
-      v-if="!inline"
+      v-if="!inline && hasHistory"
       v-model="range"
       :label="t('learning.statRange')"
       :options="[
@@ -31,207 +25,225 @@
         { value: 'history', label: t('learning.history') }
       ]"
     />
-    <view
-      class="learning-summary"
-      role="button"
-      tabindex="0"
-      :aria-expanded="expanded"
-      :aria-label="t('learning.ka3')"
-      data-learning-toggle="true"
-      @tap="expanded = !expanded"
-    >
-      <view class="overview-metrics">
-        <BaseStat
-          :label="t('learning.tasksDone')"
-          :value="stats.tasks.numerator"
-          :denominator="stats.tasks.denominator"
-        />
-        <BaseStat
-          :label="t('learning.reliableAnswers')"
-          :value="stats.totalReliableAnswers"
-          :unit="t('learning.times')"
-        />
-        <BaseStat :label="t('learning.pending')" :value="stats.pending" :unit="t('learning.times')" />
+    <template v-if="hasRecords">
+      <view class="overview-heading">
+        <text class="overview-title">{{
+          inline ? t('learning.k2p') : range === 'day' ? t('learning.kn5') : t('learning.kmz')
+        }}</text>
+        <text class="overview-date">{{ stats.day.slice(5).replace('-', ' / ') }}</text>
       </view>
       <view
-        v-if="stats.tasks.denominator"
-        class="task-progress"
-        role="progressbar"
-        :aria-valuenow="stats.tasks.numerator"
-        :aria-valuemax="stats.tasks.denominator"
-        aria-valuemin="0"
-        :aria-label="t('learning.krj')"
+        v-if="stats.tasks.denominator || answerCount"
+        class="learning-summary"
+        role="button"
+        tabindex="0"
+        :aria-expanded="expanded"
+        :aria-label="t('learning.ka3')"
+        data-learning-toggle="true"
+        @tap="expanded = !expanded"
       >
-        <view :style="{ transform: `scaleX(${stats.tasks.rate || 0})` }" />
-      </view>
-      <text v-if="!stats.tasks.denominator" class="metric-empty">{{ t('learning.kkx') }}</text>
-      <view class="summary-line">
-        <text>{{ t('learning.k8w') }}{{ stats.reliableCorrectAnswers }} / {{ stats.totalReliableAnswers }}</text>
-        <text>{{ t('learning.ko2') }}{{ stats.first.numerator }} / {{ stats.first.denominator }}</text>
-      </view>
-      <view
-        v-if="answerCount"
-        class="answer-distribution"
-        role="img"
-        :aria-label="t('learning.kfk', { v0: answerCount, v1: stats.totalReliableAnswers, v2: stats.pending })"
-      >
-        <view class="answer-checked" :style="{ width: `${(stats.totalReliableAnswers / answerCount) * 100}%` }" />
-        <view class="answer-pending" :style="{ width: `${(stats.pending / answerCount) * 100}%` }" />
-      </view>
-      <view class="summary-foot yozi-icon-row">
-        <text>{{ answerCount ? t('learning.ktl') : t('learning.k9e') }}</text>
-        <text>{{ expanded ? t('learning.kmv') : t('learning.ks4') }}</text>
-        <BaseIcon :name="expanded ? 'chevron-up' : 'chevron-down'" tone="ink-3" />
-      </view>
-      <text v-if="stats.first.partial" class="subtle"
-        >{{ t('learning.kpi') }}{{ stats.first.partial }}{{ t('learning.kbd') }}</text
-      >
-    </view>
-    <view v-if="expanded" class="learning-details">
-      <text class="subtle">{{ stats.day }} · {{ learningText(timezoneLabel) }}</text>
-      <template v-if="showTasks">
-        <view class="detail-heading">
-          <text class="learning-label">{{ t('learning.khr') }}</text>
-          <BaseButton variant="quiet" @tap="editPlan">{{ t('learning.kn8') }}</BaseButton>
+        <view class="overview-metrics">
+          <BaseStat
+            :label="t('learning.tasksDone')"
+            :value="stats.tasks.numerator"
+            :denominator="stats.tasks.denominator"
+          />
+          <BaseStat
+            :label="t('learning.reliableAnswers')"
+            :value="stats.totalReliableAnswers"
+            :unit="t('learning.times')"
+          />
+          <BaseStat :label="t('learning.pending')" :value="stats.pending" :unit="t('learning.times')" />
         </view>
-        <view v-if="!currentTasks.length" class="record-empty">
-          <BaseEmpty state="empty" :title="t('learning.k2f')" mascot-size="small" />
-          <BaseButton variant="quiet" @tap="openView('learning')">{{ t('learning.k62') }}</BaseButton>
+        <view
+          v-if="stats.tasks.denominator"
+          class="task-progress"
+          role="progressbar"
+          :aria-valuenow="stats.tasks.numerator"
+          :aria-valuemax="stats.tasks.denominator"
+          aria-valuemin="0"
+          :aria-label="t('learning.krj')"
+        >
+          <view :style="{ transform: `scaleX(${stats.tasks.rate || 0})` }" />
         </view>
-        <view v-for="task in currentTasks" :key="task.id" class="learning-row task-row">
-          <view class="task-indicator" :class="{ completed: task.completedBy }">
-            <BaseIcon v-if="task.completedBy" name="check" tone="ink-3" />
+        <text v-if="!stats.tasks.denominator" class="metric-empty">{{ t('learning.kkx') }}</text>
+        <view class="summary-line">
+          <text>{{ t('learning.ko2') }}{{ stats.first.numerator }} / {{ stats.first.denominator }}</text>
+        </view>
+        <view
+          v-if="answerCount"
+          class="answer-distribution"
+          role="img"
+          :aria-label="t('learning.kfk', { v0: answerCount, v1: stats.totalReliableAnswers, v2: stats.pending })"
+        >
+          <view class="answer-checked" :style="{ width: `${(stats.totalReliableAnswers / answerCount) * 100}%` }" />
+          <view class="answer-pending" :style="{ width: `${(stats.pending / answerCount) * 100}%` }" />
+        </view>
+        <view class="summary-foot yozi-icon-row">
+          <text>{{ answerCount ? t('learning.ktl') : t('learning.k9e') }}</text>
+          <text>{{ expanded ? t('learning.kmv') : t('learning.ks4') }}</text>
+          <BaseIcon :name="expanded ? 'chevron-up' : 'chevron-down'" tone="ink-3" />
+        </view>
+        <text v-if="stats.first.partial" class="subtle"
+          >{{ t('learning.kpi') }}{{ stats.first.partial }}{{ t('learning.kbd') }}</text
+        >
+      </view>
+      <view v-if="expanded" class="learning-details">
+        <text class="subtle">{{ stats.day }} · {{ learningText(timezoneLabel) }}</text>
+        <template v-if="showTasks">
+          <view class="detail-heading">
+            <text class="learning-label">{{ t('learning.khr') }}</text>
+            <BaseButton variant="quiet" @tap="editPlan">{{ t('learning.kn8') }}</BaseButton>
           </view>
-          <view class="row-content">
-            <text>{{ task.title }}</text>
-            <text v-if="task.privacyRemoved" class="subtle">{{ t('learning.k91') }}</text>
-            <text v-else class="subtle">
-              {{
-                task.condition === 'manual'
-                  ? task.completedBy
-                    ? t('learning.kq0')
-                    : t('learning.k4f')
-                  : task.condition === 'independent_correct'
+          <view v-if="!currentTasks.length" class="record-empty">
+            <BaseEmpty state="empty" :title="t('learning.k2f')" mascot-size="small" />
+            <BaseButton variant="quiet" @tap="openView('learning')">{{ t('learning.k62') }}</BaseButton>
+          </view>
+          <view v-for="task in currentTasks" :key="task.id" class="learning-row task-row">
+            <view class="task-indicator" :class="{ completed: task.completedBy }">
+              <BaseIcon v-if="task.completedBy" name="check" tone="ink-3" />
+            </view>
+            <view class="row-content">
+              <text>{{ task.title }}</text>
+              <text v-if="task.privacyRemoved" class="subtle">{{ t('learning.k91') }}</text>
+              <text v-else class="subtle">
+                {{
+                  task.condition === 'manual'
                     ? task.completedBy
-                      ? t('learning.k8d')
-                      : t('learning.k33')
-                    : task.completedBy
-                      ? t('learning.kbr')
-                      : t('learning.k8j')
-              }}
-            </text>
-          </view>
-          <BaseButton
-            v-if="!task.privacyRemoved && task.questionKey"
-            variant="quiet"
-            @tap="openQuestion(task.questionKey)"
-            >{{ t('learning.kll') }}</BaseButton
-          >
-          <BaseButton
-            v-else-if="!task.privacyRemoved && task.condition === 'manual' && !task.completedBy"
-            variant="quiet"
-            @tap="complete(task.id)"
-            >{{ t('learning.ktg') }}</BaseButton
-          >
-        </view>
-        <text v-for="plan in priorPlans" :key="plan.id" class="subtle"
-          >{{ t('learning.kkf') }}{{ plan.version }} · {{ plan.tasks.filter((t) => t.completedBy).length }}/{{
-            plan.tasks.length
-          }}
-        </text>
-        <view v-for="task in upcomingRetests" :key="task.id" class="learning-row">
-          <view class="learning-row-main">
-            <text>{{ learningText(task.label) }} · {{ task.day.slice(5).replace('-', '/') }}</text>
-            <text class="subtle">{{ task.title }}</text>
-          </view>
-          <BaseButton variant="quiet" @tap="openQuestion(task.questionKey, task.conversationId, 'review')">{{
-            t('learning.k5w')
-          }}</BaseButton>
-        </view>
-      </template>
-      <template v-if="showMistakes">
-        <text class="learning-label detail-heading">{{ t('learning.kr9') }}</text>
-        <view v-if="!stats.mistakes.length" class="record-empty">
-          <BaseEmpty state="empty" :title="t('learning.k45')" mascot-size="small" />
-        </view>
-        <view v-for="attempt in stats.mistakes" :key="attempt.id" class="learning-row">
-          <text class="record-question">{{ questionPrompt(attempt.questionKey) }}</text>
-          <text class="subtle"
-            >{{ t('learning.kcd') }}{{ attempt.answer }} · {{ t(`learning.attemptKind.${attempt.kind}`)
-            }}{{ t('learning.km') }}{{ attempt.hints.length }}{{ t('learning.kbd') }}</text
-          >
-          <text class="subtle">{{ t('learning.kfe') }}{{ effectiveGrade(attempt).basis }}</text>
-          <view class="record-actions">
-            <BaseButton variant="quiet" @tap="openQuestion(attempt.questionKey, attempt.conversationId)"
-              >{{ t('learning.k3k') }}<BaseIcon name="arrow-right" tone="ink-3" />
-            </BaseButton>
-            <BaseButton variant="quiet" @tap="dispute(attempt.id)">{{ t('learning.kcn') }}</BaseButton>
-          </view>
-        </view>
-        <text class="learning-label detail-heading">{{ t('learning.k7j') }}</text>
-        <BaseEmpty v-if="!stats.due.length" state="empty" :title="t('learning.k7s')" mascot-size="small" />
-        <view v-for="review in stats.due" :key="review.id" class="learning-row">
-          <text>{{ questionPrompt(review.questionKey) }}</text>
-          <BaseButton variant="quiet" @tap="openQuestion(review.questionKey, null, 'review')">{{
-            t('learning.kma')
-          }}</BaseButton>
-        </view>
-      </template>
-      <template v-if="showKnowledge">
-        <text class="learning-label detail-heading">{{ t('learning.k9x') }}</text>
-        <view v-if="!Object.keys(stats.knowledge).length" class="record-empty">
-          <BaseEmpty state="empty" :title="t('learning.kbj')" mascot-size="small" />
-        </view>
-        <view v-for="(entry, key) in stats.knowledge" :key="key" class="learning-row knowledge-row">
-          <view class="row-content">
-            <text>{{ learningText(knowledgeLabel(key)) }}</text>
-            <text class="subtle">{{ t('learning.kpw') }}{{ entry.evidenceIds.length }}{{ t('learning.kbt') }}</text>
-          </view>
-          <text class="knowledge-state">{{ learningText(entry.status) }}</text>
-        </view>
-        <template v-if="learning.teachingProgress.rows.length">
-          <text class="learning-label detail-heading">{{ t('learning.k6g') }}</text>
-          <view
-            v-for="entry in learning.teachingProgress.rows.slice(-6).reverse()"
-            :key="entry.id"
-            class="learning-row"
-          >
-            <text>{{ entry.scope }} · {{ methodNames[entry.method] || entry.method }}</text>
-            <text class="subtle"
-              >{{ learningText(observationNames[entry.status]) }}{{ entry.historyOnly ? t('learning.kb1') : '' }}</text
+                      ? t('learning.kq0')
+                      : t('learning.k4f')
+                    : task.condition === 'independent_correct'
+                      ? task.completedBy
+                        ? t('learning.k8d')
+                        : t('learning.k33')
+                      : task.completedBy
+                        ? t('learning.kbr')
+                        : t('learning.k8j')
+                }}
+              </text>
+            </view>
+            <BaseButton
+              v-if="!task.privacyRemoved && task.questionKey"
+              variant="quiet"
+              @tap="openQuestion(task.questionKey)"
+              >{{ t('learning.kll') }}</BaseButton
             >
-            <text class="subtle"
-              >{{ t('learning.kf7') }}{{ entry.followups.reliable }}{{ t('learning.kqx') }}{{ entry.followups.pending
-              }}{{ t('learning.kl0') }}{{ entry.followups.helpedCorrect }}{{ t('learning.kto')
-              }}{{ entry.followups.independentTransfer }}{{ t('learning.kw') }}{{ entry.followups.dueReview
-              }}{{ t('learning.kbd') }}</text
+            <BaseButton
+              v-else-if="!task.privacyRemoved && task.condition === 'manual' && !task.completedBy"
+              variant="quiet"
+              @tap="complete(task.id)"
+              >{{ t('learning.ktg') }}</BaseButton
             >
-            <BaseButton variant="quiet" @tap="openQuestion(entry.questionKey, entry.conversationId)">{{
-              t('learning.k1w')
+          </view>
+          <text v-for="plan in priorPlans" :key="plan.id" class="subtle"
+            >{{ t('learning.kkf') }}{{ plan.version }} · {{ plan.tasks.filter((t) => t.completedBy).length }}/{{
+              plan.tasks.length
+            }}
+          </text>
+          <view v-for="task in upcomingRetests" :key="task.id" class="learning-row">
+            <view class="learning-row-main">
+              <text>{{ learningText(task.label) }} · {{ task.day.slice(5).replace('-', '/') }}</text>
+              <text class="subtle">{{ task.title }}</text>
+            </view>
+            <BaseButton variant="quiet" @tap="openQuestion(task.questionKey, task.conversationId, 'review')">{{
+              t('learning.k5w')
             }}</BaseButton>
           </view>
         </template>
-      </template>
-      <template v-if="showPending && stats.pending">
-        <text class="learning-label detail-heading">{{ t('learning.kuo') }}</text>
-        <view v-for="attempt in pendingAttempts" :key="attempt.id" class="learning-row">
-          <text>{{ questionPrompt(attempt.questionKey) }}{{ t('learning.k74') }}{{ attempt.answer }}</text>
-          <view v-for="assessment in attempt.assistance || []" :key="assessment.id">
-            <text class="subtle">{{ t('learning.k6i') }}{{ assessment.feedback }}</text>
-            <template v-if="['subjective-rubric-v1', 'subjective-rubric-v2'].includes(assessment.contract)">
-              <text class="subtle"
-                >{{ t('learning.kmr') }}{{ assessment.score === null ? t('learning.ki1') : assessment.score }} /
-                {{ assessment.maxScore }}</text
-              >
-              <RubricEvidence :attempt="attempt" :assessment="assessment" :context-key="learning.recordContext()" />
-            </template>
+        <template v-if="showMistakes">
+          <text class="learning-label detail-heading">{{ t('learning.kr9') }}</text>
+          <view v-if="!stats.mistakes.length" class="record-empty">
+            <BaseEmpty state="empty" :title="t('learning.k45')" mascot-size="small" />
           </view>
-          <BaseButton variant="quiet" @tap="openQuestion(attempt.questionKey, attempt.conversationId)">{{
-            t('learning.k6d')
-          }}</BaseButton>
-        </view>
-      </template>
-    </view>
+          <view v-for="attempt in stats.mistakes" :key="attempt.id" class="learning-row">
+            <text class="record-question">{{ questionPrompt(attempt.questionKey) }}</text>
+            <text class="subtle"
+              >{{ t('learning.kcd') }}{{ attempt.answer }} · {{ t(`learning.attemptKind.${attempt.kind}`)
+              }}{{ t('learning.km') }}{{ attempt.hints.length }}{{ t('learning.kbd') }}</text
+            >
+            <text class="subtle">{{ t('learning.kfe') }}{{ effectiveGrade(attempt).basis }}</text>
+            <view class="record-actions">
+              <BaseButton variant="quiet" @tap="openQuestion(attempt.questionKey, attempt.conversationId)"
+                >{{ t('learning.k3k') }}<BaseIcon name="arrow-right" tone="ink-3" />
+              </BaseButton>
+              <BaseButton variant="quiet" @tap="dispute(attempt.id)">{{ t('learning.kcn') }}</BaseButton>
+            </view>
+          </view>
+          <text class="learning-label detail-heading">{{ t('learning.k7j') }}</text>
+          <BaseEmpty v-if="!stats.due.length" state="empty" :title="t('learning.k7s')" mascot-size="small" />
+          <view v-for="review in stats.due" :key="review.id" class="learning-row">
+            <text>{{ questionPrompt(review.questionKey) }}</text>
+            <BaseButton variant="quiet" @tap="openQuestion(review.questionKey, null, 'review')">{{
+              t('learning.kma')
+            }}</BaseButton>
+          </view>
+        </template>
+        <template v-if="showKnowledge">
+          <text class="learning-label detail-heading">{{ t('learning.k9x') }}</text>
+          <view v-if="!Object.keys(stats.knowledge).length" class="record-empty">
+            <BaseEmpty state="empty" :title="t('learning.kbj')" mascot-size="small" />
+          </view>
+          <view v-for="(entry, key) in stats.knowledge" :key="key" class="learning-row knowledge-row">
+            <view class="row-content">
+              <text>{{ learningText(knowledgeLabel(key)) }}</text>
+              <text class="subtle">{{ t('learning.kpw') }}{{ entry.evidenceIds.length }}{{ t('learning.kbt') }}</text>
+            </view>
+            <text class="knowledge-state">{{ learningText(entry.status) }}</text>
+          </view>
+          <template v-if="learning.teachingProgress.rows.length">
+            <text class="learning-label detail-heading">{{ t('learning.k6g') }}</text>
+            <view
+              v-for="entry in learning.teachingProgress.rows.slice(-6).reverse()"
+              :key="entry.id"
+              class="learning-row"
+            >
+              <text>{{ entry.scope }} · {{ methodNames[entry.method] || entry.method }}</text>
+              <text class="subtle"
+                >{{ learningText(observationNames[entry.status])
+                }}{{ entry.historyOnly ? t('learning.kb1') : '' }}</text
+              >
+              <text class="subtle"
+                >{{ t('learning.kf7') }}{{ entry.followups.reliable }}{{ t('learning.kqx') }}{{ entry.followups.pending
+                }}{{ t('learning.kl0') }}{{ entry.followups.helpedCorrect }}{{ t('learning.kto')
+                }}{{ entry.followups.independentTransfer }}{{ t('learning.kw') }}{{ entry.followups.dueReview
+                }}{{ t('learning.kbd') }}</text
+              >
+              <BaseButton variant="quiet" @tap="openQuestion(entry.questionKey, entry.conversationId)">{{
+                t('learning.k1w')
+              }}</BaseButton>
+            </view>
+          </template>
+        </template>
+        <template v-if="showPending && stats.pending">
+          <text class="learning-label detail-heading">{{ t('learning.kuo') }}</text>
+          <view v-for="attempt in pendingAttempts" :key="attempt.id" class="learning-row">
+            <text>{{ questionPrompt(attempt.questionKey) }}{{ t('learning.k74') }}{{ attempt.answer }}</text>
+            <view v-for="assessment in attempt.assistance || []" :key="assessment.id">
+              <text class="subtle">{{ t('learning.k6i') }}{{ assessment.feedback }}</text>
+              <template v-if="['subjective-rubric-v1', 'subjective-rubric-v2'].includes(assessment.contract)">
+                <text class="subtle"
+                  >{{ t('learning.kmr') }}{{ assessment.score === null ? t('learning.ki1') : assessment.score }} /
+                  {{ assessment.maxScore }}</text
+                >
+                <RubricEvidence :attempt="attempt" :assessment="assessment" :context-key="learning.recordContext()" />
+              </template>
+            </view>
+            <BaseButton variant="quiet" @tap="openQuestion(attempt.questionKey, attempt.conversationId)">{{
+              t('learning.k6d')
+            }}</BaseButton>
+          </view>
+        </template>
+      </view>
+    </template>
+    <BaseEmpty
+      v-else
+      class="overview-empty"
+      :title="t(view === 'mistake' ? 'ui.emptyMistakes' : view === 'plan' ? 'ui.emptyPlan' : 'ui.emptyStats')"
+      mascot-size="medium"
+      show-button
+      :button-text="!inline && range === 'day' && hasHistory ? t('learning.history') : t('ui.learnNow')"
+      @action="!inline && range === 'day' && hasHistory ? (range = 'history') : openView('learning')"
+    />
     <view
       v-if="message"
       class="subtle overview-feedback"
@@ -345,6 +357,19 @@ const showKnowledge = computed(() => ['all', 'study-detail'].includes(props.view
 const showPending = computed(() => ['all', 'mistake', 'study-detail'].includes(props.view));
 const stats = computed(() =>
   learning.scopedSummary(props.inline ? 'day' : range.value, props.conversationId || undefined)
+);
+const hasHistory = computed(() => !!(learning.state.attempts.length || learning.state.plans.length));
+const hasRecords = computed(() =>
+  props.view === 'mistake'
+    ? !!(stats.value.mistakes.length || stats.value.due.length || stats.value.pending)
+    : props.view === 'plan'
+      ? !!(
+          stats.value.tasks.denominator ||
+          currentTasks.value.length ||
+          priorPlans.value.length ||
+          upcomingRetests.value.length
+        )
+      : !!(stats.value.tasks.denominator || stats.value.totalReliableAnswers || stats.value.pending)
 );
 const answerCount = computed(() => stats.value.totalReliableAnswers + stats.value.pending);
 const currentTasks = computed(() => {

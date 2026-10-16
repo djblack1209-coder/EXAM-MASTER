@@ -69,7 +69,7 @@ function keydown(event) {
   box-shadow: none;
 }
 .base-checkbox[aria-disabled='true'] {
-  color: var(--ink-4);
+  color: var(--ink-disabled);
   cursor: not-allowed;
 }
 .base-checkbox:focus-visible {

@@ -67,7 +67,7 @@ function keydown(event) {
   font-size: var(--size-small);
 }
 .base-list-row.is-disabled {
-  color: var(--ink-4);
+  color: var(--ink-disabled);
 }
 .base-list-row:focus-visible {
   outline: var(--border-selected) solid var(--focus);

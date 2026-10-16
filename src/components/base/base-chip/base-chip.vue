@@ -80,7 +80,8 @@ function keydown(event) {
   font-weight: var(--weight-ui-emphasis);
 }
 .base-chip[disabled] {
-  color: var(--ink-4);
+  opacity: 1;
+  color: var(--ink-disabled);
 }
 .base-chip__count {
   font-size: var(--size-caption);

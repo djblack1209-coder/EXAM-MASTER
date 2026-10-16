@@ -240,6 +240,7 @@ function keydown(event) {
   width: 100%;
 }
 .base-button[disabled] {
+  opacity: 1;
   background: var(--paper-sunk);
   color: var(--ink-disabled);
   box-shadow:

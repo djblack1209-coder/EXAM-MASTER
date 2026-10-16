@@ -27,7 +27,7 @@
     >
       <BaseEmpty v-if="loadError" state="error" :title="loadError" show-button @action="onPullRefresh" />
       <!-- 统计卡片 -->
-      <view class="stats-row apple-glass-card">
+      <view v-if="totalFavorites" class="stats-row apple-glass-card">
         <BaseStat :label="t('favorite.copy1')" :value="Number(totalFavorites) || 0" />
         <BaseStat :label="t('favorite.copy2')" :value="Number(reviewedCount) || 0" :denominator="totalFavorites" />
         <BaseStat :label="t('favorite.copy3')" :value="Number(needReviewCount) || 0" :denominator="totalFavorites" />
@@ -35,7 +35,7 @@
       </view>
 
       <!-- 收藏夹列表 -->
-      <view class="folder-section">
+      <view v-if="totalFavorites || folders.some((folder) => !folder.isDefault)" class="folder-section">
         <view class="section-header">
           <text class="section-title">{{ t('favorite.copy5') }}</text>
           <BaseButton class="nav-action" icon="plus" variant="secondary" @tap="openFolderModal()">{{
@@ -67,7 +67,7 @@
 
       <!-- 收藏题目列表 -->
       <view class="favorites-section">
-        <view class="section-header">
+        <view v-if="totalFavorites" class="section-header">
           <text class="section-title">
             {{ currentFolderName }}
           </text>
@@ -79,7 +79,14 @@
         </view>
 
         <!-- 空状态 -->
-        <BaseEmpty v-if="filteredFavorites.length === 0" :title="t('favorite.copy9')" :desc="t('favorite.copy10')" />
+        <BaseEmpty
+          v-if="!loadError && filteredFavorites.length === 0"
+          :title="t('ui.emptyFavorite')"
+          mascot-size="medium"
+          show-button
+          :button-text="t('ui.choosePaper')"
+          @action="safeNavigateTo('/pages/practice-sub/question-bank')"
+        />
 
         <!-- 题目列表 (F007: 增量渲染，避免一次性渲染全部DOM) -->
         <view v-for="item in displayedFavorites" :key="item.id" class="favorite-card apple-group-card">
