@@ -1,3 +1,4 @@
+import { captureSession, assertSession } from '@/services/auth-storage.js';
 /**
  * 练习模式管理器 - 管理不同的练习模式
  *
@@ -84,6 +85,7 @@ const PRACTICE_MODES = {
  */
 class PracticeModeManager {
   constructor() {
+    this._session = captureSession();
     this.currentMode = null;
     this.currentSettings = null;
     this.practiceHistory = [];
@@ -128,6 +130,8 @@ class PracticeModeManager {
    * @returns {Array} 题目列表
    */
   async generatePracticeQuestions(_options = {}) {
+    const originSession = this._session;
+    assertSession(originSession);
     if (!this.currentMode) {
       throw new Error('请先初始化练习模式');
     }
@@ -187,7 +191,10 @@ class PracticeModeManager {
    * @returns {Object} 会话信息
    */
   async startPracticeSession(options = {}) {
+    const originSession = this._session;
+    assertSession(originSession);
     const questions = await this.generatePracticeQuestions(options);
+    assertSession(originSession);
 
     const session = {
       id: `session_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
@@ -203,7 +210,7 @@ class PracticeModeManager {
     };
 
     // 保存会话信息
-    storageService.save('current_practice_session', session);
+    storageService.save('current_practice_session', session, true, this._session);
 
     return session;
   }
@@ -257,7 +264,7 @@ class PracticeModeManager {
     this._savePracticeHistory(summary);
 
     // 清除当前会话
-    storageService.remove('current_practice_session');
+    storageService.remove('current_practice_session', true, this._session);
 
     return summary;
   }
@@ -436,7 +443,7 @@ class PracticeModeManager {
       history.splice(100);
     }
 
-    storageService.save('practice_history', history);
+    storageService.save('practice_history', history, true, this._session);
   }
 
   /**

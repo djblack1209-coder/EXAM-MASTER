@@ -1,5 +1,5 @@
 import { learningRequest } from '../api/domains/learning.api.js';
-import { getLoginSessionEpoch } from '../auth-storage.js';
+import { captureSession, assertSession } from '../auth-storage.js';
 import {
   HISTORY_LIMITS,
   validateHistoryManifest,
@@ -85,12 +85,12 @@ function checkedPush(repository, result, operations, owner, assertCurrent) {
 
 // 保持服务端 30 次/分钟限制；本次最多 512 请求/10 分钟，不无界重试。
 function syncTransport(request, owner, signal, assertContext, onProgress) {
-  const session = getLoginSessionEpoch();
+  const origin = captureSession();
   const began = Date.now(),
     recent = [];
   let calls = 0;
   const check = () => {
-    assert(getLoginSessionEpoch() === session, 'CONTEXT_CHANGED', '登录会话已变化，旧同步结果未写入');
+    assertSession(origin);
     assertContext();
     assert(
       Date.now() - began < 600000 && calls < 512,
@@ -127,7 +127,14 @@ function syncTransport(request, owner, signal, assertContext, onProgress) {
       phase: body.action === 'page' ? '读取历史分页' : body.action === 'push' ? '补传学习操作' : '读取云端记录',
       calls
     });
-    const result = await request('/learning-sync', body, { expectedOwner: owner, signal });
+    check();
+    assertSession(origin);
+    const result = await request('/learning-sync', body, {
+      session: origin,
+      expectedOwner: owner,
+      signal,
+      assertCurrent: check
+    });
     check();
     return result;
   };
@@ -186,16 +193,31 @@ function operationBatches(events) {
   if (batch.length) batches.push(batch);
   return batches;
 }
+function bindRepository(repository, session) {
+  const arity = { commit: 2, captureSyncConflict: 2, replaceSynchronized: 1, adoptConflictRemote: 2 };
+  return new Proxy(repository, {
+    get(target, name) {
+      const method = target[name];
+      if (!(name in arity) || typeof method !== 'function') return method;
+      return (...args) => {
+        assertSession(session);
+        while (args.length < arity[name]) args.push(undefined);
+        return method.call(target, ...args, { session });
+      };
+    }
+  });
+}
 export async function synchronizeLearning(
   repository,
   consent,
   request = learningRequest,
   { signal, onProgress, assertCurrent } = {}
 ) {
-  const session = getLoginSessionEpoch();
+  const session = captureSession();
+  repository = bindRepository(repository, session);
   const checkSession = () => {
     assertCurrent?.();
-    assert(getLoginSessionEpoch() === session, 'CONTEXT_CHANGED', '登录会话已变化，旧同步结果未写入');
+    assertSession(session);
     assert(!signal?.aborted, 'CANCELLED', '同步已取消，本机记录保留');
   };
   checkSession();
@@ -282,7 +304,8 @@ export async function adoptRemoteConflict(
   request = learningRequest,
   { signal, onProgress, assertCurrent } = {}
 ) {
-  const session = getLoginSessionEpoch();
+  const session = captureSession();
+  repository = bindRepository(repository, session);
   assertCurrent?.();
   assert(consent, 'CONSENT_REQUIRED', '采用云端记录需要明确确认；未合并的本机副本保留');
   assert(repository.isSyncConflictCurrent?.(preview) !== false, 'CONFLICT', '冲突副本已变化，请重新打开并核对');
@@ -291,7 +314,7 @@ export async function adoptRemoteConflict(
   assert(current.owner === preview?.owner, 'OWNER_MISMATCH', '账户已切换，请重新预览');
   const check = () => {
     assertCurrent?.();
-    assert(getLoginSessionEpoch() === session, 'CONTEXT_CHANGED', '登录会话已变化，旧同步结果未写入');
+    assertSession(session);
     assert(!signal?.aborted, 'CANCELLED', '已取消采用云端记录');
     assert(repository.read().owner === current.owner, 'OWNER_MISMATCH', '账户已切换');
     assert(repository.lifecycleRevision?.() === lifecycle, 'CONTEXT_CHANGED', '记录已恢复或删除，未采用旧结果');

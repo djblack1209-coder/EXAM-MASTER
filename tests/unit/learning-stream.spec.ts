@@ -1,3 +1,4 @@
+import { captureSession } from '@/services/auth-storage.js';
 import { describe, expect, it, vi, afterEach } from 'vitest';
 import {
   createEventStreamParser,
@@ -179,15 +180,21 @@ describe('实际客户端适配，不自动重试消费', () => {
     vi.stubGlobal('fetch', fetch);
     const preview = vi.fn();
     expect(
-      (await generateLearningTurnStream(body, { platform: 'h5', expectedModel: 'explicit', onPreview: preview }))
-        .success
+      (
+        await generateLearningTurnStream(body, {
+          session: captureSession(),
+          platform: 'h5',
+          expectedModel: 'explicit',
+          onPreview: preview
+        })
+      ).success
     ).toBe(true);
     expect(preview).toHaveBeenCalledWith('中文😀');
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch.mock.calls[0][1].redirect).toBe('error');
     offset = 0;
     bytes.fill(32);
-    const failed = await generateLearningTurnStream(body, { platform: 'h5' });
+    const failed = await generateLearningTurnStream(body, { session: captureSession(), platform: 'h5' });
     expect(failed.success).toBe(false);
     expect(fetch).toHaveBeenCalledTimes(2);
   });
@@ -197,16 +204,23 @@ describe('实际客户端适配，不自动重试消费', () => {
     vi.stubGlobal('fetch', fetch);
     const signal = new AbortController();
     signal.abort();
-    expect((await generateLearningTurnStream(body, { platform: 'h5', signal: signal.signal })).code).toBe(499);
+    expect(
+      (await generateLearningTurnStream(body, { session: captureSession(), platform: 'h5', signal: signal.signal }))
+        .code
+    ).toBe(499);
     uni.setStorageSync('EXAM_USER_ID', 'other-owner');
-    expect((await generateLearningTurnStream(body, { platform: 'h5' })).error).toBe('OWNER_MISMATCH');
+    expect((await generateLearningTurnStream(body, { session: captureSession(), platform: 'h5' })).error).toBe(
+      'OWNER_MISMATCH'
+    );
     expect(fetch).not.toHaveBeenCalled();
     auth();
     fetch.mockImplementation(async () => {
       uni.setStorageSync('EXAM_USER_ID', 'other-owner');
       return {};
     });
-    expect((await generateLearningTurnStream(body, { platform: 'h5' })).error).toBe('OWNER_MISMATCH');
+    expect((await generateLearningTurnStream(body, { session: captureSession(), platform: 'h5' })).error).toBe(
+      'CONTEXT_CHANGED'
+    );
   });
   it('微信原生分块和 JSON 拒绝均有收据；缺基础库接口停止接收', async () => {
     auth();
@@ -221,7 +235,7 @@ describe('实际客户端适配，不自动重试消费', () => {
       return task;
     });
     vi.stubGlobal('wx', { request });
-    const promise = generateLearningTurnStream(body, { platform: 'weixin' });
+    const promise = generateLearningTurnStream(body, { session: captureSession(), platform: 'weixin' });
     headers({ header: { 'Content-Type': 'text/event-stream' } });
     const bytes = new TextEncoder().encode(
       start() + event('preview', 2, { text: '微信😀', provisional: true }) + result()
@@ -230,13 +244,15 @@ describe('实际客户端适配，不自动重试消费', () => {
     options.success({ data: new ArrayBuffer(0) });
     expect((await promise).success).toBe(true);
     expect(options.enableChunked).toBe(true);
-    const error = generateLearningTurnStream(body, { platform: 'weixin' });
+    const error = generateLearningTurnStream(body, { session: captureSession(), platform: 'weixin' });
     headers({ header: { 'content-type': 'application/json' } });
     chunks({ data: new TextEncoder().encode('{"success":false,"code":422,"message":"未开放"}').buffer });
     options.success({});
     expect(await error).toMatchObject({ success: false, code: 422 });
     request.mockReturnValue({ abort: task.abort } as any);
-    expect((await generateLearningTurnStream(body, { platform: 'weixin' })).error).toBe('STREAM_TRANSPORT_UNAVAILABLE');
+    expect((await generateLearningTurnStream(body, { session: captureSession(), platform: 'weixin' })).error).toBe(
+      'STREAM_TRANSPORT_UNAVAILABLE'
+    );
     expect(task.abort).toHaveBeenCalled();
   });
 });

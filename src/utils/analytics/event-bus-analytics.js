@@ -1,3 +1,4 @@
+import { captureSession, checkSession } from '@/services/auth-storage.js';
 /**
  * 事件总线分析系统 - 检查点 5.1
  * 核心转化路径监控
@@ -62,6 +63,8 @@ const EVENT_PRIORITY = {
  */
 class AnalyticsService {
   constructor() {
+    this.session = null;
+    this.stopIdentity = null;
     this.eventQueue = [];
     this.sessionId = null;
     this.userId = null;
@@ -83,6 +86,11 @@ class AnalyticsService {
     // Registration/age screening must not create an anonymous analytics profile.
     // Existing signed-in accounts retain their established analytics flow.
     if (!storageService.get('EXAM_USER_ID', null)) return;
+
+    this.session = captureSession();
+    if (!this.session) return;
+    this.stopIdentity?.();
+    this.stopIdentity = storageService.onIdentityChange(() => this._checkSession());
 
     // 合并配置
     this.config = { ...this.config, ...options };
@@ -112,6 +120,28 @@ class AnalyticsService {
     logger.log('[Analytics] 初始化完成，会话ID:', this.sessionId);
   }
 
+  _checkSession() {
+    if (!this.session && storageService.get('EXAM_USER_ID', null)) {
+      const session = captureSession();
+      if (session && session.owner !== 'guest') {
+        this.session = session;
+        this.userId = session.owner;
+      }
+    }
+    if (!this.session) return false;
+    const status = checkSession(this.session);
+    if (status === 'changed') {
+      if (this.uploadTimer) clearInterval(this.uploadTimer);
+      this.uploadTimer = null;
+      this.eventQueue = [];
+      this.userId = null;
+      this.sessionId = null;
+      this.session = null;
+      this.isInitialized = false;
+    }
+    return status === 'current';
+  }
+
   /**
    * 追踪事件
    * @param {string} eventName - 事件名称
@@ -119,7 +149,7 @@ class AnalyticsService {
    * @param {number} priority - 优先级
    */
   track(eventName, data = {}, priority = EVENT_PRIORITY.NORMAL) {
-    if (!storageService.get('EXAM_USER_ID', null)) return;
+    if (!this._checkSession()) return;
     const event = {
       id: this._generateEventId(),
       name: eventName,
@@ -236,10 +266,10 @@ class AnalyticsService {
    * 设置用户ID
    */
   setUserId(userId) {
+    if (!this._checkSession() || this.session.owner !== userId) return;
     const previousUserId = this.userId; // ✅ P0修复：先捕获旧值再覆盖
     this.userId = userId;
     // ✅ B021-3: 使用加密的 EXAM_USER_ID 替代明文 user_id
-    storageService.save('EXAM_USER_ID', userId, true);
 
     this.track('user_identify', {
       userId,
@@ -251,10 +281,10 @@ class AnalyticsService {
    * 设置用户属性
    */
   setUserProperties(properties) {
-    if (!storageService.get('EXAM_USER_ID', null)) return;
+    if (!this._checkSession()) return;
     const profile = storageService.get(STORAGE_KEYS.USER_PROFILE, {});
     const updatedProfile = { ...profile, ...properties, updatedAt: Date.now() };
-    storageService.save(STORAGE_KEYS.USER_PROFILE, updatedProfile);
+    storageService.save(STORAGE_KEYS.USER_PROFILE, updatedProfile, true, this.session);
 
     this.track('user_profile_update', properties);
   }
@@ -306,7 +336,7 @@ class AnalyticsService {
     if (session && now - session.lastActive < SESSION_TIMEOUT) {
       // 更新最后活跃时间
       session.lastActive = now;
-      storageService.save(STORAGE_KEYS.SESSION, session);
+      storageService.save(STORAGE_KEYS.SESSION, session, true, this.session);
       return session.id;
     }
 
@@ -316,7 +346,7 @@ class AnalyticsService {
       startTime: now,
       lastActive: now
     };
-    storageService.save(STORAGE_KEYS.SESSION, newSession);
+    storageService.save(STORAGE_KEYS.SESSION, newSession, true, this.session);
     return newSession.id;
   }
 
@@ -356,10 +386,11 @@ class AnalyticsService {
    * 保存事件队列
    */
   _saveEventQueue() {
+    if (!this._checkSession()) return;
     try {
       // 只保存最近的事件
       const eventsToSave = this.eventQueue.slice(-100);
-      storageService.save(STORAGE_KEYS.EVENTS, eventsToSave);
+      storageService.save(STORAGE_KEYS.EVENTS, eventsToSave, true, this.session);
     } catch (e) {
       logger.error('[Analytics] 保存事件队列失败:', e);
     }
@@ -395,7 +426,7 @@ class AnalyticsService {
    * 批量上报
    */
   _uploadBatch() {
-    if (!storageService.get('EXAM_USER_ID', null)) return;
+    if (!this._checkSession()) return;
     if (this.eventQueue.length === 0) return;
 
     const eventsToUpload = this.eventQueue.splice(0, this.config.batchSize);
@@ -406,7 +437,7 @@ class AnalyticsService {
    * 上报事件
    */
   async _uploadEvents(events) {
-    if (!storageService.get('EXAM_USER_ID', null)) return;
+    if (!this._checkSession()) return;
     if (events.length === 0) return;
 
     try {
@@ -428,7 +459,7 @@ class AnalyticsService {
         uploadedEvents.splice(0, uploadedEvents.length - 1000);
       }
 
-      storageService.save('analytics_uploaded', uploadedEvents);
+      storageService.save('analytics_uploaded', uploadedEvents, true, this.session);
 
       if (this.config.enableDebug) {
         logger.log('[Analytics] 事件上报成功:', events.length, '条');
@@ -481,7 +512,7 @@ class AnalyticsService {
     }
 
     retention.lastVisit = now;
-    storageService.save(STORAGE_KEYS.RETENTION, retention);
+    storageService.save(STORAGE_KEYS.RETENTION, retention, true, this.session);
   }
 }
 

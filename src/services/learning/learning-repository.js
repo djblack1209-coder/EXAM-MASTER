@@ -1,5 +1,5 @@
 import { storageService } from '../storageService.js';
-import { getUserId, getLoginSessionEpoch } from '../auth-storage.js';
+import { getUserId, captureSession, assertSession } from '../auth-storage.js';
 import {
   emptyLearningState,
   applyLearningOperation,
@@ -26,12 +26,20 @@ export function createLearningRepository(
   writeLease = storage === storageService ? learningWriteLease : null
 ) {
   const writeChecks = [];
+  const sessionBindings = [];
+  const usesSessionStorage = storage === storageService;
   storage = new Proxy(storage, {
     get(target, key) {
       const method = Reflect.get(target, key);
       if (typeof method !== 'function') return method;
       return (...args) => {
         if (key === 'save' || key === 'remove') for (const check of writeChecks) check();
+        const session = sessionBindings.at(-1);
+        if (usesSessionStorage && session) {
+          if (key === 'save') args[3] = session;
+          if (key === 'remove') args[2] = session;
+          if (key === 'get') args[2] = { ...args[2], session };
+        }
         return method.apply(target, args);
       };
     }
@@ -316,7 +324,7 @@ export function createLearningRepository(
       return { ...preview, token };
     },
     async previewHistoryRestore(content, options) {
-      const session = getLoginSessionEpoch();
+      const session = captureSession();
       options?.assertCurrent?.();
       this.cancelPreview();
       const sequence = previewSequence;
@@ -324,7 +332,7 @@ export function createLearningRepository(
         lifecycle = lifecycleRevision;
       const result = await prepareLearningHistoryRestore(before, content, options);
       options?.assertCurrent?.();
-      assert(getLoginSessionEpoch() === session, 'CONTEXT_CHANGED', '登录会话已变化，旧历史预览未缓存');
+      if (usesSessionStorage) assertSession(session);
       assert(!options?.signal?.aborted, 'CANCELLED', '历史校验已取消，当前记录保留');
       assert(
         sequence === previewSequence &&
@@ -396,7 +404,7 @@ export function createLearningRepository(
       return result;
     },
     previewGuestMigration(options) {
-      const session = getLoginSessionEpoch();
+      const session = captureSession();
       options?.assertCurrent?.();
       this.cancelPreview();
       const sequence = previewSequence;
@@ -407,7 +415,7 @@ export function createLearningRepository(
         const lifecycle = lifecycleRevision;
         return prepareGuestHistoryMigration(before, guest, options).then((result) => {
           options?.assertCurrent?.();
-          assert(getLoginSessionEpoch() === session, 'CONTEXT_CHANGED', '登录会话已变化，旧访客预览未缓存');
+          if (usesSessionStorage) assertSession(session);
           assert(!options?.signal?.aborted, 'CANCELLED', '访客历史校验已取消，当前记录保留');
           assert(
             sequence === previewSequence &&
@@ -550,19 +558,22 @@ export function createLearningRepository(
   // to its initiating login. Check again immediately before every underlying storage write.
   for (const [name, action] of Object.entries(repository)) {
     repository[name] = function (...args) {
-      const session = getLoginSessionEpoch(),
+      const session = args.at(-1)?.session || captureSession(),
         identity = owner();
+      if (usesSessionStorage && name !== 'cancelPreview') assertSession(session);
       const check = () =>
         assert(
-          getLoginSessionEpoch() === session && owner() === identity,
+          (!usesSessionStorage || storageService.checkSession(session) === 'current') && owner() === identity,
           'CONTEXT_CHANGED',
           '登录会话已变化，旧记录未写入'
         );
       writeChecks.push(check);
+      sessionBindings.push(session);
       try {
         return action.apply(repository, args);
       } finally {
         writeChecks.pop();
+        sessionBindings.pop();
       }
     };
   }

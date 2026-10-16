@@ -1,3 +1,4 @@
+import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
 /**
  * 学习目标设定与提醒模块 - 帮助用户制定和追踪学习目标
  *
@@ -89,6 +90,7 @@ const REMINDER_TYPES = {
  */
 class LearningGoalManager {
   constructor() {
+    this._session = captureSession();
     this.goals = [];
     this.records = [];
     this.reminderSettings = {
@@ -102,6 +104,9 @@ class LearningGoalManager {
    * 初始化
    */
   init() {
+    if (this.isInitialized && checkSession(this._session) === 'changed') Object.assign(this, new LearningGoalManager());
+    if (!this.isInitialized) this._session = captureSession();
+    assertSession(this._session);
     if (this.isInitialized) return;
     this._loadGoals();
     this._loadRecords();
@@ -647,7 +652,7 @@ class LearningGoalManager {
   _saveGoals() {
     try {
       if (typeof uni !== 'undefined') {
-        storageService.save(STORAGE_KEYS.GOALS, this.goals);
+        storageService.save(STORAGE_KEYS.GOALS, this.goals, true, this._session);
         // ✅ F012: 触发后端同步（异步，不阻塞本地保存）
         this._syncToServer();
       }
@@ -661,11 +666,14 @@ class LearningGoalManager {
    * 策略：后端有而本地没有的 → 添加到本地；本地有而后端没有的 → 保留本地（下次 _syncToServer 会上传）
    */
   async _fetchAndMergeFromServer() {
+    const originSession = this._session;
+    assertSession(originSession);
     try {
       const userId = storageService.get('EXAM_USER_ID');
       if (!userId) return;
 
-      const res = await getLearningGoals({ status: 'active' });
+      const res = await getLearningGoals({ status: 'active' }, { session: originSession });
+      assertSession(originSession);
       const serverGoals = res?.data || [];
       if (!Array.isArray(serverGoals) || serverGoals.length === 0) return;
 
@@ -697,7 +705,7 @@ class LearningGoalManager {
       }
 
       if (changed) {
-        storageService.save(STORAGE_KEYS.GOALS, this.goals);
+        storageService.save(STORAGE_KEYS.GOALS, this.goals, true, this._session);
         logger.log(`[LearningGoal] 从后端合并了新目标，当前共 ${this.goals.length} 个`);
       }
     } catch (e) {
@@ -710,11 +718,14 @@ class LearningGoalManager {
    * ✅ F012: 同步进度增量到后端（fire-and-forget）
    */
   async _syncProgressToServer(type, value) {
+    const originSession = this._session;
+    assertSession(originSession);
     try {
       const userId = storageService.get('EXAM_USER_ID');
       if (!userId) return;
 
-      await recordGoalProgress(type, value);
+      await recordGoalProgress(type, value, { session: originSession });
+      assertSession(originSession);
     } catch (e) {
       logger.warn('[LearningGoal] 进度同步失败:', e.message);
     }
@@ -726,6 +737,8 @@ class LearningGoalManager {
    * 同步失败不影响本地使用，下次保存时会重试
    */
   async _syncToServer() {
+    const originSession = this._session;
+    assertSession(originSession);
     try {
       const userId = storageService.get('EXAM_USER_ID');
       if (!userId) return; // 未登录不同步
@@ -736,10 +749,11 @@ class LearningGoalManager {
       };
 
       // 标记待同步
-      storageService.save('learning_goals_pending_sync', true);
+      storageService.save('learning_goals_pending_sync', true, true, this._session);
 
-      await syncLearningGoals(userId, syncData);
-      storageService.remove('learning_goals_pending_sync');
+      await syncLearningGoals(userId, syncData, { session: originSession });
+      assertSession(originSession);
+      storageService.remove('learning_goals_pending_sync', true, this._session);
       logger.log('[LearningGoal] 目标已同步到服务器');
     } catch (e) {
       // 同步失败不影响本地使用，下次保存时重试
@@ -766,7 +780,7 @@ class LearningGoalManager {
   _saveRecords() {
     try {
       if (typeof uni !== 'undefined') {
-        storageService.save(STORAGE_KEYS.GOAL_RECORDS, this.records);
+        storageService.save(STORAGE_KEYS.GOAL_RECORDS, this.records, true, this._session);
       }
     } catch (e) {
       logger.warn('[LearningGoal] 保存记录失败:', e);
@@ -795,7 +809,7 @@ class LearningGoalManager {
   _saveReminderSettings() {
     try {
       if (typeof uni !== 'undefined') {
-        storageService.save(STORAGE_KEYS.REMINDER_SETTINGS, this.reminderSettings);
+        storageService.save(STORAGE_KEYS.REMINDER_SETTINGS, this.reminderSettings, true, this._session);
       }
     } catch (e) {
       logger.warn('[LearningGoal] 保存提醒设置失败:', e);

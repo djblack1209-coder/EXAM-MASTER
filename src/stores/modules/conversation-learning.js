@@ -77,7 +77,7 @@ import {
 import { computed, ref, shallowRef, onScopeDispose, watch } from 'vue';
 import { pendingUploadJournal } from '@/services/learning/pending-upload-journal.js';
 import { learningRepository, LEARNING_KEY } from '@/services/learning/learning-repository.js';
-import { getUserId, getToken, getLoginSessionEpoch } from '@/services/auth-storage.js';
+import { getUserId, getToken, captureSession, checkSession, readSessionSnapshot } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import {
   COMPUTE_CONTRACT,
@@ -173,14 +173,16 @@ export function learningId(prefix = 'learn') {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
 }
 export const useConversationLearningStore = defineStore('conversation-learning', () => {
-  let sessionEpoch = storageService.getSessionEpoch();
+  storageService.getSessionEpoch();
+  let boundSession = captureSession();
+  let sessionEpoch = boundSession?.epoch || null;
   let sessionRevision = 0;
   let sessionRevocation = new AbortController();
   const operationSessions = [];
   let sessionReady = false;
   let resettingSession = false;
   let observedIdentity = { owner: getUserId(), token: getToken() };
-  const state = ref(learningRepository.read());
+  const state = ref(boundSession ? learningRepository.read() : emptyLearningState('guest'));
   let notificationObserver = null,
     notificationRefreshTimer = null;
   function attachNotifications(observer) {
@@ -231,7 +233,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   let controllerUsesAccountToken = false;
   let pendingCloudCall = null;
   let computeRequest = null;
-  const pendingUploads = ref(pendingUploadJournal.list());
+  const pendingUploads = ref(boundSession ? pendingUploadJournal.list() : []);
   const materialBusy = ref(false);
   const materialProgress = ref(null);
   const materialImportState = ref(null);
@@ -276,9 +278,27 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   }
   // Notifications accelerate revocation. Every operation and result checks persisted identity itself.
   function ensureSessionCurrent(expectedSession = operationSessions.at(-1), signal, { readOnly = false } = {}) {
-    const epoch = getLoginSessionEpoch();
-    const identity = { owner: getUserId(), token: getToken() };
+    const snapshot = readSessionSnapshot();
+    if (snapshot.status === 'unavailable') {
+      const changed = checkSession(boundSession) === 'changed';
+      if (changed) reloadRecords({ identityChanged: true });
+      assert(
+        false,
+        changed ? 'CONTEXT_CHANGED' : 'SESSION_UNAVAILABLE',
+        changed ? '登录会话已变化，旧结果未采用' : '登录状态暂不可读，请重试'
+      );
+    }
+    if (snapshot.status === 'changed' && !boundSession) {
+      assert(readOnly, 'CONTEXT_CHANGED', '登录会话已撤销，请重新登录');
+      return loginContext();
+    }
+    const epoch = snapshot.session.epoch;
+    const identity = {
+      owner: snapshot.session.owner === 'guest' ? null : snapshot.session.owner,
+      token: snapshot.token
+    };
     if (
+      snapshot.status === 'changed' ||
       epoch !== sessionEpoch ||
       identity.owner !== observedIdentity.owner ||
       Boolean(identity.token) !== Boolean(observedIdentity.token)
@@ -355,7 +375,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   );
   const syncBusy = ref(false);
   const syncState = ref({ phase: 'idle', message: '', context: null, kind: null });
-  const syncConflict = ref(learningRepository.previewSyncConflict());
+  const syncConflict = ref(boundSession ? learningRepository.previewSyncConflict() : null);
   let syncController = null;
   let syncRequest = null;
   const syncProgress = ref(null);
@@ -869,9 +889,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const teachingProgress = computed(() => observeTeaching(state.value));
   const currentPlan = computed(() => state.value.plans.find((p) => p.id === summary.value.tasks.planId));
   function resetAccountResources() {
+    storageService.getSessionEpoch({ migrateLegacy: false });
     sessionRevocation.abort();
     sessionRevocation = new AbortController();
-    sessionEpoch = getLoginSessionEpoch();
+    boundSession = captureSession();
+    sessionEpoch = boundSession?.epoch || null;
     observedIdentity = { owner: getUserId(), token: getToken() };
     sessionRevision++;
     cancelModelActions();
@@ -940,6 +962,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       recordReadState.value = 'ready';
       return state.value;
     } catch (cause) {
+      if (cause.code === 'SESSION_UNAVAILABLE') throw cause;
       recordSearch.clear();
       resetAccountResources();
       recordLocation.value = null;
@@ -980,24 +1003,22 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   }
   const stopIdentityChanges = storageService.onIdentityChange(
     (change) => {
-      const previous = observedIdentity;
-      const identity = { owner: getUserId(), token: getToken() };
-      const reliableOwner = (owner) => typeof owner === 'string' && owner.trim().length > 0;
-      if (
-        change?.type === 'logout' ||
-        !getLoginSessionEpoch() ||
-        getLoginSessionEpoch() !== sessionEpoch ||
-        !reliableOwner(previous.owner) ||
-        !reliableOwner(identity.owner) ||
-        previous.owner !== identity.owner ||
-        identity.owner !== state.value.owner ||
-        Boolean(previous.token) !== Boolean(identity.token)
-      ) {
+      const snapshot = readSessionSnapshot();
+      if (change?.type === 'logout' || checkSession(boundSession) === 'changed') {
         reloadRecords({ identityChanged: true });
         if (change?.type === 'logout') observedIdentity = { owner: null, token: null };
         return;
       }
-      ensureSessionCurrent();
+      if (snapshot.status === 'unavailable') return;
+      if (snapshot.session?.owner === 'guest' && change?.type !== 'records') {
+        reloadRecords({ identityChanged: true });
+        return;
+      }
+      try {
+        ensureSessionCurrent(loginContext(), undefined, { readOnly: true });
+      } catch {
+        return;
+      }
       if (change?.type === 'records') reloadRecords();
     },
     {
@@ -1766,6 +1787,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           ...scope
         },
         {
+          session: boundSession,
           expectedOwner: request.owner,
           signal: request.controller.signal,
           assertCurrent: () => ensureSessionCurrent(request.session, request.controller.signal)
@@ -1915,6 +1937,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     // The already-published local encouragement is immediate; optional source metadata never writes learning facts.
     void Promise.race([
       requestLearningPoetryReference({
+        session: boundSession,
         expectedOwner: owner,
         signal: requestController.signal,
         assertCurrent: () => {
@@ -2492,11 +2515,13 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         mode === 'local'
           ? await callLocalConnector(localConnection.value, payload, {
               signal: requestController.signal,
+              session: boundSession,
               platform: learningClientPlatform(),
               assertCurrent
             })
           : await generateLearningTurn(payload, {
               signal: requestController.signal,
+              session: boundSession,
               expectedOwner: owner,
               stream: streamEnabled.value,
               expectedModel: request.model,
@@ -2763,6 +2788,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     try {
       assertRecovery();
       const result = await fetchLearningResult(pending.requestId, {
+        session: boundSession,
         expectedOwner: owner,
         signal: requestController.signal,
         assertCurrent: assertRecovery
@@ -2814,6 +2840,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         `${pending.id}:dismiss`
       );
       void cancelLearningTurn(pending.id, {
+        session: boundSession,
         expectedOwner: pending.owner,
         assertCurrent: () => ensureSessionCurrent(pending.session)
       })
@@ -2928,6 +2955,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         let result = await Promise.race([
           request({
             signal: operation.controller.signal,
+            session: boundSession,
             expectedOwner: getUserId() || undefined,
             assertCurrent: () => ensureSessionCurrent(session, operation.controller.signal)
           }),
@@ -2969,6 +2997,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     modelActions.add(controller);
     try {
       const result = await action({
+        session: boundSession,
         expectedOwner: state.value.owner,
         signal: controller.signal,
         assertCurrent: () => ensureSessionCurrent(session, controller.signal)
@@ -2985,7 +3014,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
   }
   async function testModel(id) {
+    const origin = ensureSessionCurrent();
     const result = await modelAction((options) => testLearningModel(id, learningId('connection'), options));
+    ensureSessionCurrent(origin);
     await loadModels();
     return result;
   }
@@ -2993,12 +3024,16 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     return readModelResource('usage');
   }
   async function saveModel(profile, consent) {
+    const origin = ensureSessionCurrent();
     const result = await modelAction((options) => saveLearningModel(profile, consent, options));
+    ensureSessionCurrent(origin);
     if (result.success) await loadModels();
     return result;
   }
   async function removeModel(id) {
+    const origin = ensureSessionCurrent();
     const result = await modelAction((options) => deleteLearningModel(id, options));
+    ensureSessionCurrent(origin);
     if (result.success) await loadModels();
     return result;
   }
@@ -3045,6 +3080,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     };
     try {
       const result = await parseConnectedMaterial(connection, input, {
+        session: boundSession,
         platform: learningClientPlatform(),
         signal: materialController.signal,
         uploadId: learningId(
@@ -3055,11 +3091,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         assertCurrent: checkContext,
         onUploadIntent: (entry) => {
           checkContext();
-          pendingUploads.value = pendingUploadJournal.add(entry, state.value.owner);
+          pendingUploads.value = pendingUploadJournal.add(entry, state.value.owner, boundSession);
         },
         onUploadSaved: (id) => {
           checkContext();
-          pendingUploads.value = pendingUploadJournal.remove(id, state.value.owner);
+          pendingUploads.value = pendingUploadJournal.remove(id, state.value.owner, boundSession);
         },
         onProgress: (progress) => {
           checkContext();
@@ -3169,6 +3205,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       );
     try {
       let receipt = await requestUploadRecovery(connection, 'upload-receipt', entry, {
+        session: boundSession,
         platform: learningClientPlatform(),
         signal,
         assertCurrent: check
@@ -3178,13 +3215,15 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       if (close) {
         assert(!linked, 'HAS_SAVED_MATERIAL', '这份原件已关联保存资料，请使用资料删除范围预览；待办保留');
         receipt = await requestUploadRecovery(connection, 'close-upload', entry, {
+          session: boundSession,
           platform: learningClientPlatform(),
           signal,
           assertCurrent: check
         });
         check();
       }
-      if (linked || receipt.state === 'closed') pendingUploads.value = pendingUploadJournal.remove(id, owner);
+      if (linked || receipt.state === 'closed')
+        pendingUploads.value = pendingUploadJournal.remove(id, owner, boundSession);
       return { ...receipt, ...(linked ? { state: 'linked', materialId: linked.id } : {}), entry, context };
     } finally {
       if (materialController === requestController) {
@@ -3216,7 +3255,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       actionContext: receipt.context
     });
     assert(materialContext() === receipt.context, 'CONTEXT_CHANGED', '资料授权已变化，导入待办保留');
-    pendingUploads.value = pendingUploadJournal.remove(id, state.value.owner);
+    pendingUploads.value = pendingUploadJournal.remove(id, state.value.owner, boundSession);
     return result;
   }
 
@@ -3247,7 +3286,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       'CONTEXT_CHANGED',
       '账户、记录或定位待办已变化，请重新预览'
     );
-    pendingUploads.value = pendingUploadJournal.remove(entry.id, state.value.owner);
+    pendingUploads.value = pendingUploadJournal.remove(entry.id, state.value.owner, boundSession);
     return { localRemoved: true, originalStatus: 'unverified' };
   }
   function restorePendingLocator(content, consent) {
@@ -3281,7 +3320,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       );
       return { restored: false, alreadyPresent: true };
     }
-    pendingUploads.value = pendingUploadJournal.add(locator.entry, state.value.owner);
+    pendingUploads.value = pendingUploadJournal.add(locator.entry, state.value.owner, boundSession);
     return { restored: true, originalStatus: 'unverified' };
   }
   async function uploadMaintenanceAction(preview, consent) {
@@ -3309,6 +3348,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     };
     try {
       result = await requestUploadMaintenance(connection, preview, {
+        session: boundSession,
         platform: learningClientPlatform(),
         signal,
         assertCurrent
@@ -3364,6 +3404,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     };
     try {
       await deleteConnectedMaterial(materialConnection.value, deletion.original, {
+        session: boundSession,
         platform: learningClientPlatform(),
         signal,
         assertCurrent: check
@@ -3534,6 +3575,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     localConnectionController = controller;
     try {
       const result = await testLocalConnector(connection, {
+        session: boundSession,
         platform: learningClientPlatform(),
         signal: controller.signal,
         assertCurrent: () => ensureSessionCurrent(session, controller.signal)
@@ -3564,6 +3606,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     if (connection) delete connection.status;
     try {
       const result = await testMaterialConnector(snapshot, {
+        session: boundSession,
         platform: learningClientPlatform(),
         signal: controller.signal,
         assertCurrent: () => ensureSessionCurrent(session, controller.signal)
@@ -3809,7 +3852,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         const result = await learningRequest(
           '/learning-sync',
           { action: 'delete' },
-          { expectedOwner: owner, signal, assertCurrent }
+          { session: boundSession, expectedOwner: owner, signal, assertCurrent }
         );
         assertCurrent();
         assert(learningRepository.read().owner === owner, 'OWNER_MISMATCH', '账户已切换，未显示旧账户删除结果');

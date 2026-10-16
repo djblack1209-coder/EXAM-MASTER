@@ -1,3 +1,4 @@
+import { captureSession } from '@/services/auth-storage.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/utils/logger.js', () => ({
@@ -72,7 +73,8 @@ describe('request core', () => {
   });
 
   it('adds fallback userId to the outbound request without mutating caller payload', async () => {
-    const { request } = await import('@/services/api/domains/_request-core.js');
+    const { request: requestCore } = await import('@/services/api/domains/_request-core.js');
+    const request = (path, body, options) => requestCore(path, body, { ...options, session: captureSession() });
     const payload = { action: 'submit', answer: 'A' };
 
     const result = await request('/answer-submit', payload, { skipRateLimit: true, skipCache: true });
@@ -92,7 +94,8 @@ describe('request core', () => {
       callbacks.push(options);
       return { abort: vi.fn() };
     });
-    const { request } = await import('@/services/api/domains/_request-core.js');
+    const { request: requestCore } = await import('@/services/api/domains/_request-core.js');
+    const request = (path, body, options) => requestCore(path, body, { ...options, session: captureSession() });
     const options = { skipNetworkCheck: true, skipRateLimit: true };
     const first = request('/answer-submit', { action: 'submit' }, options).catch((error) => error);
     global.__mockStorage.EXAM_USER_ID = 'user_456';
@@ -112,7 +115,8 @@ describe('request core', () => {
     });
     global.__mockStorage.EXAM_TOKEN = 'synthetic-same-token';
     global.__mockStorage.EXAM_SESSION_EPOCH = 'synthetic-first-epoch';
-    const { request } = await import('@/services/api/domains/_request-core.js');
+    const { request: requestCore } = await import('@/services/api/domains/_request-core.js');
+    const request = (path, body, options) => requestCore(path, body, { ...options, session: captureSession() });
     const options = { skipNetworkCheck: true, skipRateLimit: true };
     const first = request('/user-profile', { action: 'get' }, options).catch((error) => error);
     global.__mockStorage.EXAM_SESSION_EPOCH = 'synthetic-second-epoch';
@@ -131,7 +135,8 @@ describe('request core', () => {
     uni.getNetworkType.mockImplementation((options) => {
       network = options;
     });
-    const { request } = await import('@/services/api/domains/_request-core.js');
+    const { request: requestCore } = await import('@/services/api/domains/_request-core.js');
+    const request = (path, body, options) => requestCore(path, body, { ...options, session: captureSession() });
     const first = request('/user-profile', {}, { skipRateLimit: true }).catch((error) => error);
     global.__mockStorage.EXAM_USER_ID = 'user_456';
     network.success({ networkType: 'wifi' });
@@ -183,7 +188,8 @@ describe('request core', () => {
       callback = options;
       return { abort: vi.fn() };
     });
-    const { request } = await import('@/services/api/domains/_request-core.js');
+    const { request: requestCore } = await import('@/services/api/domains/_request-core.js');
+    const request = (path, body, options) => requestCore(path, body, { ...options, session: captureSession() });
     const result = request('/user-profile', { action: 'get' }, { skipNetworkCheck: true, skipRateLimit: true }).catch(
       (error) => error
     );
@@ -198,7 +204,8 @@ describe('request core', () => {
       callback = options;
       return { abort: vi.fn() };
     });
-    const { request } = await import('@/services/api/domains/_request-core.js');
+    const { request: requestCore } = await import('@/services/api/domains/_request-core.js');
+    const request = (path, body, options) => requestCore(path, body, { ...options, session: captureSession() });
     const result = request('/user-profile', {}, { skipNetworkCheck: true, skipRateLimit: true }).catch(
       (error) => error
     );
@@ -369,5 +376,119 @@ describe('登录凭证请求的零自动重放与脱敏', () => {
     expect(result).not.toHaveProperty('_rawMessage');
     expect(uni.request).toHaveBeenCalledOnce();
     expect(uni.$emit).not.toHaveBeenCalledWith('authFailure', expect.anything());
+  });
+});
+
+// Extend the request suite with a small source guard: new user sinks require an explicit binding.
+describe('会话入口覆盖守卫', () => {
+  it('owned storage writes and user transports declare a session binding', async () => {
+    const { readdirSync, readFileSync } = await import('node:fs');
+    const { join, relative } = await import('node:path');
+    const { parse } = await import('@babel/parser');
+    const root = join(process.cwd(), 'src');
+    const globalKeys = new Set([
+      'EXAM_TOKEN',
+      'EXAM_USER_ID',
+      'EXAM_SESSION_EPOCH',
+      'EXAM_USER_INFO',
+      'userInfo',
+      'access_token',
+      'refresh_token',
+      'token_expire_time',
+      'theme_mode',
+      'theme_type',
+      'voice_enabled',
+      'onboarding_completed',
+      'exam_type',
+      'exam_profile',
+      'daily_goal',
+      'redirect_after_login',
+      'runtime_errors'
+    ]);
+    const identityModules = new Set([
+      'stores/modules/auth.js',
+      'stores/modules/profile.js',
+      'services/storageService.js'
+    ]);
+    const transports = new Set([
+      'services/api/domains/_request-core.js',
+      'services/api/domains/learning.api.js',
+      'services/learning/learning-stream.js',
+      'services/learning/local-connector.js',
+      'services/learning/app-connector.js',
+      'utils/core/network-monitor.js'
+    ]);
+    const violations = [];
+    const transportCounts = {};
+    const visit = (dir) => {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const file = join(dir, entry.name);
+        if (entry.isDirectory()) {
+          visit(file);
+          continue;
+        }
+        if (!/\.(js|vue)$/.test(file) || /\.(spec|test)\./.test(file)) continue;
+        const name = relative(root, file),
+          text = readFileSync(file, 'utf8');
+        if (
+          !/storageService\.(?:save|saveDebounced|remove|saveBatch)\(|(?:uni|wx)\.request\(|\bfetch\(|bridge\.(?:request|stream)\(/.test(
+            text
+          )
+        )
+          continue;
+        const scripts = file.endsWith('.vue')
+          ? [...text.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)].map((match) => match[1])
+          : [text];
+        for (const script of scripts) {
+          const ast = parse(script, { sourceType: 'module', plugins: ['typescript'] });
+          const walk = (node) => {
+            if (!node || typeof node !== 'object') return;
+            if (node.type === 'CallExpression') {
+              const object = node.callee.object?.name,
+                method = node.callee.property?.name;
+              if (
+                object === 'storageService' &&
+                ['save', 'saveDebounced', 'remove', 'saveBatch'].includes(method) &&
+                !identityModules.has(name)
+              ) {
+                const required = method === 'remove' || method === 'saveBatch' ? 3 : 4;
+                const key = node.arguments[0];
+                if (node.arguments.length < required && !(key?.type === 'StringLiteral' && globalKeys.has(key.value)))
+                  violations.push(`${name}:${node.loc.start.line} unbound ${method}`);
+              }
+              const transport =
+                (['uni', 'wx'].includes(object) && method === 'request') ||
+                node.callee.name === 'fetch' ||
+                (object === 'bridge' && ['request', 'stream'].includes(method));
+              if (transport) {
+                const key = `${name}:${node.callee.name || `${object}.${method}`}`;
+                transportCounts[key] = (transportCounts[key] || 0) + 1;
+                if (!transports.has(name))
+                  violations.push(`${name}:${node.loc.start.line} new transport must validate its originating session`);
+              }
+            }
+            for (const value of Object.values(node)) {
+              if (Array.isArray(value)) value.forEach(walk);
+              else if (value && typeof value === 'object') walk(value);
+            }
+          };
+          walk(ast);
+        }
+      }
+    };
+    visit(root);
+    expect(violations).toEqual([]);
+    expect(transportCounts).toEqual({
+      'services/api/domains/_request-core.js:uni.request': 1,
+      'services/api/domains/learning.api.js:uni.request': 1,
+      'services/learning/learning-stream.js:fetch': 1,
+      'services/learning/learning-stream.js:wx.request': 1,
+      'services/learning/local-connector.js:fetch': 1,
+      'services/learning/local-connector.js:wx.request': 1,
+      'services/learning/app-connector.js:bridge.request': 1,
+      'services/learning/app-connector.js:bridge.stream': 1,
+      'utils/core/network-monitor.js:fetch': 1,
+      'utils/core/network-monitor.js:uni.request': 1
+    });
   });
 });

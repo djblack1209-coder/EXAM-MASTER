@@ -1,3 +1,4 @@
+import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
 /**
  * 离线请求队列 (Offline Queue)
  *
@@ -187,7 +188,7 @@ class OfflineQueue {
         // 过滤过期的请求
         const now = Date.now();
         this.queue = stored.filter((item) => {
-          return now - item.timestamp < MAX_AGE;
+          return now - item.timestamp < MAX_AGE && checkSession(item.session) === 'current';
         });
 
         if (this.queue.length !== stored.length) {
@@ -215,6 +216,7 @@ class OfflineQueue {
         timestamp: item.timestamp,
         retryCount: item.retryCount,
         requestData: item.requestData, // 请求数据（可序列化）
+        session: item.session,
         metadata: item.metadata
       }));
 
@@ -296,6 +298,8 @@ class OfflineQueue {
    * @returns {string} 请求ID
    */
   enqueue(request) {
+    const session = request.session || captureSession();
+    assertSession(session);
     const { requestFn, requestData, priority = 'normal', dedupeKey, metadata = {} } = request;
 
     // 检查队列大小
@@ -314,7 +318,10 @@ class OfflineQueue {
 
     // 去重检查
     if (dedupeKey) {
-      const existingIndex = this.queue.findIndex((item) => item.dedupeKey === dedupeKey);
+      const existingIndex = this.queue.findIndex(
+        (item) =>
+          item.dedupeKey === dedupeKey && item.session?.owner === session.owner && item.session?.epoch === session.epoch
+      );
       if (existingIndex !== -1) {
         // 更新现有请求
         const existing = this.queue[existingIndex];
@@ -341,6 +348,7 @@ class OfflineQueue {
       dedupeKey,
       timestamp: Date.now(),
       retryCount: 0,
+      session,
       requestData,
       metadata
     };
@@ -441,6 +449,11 @@ class OfflineQueue {
       }
 
       try {
+        if (checkSession(item.session) === 'unavailable') break;
+        if (checkSession(item.session) !== 'current') {
+          this.dequeue(item.id);
+          continue;
+        }
         // 获取请求函数
         let requestFn = this.requestFnMap.get(item.id);
 
@@ -448,7 +461,7 @@ class OfflineQueue {
         if (!requestFn && item.requestData && this._rebuilder) {
           try {
             logger.log(`[OfflineQueue] 🔧 尝试从 requestData 重建请求: ${item.id}`);
-            requestFn = () => this._rebuilder(item.requestData);
+            requestFn = () => this._rebuilder(item.requestData, { session: item.session });
           } catch (rebuildErr) {
             logger.log(`[OfflineQueue] ⚠️ 请求重建失败: ${item.id}`, rebuildErr);
           }
@@ -465,7 +478,9 @@ class OfflineQueue {
         logger.log(`[OfflineQueue] 📡 处理请求: ${item.id}`);
 
         // 执行请求
-        await requestFn();
+        assertSession(item.session);
+        await requestFn({ session: item.session });
+        assertSession(item.session);
 
         // 成功，移除队列
         this.dequeue(item.id);

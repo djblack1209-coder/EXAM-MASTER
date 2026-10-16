@@ -103,7 +103,7 @@ import { loadBankData } from './bank-data-loader.js';
 import { importFlashcardsToBank } from '@/utils/flashcard-adapter.js';
 
 import storageService from '@/services/storageService.js';
-import { getUserId, getToken } from '@/services/auth-storage.js';
+import { captureSession, checkSession, getUserId, getToken } from '@/services/auth-storage.js';
 import { toast } from '@/utils/toast.js';
 
 import { logger } from '@/utils/logger.js';
@@ -257,12 +257,13 @@ async function loadPaper(paper) {
   if (loadingBankId.value) return null;
 
   loadingBankId.value = paper.id;
+  const session = captureSession();
   const requestSequence = ++loadSequence;
   const requestIsCurrent = () => pageActive && requestSequence === loadSequence;
   try {
     const data = await loadBankData(paper.id);
     if (!requestIsCurrent()) return null;
-    if (!ownerMatches()) {
+    if (checkSession(session) !== 'current' || !ownerMatches()) {
       toast.info(t('quiz.copy143'));
       return null;
     }
@@ -271,7 +272,8 @@ async function loadPaper(paper) {
         if (!requestIsCurrent() || !ownerMatches()) throw new Error('CONTEXT_CHANGED');
         return storageService.get(key, [], { migrateLegacy: false, throwOnError: true });
       },
-      set: (key, value) => requestIsCurrent() && ownerMatches() && storageService.save(key, value, true) === true
+      set: (key, value) =>
+        requestIsCurrent() && ownerMatches() && storageService.save(key, value, true, session) === true
     };
     const result = importFlashcardsToBank(data, adapter, {
       paperId: paper.id,
@@ -282,7 +284,7 @@ async function loadPaper(paper) {
     const loaded = [...storageService.get('loaded_flashcard_banks', [], { migrateLegacy: false, throwOnError: true })];
     if (!loaded.includes(paper.id)) {
       loaded.push(paper.id);
-      if (!storageService.save('loaded_flashcard_banks', loaded, true)) throw new Error('SAVE_FAILED');
+      if (!storageService.save('loaded_flashcard_banks', loaded, true, session)) throw new Error('SAVE_FAILED');
     }
     const changed = result.imported + (result.updated || 0);
     toast.success(changed > 0 ? t('quiz.copy145', { v0: changed }) : t('quiz.copy146'));

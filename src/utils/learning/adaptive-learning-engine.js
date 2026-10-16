@@ -1,3 +1,4 @@
+import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
 /**
  * 自适应学习引擎（规范版 — 唯一实现）
  * 基于遗忘曲线的智能抽题算法 + SM-2 间隔重复
@@ -73,6 +74,7 @@ const SPACED_REPETITION_CONFIG = {
  */
 class AdaptiveLearningEngine {
   constructor() {
+    this._session = captureSession();
     this.mistakeBook = [];
     this.learningHistory = [];
     this.knowledgeMap = {};
@@ -84,6 +86,10 @@ class AdaptiveLearningEngine {
    * 初始化引擎
    */
   init() {
+    if (this.isInitialized && checkSession(this._session) === 'changed')
+      Object.assign(this, new AdaptiveLearningEngine());
+    if (!this.isInitialized) this._session = captureSession();
+    assertSession(this._session);
     if (this.isInitialized) return;
 
     this._loadMistakeBook();
@@ -570,7 +576,7 @@ class AdaptiveLearningEngine {
 
       // 保存到本地（异步写入避免大数据阻塞UI）
       try {
-        storageService.save(STORAGE_KEYS.MISTAKE_BOOK, this.mistakeBook);
+        storageService.save(STORAGE_KEYS.MISTAKE_BOOK, this.mistakeBook, true, this._session);
       } catch (e) {
         logger.error('[AdaptiveLearning] 保存错题本失败:', e);
       }
@@ -625,7 +631,7 @@ class AdaptiveLearningEngine {
       if (this.learningHistory.length > 1000) {
         this.learningHistory = this.learningHistory.slice(-1000);
       }
-      storageService.save(STORAGE_KEYS.LEARNING_HISTORY, this.learningHistory);
+      storageService.save(STORAGE_KEYS.LEARNING_HISTORY, this.learningHistory, true, this._session);
     } catch (e) {
       logger.error('[AdaptiveLearning] 保存学习历史失败:', e);
     }
@@ -641,7 +647,7 @@ class AdaptiveLearningEngine {
 
   _saveKnowledgeMap() {
     try {
-      storageService.save(STORAGE_KEYS.KNOWLEDGE_MAP, this.knowledgeMap);
+      storageService.save(STORAGE_KEYS.KNOWLEDGE_MAP, this.knowledgeMap, true, this._session);
     } catch (_e) {
       logger.error('[AdaptiveLearning] 保存知识图谱失败:', _e);
     }
@@ -657,7 +663,7 @@ class AdaptiveLearningEngine {
 
   _saveReviewSchedule() {
     try {
-      storageService.save(STORAGE_KEYS.REVIEW_SCHEDULE, this.reviewSchedule);
+      storageService.save(STORAGE_KEYS.REVIEW_SCHEDULE, this.reviewSchedule, true, this._session);
     } catch (e) {
       logger.error('[AdaptiveLearning] 保存复习计划失败:', e);
     }
@@ -722,7 +728,12 @@ export function recordReview(mistakeId, isCorrect) {
 
     // 保存到本地存储（异步写入避免大数据阻塞UI）
     try {
-      storageService.save(STORAGE_KEYS.MISTAKE_BOOK, adaptiveLearningEngine.mistakeBook);
+      storageService.save(
+        STORAGE_KEYS.MISTAKE_BOOK,
+        adaptiveLearningEngine.mistakeBook,
+        true,
+        adaptiveLearningEngine._session
+      );
       logger.log('[AdaptiveLearning] 复习记录已保存:', mistakeId, isCorrect ? '正确' : '错误');
     } catch (e) {
       logger.error('[AdaptiveLearning] 保存复习记录失败:', e);

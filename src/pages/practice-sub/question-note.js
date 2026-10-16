@@ -1,3 +1,4 @@
+import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
 /**
  * 题目笔记模块 - 在题目上添加个人笔记
  *
@@ -30,6 +31,7 @@ const DEFAULT_TAGS = [
  */
 class QuestionNoteManager {
   constructor() {
+    this._session = captureSession();
     this.notes = [];
     this.tags = [...DEFAULT_TAGS];
     this.isInitialized = false;
@@ -39,6 +41,9 @@ class QuestionNoteManager {
    * 初始化
    */
   init() {
+    if (this.isInitialized && checkSession(this._session) === 'changed') Object.assign(this, new QuestionNoteManager());
+    if (!this.isInitialized) this._session = captureSession();
+    assertSession(this._session);
     if (this.isInitialized) return;
     this._loadNotes();
     this._loadTags();
@@ -51,8 +56,9 @@ class QuestionNoteManager {
    * @param {Object} noteData - 笔记数据
    * @returns {Object} 添加结果
    */
-  addNote(noteData) {
+  addNote(noteData, session = captureSession()) {
     this.init();
+    if (checkSession(session) !== 'current') return { success: false, error: '登录会话已变化，请重新打开本题' };
 
     const note = {
       id: this._generateId(),
@@ -453,7 +459,7 @@ class QuestionNoteManager {
         if (this.notes.length > 1000) {
           this.notes = this.notes.slice(0, 1000);
         }
-        storageService.save(STORAGE_KEYS.NOTES, this.notes);
+        storageService.save(STORAGE_KEYS.NOTES, this.notes, true, this._session);
       }
     } catch (_e) {
       logger.warn('[QuestionNote] 保存笔记失败:', _e);
@@ -478,7 +484,7 @@ class QuestionNoteManager {
   _saveTags() {
     try {
       if (typeof uni !== 'undefined') {
-        storageService.save(STORAGE_KEYS.NOTE_TAGS, this.tags);
+        storageService.save(STORAGE_KEYS.NOTE_TAGS, this.tags, true, this._session);
       }
     } catch (_e) {
       logger.warn('[QuestionNote] 保存标签失败:', _e);
@@ -490,8 +496,8 @@ class QuestionNoteManager {
 export const questionNoteManager = new QuestionNoteManager();
 
 // 便捷函数
-export function addQuestionNote(noteData) {
-  return questionNoteManager.addNote(noteData);
+export function addQuestionNote(noteData, session = captureSession()) {
+  return questionNoteManager.addNote(noteData, session);
 }
 
 export function updateQuestionNote(noteId, updates) {

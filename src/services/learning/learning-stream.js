@@ -1,5 +1,5 @@
 import config from '../../config/index.js';
-import { getToken, getUserId, getLoginSessionEpoch } from '../auth-storage.js';
+import { getUserId, assertSession, sessionForRequest } from '../auth-storage.js';
 import { appLearningStreamSupported, streamAppConnector } from './app-connector.js';
 import {
   createEventStreamParser,
@@ -111,12 +111,12 @@ export function createLearningStreamConsumer(
 }
 export async function generateLearningTurnStream(body, options = {}) {
   const owner = options.expectedOwner || body.learningContext?.owner || getUserId();
-  const token = getToken();
-  const session = getLoginSessionEpoch();
+  const session = options.session;
+  let token;
   const assertCurrent = () => {
     options.assertCurrent?.();
     check(!options.signal?.aborted, 'CANCELLED', '请求已取消');
-    check(getLoginSessionEpoch() === session, 'CONTEXT_CHANGED', '登录会话已变化，拒绝旧模型流');
+    assertSession(session);
     check(getUserId() === owner, 'OWNER_MISMATCH', '账户已切换，拒绝旧模型流');
   };
   let controller,
@@ -129,6 +129,8 @@ export async function generateLearningTurnStream(body, options = {}) {
     task?.abort();
   };
   try {
+    check(!options.signal?.aborted, 'CANCELLED', '请求已取消');
+    token = sessionForRequest(session).token;
     assertCurrent();
     check(token, 'AUTH_REQUIRED', '登录后可连接云模型，本地学习无需登录');
     const platform = options.platform || learningStreamPlatform();
@@ -152,6 +154,7 @@ export async function generateLearningTurnStream(body, options = {}) {
         throw new StreamError('ENDPOINT_INVALID', '教学流目标尚未配置');
       }
       await streamAppConnector({ token, allowedOrigins: [origin], consent: body.shareConsent === true }, url, {
+        session,
         signal: options.signal,
         body: JSON.stringify(body),
         onHeaders(value) {

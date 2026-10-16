@@ -17,7 +17,7 @@ import {
   createQuizAttemptId,
   LEGACY_REVIEW_HANDOFF_KEY
 } from '@/services/quiz-session-contract.js';
-import { getUserId } from '@/services/auth-storage.js';
+import { getUserId, captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
 
 const STORAGE_KEY = 'study_engine_state_v1';
 const BANK_KEY = 'v30_bank';
@@ -79,8 +79,9 @@ function legacyGroupId(mistake) {
   return JSON.stringify([getMistakeErrorType(mistake), questionCategory(mistake)]);
 }
 
-function readPersistedState() {
-  const value = storageService.get(STORAGE_KEY, {});
+function readPersistedState(session) {
+  const value = storageService.get(STORAGE_KEY, {}, { session, migrateLegacy: false });
+  assertSession(session);
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
   return value;
 }
@@ -95,16 +96,19 @@ function persistState(state) {
       lastClusters: state.lastClusters,
       lastPlan: state.lastPlan
     },
-    true
+    true,
+    state._session
   );
 }
 
-export const useStudyEngineStore = defineStore('study-engine', {
+const studyEngineStore = defineStore('study-engine', {
   state: () => {
-    const saved = readPersistedState();
+    const session = captureSession();
+    const saved = readPersistedState(session);
     const currentSession =
       saved.currentSession && typeof saved.currentSession === 'object' ? saved.currentSession : null;
     return {
+      _session: session,
       currentSession,
       isStudying: Boolean(currentSession),
       sessionHistory: Array.isArray(saved.sessionHistory) ? saved.sessionHistory.slice(0, 50) : [],
@@ -121,6 +125,7 @@ export const useStudyEngineStore = defineStore('study-engine', {
 
   actions: {
     _persist() {
+      assertSession(this._session);
       persistState(this);
     },
 
@@ -372,7 +377,10 @@ export const useStudyEngineStore = defineStore('study-engine', {
       const handoff = JSON.parse(
         JSON.stringify({ contract: 'legacy-review-handoff-v1', id: createQuizAttemptId(), ownerId, questions })
       );
-      if ((getUserId() || '') !== ownerId || !storageService.save(LEGACY_REVIEW_HANDOFF_KEY, handoff, true))
+      if (
+        (getUserId() || '') !== ownerId ||
+        !storageService.save(LEGACY_REVIEW_HANDOFF_KEY, handoff, true, this._session)
+      )
         return { success: false, message: '未保存重练入口，请重试' };
       return {
         success: true,
@@ -384,6 +392,7 @@ export const useStudyEngineStore = defineStore('study-engine', {
     },
 
     async generateStudyPlan(examDate, dailyHours = 4) {
+      const session = this._session;
       if (!examDate || !/^\d{4}-\d{2}-\d{2}$/.test(String(examDate))) {
         return { success: false, data: null, source: 'local', message: '请提供考试日期（YYYY-MM-DD）' };
       }
@@ -404,6 +413,7 @@ export const useStudyEngineStore = defineStore('study-engine', {
       );
       const dailyMinutes = Math.max(30, Math.min(720, Math.round(Number(dailyHours || 4) * 60)));
       const masteryResult = await this.analyzeMastery();
+      assertSession(session);
       const mastery = masteryResult.data.mastery || [];
       const weak = mastery.filter((item) => item.canPractice && (item.needsRetest || item.needsHelp)).slice(0, 3);
       const review = masteryResult.data.reviewTargets.slice(0, 3);
@@ -483,3 +493,34 @@ export const useStudyEngineStore = defineStore('study-engine', {
     }
   }
 });
+
+const studyEngineBindings = new WeakSet();
+export function useStudyEngineStore(...args) {
+  const store = studyEngineStore(...args);
+  if (!studyEngineBindings.has(store)) {
+    studyEngineBindings.add(store);
+    const ensure = () => {
+      const status = checkSession(store._session);
+      if (status === 'unavailable') assertSession(store._session);
+      if (status === 'changed') store.$reset();
+      assertSession(store._session);
+    };
+    const stopIdentity = storageService.onIdentityChange(() => {
+      try {
+        ensure();
+      } catch {
+        /* Retry after an unavailable read. */
+      }
+    });
+    const stopActions = store.$onAction(({ name }) => {
+      if (name !== '_persist') ensure();
+    });
+    const dispose = store.$dispose.bind(store);
+    store.$dispose = () => {
+      stopIdentity();
+      stopActions();
+      dispose();
+    };
+  }
+  return store;
+}

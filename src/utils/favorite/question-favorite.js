@@ -1,3 +1,4 @@
+import { captureSession, checkSession } from '@/services/auth-storage.js';
 /**
  * 题目收藏模块 - 收藏重要题目，方便复习
  *
@@ -121,14 +122,17 @@ class QuestionFavoriteManager {
     if (!this.init()) return failed(this.lastError.message, 'FAVORITE_UNAVAILABLE');
     if (expectedOwner !== undefined && expectedOwner !== this.ownerId)
       return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
+    const session = captureSession();
     const context = this.ownerId;
     try {
       const next = clone(this[field]);
       const result = change(next);
       if (!result.success) return result;
-      if (owner() !== context) return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
-      if (storageService.save(key, clone(next), true) !== true) return failed('保存失败，原记录已保留');
-      if (owner() !== context) return failed('账户已变化，请重新读取', 'CONTEXT_CHANGED');
+      if (checkSession(session) !== 'current' || owner() !== context)
+        return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
+      if (storageService.save(key, clone(next), true, session) !== true) return failed('保存失败，原记录已保留');
+      if (checkSession(session) !== 'current' || owner() !== context)
+        return failed('账户已变化，请重新读取', 'CONTEXT_CHANGED');
       this[field] = next;
       return result;
     } catch (_error) {
@@ -396,9 +400,11 @@ class QuestionFavoriteManager {
     if (referenceViewed === true)
       prepared.question.legacyReviewContext = { contract: 'legacy-review-view-v1', referenceViewed: true };
     const handoff = createSinglePracticeHandoff(prepared.question, expectedOwner);
+    const session = captureSession();
     if (!handoff || owner() !== expectedOwner) return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
     try {
-      if (storageService.save('temp_practice_question', handoff, true) !== true) return failed('练习未保存，请重试');
+      if (storageService.save('temp_practice_question', handoff, true, session) !== true)
+        return failed('练习未保存，请重试');
       if (owner() !== expectedOwner) return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
       const saved = storageService.get('temp_practice_question', null, { migrateLegacy: false, throwOnError: true });
       if (

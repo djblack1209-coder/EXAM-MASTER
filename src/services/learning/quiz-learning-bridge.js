@@ -1,3 +1,4 @@
+import { captureSession, assertSession } from '../auth-storage.js';
 import { learningRepository } from './learning-repository.js';
 import { materialFingerprint } from './material-intake.js';
 import { learningWriteLease } from './learning-write-lease.js';
@@ -41,7 +42,8 @@ export async function recordQuizLearningObservation({
   kind,
   rating,
   referenceId,
-  canContinue = () => true
+  canContinue = () => true,
+  session: origin = captureSession()
 }) {
   assert(isValidQuizSessionId(sessionId) && isValidQuizAttemptId(observationId), 'INVALID_INPUT', '记录编号不合法');
   assert(
@@ -52,9 +54,11 @@ export async function recordQuizLearningObservation({
   const q = JSON.parse(JSON.stringify(currentQuestion));
   const original = createQuizOriginal(q);
   assertQuizOriginalDisplay(q, original);
+  assertSession(origin);
   const context = learningRepository.lifecycleContext();
   assert(canContinue(), 'CONTEXT_CHANGED', '原查看上下文已变化');
   await learningWriteLease.waitUntilWritable(context[0]);
+  assertSession(origin);
   assert(
     canContinue() && JSON.stringify(learningRepository.lifecycleContext()) === JSON.stringify(context),
     'CONTEXT_CHANGED',
@@ -121,7 +125,10 @@ export async function recordQuizLearningObservation({
       '请先保存当前题目的查看记录'
     );
   }
-  const commit = (type, id, value) => learningRepository.commit({ type, id, data: value });
+  const commit = (type, id, value) => {
+    assertSession(origin);
+    return learningRepository.commit({ type, id, data: value }, undefined, { session: origin });
+  };
   if (!before.conversations.some((row) => row.id === session))
     commit('conversation.start', session, { goal: '独立练习的查看与自评记录' });
   if (!existing) commit('question.add', `${observationId}:question`, { question: saved });
@@ -143,21 +150,27 @@ export async function recordQuizLearningAttempt({
   userAnswer,
   sessionId,
   attemptId,
-  canContinue = () => true
+  canContinue = () => true,
+  session: origin = captureSession()
 }) {
   const q = currentQuestion ? JSON.parse(JSON.stringify(currentQuestion)) : null;
   if (q?.id === undefined || q.id === null || String(q.id).trim() === '' || !sessionId || !attemptId)
     return { success: false, error: 'STABLE_ATTEMPT_ID_REQUIRED' };
+  assertSession(origin);
   const context = learningRepository.lifecycleContext();
   assert(canContinue(), 'CONTEXT_CHANGED', '原作答上下文已变化');
   await learningWriteLease.waitUntilWritable(context[0]);
+  assertSession(origin);
   assert(
     canContinue() && JSON.stringify(learningRepository.lifecycleContext()) === JSON.stringify(context),
     'CONTEXT_CHANGED',
     '原作答上下文已变化'
   );
   const session = `quiz_${sessionId}`;
-  const commit = (type, id, data) => learningRepository.commit({ type, id, data });
+  const commit = (type, id, data) => {
+    assertSession(origin);
+    return learningRepository.commit({ type, id, data }, undefined, { session: origin });
+  };
   const before = learningRepository.read();
   const logicalId = `bank_${q.bankId || q.subject || 'legacy'}_${q.id}`;
   const quizOriginal = createQuizOriginal(q);
@@ -231,11 +244,13 @@ export async function restoreQuizLearningAttempts({
   questions,
   answeredQuestions,
   sessionId,
-  canContinue = () => true
+  canContinue = () => true,
+  session: origin = captureSession()
 }) {
   const result = { restored: 0, reused: 0, skipped: 0 };
   if (!isValidQuizSessionId(sessionId)) return result;
   const snapshot = JSON.parse(JSON.stringify({ questions, answeredQuestions }));
+  assertSession(origin);
   const context = learningRepository.lifecycleContext();
   const jobs = [];
   const bindings = new Map();
@@ -257,7 +272,9 @@ export async function restoreQuizLearningAttempts({
     jobs.push({ record, question, answer });
   }
   for (const { record, question, answer } of jobs) {
+    assertSession(origin);
     const outcome = await recordQuizLearningAttempt({
+      session: origin,
       currentQuestion: question,
       userAnswer: answer,
       sessionId,

@@ -278,6 +278,7 @@
 </template>
 
 <script setup>
+import { captureSession, assertSession } from '@/services/auth-storage.js';
 import CustomModal from '@/components/common/CustomModal.vue';
 const uiText = (value) => translateRegisteredText('plan', value);
 import '@/pages/plan/messages.js';
@@ -402,6 +403,7 @@ async function loadIntelligentReminders() {
 
 /** AI 自适应7天计划 — 调用后端 generate_plan API */
 async function loadAIPlan() {
+  const session = captureSession();
   // 检查缓存（1小时内有效）
   const cached = storageService.get('ai_adaptive_plan', null);
   if (cached && Date.now() - (cached._ts || 0) < 3600000) {
@@ -414,11 +416,12 @@ async function loadAIPlan() {
     const examDate = storageService.get('exam_date', '');
     const dailyHours = storageService.get('daily_study_hours', 4);
     const result = await studyEngineStore.generateStudyPlan(examDate, dailyHours);
+    assertSession(session);
     if (result?.data?.plan) {
       const plan = result.data.plan;
       plan._ts = Date.now();
       aiPlan.value = plan;
-      storageService.save('ai_adaptive_plan', plan);
+      storageService.save('ai_adaptive_plan', plan, true, session);
     }
   } catch (err) {
     logger.warn('[plan] AI 计划加载失败:', err);

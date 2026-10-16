@@ -1,3 +1,4 @@
+import { captureSession, checkSession } from '../auth-storage.js';
 import { t, currentLanguage } from '@/i18n/index.js';
 import { invoke } from '@tauri-apps/api/core';
 import { isDesktopRuntime } from '@/services/desktop/runtime.js';
@@ -47,11 +48,26 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
   let running = Promise.resolve();
   let trustedIdentity = learning.notificationContext();
   const notices = new Set();
+  const delivered = new Map();
   const opened = new Set();
   const waiting = new Map();
   let initialization = null;
   let stopListening = () => undefined;
   const context = () => learning.recordContext();
+  const stopIdentity = storageService.onIdentityChange(() => {
+    const status = checkSession(notificationSession);
+    if (status !== 'changed') return;
+    notices.forEach((notice) => notice.close());
+    notices.clear();
+    waiting.clear();
+    delivered.clear();
+    notificationSession = captureSession();
+    if (channel === 'macos' && token)
+      native('replace_learning_notifications', { token, sequence: ++sequence, consent: false, jobs: [] }).catch(
+        () => undefined
+      );
+  });
+  let notificationSession = captureSession();
   const consent = () => storageService.get(CONSENT_KEY, null)?.context === learning.notificationContext();
   const current = (job) =>
     learning.state.conversations.some(
@@ -60,27 +76,35 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
         c.id === job.conversationId &&
         c.reminders?.some((r) => r.id === job.reminderId && r.generation === job.generation && r.enabled)
     );
-  function open(job, expected = context()) {
+  function open(job, expected, session) {
     if (disposed || typeof job?.id !== 'string' || opened.has(job.id)) return;
-    if (context() !== expected) {
+    if (checkSession(session) !== 'current' || !expected || context() !== expected) {
       waiting.delete(job.id);
       return;
     }
     // 冷启动的系统点击先保留；初始页面和启动页的默认导航完成后再返回任务。
     if (!canOpen()) {
-      if (!waiting.has(job.id) && waiting.size < 20) waiting.set(job.id, { job, expected });
+      if (!waiting.has(job.id) && waiting.size < 20) waiting.set(job.id, { job, expected, session });
       scheduleOpen();
       return;
     }
     waiting.delete(job.id);
     try {
       learning.openReminder(job);
-      learning.reminderReceipt(job, 'opened', channel, context());
+      learning.reminderReceipt(job, 'opened', channel, expected);
       opened.add(job.id);
       onOpen?.(job);
     } catch {
       /* 过期或其他账户提醒不导航、不恢复任务。 */
     }
+  }
+  function openNative(job) {
+    const session = captureSession();
+    if (!job || !Object.hasOwn(job, 'loginEpoch') || !session || job.loginEpoch !== session.epoch) return;
+    const binding = delivered.get(job.id);
+    if (binding) open(job, binding.expected, binding.session);
+    // A cold-start click is accepted only with its original epoch and persisted consent.
+    else if (consent()) open(job, context(), session);
   }
   function scheduleOpen() {
     if (active && openTimer === null && waiting.size) openTimer = setTimeout(drainOpen, 100);
@@ -88,7 +112,7 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
   function drainOpen() {
     openTimer = null;
     if (disposed || !active) return;
-    for (const { job, expected } of waiting.values()) open(job, expected);
+    for (const { job, expected, session } of waiting.values()) open(job, expected, session);
     scheduleOpen();
   }
   async function permission(request = false) {
@@ -100,6 +124,7 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
     return 'unsupported';
   }
   async function allow() {
+    const session = captureSession();
     const identity = learning.prepareNotificationConsent();
     const expected = context();
     learning.refresh();
@@ -108,7 +133,11 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
     assert(result === 'granted', 'NOTIFICATION_PERMISSION', '通知未获授权，请在系统设置中允许后重试');
     assert(learning.notificationContext() === identity, 'CONTEXT_CHANGED', '学习记录已恢复，旧通知许可未保存');
     learning.ensureSessionCurrent?.();
-    assert(storageService.save(CONSENT_KEY, { context: identity }, true), 'STORAGE_FAILED', '通知许可未保存，请重试');
+    assert(
+      storageService.save(CONSENT_KEY, { context: identity }, true, session),
+      'STORAGE_FAILED',
+      '通知许可未保存，请重试'
+    );
     trustedIdentity = identity;
     return refresh();
   }
@@ -124,6 +153,8 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
   async function performRefresh() {
     if (disposed) return null;
     const expected = context();
+    const session = captureSession();
+    if (checkSession(session) !== 'current') return null;
     {
       learning.refresh();
       if (channel === 'macos') {
@@ -131,12 +162,13 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
         const requested = consent() ? learning.reminderQueue().filter((j) => j.dueAt > Date.now()) : [];
         const jobs = requested.slice(0, 64);
         if (disposed || context() !== expected) return null;
+        for (const job of jobs) delivered.set(job.id, { expected, session });
         const reply = await native('replace_learning_notifications', {
           token,
           sequence: ++sequence,
           consent: consent(),
           language: currentLanguage.value,
-          jobs: jobs.map(({ accepted: _accepted, ...job }) => job)
+          jobs: jobs.map(({ accepted: _accepted, ...job }) => ({ ...job, loginEpoch: session.epoch }))
         });
         if (disposed || context() !== expected) return null;
         assert(
@@ -150,7 +182,7 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
           '部分提醒尚未安排，请重试'
         );
         const actions = await native('take_learning_notification_actions');
-        if (!disposed && context() === expected) actions.forEach((job) => open(job));
+        if (!disposed && context() === expected) actions.forEach(openNative);
         return {
           channel,
           status: requested.length > 64 ? 'partial-scheduled' : jobs.length ? 'scheduled' : 'saved',
@@ -190,7 +222,7 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
             };
             notification.onclick = () => {
               window.focus();
-              open(job);
+              open(job, expected, session);
               notification.close();
             };
             notification.onerror = () => {
@@ -241,7 +273,9 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
       if (channel === 'macos') {
         const { listen } = await import('@tauri-apps/api/event');
         if (disposed) return;
-        stopListening = await listen('learning-notification-action', (event) => open(event.payload));
+        stopListening = await listen('learning-notification-action', (event) => {
+          openNative(event.payload);
+        });
         if (disposed) stopListening();
       }
       show();
@@ -250,6 +284,8 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
   }
   function dispose() {
     disposed = true;
+    stopIdentity();
+    delivered.clear();
     hide();
     stopListening();
     notices.forEach((n) => n.close());

@@ -1,3 +1,5 @@
+import { captureSession, assertSession, checkSession } from '@/services/auth-storage.js';
+import { storageService } from '@/services/storageService.js';
 /**
  * 离线缓存服务
  *
@@ -49,9 +51,9 @@ function getOnlineStatus() {
  * 方法：
  * - getCachedQuestions(category, limit): 获取缓存的题目
  * - cacheQuestions(questions, category): 缓存题目
- * - addToSyncQueue(action, data): 将操作加入同步队列
+ * - addToSyncQueue(action, data, session = captureSession()): 将操作加入同步队列
  * - getSyncQueue(): 获取待同步队列
- * - clearSyncQueue(): 清空同步队列
+ * - clearSyncQueue(session = captureSession()): 清空同步队列
  */
 export const offlineCache = {
   /**
@@ -69,7 +71,7 @@ export const offlineCache = {
    */
   getCachedQuestions(category = 'all', limit = 20) {
     try {
-      const cached = uni.getStorageSync(STORAGE_KEYS.CACHED_QUESTIONS) || {};
+      const cached = storageService.get(STORAGE_KEYS.CACHED_QUESTIONS, null, { migrateLegacy: false }) || {};
       const questions = category === 'all' ? Object.values(cached).flat() : cached[category] || [];
       return questions.slice(0, limit);
     } catch (err) {
@@ -83,12 +85,13 @@ export const offlineCache = {
    * @param {Array} questions - 要缓存的题目数组
    * @param {string} category - 题目分类
    */
-  cacheQuestions(questions, category = 'all') {
+  cacheQuestions(questions, category = 'all', session = captureSession()) {
     try {
       if (!Array.isArray(questions) || questions.length === 0) return;
-      const cached = uni.getStorageSync(STORAGE_KEYS.CACHED_QUESTIONS) || {};
+      const cached = storageService.get(STORAGE_KEYS.CACHED_QUESTIONS, null, { migrateLegacy: false }) || {};
+      assertSession(session);
       cached[category] = questions;
-      uni.setStorageSync(STORAGE_KEYS.CACHED_QUESTIONS, cached);
+      storageService.save(STORAGE_KEYS.CACHED_QUESTIONS, cached, true, session);
       logger.log(`[OfflineCacheService] 缓存 ${questions.length} 道题目 (${category})`);
     } catch (err) {
       logger.warn('[OfflineCacheService] cacheQuestions 失败:', err);
@@ -100,11 +103,12 @@ export const offlineCache = {
    * @param {string} action - 操作类型（如 'answer_submit'）
    * @param {Object} data - 操作数据
    */
-  addToSyncQueue(action, data) {
+  addToSyncQueue(action, data, session = captureSession()) {
     try {
-      const queue = uni.getStorageSync(STORAGE_KEYS.SYNC_QUEUE) || [];
-      queue.push({ action, data, timestamp: Date.now() });
-      uni.setStorageSync(STORAGE_KEYS.SYNC_QUEUE, queue);
+      const queue = storageService.get(STORAGE_KEYS.SYNC_QUEUE, [], { migrateLegacy: false }) || [];
+      assertSession(session);
+      queue.push({ action, data, timestamp: Date.now(), session });
+      storageService.save(STORAGE_KEYS.SYNC_QUEUE, queue, true, session);
       logger.log(`[OfflineCacheService] 加入同步队列: ${action}`);
     } catch (err) {
       logger.warn('[OfflineCacheService] addToSyncQueue 失败:', err);
@@ -117,7 +121,9 @@ export const offlineCache = {
    */
   getSyncQueue() {
     try {
-      return uni.getStorageSync(STORAGE_KEYS.SYNC_QUEUE) || [];
+      return (storageService.get(STORAGE_KEYS.SYNC_QUEUE, [], { migrateLegacy: false }) || []).filter(
+        (item) => checkSession(item.session) === 'current'
+      );
     } catch {
       return [];
     }
@@ -126,9 +132,9 @@ export const offlineCache = {
   /**
    * 清空同步队列（同步完成后调用）
    */
-  clearSyncQueue() {
+  clearSyncQueue(session = captureSession()) {
     try {
-      uni.removeStorageSync(STORAGE_KEYS.SYNC_QUEUE);
+      storageService.remove(STORAGE_KEYS.SYNC_QUEUE, true, session);
     } catch {
       /* 静默 */
     }
@@ -152,14 +158,14 @@ export function checkOfflineAvailability() {
 
   try {
     // 检查本地题库
-    const bank = uni.getStorageSync(STORAGE_KEYS.QUESTION_BANK);
+    const bank = storageService.get(STORAGE_KEYS.QUESTION_BANK, [], { migrateLegacy: false });
     if (Array.isArray(bank) && bank.length > 0) {
       available = true;
     }
 
     // 也检查离线缓存的题目
     if (!available) {
-      const cached = uni.getStorageSync(STORAGE_KEYS.CACHED_QUESTIONS);
+      const cached = storageService.get(STORAGE_KEYS.CACHED_QUESTIONS, null, { migrateLegacy: false });
       if (cached && typeof cached === 'object' && Object.keys(cached).length > 0) {
         available = true;
       }

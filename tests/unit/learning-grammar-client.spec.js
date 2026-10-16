@@ -1,3 +1,4 @@
+import { storageService } from '@/services/storageService.js';
 import { beforeEach, afterEach, it, expect, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -136,7 +137,7 @@ it.each(['stop', 'cancel', 'token', 'owner', 'new-answer', 'switch-task'])(
     if (kind === 'cancel') store.cancel();
     if (kind === 'token') uni.setStorageSync('EXAM_TOKEN', 'changed');
     if (kind === 'owner') {
-      uni.setStorageSync('EXAM_USER_ID', 'other');
+      storageService.saveLoginSession({ userId: 'other', token: 'fixture-peer-token', userInfo: {} });
       store.refresh();
     }
     if (kind === 'new-answer') store.submit('other', true, 'other-answer');

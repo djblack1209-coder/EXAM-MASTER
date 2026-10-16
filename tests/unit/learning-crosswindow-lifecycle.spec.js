@@ -1,9 +1,10 @@
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
+import { ref } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { createLearningRepository, learningRepository, LEARNING_KEY } from '@/services/learning/learning-repository.js';
 import { storageService, StorageService } from '@/services/storageService.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
-import { getLoginSessionEpoch } from '@/services/auth-storage.js';
+import { getLoginSessionEpoch, sessionCredentialProof } from '@/services/auth-storage.js';
 import { obfuscate } from '@/utils/crypto/cipher.js';
 import { parsePastedMaterial } from '@/services/learning/material-intake.js';
 const epochKey = `${LEARNING_KEY}_lifecycle`;
@@ -274,9 +275,9 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
     const pending = requests(),
       promise = store.loadModels();
     const rejected = expect(promise).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
-    uni.setStorageSync('_enc_EXAM_USER_ID', obfuscate('synthetic-second-owner'));
+    storageService.saveLoginSession({ userId: 'synthetic-second-owner', token: 'fixture-peer', userInfo: {} });
     learningRepository.read();
-    uni.setStorageSync('_enc_EXAM_USER_ID', obfuscate('synthetic-crosswindow-owner'));
+    storageService.saveLoginSession({ userId: 'synthetic-crosswindow-owner', token: 'fixture-back', userInfo: {} });
     pending[0].success({ data: modelResult('old-account') });
     await rejected;
     expect(store.models).toEqual([]);
@@ -300,6 +301,7 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
       if (change === 'same-window') storageService.save('EXAM_USER_ID', 'synthetic-second-owner', true);
       else if (change === 'token-removal') storageService.remove('EXAM_TOKEN', true);
       else {
+        uni.removeStorageSync('_enc_EXAM_SESSION_EPOCH');
         uni.setStorageSync('_enc_EXAM_USER_ID', peerIdentity);
         window.dispatchEvent(
           new StorageEvent('storage', {
@@ -461,7 +463,7 @@ describe('加密同账户会话与凭据请求边界', () => {
     for (const [key, value] of [
       ['EXAM_USER_ID', owner],
       ['EXAM_TOKEN', originalToken],
-      ['EXAM_SESSION_EPOCH', epoch]
+      ['EXAM_SESSION_EPOCH', { version: 1, epoch, owner, proof: sessionCredentialProof(owner, originalToken) }]
     ])
       uni.setStorageSync(`_enc_${key}`, obfuscate(value));
   }
@@ -554,8 +556,12 @@ describe('加密同账户会话与凭据请求边界', () => {
     else uni.removeStorageSync('_enc_EXAM_SESSION_EPOCH');
     resolve({ ok: true, text: async () => JSON.stringify({ success: true, data: { message: '事件未达的迟到正文' } }) });
     await expect(promise).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
-    expect(kind === 'removed' ? learningRepository.exportData() : store.exportData()).toBe(facts);
-    expect(store.active.messages.some((m) => m.content === '事件未达的迟到正文')).toBe(false);
+    if (kind === 'removed')
+      expect(JSON.stringify(uni.getStorageSync('u_synthetic-crosswindow-owner_conversation_learning_v1'))).toBe(
+        JSON.stringify(JSON.parse(facts))
+      );
+    else expect(store.exportData()).toBe(facts);
+    expect(store.active?.messages.some((m) => m.content === '事件未达的迟到正文')).not.toBe(true);
     expect(getLoginSessionEpoch()).toBe(kind === 'removed' ? null : 'synthetic-peer-login-epoch');
   });
   it('代号换代取消资料连接和历史读取，不采纳忽略取消的迟到结果', async () => {
@@ -599,6 +605,7 @@ describe('加密同账户会话与凭据请求边界', () => {
     session();
     const facts = store.exportData();
     store.$dispose();
+    uni.removeStorageSync('EXAM_SESSION_ENABLED'); // genuinely never-enabled legacy device
     uni.removeStorageSync('_enc_EXAM_SESSION_EPOCH');
     expect(getLoginSessionEpoch()).toBeNull();
     setActivePinia(createPinia());
@@ -644,8 +651,12 @@ describe('加密同账户会话与凭据请求边界', () => {
       else store.cancelMaterial();
       resolve({ ok: true, text: async () => JSON.stringify({ success: true, data: { fileId, deleted: true } }) });
       await rejected;
-      expect(learningRepository.exportData()).toBe(facts);
-      expect(learningRepository.read().materialDeletions.at(-1).originalStatus).toBe('pending');
+      const saved =
+        kind === 'removed'
+          ? uni.getStorageSync('u_synthetic-crosswindow-owner_conversation_learning_v1')
+          : learningRepository.read();
+      expect(JSON.stringify(saved)).toBe(JSON.stringify(JSON.parse(facts)));
+      expect(saved.materialDeletions.at(-1).originalStatus).toBe('pending');
       expect(transport.mock.calls[0][1].signal.aborted).toBe(true);
     }
   );
@@ -857,6 +868,15 @@ describe('加密同账户会话与凭据请求边界', () => {
       if (source === 'same-window') change('refresh');
       else {
         uni.setStorageSync('_enc_EXAM_TOKEN', encrypted);
+        uni.setStorageSync(
+          '_enc_EXAM_SESSION_EPOCH',
+          obfuscate({
+            version: 1,
+            epoch: getLoginSessionEpoch(),
+            owner: 'synthetic-crosswindow-owner',
+            proof: sessionCredentialProof('synthetic-crosswindow-owner', renewedToken)
+          })
+        );
         window.dispatchEvent(
           new StorageEvent('storage', {
             key: source === 'encrypted-storage' ? '_enc_EXAM_TOKEN' : '__exam_storage__:_enc_EXAM_TOKEN'
@@ -1216,4 +1236,300 @@ describe('标记初始化与只读上下文', () => {
     notify();
     expect(store.state).toBe(before);
   });
+});
+
+// Stage 5: use the real entry points. Fixture fallback keeps these scenarios executable on 2c739ff4.
+describe('阶段5入口绑定回归', () => {
+  const owner = 'audit5-A',
+    token = 'fixture-audit5-token';
+  const binding = () => storageService.captureSession?.() || { owner: 'audit5-A', epoch: getLoginSessionEpoch() };
+  const login = (userId = owner) =>
+    storageService.saveLoginSession({
+      userId,
+      token: userId === owner ? token : 'fixture-audit5-B-token',
+      userInfo: { uid: userId }
+    });
+  const question = {
+    id: 'audit5-q',
+    question: 'A_PRIVATE_QUESTION',
+    options: ['甲', '乙'],
+    answer: 'A',
+    subject: '数学'
+  };
+  beforeEach(async () => {
+    store?.$dispose();
+    uni.clearStorageSync();
+    await login();
+    setActivePinia(createPinia());
+    store = useConversationLearningStore();
+  });
+  it('writes-1: study engine never persists A clusters with B plan', async () => {
+    const { useStudyEngineStore } = await import('@/stores/modules/study-engine.js');
+    const engine = useStudyEngineStore();
+    engine.lastClusters = [{ questionContent: 'PRIVATE_A_CLUSTER', userAnswer: 'PRIVATE_A_ANSWER' }];
+    await login('audit5-B');
+    await engine.generateStudyPlan('2026-12-01');
+    expect(JSON.stringify(uni.getStorageSync('u_audit5-B_study_engine_state_v1'))).not.toContain('PRIVATE_A');
+    engine.$dispose();
+  });
+  it('writes-2: analytics timer discards A queue before B storage', async () => {
+    const { analytics } = await import('@/utils/analytics/event-bus-analytics.js');
+    analytics.isInitialized = false;
+    analytics.eventQueue = [];
+    vi.useFakeTimers();
+    try {
+      analytics.init({ enableDebug: false });
+      await login('audit5-B');
+      await vi.advanceTimersByTimeAsync(60001);
+      expect(JSON.stringify(uni.getStorageSync('u_audit5-B_analytics_uploaded'))).not.toContain('audit5-A');
+    } finally {
+      clearInterval(analytics.uploadTimer);
+      analytics.stopIdentity?.();
+      analytics.isInitialized = false;
+      analytics.eventQueue = [];
+      vi.useRealTimers();
+    }
+  });
+  it.each(['attempt', 'reference', 'recorder'])(
+    'writes-3: %s waiting for lease cannot survive relogin',
+    async (kind) => {
+      const bridge = await import('@/services/learning/quiz-learning-bridge.js');
+      const { learningWriteLease } = await import('@/services/learning/learning-write-lease.js');
+      const { recordAnswerToAnalytics } = await import('@/pages/practice-sub/quiz-analytics-recorder.js');
+      let release;
+      vi.spyOn(learningWriteLease, 'waitUntilWritable').mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            release = resolve;
+          })
+      );
+      const transport = vi.spyOn(uni, 'request');
+      const params = { currentQuestion: question, sessionId: 'quiz_audit5_session', attemptId: 'attempt_audit5_1' };
+      const pending =
+        kind === 'attempt'
+          ? bridge.recordQuizLearningAttempt({ ...params, userAnswer: 'A' })
+          : kind === 'reference'
+            ? bridge.recordQuizLearningObservation({
+                ...params,
+                observationId: 'observe_audit5_1',
+                kind: 'reference_view'
+              })
+            : recordAnswerToAnalytics({ ...params, userChoice: 0, getOptionLabel: () => 'A', timeSpent: 1000 });
+      const outcome = pending.catch((error) => ({ code: error.code }));
+      await login();
+      release();
+      await outcome;
+      expect(learningRepository.read().attempts).toHaveLength(0);
+      expect(learningRepository.read().events).toHaveLength(0);
+      expect(transport).not.toHaveBeenCalled();
+    }
+  );
+  it('writes-4: queued mistake removal retains the originating epoch', async () => {
+    storageService.save('mistake_book', [{ id: 'local_audit5', question: 'PRIVATE_A' }], true);
+    let release;
+    storageService._mistakeBookMutex = new Promise((resolve) => {
+      release = resolve;
+    });
+    const pending = storageService.removeMistake('local_audit5');
+    await login();
+    release();
+    expect(await pending).toMatchObject({ success: false, code: 'CONTEXT_CHANGED' });
+    expect(storageService.get('mistake_book', [])).toHaveLength(1);
+  });
+  it('inflight-1: identity read interleaving never sends A body with B credentials', async () => {
+    const { learningRequest } = await import('@/services/api/domains/learning.api.js');
+    const session = binding();
+    const read = uni.getStorageSync.getMockImplementation();
+    let switched = false;
+    vi.spyOn(uni, 'getStorageSync').mockImplementation((key) => {
+      const value = read(key);
+      if (!switched && key === '_enc_EXAM_USER_ID') {
+        switched = true;
+        login('audit5-B');
+      }
+      return value;
+    });
+    const sent = [];
+    vi.spyOn(uni, 'request').mockImplementation((options) => {
+      sent.push(options);
+      options.success({ data: { success: true } });
+      return { abort() {} };
+    });
+    const result = await learningRequest(
+      '/learning-sync',
+      { action: 'push', operations: [{ private: 'A_PRIVATE_GOAL' }] },
+      { session, expectedOwner: owner }
+    );
+    expect(result.success).toBe(false);
+    expect(sent).toHaveLength(0);
+  });
+  it('inflight-2: progress callback cannot rebind a pending sync push', async () => {
+    const { synchronizeLearning } = await import('@/services/learning/learning-sync.js');
+    const { learningRequest } = await import('@/services/api/domains/learning.api.js');
+    const { emptyLearningState } = await import('@/services/learning/learning-domain.js');
+    store.start('PRIVATE_SYNC_A');
+    const requests = [];
+    vi.spyOn(uni, 'request').mockImplementation((options) => {
+      requests.push(options.data.action);
+      options.success({ data: { success: true, data: { state: emptyLearningState(owner), revision: 0 } } });
+      return { abort() {} };
+    });
+    await expect(
+      synchronizeLearning(learningRepository, true, learningRequest, {
+        onProgress(progress) {
+          if (progress.phase === '补传学习操作') login();
+        }
+      })
+    ).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+    expect(requests).toEqual(['pull']);
+  });
+  it.each(['saveModel', 'testModel', 'removeModel'])(
+    'inflight-3: %s continuation does not load B models',
+    async (action) => {
+      const sent = [],
+        callbacks = [];
+      vi.spyOn(uni, 'request').mockImplementation((options) => {
+        sent.push(options.data.action);
+        callbacks.push(options);
+        return { abort() {} };
+      });
+      const pending = store[action](action === 'saveModel' ? { name: 'A_PRIVATE_PROFILE' } : 'profile-a', true);
+      const rejected = expect(pending).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      callbacks[0].success({ data: { success: true, data: {} } });
+      queueMicrotask(() => login('audit5-B'));
+      await rejected;
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(sent).toHaveLength(1);
+      expect(sent).not.toContain('list');
+    }
+  );
+  it('regress-1: silent cache restoration keeps active epoch and authorization', async () => {
+    const { useAuthStore } = await import('@/stores/modules/auth.js');
+    store.localConnection = { endpoint: 'private-connection', token: 'fixture-local' };
+    store.sharingAllowed = true;
+    const epoch = getLoginSessionEpoch();
+    const pinia = createPinia();
+    const auth = useAuthStore(pinia);
+    auth._setUserInfoRef(ref({ uid: owner }));
+    expect(auth.silentLogin().success).toBe(true);
+    expect(getLoginSessionEpoch()).toBe(epoch);
+    expect(store.localConnection?.endpoint).toBe('private-connection');
+    expect(store.sharingAllowed).toBe(true);
+    for (const item of pinia._s.values()) item.$dispose();
+  });
+  it('regress-2: one epoch read error preserves model and connection configuration', () => {
+    store.modelId = 'chosen-profile';
+    store.sharingAllowed = true;
+    store.localConnection = { endpoint: 'private-connection' };
+    const read = uni.getStorageSync.getMockImplementation();
+    let failed = false;
+    vi.spyOn(uni, 'getStorageSync').mockImplementation((key) => {
+      if (!failed && key === '_enc_EXAM_SESSION_EPOCH') {
+        failed = true;
+        throw new Error('FIXTURE_READ_ERROR');
+      }
+      return read(key);
+    });
+    try {
+      store.recordContext();
+    } catch {
+      /* The current action may report a retryable read failure. */
+    }
+    expect(store.modelId).toBe('chosen-profile');
+    expect(store.localConnection?.endpoint).toBe('private-connection');
+    expect(store.sharingAllowed).toBe(true);
+    expect(store.recordContext()).toBeTruthy();
+  });
+  it('R1: interleaved login writes cannot bless mixed owner and token', async () => {
+    const { learningRequest } = await import('@/services/api/domains/learning.api.js');
+    const write = uni.setStorageSync.getMockImplementation();
+    let crossed = false;
+    vi.spyOn(uni, 'setStorageSync').mockImplementation((key, value) => {
+      if (!crossed && key === '_enc_EXAM_TOKEN') {
+        crossed = true;
+        login('audit5-B');
+      }
+      write(key, value);
+    });
+    try {
+      await login();
+    } catch {
+      /* No Web Locks: reject the torn transaction. */
+    }
+    const transport = vi.spyOn(uni, 'request');
+    const result = await learningRequest('/learning-models', { action: 'list' });
+    expect(result.success).toBe(false);
+    expect(transport).not.toHaveBeenCalled();
+  });
+  it('R2: remount cannot resurrect credentials after epoch revocation', async () => {
+    storageService.remove('EXAM_SESSION_EPOCH', true);
+    const pinia = createPinia();
+    const remounted = useConversationLearningStore(pinia);
+    const transport = vi.spyOn(uni, 'request');
+    await remounted.loadModels().catch(() => undefined);
+    expect(getLoginSessionEpoch()).toBeNull();
+    expect(transport).not.toHaveBeenCalled();
+    remounted.$dispose();
+  });
+  it('R3: intercepted recovery write cannot resolve to the new partition', async () => {
+    store.start('OWNER_A_PRIVATE_ORIGINAL');
+    const save = storageService.save.bind(storageService);
+    let switched = false;
+    vi.spyOn(storageService, 'save').mockImplementation((key, ...args) => {
+      if (!switched && key === `${LEARNING_KEY}_recovery`) {
+        switched = true;
+        login('audit5-B');
+      }
+      return save(key, ...args);
+    });
+    expect(() =>
+      store.commit('profile.set', { field: 'foundation', value: 'A-private', source: 'self_report', scope: 'test' })
+    ).toThrow();
+    expect(JSON.stringify(uni.getStorageSync(`u_audit5-B_${LEARNING_KEY}_recovery`))).not.toContain('OWNER_A_PRIVATE');
+  });
+});
+
+it('R2: remount stays empty while revoked credential cleanup waits for a Web Lock', async () => {
+  store.$dispose();
+  uni.clearStorageSync();
+  await storageService.saveLoginSession({ userId: 'revoked-mount-owner', token: 'fixture-token', userInfo: {} });
+  storageService.remove('EXAM_SESSION_EPOCH', true);
+  const previous = navigator.locks;
+  let complete;
+  Object.defineProperty(navigator, 'locks', {
+    configurable: true,
+    value: {
+      request: (_name, _options, write) =>
+        new Promise((resolve) => {
+          complete = () => resolve(write());
+        })
+    }
+  });
+  let mounted;
+  try {
+    const pinia = createPinia();
+    expect(() => {
+      mounted = useConversationLearningStore(pinia);
+    }).not.toThrow();
+    expect(mounted.state.events).toHaveLength(0);
+    expect(getLoginSessionEpoch()).toBeNull();
+    complete();
+    await storageService._revocationCleanup;
+    expect(storageService.get('EXAM_TOKEN')).toBeNull();
+    expect(getLoginSessionEpoch()).toBeNull();
+  } finally {
+    mounted?.$dispose();
+    if (previous) Object.defineProperty(navigator, 'locks', { configurable: true, value: previous });
+    else delete navigator.locks;
+  }
+});
+
+it('deferred note content keeps its page session when the manager has switched accounts', async () => {
+  const { addQuestionNote } = await import('@/pages/practice-sub/question-note.js');
+  await storageService.saveLoginSession({ userId: 'note-A', token: 'fixture-token-A', userInfo: {} });
+  const session = storageService.captureSession();
+  await storageService.saveLoginSession({ userId: 'note-B', token: 'fixture-token-B', userInfo: {} });
+  expect(addQuestionNote({ questionId: 'q-A', content: 'PRIVATE_A_NOTE' }, session).success).toBe(false);
+  expect(JSON.stringify(storageService.get('question_notes', []))).not.toContain('PRIVATE_A_NOTE');
 });

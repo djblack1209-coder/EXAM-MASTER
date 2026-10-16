@@ -1,3 +1,4 @@
+import { captureSession } from '@/services/auth-storage.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -335,6 +336,7 @@ describe('App分块保护合同与教学完成边界', () => {
     bridge.stream.mockImplementation((input, done) => nativeEvents(input, done, frames, { chunkSize: 8192 }));
     try {
       const result = await generateLearningTurnStream(body, {
+        session: captureSession(),
         platform: 'app',
         expectedModel: 'explicit',
         onPreview: preview
@@ -380,6 +382,7 @@ describe('App分块保护合同与教学完成边界', () => {
       });
       try {
         const result = await generateLearningTurnStream(body, {
+          session: captureSession(),
           platform: 'app',
           expectedModel: 'explicit',
           onPreview: preview

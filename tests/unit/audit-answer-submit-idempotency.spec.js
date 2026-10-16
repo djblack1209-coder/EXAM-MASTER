@@ -68,7 +68,8 @@ it('only acknowledges a bound receipt and persists it without upgrading the pend
   expect(result.grade).toEqual({ status: 'pending' });
   expect(result.isCorrect).toBeNull();
   expect(saveOfflineAnswer).toHaveBeenLastCalledWith(
-    expect.objectContaining({ submission: expect.objectContaining({ status: 'received' }) })
+    expect.objectContaining({ submission: expect.objectContaining({ status: 'received' }) }),
+    expect.objectContaining({ owner: 'receipt-owner' })
   );
 });
 
@@ -83,12 +84,16 @@ it('keeps numeric zero in originals and offline records while the legacy receipt
   }));
   const result = await recordAnswerToAnalytics(input);
   expect(clientSubmit).toHaveBeenCalledWith(
-    expect.objectContaining({ data: expect.objectContaining({ question_id: '0', practice_mode: 'normal' }) })
+    expect.objectContaining({ data: expect.objectContaining({ question_id: '0', practice_mode: 'normal' }) }),
+    expect.objectContaining({ session: expect.objectContaining({ owner: 'receipt-owner' }) })
   );
   expect(clientBridge).toHaveBeenCalledWith(
     expect.objectContaining({ currentQuestion: expect.objectContaining({ id: 0 }) })
   );
-  expect(saveOfflineAnswer).toHaveBeenCalledWith(expect.objectContaining({ questionId: 0 }));
+  expect(saveOfflineAnswer).toHaveBeenCalledWith(
+    expect.objectContaining({ questionId: 0 }),
+    expect.objectContaining({ owner: 'receipt-owner' })
+  );
   expect(result.questionId).toBe(0);
   expect(result.submission.status).toBe('received');
   expect(result.grade.status).toBe('pending');
@@ -171,7 +176,8 @@ it('freezes original question and answer before asynchronous local writes', asyn
   finish({});
   await work;
   expect(clientSubmit).toHaveBeenCalledWith(
-    expect.objectContaining({ data: expect.objectContaining({ question_id: 'q_1', user_answer: 'A', duration: 2 }) })
+    expect.objectContaining({ data: expect.objectContaining({ question_id: 'q_1', user_answer: 'A', duration: 2 }) }),
+    expect.objectContaining({ session: expect.objectContaining({ owner: 'receipt-owner' }) })
   );
 });
 
@@ -186,34 +192,34 @@ it('retries offline saves once per owner and original attempt without changing t
   const { saveOfflineAnswer: save } = await vi.importActual('@/pages/practice-sub/offline-cache.js');
   const raw = {
     attemptId: 'attempt-original',
-    userId: 'owner',
+    userId: 'receipt-owner',
     sessionId: 'session',
     questionId: 'q',
     userAnswer: 'A',
     timeSpent: 2000
   };
   expect(await save(raw)).toBe(true);
-  const original = JSON.stringify(uni.getStorageSync('EXAM_OFFLINE_ANSWERS'));
+  const original = JSON.stringify(uni.getStorageSync('u_receipt-owner_EXAM_OFFLINE_ANSWERS'));
   expect(await save(raw)).toBe(true);
-  expect(JSON.stringify(uni.getStorageSync('EXAM_OFFLINE_ANSWERS'))).toBe(original);
+  expect(JSON.stringify(uni.getStorageSync('u_receipt-owner_EXAM_OFFLINE_ANSWERS'))).toBe(original);
   for (const field of ['sessionId', 'questionId', 'userAnswer', 'timeSpent']) {
     expect(await save({ ...raw, [field]: 'changed' })).toBe(false);
-    expect(JSON.stringify(uni.getStorageSync('EXAM_OFFLINE_ANSWERS'))).toBe(original);
+    expect(JSON.stringify(uni.getStorageSync('u_receipt-owner_EXAM_OFFLINE_ANSWERS'))).toBe(original);
   }
   const submission = { status: 'received', recordId: 'server-original', receivedAt: 123 };
   expect(await save({ ...raw, submission })).toBe(true);
-  const accepted = JSON.stringify(uni.getStorageSync('EXAM_OFFLINE_ANSWERS'));
+  const accepted = JSON.stringify(uni.getStorageSync('u_receipt-owner_EXAM_OFFLINE_ANSWERS'));
   expect(await save(raw)).toBe(true);
-  expect(JSON.stringify(uni.getStorageSync('EXAM_OFFLINE_ANSWERS'))).toBe(accepted);
-  expect(await save({ ...raw, userId: 'other-owner' })).toBe(true);
-  expect(uni.getStorageSync('EXAM_OFFLINE_ANSWERS')).toHaveLength(2);
-  uni.setStorageSync('EXAM_OFFLINE_ANSWERS', 'unreadable-original');
+  expect(JSON.stringify(uni.getStorageSync('u_receipt-owner_EXAM_OFFLINE_ANSWERS'))).toBe(accepted);
+  expect(await save({ ...raw, userId: 'other-owner' })).toBe(false);
+  expect(uni.getStorageSync('u_receipt-owner_EXAM_OFFLINE_ANSWERS')).toHaveLength(1);
+  uni.setStorageSync('u_receipt-owner_EXAM_OFFLINE_ANSWERS', 'unreadable-original');
   expect(await save(raw)).toBe(false);
-  expect(uni.getStorageSync('EXAM_OFFLINE_ANSWERS')).toBe('unreadable-original');
+  expect(uni.getStorageSync('u_receipt-owner_EXAM_OFFLINE_ANSWERS')).toBe('unreadable-original');
   for (const corrupt of [0, false, {}]) {
-    uni.setStorageSync('EXAM_OFFLINE_ANSWERS', corrupt);
+    uni.setStorageSync('u_receipt-owner_EXAM_OFFLINE_ANSWERS', corrupt);
     expect(await save(raw)).toBe(false);
-    expect(uni.getStorageSync('EXAM_OFFLINE_ANSWERS')).toEqual(corrupt);
+    expect(uni.getStorageSync('u_receipt-owner_EXAM_OFFLINE_ANSWERS')).toEqual(corrupt);
   }
 });
 
@@ -240,7 +246,8 @@ it.each([true, false])('keeps reference match %s out of mastery, daily accuracy 
       isCorrect: null,
       grade: { status: 'pending' },
       referenceMatch: match
-    })
+    }),
+    expect.objectContaining({ owner: 'receipt-owner' })
   );
   expect(clientSubmit).toHaveBeenCalledTimes(1);
 });

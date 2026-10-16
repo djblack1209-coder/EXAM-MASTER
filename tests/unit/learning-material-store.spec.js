@@ -356,7 +356,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     }
   });
   it('请求层在发送前再次核对账户，不用新账户令牌传输旧用户内容', async () => {
-    uni.setStorageSync('EXAM_USER_ID', 'owner-after');
+    storageService.saveLoginSession({ userId: 'owner-after', token: 'fixture-peer-token', userInfo: {} });
     uni.setStorageSync('EXAM_TOKEN', 'isolated-placeholder-token');
     const transport = vi.spyOn(uni, 'request');
     try {
@@ -383,7 +383,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     try {
       const result = store.loadUsage();
       const rejected = expect(result).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
-      uni.setStorageSync('EXAM_USER_ID', 'owner-after');
+      storageService.saveLoginSession({ userId: 'owner-after', token: 'fixture-peer-token', userInfo: {} });
       store.refresh();
       request.success({ data: { success: true, data: { cost: { spent: 123 } } } });
       await rejected;

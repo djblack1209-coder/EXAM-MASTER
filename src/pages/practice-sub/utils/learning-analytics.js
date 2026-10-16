@@ -1,3 +1,4 @@
+import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
 /**
  * 学习数据分析模块 - 提供全面的学习统计和可视化数据
  *
@@ -42,6 +43,7 @@ const ANALYTICS_ACHIEVEMENT_IDS = [
 
 class LearningAnalytics {
   constructor() {
+    this._session = captureSession();
     this.dailyStats = {};
     this.streakData = { currentStreak: 0, longestStreak: 0, lastStudyDate: null };
     this.achievements = [];
@@ -49,6 +51,9 @@ class LearningAnalytics {
   }
 
   init() {
+    if (this.isInitialized && checkSession(this._session) === 'changed') Object.assign(this, new LearningAnalytics());
+    if (!this.isInitialized) this._session = captureSession();
+    assertSession(this._session);
     if (this.isInitialized) return;
     this._loadDailyStats();
     this._loadStreakData();
@@ -365,7 +370,7 @@ class LearningAnalytics {
       if (dates.length > 365) {
         for (const date of dates.slice(0, dates.length - 365)) delete this.dailyStats[date];
       }
-      storageService.save(STORAGE_KEYS.DAILY_STATS, this.dailyStats);
+      storageService.save(STORAGE_KEYS.DAILY_STATS, this.dailyStats, true, this._session);
     } catch (e) {
       logger.error('[LearningAnalytics] 保存失败:', e);
     }
@@ -385,7 +390,7 @@ class LearningAnalytics {
 
   _saveStreakData() {
     try {
-      storageService.save(STORAGE_KEYS.STREAK_DATA, this.streakData);
+      storageService.save(STORAGE_KEYS.STREAK_DATA, this.streakData, true, this._session);
     } catch (e) {
       logger.error('[LearningAnalytics] 保存连续学习数据失败:', e);
     }
@@ -401,7 +406,7 @@ class LearningAnalytics {
 
   _saveAchievements() {
     try {
-      storageService.save(STORAGE_KEYS.ACHIEVEMENT_DATA, this.achievements);
+      storageService.save(STORAGE_KEYS.ACHIEVEMENT_DATA, this.achievements, true, this._session);
     } catch (e) {
       logger.error('[LearningAnalytics] 保存成就数据失败:', e);
     }
@@ -412,13 +417,16 @@ class LearningAnalytics {
    * 策略：后端已解锁而本地没有的 → 添加到本地
    */
   async _fetchAndMergeAchievementsFromServer() {
+    const originSession = this._session;
+    assertSession(originSession);
     try {
       const userId = storageService.get('EXAM_USER_ID', null);
       if (!userId) return;
 
       // 1. 先触发后端 check（根据用户数据自动解锁满足条件的成就）
       try {
-        const checkRes = await checkAchievements();
+        const checkRes = await checkAchievements({ session: originSession });
+        assertSession(originSession);
         const newlyUnlocked = checkRes?.data?.newlyUnlocked || [];
         if (newlyUnlocked.length > 0) {
           for (const ach of newlyUnlocked) {
@@ -438,7 +446,8 @@ class LearningAnalytics {
 
       // 2. 拉取后端已解锁成就列表，合并到本地
       try {
-        const res = await getAllAchievements();
+        const res = await getAllAchievements({ session: originSession });
+        assertSession(originSession);
         const allAch = res?.data?.achievements || [];
         const serverUnlocked = allAch.filter((a) => a.unlocked).map((a) => a.id);
 
@@ -467,6 +476,8 @@ class LearningAnalytics {
    * @param {Array} newAchievementIds - 新解锁的成就ID列表
    */
   async _syncAchievementsToServer(newAchievementIds) {
+    const originSession = this._session;
+    assertSession(originSession);
     try {
       // ✅ B021: storageService.get('EXAM_USER_ID') 已自动处理加密/明文回退
       const userId = storageService.get('EXAM_USER_ID', null);
@@ -475,7 +486,8 @@ class LearningAnalytics {
       // 逐个解锁成就到后端
       for (const achievementId of newAchievementIds) {
         try {
-          await unlockAchievement(achievementId);
+          await unlockAchievement(achievementId, { session: originSession });
+          assertSession(originSession);
         } catch (e) {
           logger.warn(`[LearningAnalytics] 同步成就 ${achievementId} 失败:`, e.message);
         }

@@ -1,3 +1,4 @@
+import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
 /**
  * 智能组题算法 - 智能刷题功能增强
  *
@@ -45,6 +46,7 @@ const STORAGE_KEYS = {
  */
 class SmartQuestionPicker {
   constructor() {
+    this._session = captureSession();
     this.userProfile = null;
     this.questionHistory = [];
     this.performanceMetrics = {};
@@ -55,6 +57,9 @@ class SmartQuestionPicker {
    * 初始化
    */
   init() {
+    if (this.isInitialized && checkSession(this._session) === 'changed') Object.assign(this, new SmartQuestionPicker());
+    if (!this.isInitialized) this._session = captureSession();
+    assertSession(this._session);
     if (this.isInitialized) return;
 
     this._loadUserProfile();
@@ -777,7 +782,7 @@ class SmartQuestionPicker {
 
   _saveUserProfile() {
     try {
-      storageService.save(STORAGE_KEYS.USER_PROFILE, this.userProfile);
+      storageService.save(STORAGE_KEYS.USER_PROFILE, this.userProfile, true, this._session);
     } catch (_e) {
       logger.error('[SmartPicker] 保存用户画像失败:', _e);
     }
@@ -797,7 +802,7 @@ class SmartQuestionPicker {
       if (this.questionHistory.length > 500) {
         this.questionHistory = this.questionHistory.slice(-500);
       }
-      storageService.save(STORAGE_KEYS.QUESTION_HISTORY, this.questionHistory);
+      storageService.save(STORAGE_KEYS.QUESTION_HISTORY, this.questionHistory, true, this._session);
     } catch (_e) {
       logger.error('[SmartPicker] 保存答题历史失败:', _e);
     }
@@ -813,7 +818,7 @@ class SmartQuestionPicker {
 
   _savePerformanceMetrics() {
     try {
-      storageService.save(STORAGE_KEYS.PERFORMANCE_METRICS, this.performanceMetrics);
+      storageService.save(STORAGE_KEYS.PERFORMANCE_METRICS, this.performanceMetrics, true, this._session);
     } catch (_e) {
       logger.error('[SmartPicker] 保存性能指标失败:', _e);
     }

@@ -1,3 +1,4 @@
+import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
 /**
  * 集中式 FSRS 间隔重复调度服务 (Centralized FSRS Spaced Repetition Service)
  *
@@ -63,6 +64,20 @@ let _scheduler = _buildScheduler(null);
  * @type {string}
  */
 let _paramsFingerprint = '';
+let schedulerSession = captureSession();
+const cardSessions = new WeakMap();
+function currentScheduler() {
+  checkSchedulerSession();
+  return _scheduler;
+}
+function checkSchedulerSession() {
+  if (checkSession(schedulerSession) === 'changed') {
+    schedulerSession = captureSession();
+    _scheduler = _buildScheduler(null);
+    _paramsFingerprint = '';
+  }
+  assertSession(schedulerSession);
+}
 
 /**
  * 根据参数构建 FSRS 实例
@@ -95,7 +110,9 @@ function _buildScheduler(userParams) {
  *   requestRetention (个性化目标留存率) 字段
  * @returns {boolean} 是否成功加载了个性化参数（false 表示回退到默认）
  */
-export function loadUserParams(userParams) {
+export function loadUserParams(userParams, session = captureSession()) {
+  assertSession(session);
+  checkSchedulerSession();
   const retention = userParams?.requestRetention ?? userParams?.request_retention ?? DEFAULT_REQUEST_RETENTION;
   if (
     (userParams?.w != null && !Array.isArray(userParams.w)) ||
@@ -127,9 +144,9 @@ export function loadUserParams(userParams) {
 
   // 持久化到本地，下次冷启动可直接使用
   if (userParams?.w?.length) {
-    storageService.save(USER_PARAMS_KEY, userParams, true);
+    storageService.save(USER_PARAMS_KEY, userParams, true, session);
   } else {
-    storageService.remove(USER_PARAMS_KEY, true);
+    storageService.remove(USER_PARAMS_KEY, true, session);
   }
 
   logger.log('[FSRSService] 调度器参数已更新', fingerprint ? '个性化' : '默认');
@@ -183,7 +200,9 @@ function _cardKey(questionId) {
  * @returns {import('ts-fsrs').Card} ts-fsrs 标准 Card 对象
  */
 export function createNewCard(now = new Date()) {
-  return createEmptyCard(now);
+  const card = createEmptyCard(now);
+  cardSessions.set(card, captureSession());
+  return card;
 }
 
 /**
@@ -240,12 +259,12 @@ function _deserializeCard(obj) {
  * @param {import('ts-fsrs').Card} card - ts-fsrs Card 对象
  * @returns {boolean} 是否保存成功
  */
-export function saveCardState(questionId, card) {
+export function saveCardState(questionId, card, session = cardSessions.get(card) || captureSession()) {
   if (!questionId) {
     logger.warn('[FSRSService] saveCardState: questionId 为空');
     return false;
   }
-  return storageService.save(_cardKey(questionId), _serializeCard(card), true);
+  return storageService.save(_cardKey(questionId), _serializeCard(card), true, session);
 }
 
 /**
@@ -261,7 +280,9 @@ export function loadCardState(questionId) {
   const raw = storageService.get(_cardKey(questionId), null);
   if (!raw || typeof raw !== 'object' || !raw.due) return null;
   try {
-    return _deserializeCard(raw);
+    const card = _deserializeCard(raw);
+    cardSessions.set(card, captureSession());
+    return card;
   } catch (e) {
     logger.warn('[FSRSService] 反序列化卡片失败', questionId, e);
     return null;
@@ -273,9 +294,9 @@ export function loadCardState(questionId) {
  *
  * @param {string} questionId - 题目唯一 ID
  */
-export function removeCardState(questionId) {
+export function removeCardState(questionId, session = captureSession()) {
   if (!questionId) return;
-  storageService.remove(_cardKey(questionId), true);
+  storageService.remove(_cardKey(questionId), true, session);
 }
 
 // ---------------------------------------------------------------------------
@@ -303,8 +324,10 @@ export function removeCardState(questionId) {
  * @throws {Error} 评分值无效时抛出
  */
 export function scheduleCard(card, rating, now = new Date()) {
+  checkSchedulerSession();
+  if (cardSessions.has(card)) assertSession(cardSessions.get(card));
   const numericRating = _normalizeRating(rating);
-  const result = _scheduler.repeat(card, now);
+  const result = currentScheduler().repeat(card, now);
   const chosen = result[numericRating];
 
   return {
@@ -325,7 +348,7 @@ export function scheduleCard(card, rating, now = new Date()) {
  * @returns {{ again: { nextDue: Date, intervalDays: number }, hard: { nextDue: Date, intervalDays: number }, good: { nextDue: Date, intervalDays: number }, easy: { nextDue: Date, intervalDays: number } }}
  */
 export function previewSchedule(card, now = new Date()) {
-  const result = _scheduler.repeat(card, now);
+  const result = currentScheduler().repeat(card, now);
 
   return {
     again: _extractPreview(result[Rating.Again]),
@@ -609,13 +632,15 @@ function _normalizeRating(rating) {
  * @returns {{ card: import('ts-fsrs').Card, log: import('ts-fsrs').ReviewLog, nextDue: Date, intervalDays: number, questionId: string }}
  */
 export function scheduleAndSave(questionId, rating, now = new Date()) {
+  const session = captureSession();
   let card = loadCardState(questionId);
   if (!card) {
     card = createNewCard(now);
   }
 
   const result = scheduleCard(card, rating, now);
-  saveCardState(questionId, result.card);
+  cardSessions.set(result.card, session);
+  saveCardState(questionId, result.card, session);
 
   return {
     ...result,

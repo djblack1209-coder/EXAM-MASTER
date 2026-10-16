@@ -1,7 +1,7 @@
 import { assert } from './learning-domain.js';
 import { createUtf8StreamDecoder } from '../../../laf-backend/functions/_shared/learning-stream-codec.js';
 import { appConnectorSupported, requestAppConnector } from './app-connector.js';
-import { getLoginSessionEpoch, getUserId } from '../auth-storage.js';
+import { captureSession, assertSession } from '../auth-storage.js';
 
 export const WEIXIN_CONNECTOR_ORIGIN = 'https://wenli-weixin.invalid';
 
@@ -61,17 +61,20 @@ export function assertConnectorPlatform(platform) {
 export async function requestConnector(
   connection,
   url,
-  { platform, signal, assertCurrent, method = 'POST', body, timeout = 30000, limit = 100000 } = {}
+  {
+    platform,
+    signal,
+    assertCurrent,
+    session = captureSession(),
+    method = 'POST',
+    body,
+    timeout = 30000,
+    limit = 100000
+  } = {}
 ) {
-  const session = getLoginSessionEpoch(),
-    owner = getUserId();
   const checkCurrent = () => {
     assertCurrent?.();
-    assert(
-      getLoginSessionEpoch() === session && getUserId() === owner,
-      'CONTEXT_CHANGED',
-      '登录会话已变化，旧连接结果未采用'
-    );
+    assertSession(session);
     assert(!signal?.aborted, 'CANCELLED', '连接请求已取消');
   };
   checkCurrent();
@@ -89,9 +92,10 @@ export async function requestConnector(
     ...(body !== undefined ? { 'Content-Type': 'application/json' } : {})
   };
   if (platform === 'weixin' || platform === 'app') {
+    checkCurrent();
     const result = await (platform === 'weixin'
       ? requestWeixinConnector(url.href, { signal, method, body, timeout, limit, headers })
-      : requestAppConnector(connection, url.href, { signal, method, body, timeout, limit }));
+      : requestAppConnector(connection, url.href, { signal, method, body, timeout, limit, session }));
     checkCurrent();
     return result;
   }
@@ -104,6 +108,7 @@ export async function requestConnector(
   }, timeout);
   signal?.addEventListener('abort', abort, { once: true });
   try {
+    checkCurrent();
     const response = await fetch(url.href, {
       method,
       headers,

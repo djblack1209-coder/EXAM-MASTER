@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-const fixture = vi.hoisted(() => ({ get: vi.fn(), save: vi.fn() }));
+const fixture = vi.hoisted(() => ({ get: vi.fn(), save: vi.fn(), onIdentityChange: vi.fn(() => () => undefined) }));
 vi.mock('@/services/storageService.js', () => ({ default: fixture }));
 vi.mock('@/utils/logger.js', () => ({ logger: { log: vi.fn(), error: vi.fn() } }));
 afterEach(() => {
@@ -23,15 +23,17 @@ describe('registration analytics privacy', () => {
     expect(vi.getTimerCount()).toBe(0);
   });
   it('authenticated events still work; logout stops recording and queued upload', async () => {
+    uni.setStorageSync('EXAM_USER_ID', 'synthetic-user');
     fixture.get.mockImplementation((key) => (key === 'EXAM_USER_ID' ? 'synthetic-user' : null));
     const { analytics } = await import('@/utils/analytics/event-bus-analytics.js');
     analytics.track('synthetic-authenticated-event');
     expect(analytics.eventQueue).toHaveLength(1);
     fixture.save.mockClear();
     fixture.get.mockReturnValue(null);
+    uni.removeStorageSync('EXAM_USER_ID');
     analytics.track('synthetic-anonymous-event');
     analytics._uploadBatch();
-    expect(analytics.eventQueue).toHaveLength(1);
+    expect(analytics.eventQueue).toHaveLength(0);
     expect(fixture.save).not.toHaveBeenCalled();
   });
 });
