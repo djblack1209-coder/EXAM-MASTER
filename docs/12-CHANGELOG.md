@@ -1,5 +1,41 @@
 # 重要变更
 
+## 2026-10-16 终审第四轮防回退收敛（阶段5D）
+
+- 基线`22e686e1`先复现12类问题；同一缺陷的双向发现合并修复。最新基线`baseline-last.json`有26项失败/1项通过，独立`baseline-migration.json`复现旧格式绑定在标记故障时误判换代；`baseline-workers.json`复现无Web Locks的真实Worker旧资料物理写入使原身份复活。空串冲突在基线已保留，未复现覆盖（原严格读取拒绝该空值），0/false确实被覆盖；本轮以明确键存在性统一处理三种值。
+- 操作绑定仅owner/epoch，proof只校验快照完整性；身份事务另比较调用时完整快照，防止排队写入覆盖期间完成的更新。删除续期取消模型/同步分支及其无用标志，正常同账户进行中请求继续完成，新请求使用最新凭据。旧跨账户/退出/同账户重新登录换代的拒绝测试原样保留；八个旧令牌取消断言按本轮设计改为正常完成，没有放宽真实换代拒绝、来源、答案、授权或幂等。
+- 登录提交更新独立撤销标记，无锁身份写后核对密文/尝试/标记，冲突删除代号要求重新登录，不恢复旧身份。旧用户升级等待提交后再恢复资料；migratedFrom只记录格式迁移前epoch并在明确登录时移除。Auth同步其他窗口退出/暂不可用，Profile事件订阅改为Store作用域释放。首次登录建立非空标记，20次学习上下文读取零全键枚举。
+- 练习单例新操作重新绑定，await同时核对原会话和操作标识；计划提醒显式传创建原session。练习自动保存删除独立计时器/重复快照逻辑，复用可重试待写队列，立即写失败也保留；写入回读确认后移除。离线网络异常先检查原会话，暂不可用不消耗次数/删除任务；Review以待处理集合收尾。全src排查另修复生成循环的暂不可用计数、旧回调及旧finally；该旧AI入口仍使用原退役stub，没有恢复服务。历史取消绕开身份读取，通知/计算只读上下文使用最后可信投影或null；实际写入/外发守卫保留。[八条设计落实](05-DATABASE-SCHEMAS.md#本机登录会话代号2026-10-16)、[接口与持有者](04-API-DOCUMENTATION.md#用户数据持有者--绑定方式阶段5)。
+
+| 问题                        | 状态及对应回归（tests/unit；主要新增在session-round4.spec.js）                                                                                                                                                                   |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| writes-1                    | 已修复：reminder continuation keeps original owner, normal create still works                                                                                                                                                    |
+| writes-2                    | 已修复：singleton starts fresh practice after logout/login；previous practice await cannot overwrite a new operation                                                                                                             |
+| writes-3 / migrate-13-01    | 已修复：unavailable debounce retries original snapshot on flush；unavailable immediate save also survives, changed session cannot replay                                                                                         |
+| inflight-01 / migrate-13-02 | 已修复：unavailable network rejection preserves retry=0/2 then succeeds                                                                                                                                                          |
+| inflight-02                 | 已修复：三个Review入口always settles its own loading and works after recovery；older finally leaves overlapping new review request busy；typed temporary response preserves review cache                                         |
+| regress-01 / order-02       | 已修复：renewed token allows profile, practice, plan, review (locks=false/true)；queued stale snapshot cannot overwrite a completed renewal；session-final-convergence的same owner and epoch binding survives credential renewal |
+| regress-02                  | 已修复：async legacy upgrade restores complete profile and login after commit；migrated legacy binding stays retryable during a marker fault, relogin revokes it                                                                 |
+| regress-03                  | 已修复：unavailable permits local cancellation and readonly notification/compute contexts；readonly notification controller can initialize while unavailable                                                                     |
+| regress-04                  | 已修复：first-login repeated input does not enumerate all storage keys                                                                                                                                                           |
+| order-01                    | 已修复：identity-cas-convergence的no Web Locks cannot resurrect old identity after peer relogin or switch（两个真实Worker，续登/换账户两项交错）                                                                                 |
+| order-03                    | 已修复：peer logout updates auth and profile, unavailable preserves login with status（共享存储写入后仅投递事件）                                                                                                                |
+| migrate-13-03               | 已修复：existing account 0/false/空串 survives guest migration with source retained                                                                                                                                              |
+
+防回退覆盖：续期后编辑资料、开始练习、调整计划、查看复习；老用户升级保留资料/登录/旧格式绑定；暂不可用恢复后自动保存落盘、队列再次成功、loading复位、本地取消及通知初始化；退出后同账户/另一账户新练习与新计划；已有0/false/空串及游客来源保留；另一窗口退出同步Auth。另覆盖同会话新操作拒绝旧await、生成循环保留输入/次数/忙碌状态以及只结束自己的finally。
+
+本批补充普通失败路径：完整身份写入尚未发生即配额失败，只在仍拥有原记录/尝试/本次栅栏时回退本次标记并再次核对，不回写旧身份；锁内恢复保留旧字符串代号原格式，含撤销字段的完整记录才更新栅栏。既有配额失败回归及新字符串回退回归均通过。全量首轮5081通过/7失败/7跳过：1项真实写前失败回退已修复；4项旧跨窗口夹具补齐实际完整提交携带的撤销标记；计算/语法2项旧令牌拒绝断言按设计改为继续完成。原跨账户/原答/题目变化/取消拒绝保持。相关197项重跑通过。
+
+全量另有既有5000原答准备触发beforeAll的60秒超时，该文件耗时79.494秒，故该项未执行；当时记录机器1分钟负载最高295.28，首轮及负载证据保留，未改阈值或跳过条件。最后补齐个人页：响应式读取Auth的sessionStatus，暂不可用显示中英短提示；确认撤销不再读取残留别名当作登录。该页原`22e686e1`实现的挂载回归先失败，修复后52项相关检查通过。真实H5使用构建模块的会话事务写入合成身份，故障注入后登录/昵称保留且显示“登录状态暂不可用”，恢复和明确退出均通过；网络回执零非静态请求。合成存储已清除，仅本轮标签关闭，原标签保留，登记预览服务退出且61191端口无监听。
+
+最终`YOZI_ISOLATED_BUILD=1 npm test -- --reporter=default --reporter=json --outputFile.json=tmp/stage5d/full-final-ui.json`：270文件中269通过/1既有专用Mongo文件跳过，5096项中5090通过/6跳过，零失败和未处理拒绝。5000原答性能用例27.677秒通过；之前同源码主体全量也已5089通过，页面补充后重新全量。新增31项回归，没有提高阈值或加入跳过。源码lint、改动JS/Vue及夹具lint通过。
+
+最终`build:h5`、`build:mp-weixin`、`build:app`均以`YOZI_ISOLATED_BUILD=1`及`UNI_OUTPUT_DIR=tmp/stage5d/dist/build/<平台>`隔离构建通过；`audit:public-build`的735文件扫描、微信/App产物检查及主包预算通过。微信主包332文件/1936631字节，媒体19文件/181028字节，低于2MB/200KB；只有原有选择器提示。113个压缩题库重新生成后逐项解压JSON等价，恢复原生成源码，未引入题库改动。新增/修改合同链接、锚点与`git diff --check`通过。
+
+本轮源码新增392行、删除273行，清除独立练习计时器/重复快照、旧proof操作绑定条件、续期取消分支/无用标志和Profile全局一次性闭包。复用依赖与原资源记录，所有登记进程均结束并回收；核无消费者后删除基线源副本、冗余诊断/辅助及被5C/5D替代的5B临时构建，共4040文件/365582501逻辑字节，不等同实时空闲磁盘或RAM增量。5D当前候选、5C回退基线、正式历史材料、日常App和用户资料保留。前态/失败/最终回执位于`tmp/stage5d/`，PID与清理沿用`tmp/audit5/resources.log`。
+
+未推送、部署、发短信、收费、调用真实模型或替换日常App；真实账号/自然多窗口、微信/App对应设备及公开发布仍未验。本轮只修复阶段5D，不提前开展后续功能。
+
 ## 2026-10-16 终审问题第三轮收敛（阶段5C）
 
 - 终审12项已实现修复，regress-1/order-1为同一问题；20项核心回归在`53160309`全部失败，双窗口探针的资料、续期、两种迁移与取消后继5个结果均为false。另保留日志、取消游客登录别名、明确清空资料与个人页只读回退的失败证据；回执在`tmp/stage5c/`。
