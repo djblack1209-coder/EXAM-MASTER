@@ -1,4 +1,11 @@
-import { captureSession, assertSession, checkSession, sessionForRequest } from '@/services/auth-storage.js';
+import {
+  captureSession,
+  assertSession,
+  checkSession,
+  sessionForRequest,
+  readSessionSnapshot,
+  sessionUnavailable
+} from '@/services/auth-storage.js';
 /**
  * 认证状态管理
  * 管理 token、登录状态、登录/登出流程
@@ -9,7 +16,7 @@ import { captureSession, assertSession, checkSession, sessionForRequest } from '
 import { publicError } from '@/i18n/index.js';
 import { readLoginRegion } from '@/services/auth-region.js';
 import { defineStore, getActivePinia } from 'pinia';
-import { ref } from 'vue';
+import { ref, onScopeDispose } from 'vue';
 import config from '@/config/index.js';
 const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
@@ -26,6 +33,7 @@ import { toast } from '@/utils/toast.js';
 export const useAuthStore = defineStore('auth', () => {
   const token = ref('');
   const isLogin = ref(false);
+  const sessionStatus = ref('current');
   let authLifecycle = 0;
 
   // 需要 userInfo 引用来判断登录状态，由 facade 注入
@@ -41,6 +49,21 @@ export const useAuthStore = defineStore('auth', () => {
   const syncLoginStatus = () => {
     isLogin.value = !!token.value && !!(_userInfoRef ? _userInfoRef.value : null);
   };
+
+  const stopIdentity = storageService.onIdentityChange(() => {
+    const snapshot = readSessionSnapshot();
+    sessionStatus.value = snapshot.status;
+    if (snapshot.status === 'unavailable') return;
+    if (snapshot.status === 'changed' || !snapshot.token || snapshot.session.owner === 'guest') {
+      authLifecycle++;
+      token.value = '';
+      isLogin.value = false;
+      return;
+    }
+    token.value = snapshot.token;
+    isLogin.value = true;
+  });
+  onScopeDispose(stopIdentity);
 
   /**
    * 设置 Token
@@ -206,7 +229,11 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const restoreUserInfo = () => {
     const session = captureSession();
-    if (!session) return false;
+    if (!session) {
+      sessionStatus.value = readSessionSnapshot().status;
+      return false;
+    }
+    sessionStatus.value = 'current';
     const snapshot = sessionForRequest(session);
     const cachedUserInfo = storageService.get(APP_CONFIG.cacheKeys.userInfo, null, { session });
     const cachedUserId = session.owner === 'guest' ? null : session.owner;
@@ -225,23 +252,19 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * 静默登录（应用启动时自动调用）
    */
-  // [AUDIT R432] 移除多余 async（函数体内无 await）
   const silentLogin = () => {
-    storageService.getSessionEpoch();
-    if (!storageService.captureSession()) return { success: false, error: new Error('登录状态暂不可用，请重试') };
-    restoreUserInfo();
-
-    if (isLogin.value) {
-      try {
-        storageService.getSessionEpoch();
-        if (!storageService.captureSession()) return { success: false, error: new Error('登录状态暂不可用，请重试') };
-      } catch (error) {
-        return { success: false, error };
-      }
-      return { success: true, userInfo: _userInfoRef ? _userInfoRef.value : null };
+    const finish = () => {
+      if (!restoreUserInfo()) return { success: false, error: sessionUnavailable() };
+      return isLogin.value
+        ? { success: true, userInfo: _userInfoRef ? _userInfoRef.value : null }
+        : { success: false, error: new Error('无缓存会话') };
+    };
+    try {
+      const upgraded = storageService.getSessionEpoch();
+      return upgraded?.then ? upgraded.then(finish).catch((error) => ({ success: false, error })) : finish();
+    } catch (error) {
+      return { success: false, error };
     }
-
-    return { success: false, error: new Error('无缓存会话') };
   };
 
   /**
@@ -317,6 +340,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     token,
     isLogin,
+    sessionStatus,
     setToken,
     login,
     logout,

@@ -26,7 +26,7 @@ export const useUserStore = defineStore('user', () => {
   authStore._setUserInfoRef(userInfo);
 
   // ---- 解构子 store 的 refs ----
-  const { token, isLogin } = storeToRefs(authStore);
+  const { token, isLogin, sessionStatus } = storeToRefs(authStore);
   const { planProgress } = storeToRefs(profileStore);
 
   // ---- 社交功能（已移除，保留空方法兼容） ----
@@ -86,6 +86,7 @@ export const useUserStore = defineStore('user', () => {
     token,
     userInfo,
     isLogin,
+    sessionStatus,
     planProgress,
     friendsList,
 

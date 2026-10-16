@@ -90,13 +90,20 @@ export function readStorageStrict(runtime, key, strict = true) {
   const value = Reflect.get(runtime, reader).call(runtime, key);
   if (strict && (value === '' || value === undefined || value === null) && runtime.getStorageInfoSync) {
     const info = runtime.getStorageInfoSync();
-    if (!Array.isArray(info?.keys) || info.keys.includes(key))
-      throw Object.assign(new Error('存储暂不可读，请重试'), { code: 'SESSION_UNAVAILABLE' });
+    if (!Array.isArray(info?.keys) || info.keys.includes(key)) throw sessionUnavailable();
   }
   return value;
 }
-export const sessionUnavailable = () =>
-  Object.assign(new Error('登录状态暂不可读，请重试'), { code: 'SESSION_UNAVAILABLE' });
+export class SessionUnavailableError extends Error {
+  constructor() {
+    super('登录状态暂不可读，请重试');
+    this.name = 'SessionUnavailableError';
+    this.code = 'SESSION_UNAVAILABLE';
+  }
+}
+export const sessionUnavailable = () => new SessionUnavailableError();
+export const isSessionUnavailable = (error) =>
+  error?.code === 'SESSION_UNAVAILABLE' || error?.errorCode === 'SESSION_UNAVAILABLE';
 
 function getStoredAuthValue(key) {
   let record, encrypted, plain;
@@ -259,49 +266,55 @@ export function captureSession() {
   const snapshot = readSessionSnapshot();
   return snapshot.status === 'current' ? snapshot.session : null;
 }
+export function isSessionFormatMigration(session, snapshot = readSessionSnapshot()) {
+  return (
+    snapshot.status === 'current' &&
+    !!session &&
+    snapshot.session.owner === session.owner &&
+    snapshot.record &&
+    Object.prototype.hasOwnProperty.call(snapshot.record, 'migratedFrom') &&
+    snapshot.record.migratedFrom === session.epoch &&
+    snapshot.session.epoch !== session.epoch
+  );
+}
+function sameBinding(session, snapshot) {
+  return (
+    session &&
+    session.owner === snapshot.session.owner &&
+    (session.epoch === snapshot.session.epoch || isSessionFormatMigration(session, snapshot))
+  );
+}
 export function checkSession(session) {
   const snapshot = readSessionSnapshot();
   if (snapshot.status === 'unavailable') {
     // A confirmed different/missing epoch revokes old work even while the next login is incomplete.
     // A failed read or mismatched credentials within the same epoch remains retryable.
     try {
-      if (session && getLoginSessionEpoch() !== session.epoch) return 'changed';
+      const epoch = getLoginSessionEpoch();
+      // A formerly absent epoch may have been filled by a format migration. Until
+      // the full record is readable, keep that old binding blocked but retryable.
+      if (session && epoch !== session.epoch && (session.epoch !== null || epoch === null)) return 'changed';
     } catch {
       /* unavailable */
     }
     return 'unavailable';
   }
   if (snapshot.status !== 'current') return snapshot.status;
-  return session && session.owner === snapshot.session.owner && session.epoch === snapshot.session.epoch
-    ? 'current'
-    : 'changed';
+  return sameBinding(session, snapshot) ? 'current' : 'changed';
 }
 export function assertSession(session) {
   const status = checkSession(session);
+  if (status === 'unavailable') throw sessionUnavailable();
   if (status !== 'current')
-    throw Object.assign(
-      new Error(status === 'unavailable' ? '登录状态暂不可读，请重试' : '登录会话已变化，请重新确认后继续'),
-      {
-        code: status === 'unavailable' ? 'SESSION_UNAVAILABLE' : 'CONTEXT_CHANGED'
-      }
-    );
+    throw Object.assign(new Error('登录会话已变化，请重新确认后继续'), { code: 'CONTEXT_CHANGED' });
   return session;
 }
 // Read credentials and validate the originating session together, immediately before transport.
 export function sessionForRequest(session) {
   const snapshot = readSessionSnapshot();
   const status =
-    snapshot.status !== 'current'
-      ? snapshot.status
-      : session && snapshot.session.owner === session.owner && snapshot.session.epoch === session.epoch
-        ? 'current'
-        : 'changed';
-  if (status !== 'current')
-    throw Object.assign(
-      new Error(status === 'unavailable' ? '登录状态暂不可读，请重试' : '登录会话已变化，未发送旧内容'),
-      {
-        code: status === 'unavailable' ? 'SESSION_UNAVAILABLE' : 'CONTEXT_CHANGED'
-      }
-    );
+    snapshot.status !== 'current' ? snapshot.status : sameBinding(session, snapshot) ? 'current' : 'changed';
+  if (status === 'unavailable') throw sessionUnavailable();
+  if (status !== 'current') throw Object.assign(new Error('登录会话已变化，未发送旧内容'), { code: 'CONTEXT_CHANGED' });
   return snapshot;
 }

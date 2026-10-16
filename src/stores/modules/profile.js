@@ -7,7 +7,7 @@
 
 import { defineStore } from 'pinia';
 import { ref, onScopeDispose } from 'vue';
-import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
+import { captureSession, checkSession, assertSession, isSessionFormatMigration } from '@/services/auth-storage.js';
 import config from '@/config/index.js';
 const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
@@ -47,7 +47,7 @@ export const useProfileStore = defineStore('profile', () => {
    */
   const updateUserInfo = (info) => {
     assertSession(session);
-    return setUserInfo({ ...userInfo.value, ...info }, session);
+    return setUserInfo({ ...userInfo.value, ...info }, captureSession());
   };
 
   /**
@@ -59,53 +59,40 @@ export const useProfileStore = defineStore('profile', () => {
   };
 
   const stopIdentity = storageService.onIdentityChange(() => {
+    if (isSessionFormatMigration(session)) {
+      session = captureSession();
+      return;
+    }
     if (checkSession(session) !== 'changed') return;
     $reset();
     session = captureSession();
   });
   onScopeDispose(stopIdentity);
 
-  // 监听登出事件（避免重复注册）
-  if (!uni.__profileStoreLogoutBound__) {
-    uni.$on('user:logout', $reset);
-    uni.__profileStoreLogoutBound__ = true;
-  }
-
-  // 监听登录时设置用户数据（避免重复注册）
-  if (!uni.__profileStoreUserdataBound__) {
-    uni.$on('auth:userdata', (userData, origin) => {
-      if (!origin) return;
-      if (checkSession(origin) !== 'current') return;
-      session = origin;
-      userInfo.value = userData;
-    });
-    uni.__profileStoreUserdataBound__ = true;
-  }
-
-  // 监听恢复缓存（避免重复注册）
-  if (!uni.__profileStoreRestoreBound__) {
-    uni.$on('auth:restore', ({ cachedUserInfo, cachedUserId, session: origin }) => {
-      const current = origin || captureSession();
-      if (!origin && current?.epoch) return;
-      if (checkSession(current) !== 'current' || (current.owner !== 'guest' && cachedUserId !== current.owner)) return;
-      session = current;
-      if (cachedUserInfo) {
-        userInfo.value = cachedUserInfo;
-        if (!cachedUserInfo._id && cachedUserId) {
-          userInfo.value._id = cachedUserId;
-          userInfo.value.id = cachedUserId;
-          userInfo.value.userId = cachedUserId;
-        }
-      } else if (cachedUserId) {
-        userInfo.value = {
-          _id: cachedUserId,
-          id: cachedUserId,
-          userId: cachedUserId
-        };
-      }
-    });
-    uni.__profileStoreRestoreBound__ = true;
-  }
+  const onUserData = (userData, origin) => {
+    if (!origin || checkSession(origin) !== 'current') return;
+    session = origin;
+    userInfo.value = userData;
+  };
+  const onRestore = ({ cachedUserInfo, cachedUserId, session: origin }) => {
+    const current = origin || captureSession();
+    if (!origin && current?.epoch) return;
+    if (checkSession(current) !== 'current' || (current.owner !== 'guest' && cachedUserId !== current.owner)) return;
+    session = current;
+    if (cachedUserInfo) {
+      userInfo.value = { ...cachedUserInfo };
+      if (!cachedUserInfo._id && cachedUserId)
+        Object.assign(userInfo.value, { _id: cachedUserId, id: cachedUserId, userId: cachedUserId });
+    } else if (cachedUserId) userInfo.value = { _id: cachedUserId, id: cachedUserId, userId: cachedUserId };
+  };
+  uni.$on('user:logout', $reset);
+  uni.$on('auth:userdata', onUserData);
+  uni.$on('auth:restore', onRestore);
+  onScopeDispose(() => {
+    uni.$off('user:logout', $reset);
+    uni.$off('auth:userdata', onUserData);
+    uni.$off('auth:restore', onRestore);
+  });
 
   /**
    * 申请注销账号
