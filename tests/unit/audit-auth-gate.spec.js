@@ -35,6 +35,10 @@ vi.mock('@/services/storageService.js', () => ({
     clearUserData: vi.fn(() => {
       _mockStore.clear();
     }),
+    onIdentityChange: vi.fn(() => () => undefined),
+    _clearRevokedCredentials: vi.fn(() => {
+      for (const key of ['access_token', 'refresh_token', 'token_expire_time', 'EXAM_TOKEN']) _mockStore.delete(key);
+    }),
     migrateUserKeys: vi.fn()
   },
   getUserId: vi.fn(() => null),
@@ -51,6 +55,10 @@ vi.mock('@/services/storageService.js', () => ({
     }),
     clearUserData: vi.fn(() => {
       _mockStore.clear();
+    }),
+    onIdentityChange: vi.fn(() => () => undefined),
+    _clearRevokedCredentials: vi.fn(() => {
+      for (const key of ['access_token', 'refresh_token', 'token_expire_time', 'EXAM_TOKEN']) _mockStore.delete(key);
     }),
     migrateUserKeys: vi.fn()
   }

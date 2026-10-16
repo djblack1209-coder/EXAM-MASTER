@@ -6,7 +6,8 @@
  */
 
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, onScopeDispose } from 'vue';
+import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
 import config from '@/config/index.js';
 const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
@@ -20,26 +21,32 @@ import {
 import { logger } from '@/utils/logger.js';
 
 export const useProfileStore = defineStore('profile', () => {
+  let session = captureSession();
   const userInfo = ref(null);
   const planProgress = ref(0);
 
   /**
    * 设置用户信息
    */
-  const setUserInfo = (info) => {
+  const setUserInfo = (info, origin = captureSession()) => {
+    assertSession(origin);
+    const owner = info?.uid || info?.userId || info?._id || info?.id;
+    if (owner && origin.owner !== 'guest' && owner !== origin.owner) return false;
+    session = origin;
     userInfo.value = info;
-    storageService.save(APP_CONFIG.cacheKeys.userInfo, info, true);
+    storageService.save(APP_CONFIG.cacheKeys.userInfo, info, true, origin);
   };
 
   /**
    * 更新用户信息（合并）
    */
   const updateUserInfo = (info) => {
+    assertSession(session);
     if (!userInfo.value) {
       userInfo.value = {};
     }
     userInfo.value = { ...userInfo.value, ...info };
-    storageService.save(APP_CONFIG.cacheKeys.userInfo, userInfo.value, true);
+    storageService.save(APP_CONFIG.cacheKeys.userInfo, userInfo.value, true, session);
   };
 
   /**
@@ -50,6 +57,13 @@ export const useProfileStore = defineStore('profile', () => {
     planProgress.value = 0;
   };
 
+  const stopIdentity = storageService.onIdentityChange(() => {
+    if (checkSession(session) !== 'changed') return;
+    $reset();
+    session = captureSession();
+  });
+  onScopeDispose(stopIdentity);
+
   // 监听登出事件（避免重复注册）
   if (!uni.__profileStoreLogoutBound__) {
     uni.$on('user:logout', $reset);
@@ -58,15 +72,20 @@ export const useProfileStore = defineStore('profile', () => {
 
   // 监听登录时设置用户数据（避免重复注册）
   if (!uni.__profileStoreUserdataBound__) {
-    uni.$on('auth:userdata', (userData) => {
-      setUserInfo(userData);
+    uni.$on('auth:userdata', (userData, origin) => {
+      if (!origin) return;
+      setUserInfo(userData, origin);
     });
     uni.__profileStoreUserdataBound__ = true;
   }
 
   // 监听恢复缓存（避免重复注册）
   if (!uni.__profileStoreRestoreBound__) {
-    uni.$on('auth:restore', ({ cachedUserInfo, cachedUserId }) => {
+    uni.$on('auth:restore', ({ cachedUserInfo, cachedUserId, session: origin }) => {
+      const current = origin || captureSession();
+      if (!origin && current?.epoch) return;
+      if (checkSession(current) !== 'current' || (current.owner !== 'guest' && cachedUserId !== current.owner)) return;
+      session = current;
       if (cachedUserInfo) {
         userInfo.value = cachedUserInfo;
         if (!cachedUserInfo._id && cachedUserId) {

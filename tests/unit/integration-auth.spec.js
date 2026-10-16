@@ -95,7 +95,7 @@ describe('全链路: 启动 -> 登录 -> 首页', () => {
   });
 
   describe('Phase 2: 用户认证流程', () => {
-    it('静默登录成功换代，普通缓存恢复及设置续期令牌保留代号', async () => {
+    it('静默登录只恢复缓存，启动及设置续期令牌保留代号', async () => {
       const { storageService } = await import('@/services/storageService.js');
       const { getLoginSessionEpoch } = await import('@/services/auth-storage.js');
       const { useAuthStore } = await import('@/stores/modules/auth.js');
@@ -111,11 +111,11 @@ describe('全链路: 启动 -> 登录 -> 首页', () => {
       expect(getLoginSessionEpoch()).toBe(first);
       expect(auth.silentLogin().success).toBe(true);
       const second = getLoginSessionEpoch();
-      expect(second).not.toBe(first);
+      expect(second).toBe(first);
       auth.setToken('synthetic-silent-refresh');
       expect(getLoginSessionEpoch()).toBe(second);
       expect(auth.silentLogin().success).toBe(true);
-      expect(getLoginSessionEpoch()).not.toBe(second);
+      expect(getLoginSessionEpoch()).toBe(second);
     });
     async function localProgressFixture() {
       const { storageService } = await import('@/services/storageService.js');
@@ -299,9 +299,12 @@ describe('全链路: 启动 -> 登录 -> 首页', () => {
       const user = useUserStore();
       const stats = useStatsStore();
       const favorites = useFavoriteStore();
+      const { storageService } = await import('@/services/storageService.js');
+      storageService.saveLoginSession({ userId: 'synthetic-a', token: 'synthetic-token-a', userInfo: {} });
       user.setToken('synthetic-token-a');
       user.setUserInfo({ _id: 'synthetic-a' });
       user.logout();
+      storageService.saveLoginSession({ userId: 'synthetic-b', token: 'synthetic-token-b', userInfo: {} });
       user.setToken('synthetic-token-b');
       user.setUserInfo({ _id: 'synthetic-b' });
       stats.overview = { totalQuestions: 20 };
@@ -365,6 +368,7 @@ describe('全链路: 启动 -> 登录 -> 首页', () => {
 
       expect(userStore.isLogin).toBe(false);
 
+      uni.setStorageSync('EXAM_USER_ID', 'user_003');
       userStore.setToken('new_token');
       // 只有 token 没有 userInfo，仍然不算登录
       expect(userStore.isLogin).toBe(false);
@@ -378,6 +382,7 @@ describe('全链路: 启动 -> 登录 -> 首页', () => {
       const userStore = useUserStore();
 
       // 先登录
+      uni.setStorageSync('EXAM_USER_ID', 'user_004');
       userStore.setToken('token_to_clear');
       userStore.setUserInfo({ _id: 'user_004' });
       expect(userStore.isLogin).toBe(true);

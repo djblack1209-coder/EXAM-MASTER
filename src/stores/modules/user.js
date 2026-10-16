@@ -63,8 +63,8 @@ export const useUserStore = defineStore('user', () => {
   const restoreUserInfo = authStore.restoreUserInfo;
   const silentLogin = authStore.silentLogin;
 
-  const setUserInfo = (info) => {
-    profileStore.setUserInfo(info);
+  const setUserInfo = (info, session) => {
+    profileStore.setUserInfo(info, session);
     authStore.syncLoginStatus();
   };
   const updateUserInfo = profileStore.updateUserInfo;

@@ -1,3 +1,4 @@
+import { captureSession } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import { isDesktopRuntime } from '@/services/desktop/runtime.js';
 
@@ -104,7 +105,7 @@ export function beginWebOAuth(provider, appId, configuredRedirect = '', { wechat
     createdAt: Date.now(),
     ...(provider === 'wechat' ? { wechatMode } : {})
   };
-  if (!storageService.save(info.key, context, true)) {
+  if (!storageService.save(info.key, context, true, captureSession())) {
     throw new Error('无法保存授权校验信息，请重新登录');
   }
   const authUrl = new URL(
@@ -164,7 +165,7 @@ export function consumeWebOAuth(provider, options = {}) {
   const info = providerInfo(provider);
   const context = storageService.get(info.key);
   // Claim even denied, malformed or expired callbacks before any network request.
-  if (!storageService.remove(info.key, true)) throw new Error('无法清除授权校验信息，请重新登录');
+  if (!storageService.remove(info.key, true, captureSession())) throw new Error('无法清除授权校验信息，请重新登录');
   requireWebOAuth(provider);
   const page = currentUrl();
   let params;

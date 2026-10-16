@@ -1,3 +1,5 @@
+import { storageService } from '../../storageService.js';
+import { captureSession, assertSession, sessionForRequest } from '../../auth-storage.js';
 /**
  * 用户服务 API
  * 职责：账号注销、用户统计概览、
@@ -41,12 +43,13 @@ function requireAccountAuth() {
  * 申请注销账号
  * @returns {Promise}
  */
-export async function requestAccountDeletion() {
+export async function requestAccountDeletion(options = { session: captureSession() }) {
+  const session = options.session;
   try {
     const authError = requireAccountAuth();
     if (authError) return authError;
 
-    const response = await request('/account-delete', { action: 'request' });
+    const response = await request('/account-delete', { action: 'request' }, { session });
     return response;
   } catch (error) {
     logger.error('[LafService] 申请注销失败:', error);
@@ -58,12 +61,13 @@ export async function requestAccountDeletion() {
  * 撤销注销申请
  * @returns {Promise}
  */
-export async function cancelAccountDeletion() {
+export async function cancelAccountDeletion(options = { session: captureSession() }) {
+  const session = options.session;
   try {
     const authError = requireAccountAuth();
     if (authError) return authError;
 
-    const response = await request('/account-delete', { action: 'cancel' });
+    const response = await request('/account-delete', { action: 'cancel' }, { session });
     return response;
   } catch (error) {
     logger.error('[LafService] 撤销注销失败:', error);
@@ -75,12 +79,13 @@ export async function cancelAccountDeletion() {
  * 查询账号注销状态
  * @returns {Promise} data: { status, deletionScheduledAt, remainingDays }
  */
-export async function getAccountDeletionStatus() {
+export async function getAccountDeletionStatus(options = { session: captureSession() }) {
+  const session = options.session;
   try {
     const authError = requireAccountAuth();
     if (authError) return authError;
 
-    const response = await request('/account-delete', { action: 'status' });
+    const response = await request('/account-delete', { action: 'status' }, { session });
     return response;
   } catch (error) {
     logger.error('[LafService] 查询注销状态失败:', error);
@@ -96,7 +101,8 @@ export async function getAccountDeletionStatus() {
  * @param {Object} syncData - 同步数据 { goals, updatedAt }
  * @returns {Promise} 返回同步结果
  */
-export async function syncLearningGoals(userId, syncData) {
+export async function syncLearningGoals(userId, syncData, options = { session: captureSession() }) {
+  const session = options.session;
   try {
     if (!userId) return { code: -1, success: false, message: '用户未登录' };
 
@@ -106,15 +112,19 @@ export async function syncLearningGoals(userId, syncData) {
 
     for (const goal of activeGoals) {
       try {
-        const response = await request('/learning-goal', {
-          action: 'create',
-          userId,
-          data: {
-            type: goal.type,
-            targetValue: goal.targetValue,
-            period: goal.period
-          }
-        });
+        const response = await request(
+          '/learning-goal',
+          {
+            action: 'create',
+            userId,
+            data: {
+              type: goal.type,
+              targetValue: goal.targetValue,
+              period: goal.period
+            }
+          },
+          { session }
+        );
         results.push(response);
       } catch (goalErr) {
         failCount++;
@@ -140,16 +150,21 @@ export async function syncLearningGoals(userId, syncData) {
  * @param {Object} params - 查询参数
  * @returns {Promise} 返回目标列表
  */
-export async function getLearningGoals(params = {}) {
+export async function getLearningGoals(params = {}, options = { session: captureSession() }) {
+  const session = options.session;
   try {
     const userId = getUserId();
     if (!userId) return { code: -1, success: false, message: '请先登录', data: [] };
 
-    const response = await request('/learning-goal', {
-      action: 'get',
-      userId,
-      data: params
-    });
+    const response = await request(
+      '/learning-goal',
+      {
+        action: 'get',
+        userId,
+        data: params
+      },
+      { session }
+    );
     return response;
   } catch (error) {
     // [AUDIT FIX R268] 统一 normalizeError
@@ -164,16 +179,21 @@ export async function getLearningGoals(params = {}) {
  * @param {number} value - 进度值
  * @returns {Promise} 返回记录结果
  */
-export async function recordGoalProgress(type, value) {
+export async function recordGoalProgress(type, value, options = { session: captureSession() }) {
+  const session = options.session;
   try {
     const userId = getUserId();
     if (!userId) return { code: -1, success: false, message: '请先登录' };
 
-    const response = await request('/learning-goal', {
-      action: 'recordProgress',
-      userId,
-      data: { type, value }
-    });
+    const response = await request(
+      '/learning-goal',
+      {
+        action: 'recordProgress',
+        userId,
+        data: { type, value }
+      },
+      { session }
+    );
     return response;
   } catch (error) {
     // [AUDIT FIX R268] 统一 normalizeError
@@ -188,34 +208,44 @@ export async function recordGoalProgress(type, value) {
  * 检查并同步成就到后端
  * @returns {Promise} 返回新解锁的成就
  */
-export async function checkAchievements() {
+export async function checkAchievements(options = { session: captureSession() }) {
+  const session = options.session;
   try {
     const userId = getUserId();
     if (!userId) return { code: -1, success: false, message: '请先登录', data: { newlyUnlocked: [] } };
 
     // 先重试之前失败的解锁请求
     try {
-      const pending = uni.getStorageSync('_pendingAchievements') || [];
+      assertSession(session);
+      const pending = storageService.get('achievement_retry_v1', [], { session, migrateLegacy: false }) || [];
       if (pending.length > 0) {
         const remaining = [];
         for (const aid of pending) {
           try {
-            await request('/achievement-manager', { action: 'unlock', userId, data: { achievementId: aid } });
+            await request(
+              '/achievement-manager',
+              { action: 'unlock', userId, data: { achievementId: aid } },
+              { session }
+            );
           } catch (_e) {
             remaining.push(aid);
           }
         }
-        uni.setStorageSync('_pendingAchievements', remaining);
+        storageService.save('achievement_retry_v1', remaining, true, session);
       }
     } catch (_e) {
       /* 重试失败不影响主流程 */
     }
 
-    const response = await request('/achievement-manager', {
-      action: 'check',
-      userId,
-      data: {}
-    });
+    const response = await request(
+      '/achievement-manager',
+      {
+        action: 'check',
+        userId,
+        data: {}
+      },
+      { session }
+    );
     return response;
   } catch (error) {
     // [AUDIT FIX R268] 统一 normalizeError
@@ -228,16 +258,21 @@ export async function checkAchievements() {
  * 获取所有成就（含解锁状态）
  * @returns {Promise} 返回成就列表
  */
-export async function getAllAchievements() {
+export async function getAllAchievements(options = { session: captureSession() }) {
+  const session = options.session;
   try {
     const userId = getUserId();
     if (!userId) return { code: -1, success: false, message: '请先登录', data: { achievements: [] } };
 
-    const response = await request('/achievement-manager', {
-      action: 'getAll',
-      userId,
-      data: {}
-    });
+    const response = await request(
+      '/achievement-manager',
+      {
+        action: 'getAll',
+        userId,
+        data: {}
+      },
+      { session }
+    );
     return response;
   } catch (error) {
     // [AUDIT FIX R268] 统一 normalizeError
@@ -252,24 +287,30 @@ export async function getAllAchievements() {
  * @param {string} achievementId - 成就ID
  * @returns {Promise} 返回解锁结果
  */
-export async function unlockAchievement(achievementId) {
+export async function unlockAchievement(achievementId, options = { session: captureSession() }) {
+  const session = options.session;
   try {
     const userId = getUserId();
     if (!userId) return { code: -1, success: false, message: '请先登录' };
 
-    const response = await request('/achievement-manager', {
-      action: 'unlock',
-      userId,
-      data: { achievementId }
-    });
+    const response = await request(
+      '/achievement-manager',
+      {
+        action: 'unlock',
+        userId,
+        data: { achievementId }
+      },
+      { session }
+    );
     return response;
   } catch (error) {
     logger.warn('[LafService] 解锁成就失败，已缓存待重试:', achievementId, error);
     try {
-      const pending = uni.getStorageSync('_pendingAchievements') || [];
+      assertSession(session);
+      const pending = storageService.get('achievement_retry_v1', [], { session, migrateLegacy: false }) || [];
       if (!pending.includes(achievementId)) {
         pending.push(achievementId);
-        uni.setStorageSync('_pendingAchievements', pending);
+        storageService.save('achievement_retry_v1', pending, true, session);
       }
     } catch (_e) {
       /* 存储失败忽略 */
@@ -288,9 +329,10 @@ export async function unlockAchievement(achievementId) {
  * @param {Object} data - 请求参数（action, userId, 等）
  * @returns {Promise} 返回更新结果
  */
-export async function updateProfile(data) {
+export async function updateProfile(data, options = { session: captureSession() }) {
+  const session = options.session;
   try {
-    return await request('/user-profile', data);
+    return await request('/user-profile', data, { session });
   } catch (error) {
     logger.error('[UserAPI] updateProfile 失败:', error);
     return normalizeError(error, '更新资料');
@@ -313,6 +355,7 @@ export async function updateProfile(data) {
  * @returns {Promise<{success: boolean, avatarUrl?: string, message?: string}>}
  */
 export async function uploadAvatar(filePath, userId, options = {}) {
+  const session = options.session || captureSession();
   const { filePathToBase64, inferImageMimeType } = options;
 
   // base64 降级方案
@@ -323,12 +366,16 @@ export async function uploadAvatar(filePath, userId, options = {}) {
     try {
       const avatarBase64 = await filePathToBase64(filePath);
       const avatarType = inferImageMimeType(filePath);
-      const response = await request('/user-profile', {
-        action: 'upload_avatar',
-        userId,
-        avatar_base64: avatarBase64,
-        avatar_type: avatarType
-      });
+      const response = await request(
+        '/user-profile',
+        {
+          action: 'upload_avatar',
+          userId,
+          avatar_base64: avatarBase64,
+          avatar_type: avatarType
+        },
+        { session }
+      );
 
       if ((response.code === 0 || response.success) && response.data) {
         return {
@@ -346,9 +393,11 @@ export async function uploadAvatar(filePath, userId, options = {}) {
   // 优先尝试 multipart 上传
   try {
     const baseUrl = config.api.baseUrl;
-    const token = getToken() || '';
+    const snapshot = sessionForRequest(session);
+    const token = snapshot.token || '';
 
     const result = await new Promise((resolve) => {
+      assertSession(session);
       uni.uploadFile({
         url: `${baseUrl}/upload-avatar`,
         filePath,
@@ -356,6 +405,8 @@ export async function uploadAvatar(filePath, userId, options = {}) {
         formData: { userId, type: 'avatar' },
         header: { Authorization: `Bearer ${token}` },
         success: async (res) => {
+          if (storageService.checkSession(session) !== 'current')
+            return resolve({ success: false, message: '登录会话已变化，请重新选择' });
           try {
             const data = JSON.parse(res.data);
             if (data.code === 0 || data.success) {

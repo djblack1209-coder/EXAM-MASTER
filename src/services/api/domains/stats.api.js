@@ -1,3 +1,4 @@
+import { captureSession } from '../../auth-storage.js';
 /**
  * 用户统计 API
  * 职责：对接后端 user-stats 云函数，提供学习统计、趋势分析、
@@ -22,9 +23,10 @@ const ENDPOINT = '/user-stats';
  *       错题数据、今日数据、成就数量
  * @returns {Promise<{code:number, data:Object}>}
  */
-export async function getStatsOverview() {
+export async function getStatsOverview(options = { session: captureSession() }) {
+  const session = options.session;
   try {
-    return await request(ENDPOINT, { action: 'getOverview', data: {} });
+    return await request(ENDPOINT, { action: 'getOverview', data: {} }, { session });
   } catch (error) {
     logger.warn('[stats.api] 获取综合统计失败:', error);
     return normalizeError(error, '获取综合统计');
@@ -37,9 +39,10 @@ export async function getStatsOverview() {
  * @param {number} [params.days=7] - 查询天数（1~90）
  * @returns {Promise<{code:number, data:{days:number, stats:Array, summary:Object}}>}
  */
-export async function getDailyStats(params = {}) {
+export async function getDailyStats(params = {}, options = { session: captureSession() }) {
+  const session = options.session;
   try {
-    return await request(ENDPOINT, { action: 'getDailyStats', data: params });
+    return await request(ENDPOINT, { action: 'getDailyStats', data: params }, { session });
   } catch (error) {
     logger.warn('[stats.api] 获取每日统计失败:', error);
     return normalizeError(error, '获取每日统计');
@@ -52,9 +55,10 @@ export async function getDailyStats(params = {}) {
  * @param {string} [params.period='week'] - 时间周期（'week' 或 'month'）
  * @returns {Promise<{code:number, data:{period:string, stats:Array, trend:Object, summary:Object}}>}
  */
-export async function getStudyTrend(params = {}) {
+export async function getStudyTrend(params = {}, options = { session: captureSession() }) {
+  const session = options.session;
   try {
-    return await request(ENDPOINT, { action: 'getTrend', data: params });
+    return await request(ENDPOINT, { action: 'getTrend', data: params }, { session });
   } catch (error) {
     logger.warn('[stats.api] 获取学习趋势失败:', error);
     return normalizeError(error, '获取学习趋势');
@@ -65,9 +69,10 @@ export async function getStudyTrend(params = {}) {
  * 获取排名信息
  * @returns {Promise<{code:number, data:{rank:number, totalUsers:number, percentile:number, description:string}}>}
  */
-export async function getRankInfo() {
+export async function getRankInfo(options = { session: captureSession() }) {
+  const session = options.session;
   try {
-    return await request(ENDPOINT, { action: 'getRankInfo', data: {} });
+    return await request(ENDPOINT, { action: 'getRankInfo', data: {} }, { session });
   } catch (error) {
     logger.warn('[stats.api] 获取排名信息失败:', error);
     return normalizeError(error, '获取排名信息');
@@ -81,12 +86,17 @@ export async function getRankInfo() {
  * @param {number} minutes - 学习分钟数（1~480）
  * @returns {Promise<{code:number, data:{minutes:number, dateKey:string}}>}
  */
-export async function recordStudyTime(minutes) {
+export async function recordStudyTime(minutes, options = { session: captureSession() }) {
+  const session = options.session;
   try {
-    return await request(ENDPOINT, {
-      action: 'recordStudyTime',
-      data: { minutes }
-    });
+    return await request(
+      ENDPOINT,
+      {
+        action: 'recordStudyTime',
+        data: { minutes }
+      },
+      { session }
+    );
   } catch (error) {
     logger.warn('[stats.api] 记录学习时长失败:', error);
     return normalizeError(error, '记录学习时长');
@@ -97,9 +107,10 @@ export async function recordStudyTime(minutes) {
  * 更新连续学习天数（每日首次学习时调用）
  * @returns {Promise<{code:number, data:{streakDays:number, totalStudyDays:number, lastStudyDate:number}}>}
  */
-export async function updateStreak() {
+export async function updateStreak(options = { session: captureSession() }) {
+  const session = options.session;
   try {
-    return await request(ENDPOINT, { action: 'updateStreak', data: {} });
+    return await request(ENDPOINT, { action: 'updateStreak', data: {} }, { session });
   } catch (error) {
     logger.warn('[stats.api] 更新连续天数失败:', error);
     return normalizeError(error, '更新连续天数');

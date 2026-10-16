@@ -757,7 +757,7 @@ describe('storageService', () => {
           throw Error('synthetic read failure');
         });
         expect(() => strictStorage.get('question_favorites', [], { throwOnError: true })).toThrow(
-          'synthetic read failure'
+          '登录状态暂不可读，请重试'
         );
       } finally {
         readFailure?.mockRestore();
@@ -979,5 +979,135 @@ describe('storageService', () => {
       expect(result.list.map((item) => item.id)).toEqual(['new', 'old']);
       expect(storageService.get('mistake_book').map((item) => item.id)).toEqual(['old', 'new']);
     });
+  });
+});
+
+describe('阶段5一致会话与存储入口', () => {
+  it('serializes complete logins with the shared Web Lock and adopts the later writer', async () => {
+    const { storageService } = await import('@/services/storageService.js');
+    const { captureSession, checkSession, sessionForRequest } = await import('@/services/auth-storage.js');
+    uni.clearStorageSync();
+    const previous = navigator.locks;
+    let tail = Promise.resolve();
+    const request = vi.fn((_name, _options, write) => {
+      const job = tail.then(write);
+      tail = job.catch(() => undefined);
+      return job;
+    });
+    Object.defineProperty(navigator, 'locks', { configurable: true, value: { request } });
+    try {
+      await Promise.all([
+        storageService.saveLoginSession({ userId: 'lock-A', token: 'fixture-token-A', userInfo: {} }),
+        storageService.saveLoginSession({ userId: 'lock-B', token: 'fixture-token-B', userInfo: {} })
+      ]);
+      const session = captureSession();
+      expect(Object.isFrozen(session)).toBe(true);
+      expect(Object.keys(session)).toEqual(['owner', 'epoch']);
+      expect(session.owner).toBe('lock-B');
+      expect(sessionForRequest(session).token).toBe('fixture-token-B');
+      expect(checkSession(session)).toBe('current');
+      expect(request.mock.calls.every(([name]) => name === 'exam-master:login-session-v1')).toBe(true);
+    } finally {
+      if (previous) Object.defineProperty(navigator, 'locks', { configurable: true, value: previous });
+      else delete navigator.locks;
+    }
+  });
+  it('uses an irreversible SHA-256 proof and rejects a mixed identity within the same epoch', async () => {
+    const { createHash } = await import('node:crypto');
+    const { storageService } = await import('@/services/storageService.js');
+    const { captureSession, checkSession, sessionCredentialProof } = await import('@/services/auth-storage.js');
+    for (const pair of [
+      ['owner', 'fixture-token'],
+      ['账户', 'fixture-长令牌']
+    ])
+      expect(sessionCredentialProof(...pair)).toBe(createHash('sha256').update(JSON.stringify(pair)).digest('hex'));
+    uni.clearStorageSync();
+    await storageService.saveLoginSession({ userId: 'snapshot-A', token: 'fixture-token-A', userInfo: {} });
+    const session = captureSession();
+    uni.setStorageSync('_enc_EXAM_TOKEN', obfuscate('fixture-token-B'));
+    expect(captureSession()).toBeNull();
+    expect(checkSession(session)).toBe('unavailable');
+  });
+  it('distinguishes transient read failure from confirmed revocation and never falls back to stale credentials', async () => {
+    const { storageService } = await import('@/services/storageService.js');
+    const { captureSession, checkSession } = await import('@/services/auth-storage.js');
+    uni.clearStorageSync();
+    await storageService.saveLoginSession({ userId: 'snapshot-A', token: 'fixture-token-A', userInfo: {} });
+    const session = captureSession(),
+      read = uni.getStorageSync.getMockImplementation();
+    let failed = false;
+    const spy = vi.spyOn(uni, 'getStorageSync').mockImplementation((key) => {
+      if (!failed && key === '_enc_EXAM_SESSION_EPOCH') {
+        failed = true;
+        throw new Error('fixture-read');
+      }
+      return read(key);
+    });
+    try {
+      expect(checkSession(session)).toBe('unavailable');
+    } finally {
+      spy.mockRestore();
+    }
+    expect(checkSession(session)).toBe('current');
+    storageService.remove('EXAM_SESSION_EPOCH', true);
+    expect(checkSession(session)).toBe('changed');
+    storageService.getSessionEpoch();
+    expect(getToken()).toBeNull();
+    expect(storageService.getSessionEpoch()).toBeNull();
+  });
+  it('binds debounce at enqueue and rejects stale remove/saveBatch without touching B', async () => {
+    const { storageService } = await import('@/services/storageService.js');
+    const { captureSession } = await import('@/services/auth-storage.js');
+    uni.clearStorageSync();
+    await storageService.saveLoginSession({ userId: 'deferred-A', token: 'fixture-token-A', userInfo: {} });
+    const session = captureSession();
+    vi.useFakeTimers();
+    try {
+      storageService.saveDebounced('mistake_book', [{ private: 'PRIVATE_A' }], true, session);
+      await storageService.saveLoginSession({ userId: 'deferred-B', token: 'fixture-token-B', userInfo: {} });
+      expect(storageService.remove('mistake_book', true, session)).toBe(false);
+      expect(storageService.saveBatch({ mistake_book: [{ private: 'PRIVATE_A' }] }, true, session)).toBe(false);
+      await vi.advanceTimersByTimeAsync(501);
+      expect(uni.getStorageSync('u_deferred-B_mistake_book')).toBe('');
+    } finally {
+      storageService.flushPendingWrites();
+      vi.useRealTimers();
+    }
+  });
+});
+
+describe('跨窗口撤销清理与登录事务', () => {
+  it('does not clear a completed later login while waiting to clean revoked credentials', async () => {
+    const { storageService } = await import('@/services/storageService.js');
+    uni.clearStorageSync();
+    await storageService.saveLoginSession({ userId: 'cleanup-A', token: 'fixture-token-A', userInfo: {} });
+    storageService.remove('EXAM_SESSION_EPOCH', true);
+    const previous = navigator.locks;
+    let cleanup;
+    Object.defineProperty(navigator, 'locks', {
+      configurable: true,
+      value: {
+        request: vi.fn(
+          (_name, _options, write) =>
+            new Promise((resolve) => {
+              cleanup = () => resolve(write());
+            })
+        )
+      }
+    });
+    try {
+      expect(storageService.getSessionEpoch()).toBeNull();
+      // Finish another window's transaction before the queued cleanup gets the Web Lock.
+      delete navigator.locks;
+      await storageService.saveLoginSession({ userId: 'cleanup-B', token: 'fixture-token-B', userInfo: {} });
+      cleanup();
+      await storageService._revocationCleanup;
+      expect(getUserId()).toBe('cleanup-B');
+      expect(getToken()).toBe('fixture-token-B');
+      expect(getLoginSessionEpoch()).toBeTruthy();
+    } finally {
+      if (previous) Object.defineProperty(navigator, 'locks', { configurable: true, value: previous });
+      else delete navigator.locks;
+    }
   });
 });

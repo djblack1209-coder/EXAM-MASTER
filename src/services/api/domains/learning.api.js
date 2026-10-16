@@ -1,35 +1,50 @@
 import config from '../../../config/index.js';
-import { getToken, getUserId, getLoginSessionEpoch } from '../../auth-storage.js';
+import { captureSession, sessionForRequest } from '../../auth-storage.js';
 import { generateLearningTurnStream } from '../../learning/learning-stream.js';
 import poetryCache from '../../learning/poetry-cache.json';
 
 // 学习模型请求固定到用户选择的后端，不使用跨服务自动故障切换，不记录消息和密钥。
 export function learningRequest(path, body, options = {}) {
-  options.assertCurrent?.();
+  const readOnly =
+    (path === '/learning-models' && ['list', 'usage', 'poetry', 'result'].includes(body?.action)) ||
+    (path === '/learning-sync' && ['pull', 'page'].includes(body?.action));
+  const session = options.session || (readOnly ? captureSession() : null);
+  const failure = (error) => ({
+    success: false,
+    code: error?.code === 'SESSION_UNAVAILABLE' ? 503 : 409,
+    errorCode: error?.code || 'CONTEXT_CHANGED',
+    message: error?.message || '登录会话已变化，未发送旧内容'
+  });
+  try {
+    options.assertCurrent?.();
+    sessionForRequest(session);
+  } catch (error) {
+    return Promise.resolve(failure(error));
+  }
   if (options.signal?.aborted) return Promise.resolve({ success: false, code: 499, message: '请求已取消，未再次发送' });
-  if (options.expectedOwner && getUserId() !== options.expectedOwner)
-    return Promise.resolve({ success: false, code: 409, message: '用户已切换，未发送旧账户记录' });
-  const token = getToken();
-  const session = getLoginSessionEpoch();
-  if (!token) return Promise.resolve({ success: false, code: 401, message: '登录后可连接云模型；本地学习无需登录' });
   return new Promise((resolve) => {
     let abort;
     const finish = (value) => {
       if (abort) options.signal?.removeEventListener('abort', abort);
       try {
         options.assertCurrent?.();
-      } catch {
-        resolve({ success: false, code: 409, message: '登录会话已变化，旧响应未采用' });
-        return;
+        sessionForRequest(session);
+        if (options.signal?.aborted) return resolve({ success: false, code: 499, message: '请求已取消，未读取旧响应' });
+        resolve(value);
+      } catch (error) {
+        resolve(failure(error));
       }
-      resolve(
-        getLoginSessionEpoch() !== session || (options.expectedOwner && getUserId() !== options.expectedOwner)
-          ? { success: false, code: 409, message: '账户已切换，未读取旧账户响应' }
-          : options.signal?.aborted
-            ? { success: false, code: 499, message: '请求已取消，未读取旧响应' }
-            : value
-      );
     };
+    let snapshot;
+    try {
+      options.assertCurrent?.();
+      snapshot = sessionForRequest(session);
+      if (options.expectedOwner && snapshot.session.owner !== options.expectedOwner) return resolve(failure());
+    } catch (error) {
+      return resolve(failure(error));
+    }
+    if (!snapshot.token) return resolve({ success: false, code: 401, message: '登录后可连接云模型；本地学习无需登录' });
+    const token = snapshot.token;
     const task = uni.request({
       url: `${config.api.baseUrl}${path}`,
       method: 'POST',

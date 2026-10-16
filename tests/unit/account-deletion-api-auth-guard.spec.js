@@ -34,6 +34,7 @@ describe('account deletion api auth guard', () => {
   });
 
   it('keeps the explicit account-delete action payloads when auth exists', async () => {
+    global.__mockStorage.EXAM_USER_ID = 'user_abc';
     global.__mockStorage.EXAM_TOKEN = 'token_abc';
     const api = await import('@/services/api/domains/user.api.js');
 
@@ -41,9 +42,24 @@ describe('account deletion api auth guard', () => {
     await api.cancelAccountDeletion();
     await api.getAccountDeletionStatus();
 
-    expect(request).toHaveBeenNthCalledWith(1, '/account-delete', { action: 'request' });
-    expect(request).toHaveBeenNthCalledWith(2, '/account-delete', { action: 'cancel' });
-    expect(request).toHaveBeenNthCalledWith(3, '/account-delete', { action: 'status' });
+    expect(request).toHaveBeenNthCalledWith(
+      1,
+      '/account-delete',
+      { action: 'request' },
+      expect.objectContaining({ session: expect.anything() })
+    );
+    expect(request).toHaveBeenNthCalledWith(
+      2,
+      '/account-delete',
+      { action: 'cancel' },
+      expect.objectContaining({ session: expect.anything() })
+    );
+    expect(request).toHaveBeenNthCalledWith(
+      3,
+      '/account-delete',
+      { action: 'status' },
+      expect.objectContaining({ session: expect.anything() })
+    );
   });
 
   it('accepts restored user id credentials as a login signal before backend verification', async () => {
@@ -53,6 +69,10 @@ describe('account deletion api auth guard', () => {
     const result = await api.getAccountDeletionStatus();
 
     expect(result.success).toBe(true);
-    expect(request).toHaveBeenCalledWith('/account-delete', { action: 'status' });
+    expect(request).toHaveBeenCalledWith(
+      '/account-delete',
+      { action: 'status' },
+      expect.objectContaining({ session: expect.anything() })
+    );
   });
 });
