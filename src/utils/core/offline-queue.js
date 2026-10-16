@@ -188,7 +188,13 @@ class OfflineQueue {
         // 过滤过期的请求
         const now = Date.now();
         this.queue = stored.filter((item) => {
-          return now - item.timestamp < MAX_AGE && checkSession(item.session) === 'current';
+          return (
+            now - item.timestamp < MAX_AGE &&
+            typeof item.session?.owner === 'string' &&
+            !!item.session.owner &&
+            (item.session.epoch === null || /^[a-zA-Z0-9_-]{8,120}$/.test(item.session.epoch || '')) &&
+            checkSession(item.session) !== 'changed'
+          );
         });
 
         if (this.queue.length !== stored.length) {
@@ -449,8 +455,9 @@ class OfflineQueue {
       }
 
       try {
-        if (checkSession(item.session) === 'unavailable') break;
-        if (checkSession(item.session) !== 'current') {
+        const status = checkSession(item.session);
+        if (status === 'unavailable') break;
+        if (status !== 'current') {
           this.dequeue(item.id);
           continue;
         }
@@ -488,6 +495,7 @@ class OfflineQueue {
 
         logger.log(`[OfflineQueue] ✅ 请求成功: ${item.id}`);
       } catch (error) {
+        if (error.code === 'SESSION_UNAVAILABLE') break;
         logger.error(`[OfflineQueue] ❌ 请求失败: ${item.id}`, error);
 
         item.retryCount++;

@@ -181,6 +181,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const operationSessions = [];
   let sessionReady = false;
   let resettingSession = false;
+  let lastRecordContext = null;
   let observedIdentity = { owner: getUserId(), token: getToken() };
   const state = ref(boundSession ? learningRepository.read() : emptyLearningState('guest'));
   let notificationObserver = null,
@@ -268,9 +269,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   function recordContext() {
     try {
       if (sessionReady && !resettingSession) ensureSessionCurrent(undefined, undefined, { readOnly: true });
-      return JSON.stringify([learningRepository.lifecycleContext(), loginContext()]);
+      lastRecordContext = JSON.stringify([learningRepository.lifecycleContext(), loginContext()]);
+      return lastRecordContext;
     } catch {
-      return null;
+      return readSessionSnapshot().status === 'unavailable' ? lastRecordContext : null;
     }
   }
   function loginContext() {
@@ -278,10 +280,18 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   }
   // Notifications accelerate revocation. Every operation and result checks persisted identity itself.
   function ensureSessionCurrent(expectedSession = operationSessions.at(-1), signal, { readOnly = false } = {}) {
+    if (resettingSession) {
+      assert(readOnly, 'CONTEXT_CHANGED', '登录会话正在重置，旧动作未写入');
+      return loginContext();
+    }
     const snapshot = readSessionSnapshot();
     if (snapshot.status === 'unavailable') {
       const changed = checkSession(boundSession) === 'changed';
       if (changed) reloadRecords({ identityChanged: true });
+      else {
+        error.value = '登录状态暂不可读，请重试';
+        if (readOnly) return loginContext();
+      }
       assert(
         false,
         changed ? 'CONTEXT_CHANGED' : 'SESSION_UNAVAILABLE',
@@ -944,7 +954,17 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     historyBusy.value = false;
   }
   function refresh() {
+    if (readSessionSnapshot().status === 'unavailable' && checkSession(boundSession) !== 'changed') {
+      error.value = '登录状态暂不可读，请重试';
+      return state.value;
+    }
     if (!resettingSession) ensureSessionCurrent(undefined, undefined, { readOnly: true });
+    const previous = {
+      state: state.value,
+      session: boundSession,
+      phase: recordReadState.value,
+      context: recordSnapshotContext.value
+    };
     // Invalidate reactive projections before a read can throw or notify a subscriber.
     recordReadState.value = 'loading';
     recordSnapshotContext.value = null;
@@ -962,7 +982,15 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       recordReadState.value = 'ready';
       return state.value;
     } catch (cause) {
-      if (cause.code === 'SESSION_UNAVAILABLE') throw cause;
+      if (cause.code === 'SESSION_UNAVAILABLE') {
+        if (checkSession(previous.session) !== 'changed' && previous.state.owner === (boundSession?.owner || 'guest')) {
+          state.value = previous.state;
+          recordSnapshotContext.value = previous.context;
+          recordReadState.value = previous.phase;
+        }
+        error.value = '登录状态暂不可读，请重试';
+        return state.value;
+      }
       recordSearch.clear();
       resetAccountResources();
       recordLocation.value = null;
@@ -975,11 +1003,21 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
   }
   function reloadRecords({ identityChanged = false } = {}) {
+    if (readSessionSnapshot().status === 'unavailable' && checkSession(boundSession) !== 'changed') {
+      error.value = '登录状态暂不可读，请重试';
+      return state.value;
+    }
+    const previous = {
+      location: recordLocation.value,
+      conversation: conversationLocation.value,
+      session: boundSession
+    };
     recordSearch.clear();
     recordLocation.value = null;
     conversationLocation.value = null;
     if (identityChanged) {
       resettingSession = true;
+      lastRecordContext = null;
       recordReadState.value = 'loading';
       recordSnapshotContext.value = null;
       resetAccountResources();
@@ -988,8 +1026,21 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       cancelHistory();
     }
     try {
-      return refresh();
-    } catch {
+      const result = refresh();
+      if (
+        !identityChanged &&
+        readSessionSnapshot().status === 'unavailable' &&
+        checkSession(previous.session) !== 'changed'
+      ) {
+        recordLocation.value = previous.location;
+        conversationLocation.value = previous.conversation;
+      }
+      return result;
+    } catch (cause) {
+      if (cause.code === 'SESSION_UNAVAILABLE') {
+        error.value = '登录状态暂不可读，请重试';
+        return state.value;
+      }
       resetModelResources();
       cancelSync({ clearFeedback: true });
       cancelHistory();
@@ -1004,9 +1055,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const stopIdentityChanges = storageService.onIdentityChange(
     (change) => {
       const snapshot = readSessionSnapshot();
-      if (change?.type === 'logout' || checkSession(boundSession) === 'changed') {
+      if (checkSession(boundSession) === 'changed') {
         reloadRecords({ identityChanged: true });
-        if (change?.type === 'logout') observedIdentity = { owner: null, token: null };
         return;
       }
       if (snapshot.status === 'unavailable') return;
@@ -2833,6 +2883,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     pendingCloudCall = null;
     controller?.abort();
     streamPreview.value = '';
+    if (checkSession(boundSession) !== 'current') return;
     if (pending && pending.owner === state.value.owner && pending.session === loginContext()) {
       commit(
         'execution.record',

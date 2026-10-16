@@ -4,7 +4,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { createLearningRepository, learningRepository, LEARNING_KEY } from '@/services/learning/learning-repository.js';
 import { storageService, StorageService } from '@/services/storageService.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
-import { getLoginSessionEpoch, sessionCredentialProof } from '@/services/auth-storage.js';
+import { getLoginSessionEpoch, sessionCredentialProof, captureSession } from '@/services/auth-storage.js';
 import { obfuscate } from '@/utils/crypto/cipher.js';
 import { parsePastedMaterial } from '@/services/learning/material-intake.js';
 const epochKey = `${LEARNING_KEY}_lifecycle`;
@@ -523,15 +523,17 @@ describe('加密同账户会话与凭据请求边界', () => {
       `__exam_storage__:${key}`,
       `__exam_storage__:_enc_${key}`
     ])
-  )('积压%s删除在当前代号已恢复相同时仍撤销，拒绝迟到本地正文', async (key) => {
+  )('积压%s删除后重读持久换代，拒绝迟到本地正文', async (key) => {
     session();
     store.selectedMode = 'local';
     let resolve;
     const transport = vi.fn(() => new Promise((done) => (resolve = done)));
     vi.stubGlobal('fetch', transport);
     const promise = store.send('请再解释一下');
-    const facts = store.exportData(),
-      epoch = getLoginSessionEpoch();
+    const facts = store.exportData();
+    // Revocation is observed from persisted state; a delayed event cannot revoke a later binding.
+    peerLogin('synthetic-post-revocation-epoch');
+    const epoch = getLoginSessionEpoch();
     window.dispatchEvent(new StorageEvent('storage', { key, oldValue: 'synthetic-deleted-value', newValue: null }));
     expect(getLoginSessionEpoch()).toBe(epoch);
     expect(transport.mock.calls[0][1].signal.aborted).toBe(true);
@@ -1343,7 +1345,7 @@ describe('阶段5入口绑定回归', () => {
     let switched = false;
     vi.spyOn(uni, 'getStorageSync').mockImplementation((key) => {
       const value = read(key);
-      if (!switched && key === '_enc_EXAM_USER_ID') {
+      if (!switched && key === '_enc_EXAM_SESSION_EPOCH') {
         switched = true;
         login('audit5-B');
       }
@@ -1443,6 +1445,7 @@ describe('阶段5入口绑定回归', () => {
   });
   it('R1: interleaved login writes cannot bless mixed owner and token', async () => {
     const { learningRequest } = await import('@/services/api/domains/learning.api.js');
+    const original = captureSession();
     const write = uni.setStorageSync.getMockImplementation();
     let crossed = false;
     vi.spyOn(uni, 'setStorageSync').mockImplementation((key, value) => {
@@ -1458,7 +1461,8 @@ describe('阶段5入口绑定回归', () => {
       /* No Web Locks: reject the torn transaction. */
     }
     const transport = vi.spyOn(uni, 'request');
-    const result = await learningRequest('/learning-models', { action: 'list' });
+    expect(captureSession()?.owner).toBe('audit5-B');
+    const result = await learningRequest('/learning-models', { action: 'list' }, { session: original });
     expect(result.success).toBe(false);
     expect(transport).not.toHaveBeenCalled();
   });
