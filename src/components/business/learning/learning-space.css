@@ -9,8 +9,8 @@
 }
 .space-frame {
   display: grid;
-  grid-template-columns: calc(var(--control-height) * 5) minmax(0, 1fr);
-  max-width: calc(var(--dialog-width) * 3);
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  max-width: calc(var(--sidebar-width) + var(--page-content-width) + var(--s-6));
   min-height: calc(100vh - var(--s-8) * 2);
   margin: auto;
   gap: var(--s-6);
@@ -31,6 +31,9 @@
 }
 .space-main {
   min-width: 0;
+  width: 100%;
+  max-width: var(--page-content-width);
+  margin-inline: auto;
 }
 .brand-row,
 .space-header,
@@ -365,7 +368,7 @@
 .sidebar-scrim {
   display: none;
 }
-@media (max-width: 900px) {
+@media (max-width: 767px) {
   .learning-space {
     padding: var(--s-4);
     padding-top: calc(var(--s-4) + var(--space-status-top, 0px));
@@ -506,7 +509,7 @@
 .message-content {
   min-width: 0;
 }
-@media (max-width: 900px) {
+@media (max-width: 767px) {
   .mobile-dock {
     bottom: calc(var(--tabbar-gap) + env(safe-area-inset-bottom));
   }
@@ -528,4 +531,75 @@
 .learning-summary:focus-visible {
   outline: var(--border-selected) solid var(--focus);
   outline-offset: var(--focus-offset);
+}
+
+/* One app frame: desktop sidebar, compact tablet sidebar, mobile drawer + dock. */
+.space-sidebar .desktop-navigation .base-button {
+  min-height: var(--touch-min);
+}
+.space-sidebar .library-search {
+  margin-top: var(--s-2);
+}
+.space-sidebar .recent-list:empty {
+  display: none;
+}
+.space-sidebar .sidebar-footer {
+  margin-top: auto;
+}
+.learning-space.yozi-page :where(.main-scroll, .scroll-body, .scroll-container, .quiz-scroll) {
+  max-width: none;
+  min-height: 0;
+  padding: 0 0 var(--s-8);
+  margin: 0;
+}
+.learning-space.yozi-page :where(.nav-bar, .header-nav, .navbar) {
+  background: none;
+  border: 0;
+}
+.learning-space .yozi-tabbar-space {
+  display: none;
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .learning-space {
+    --sidebar-width: 88px;
+    padding: var(--s-4);
+  }
+  .space-frame {
+    gap: var(--s-5);
+  }
+  .space-sidebar {
+    padding: var(--s-3);
+    top: var(--s-4);
+  }
+  .space-sidebar .brand-copy,
+  .space-sidebar .sidebar-label,
+  .space-sidebar .library-search,
+  .space-sidebar .recent-list,
+  .space-sidebar .nav-count,
+  .space-sidebar .library-materials,
+  .space-sidebar .new-session text {
+    display: none;
+  }
+  .space-sidebar .brand-link {
+    padding: 0;
+  }
+  .space-sidebar .base-button {
+    justify-content: center;
+    padding-inline: 0;
+  }
+  .space-sidebar .base-button__content {
+    width: auto;
+    flex: none;
+  }
+  .space-sidebar .desktop-navigation .base-button__content > text {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .learning-space .space-header {
+    padding-top: 0;
+  }
+  .learning-space .space-frame {
+    min-height: calc(100svh - var(--tabbar-reserve));
+  }
 }

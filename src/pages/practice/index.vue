@@ -1,17 +1,13 @@
 <template>
-  <view
+  <LearningShell
     ref="keyboardRoot"
-    class="yozi-page page has-tabbar"
+    class="yozi-page"
+    active="practice"
+    :title="$t('pages.practice')"
     :style="[tabBarStyle, $yoziInsets]"
     :class="{ 'dark-mode': isDark, 'theme-light': !isDark }"
   >
     <!-- 自定义导航栏 -->
-    <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <view class="nav-content">
-        <text class="nav-title">{{ $t('pages.practice') }}</text>
-      </view>
-    </view>
-
     <!-- 主内容 -->
     <scroll-view scroll-y class="main-scroll">
       <!-- 可用题库列表 -->
@@ -248,11 +244,11 @@
     </scroll-view>
 
     <!-- 底部导航栏 -->
-    <CustomTabbar :active-index="1" />
-  </view>
+  </LearningShell>
 </template>
 
 <script>
+import LearningShell from '@/components/business/learning/learning-shell.vue';
 import { getTabbarSafeAreaStyle } from '@/utils/core/system.js';
 import BaseStat from '@/components/base/base-stat/base-stat.vue';
 import '@/i18n/messages/dashboard.js';
@@ -264,7 +260,7 @@ import BaseButton from '@/components/base/base-button/base-button.vue';
 import '@/styles/yozi-pages.scss';
 
 import { BRAND } from '@/config/brand.js';
-import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
+
 import { useFlashcardBank } from '@/composables/useFlashcardBank.js';
 import { useBankStatus } from '@/composables/useBankStatus.js';
 import { useDynamicMixin } from '@/composables/useDynamicMixin.js';
@@ -279,7 +275,7 @@ import { isGuestDemoEnabled, startGuestDemoPractice } from '@/utils/practice/dem
 import { getRecoverableQuizProgress } from '@/composables/useQuizAutoSave.js';
 
 export default {
-  components: { BaseStat, BaseButton, BaseChip, BaseEmpty, CustomTabbar },
+  components: { LearningShell, BaseStat, BaseButton, BaseChip, BaseEmpty },
 
   setup() {
     const dynamicMixinHelper = useDynamicMixin();

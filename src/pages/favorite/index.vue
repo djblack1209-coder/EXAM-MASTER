@@ -1,27 +1,18 @@
 <template>
-  <view class="yozi-page" :style="$yoziInsets" :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
+  <LearningShell
+    class="yozi-page"
+    active="favorite"
+    :title="$t('pages.favorite')"
+    :style="$yoziInsets"
+    :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]"
+  >
     <view class="aurora-bg" />
 
     <!-- 导航栏 -->
-    <view class="header-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <view class="nav-content">
-        <BaseButton class="nav-back" :label="$t('ui.back')" variant="secondary" @tap="goBack"
-          ><BaseIcon name="arrow-left"
-        /></BaseButton>
-        <text class="nav-title">{{ $t('pages.favorite') }}</text>
-        <view class="nav-actions">
-          <BaseButton
-            class="nav-action"
-            variant="secondary"
-            icon="plus"
-            icon-only
-            :label="t('favorite.copy0')"
-            @tap="openFolderModal()"
-          />
-        </view>
-      </view>
-    </view>
-
+    <template #controls>
+      <BaseButton icon="arrow-left" icon-only variant="quiet" :label="$t('ui.back')" @tap="goBack" />
+      <BaseButton icon="plus" icon-only variant="secondary" :label="t('favorite.copy0')" @tap="openFolderModal()" />
+    </template>
     <!-- ✅ F018: 加载状态 -->
     <BaseEmpty v-if="isLoading" state="loading" class="loading-state" />
 
@@ -248,7 +239,7 @@
         ></view
       ></CustomModal
     >
-  </view>
+  </LearningShell>
   <CustomModal
     :visible="!!actionFolder"
     :title="actionFolder ? builtinFolderText(actionFolder) : ''"
@@ -291,6 +282,7 @@
 </template>
 
 <script setup>
+import LearningShell from '@/components/business/learning/learning-shell.vue';
 import BaseStat from '@/components/base/base-stat/base-stat.vue';
 const uiText = (value) => translateRegisteredText('favorite', value);
 import '@/pages/favorite/messages.js';

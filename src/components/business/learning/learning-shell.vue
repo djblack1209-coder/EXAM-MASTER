@@ -63,6 +63,7 @@
         </view>
         <BaseButton
           class="new-session"
+          :label="t('learning.k8t')"
           block
           :disabled="learning.busy"
           :aria-disabled="learning.busy"
@@ -78,6 +79,8 @@
             :key="item.id"
             class="space-nav-item"
             align="start"
+            :label="learningText(item.label)"
+            :title="learningText(item.label)"
             :selected="active === item.id"
             :class="{ selected: active === item.id }"
             :aria-current="active === item.id ? 'page' : undefined"
@@ -86,6 +89,8 @@
           >
             <BaseIcon
               :name="item.icon"
+              :label="learningText(item.label)"
+              :title="learningText(item.label)"
               :selected="active === item.id"
               :tone="active === item.id ? 'violet-ink' : 'ink-3'"
             />
@@ -162,12 +167,6 @@
               >
             </view>
           </view>
-          <BaseEmpty
-            v-if="!recent.length"
-            state="empty"
-            :title="query ? t('learning.keu') : t('learning.k22')"
-            mascot-size="small"
-          />
         </view>
         <BaseButton class="library-materials" align="start" variant="quiet" @tap="openMaterials">
           <BaseIcon name="folder" tone="ink-3" />
@@ -221,7 +220,7 @@
       :inert="menuOpen || undefined"
     >
       <BaseButton
-        v-for="item in navigation"
+        v-for="item in mobileNavigation"
         :key="item.id"
         :class="{ selected: active === item.id }"
         :aria-current="active === item.id ? 'page' : undefined"
@@ -294,8 +293,16 @@ const navigation = computed(() => [
   { id: 'learning', label: t('nav.learning'), icon: 'chat' },
   { id: 'mistake', label: t('nav.mistake'), icon: 'book-open' },
   { id: 'plan', label: t('nav.plan'), icon: 'calendar' },
-  { id: 'study-detail', label: t('nav.stats'), icon: 'chart-bar' }
+  { id: 'study-detail', label: t('nav.stats'), icon: 'chart-bar' },
+  { id: 'practice', label: t('pages.practice'), icon: 'pen' },
+  { id: 'question-bank', label: t('pages.bank'), icon: 'books' },
+  { id: 'favorite', label: t('pages.favorite'), icon: 'star' },
+  { id: 'profile', label: t('pages.profile'), icon: 'user' },
+  { id: 'settings', label: t('nav.settings'), icon: 'settings' }
 ]);
+const mobileNavigation = computed(() =>
+  navigation.value.filter((item) => ['learning', 'practice', 'mistake', 'profile'].includes(item.id))
+);
 const recent = computed(() =>
   [...learning.state.conversations]
     .reverse()
@@ -357,7 +364,18 @@ function escapeMenu(event) {
 function openView(view) {
   menuOpen.value = false;
   const route = getCurrentPages().at(-1)?.route;
-  if (route !== `pages/${view}/index`) safeNavigateTo(`/pages/${view}/index`);
+  if (['settings', 'profile'].includes(view)) {
+    if (route === 'pages/profile/index') uni.$emit('profilePanel', view);
+    else safeNavigateTo('/pages/profile/index', { success: () => uni.$emit('profilePanel', view) });
+    return;
+  }
+  const target =
+    view === 'question-bank'
+      ? '/pages/practice-sub/question-bank'
+      : view === 'settings'
+        ? '/pages/profile/index?panel=settings'
+        : `/pages/${view}/index`;
+  if (view === 'settings' || route !== target.slice(1)) safeNavigateTo(target);
 }
 function newSession() {
   if (learning.busy) return;

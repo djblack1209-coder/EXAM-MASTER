@@ -1,21 +1,17 @@
 <template>
-  <view
+  <LearningShell
     ref="root"
-    class="yozi-page page has-tabbar"
+    class="yozi-page"
+    :active="settingsMode ? 'settings' : 'profile'"
+    :title="t(settingsMode ? 'nav.settings' : 'pages.profile')"
     :style="[tabBarStyle, $yoziInsets]"
     :class="{ 'dark-mode': isDark, 'theme-light': !isDark, 'reduce-motion': reducedMotion }"
   >
     <!-- 自定义导航栏 -->
-    <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <view class="nav-content">
-        <text class="nav-title">{{ $t('pages.profile') }}</text>
-      </view>
-    </view>
-
     <!-- 主内容 -->
     <scroll-view scroll-y class="main-scroll">
       <!-- 用户信息 -->
-      <view class="section user-section">
+      <view v-if="!settingsMode" class="section user-section">
         <view class="profile-command-card">
           <view class="profile-top">
             <view class="avatar-wrap">
@@ -38,12 +34,8 @@
         </view>
       </view>
 
-      <view class="section">
-        <LearningOverview view="study-detail" />
-      </view>
-
       <!-- 旧题库记录继续保留原口径 -->
-      <view class="section">
+      <view v-if="!settingsMode && (totalQuestions || studyStore?.studyProgress?.studyMinutes)" class="section">
         <text class="legacy-stats-label">{{ t('dashboard.copy101') }}</text>
         <view class="stats-card"
           ><BaseStat :label="t('dashboard.copy102')" :value="studyStore?.studyProgress?.studyMinutes || 0" /><BaseStat
@@ -95,7 +87,7 @@
     </scroll-view>
 
     <!-- 底部导航栏 -->
-    <CustomTabbar :active-index="2" />
+
     <CustomModal
       v-model:visible="showDialog"
       :is-dark="isDark"
@@ -106,10 +98,11 @@
       :confirm-text="dialog.kind === 'logout' ? t('dashboard.copy110') : t('dashboard.copy111')"
       @confirm="confirmDialog"
     />
-  </view>
+  </LearningShell>
 </template>
 
 <script>
+import LearningShell from '@/components/business/learning/learning-shell.vue';
 import { getTabbarSafeAreaStyle } from '@/utils/core/system.js';
 import '@/i18n/messages/dashboard.js';
 import BaseListRow from '@/components/base/base-list-row/base-list-row.vue';
@@ -118,8 +111,6 @@ import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import '@/styles/yozi-pages.scss';
 
-import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
-import LearningOverview from '@/components/business/learning/learning-overview.vue';
 import { useUserStore } from '@/stores/modules/user';
 import { useStudyStore } from '@/stores/modules/study';
 import { useThemeStore } from '@/stores/modules/theme.js';
@@ -133,10 +124,11 @@ import { bindBusinessMotion } from '@/design/business-motion.js';
 import { currentLanguage, LANGUAGE_OPTIONS, setLanguage, t, translateRegisteredText } from '@/i18n/index.js';
 
 export default {
-  components: { BaseButton, BaseInput, BaseStat, BaseListRow, CustomTabbar, LearningOverview, CustomModal },
+  components: { LearningShell, BaseButton, BaseInput, BaseStat, BaseListRow, CustomModal },
 
   data() {
     return {
+      settingsMode: false,
       languageDraft: currentLanguage.value,
       statusBarHeight: 44,
       tabBarStyle: {},
@@ -215,7 +207,9 @@ export default {
     }
   },
 
-  onLoad() {
+  onLoad(options) {
+    this.settingsMode = options?.panel === 'settings';
+    uni.$on('profilePanel', this.setProfilePanel);
     this.syncTheme();
     this.initLayout();
     uni.$on('themeUpdate', this.syncTheme);
@@ -237,6 +231,7 @@ export default {
     });
   },
   beforeUnmount() {
+    uni.$off('profilePanel', this.setProfilePanel);
     this.releaseKeyboard?.();
     this.releaseMotion?.();
   },
@@ -258,6 +253,9 @@ export default {
   },
 
   methods: {
+    setProfilePanel(panel) {
+      this.settingsMode = panel === 'settings';
+    },
     t,
     uiText(value) {
       return translateRegisteredText('dashboard', value);
