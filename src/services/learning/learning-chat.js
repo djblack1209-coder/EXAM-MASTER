@@ -9,6 +9,7 @@ import { createFractionQuestion, FRACTION_CONTRACT } from '../../../laf-backend/
 import { createScienceQuestion } from '../../../laf-backend/functions/_shared/learning-science.js';
 import { DENSITY_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-density.js';
 import { PRESSURE_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-pressure.js';
+import { ENERGY_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-visual.js';
 import {
   createWritingQuestion,
   EMAIL_WRITING_CONTRACT
@@ -38,7 +39,7 @@ export function localChatOpening(raw) {
   );
   if (emailTopic) return { goal: '英文邮件写作', replaceActive: Boolean(emailTopic[1]) };
   const englishTopic =
-    /^(?:(review|practice|study)\s+)?(equations|linear inequalities|fractions|density|(?:contact )?pressure)[.!]?$/iu.exec(
+    /^(?:(review|practice|study)\s+)?(equations|linear inequalities|fractions|density|(?:contact )?pressure|work and kinetic energy)[.!]?$/iu.exec(
       raw.trim()
     );
   if (englishTopic)
@@ -47,6 +48,7 @@ export function localChatOpening(raw) {
         density: '密度',
         pressure: '压强',
         'contact pressure': '压强',
+        'work and kinetic energy': '功与动能',
         fractions: '1/2 + 1/3',
         equations: '解关于 t 的方程 2*t+3=9',
         'linear inequalities': '解关于 t 的不等式 -2*t+6>0'
@@ -66,6 +68,11 @@ export function localChatOpening(raw) {
   if (/^(?:英文|英语)邮件(?:写作)?$/u.test(request))
     return {
       goal: '英文邮件写作',
+      replaceActive: /^(?:(?:我想(?:要)?|想|请(?:帮我)?|帮我)\s*)?(?:复习|练习|学习)\s*/u.test(raw.trim())
+    };
+  if (/^功[与和]动能$/u.test(request))
+    return {
+      goal: '功与动能',
       replaceActive: /^(?:(?:我想(?:要)?|想|请(?:帮我)?|帮我)\s*)?(?:复习|练习|学习)\s*/u.test(raw.trim())
     };
   const topic =
@@ -149,6 +156,18 @@ export function localPressureQuestion(id, conversationId, goal) {
   });
 }
 
+export function localEnergyQuestion(id, conversationId, goal) {
+  if (!/^功与动能[。.!]?$/u.test(goal.trim()) || !conversationId) return null;
+  return createScienceQuestion(id, conversationId, {
+    template: ENERGY_TEMPLATE,
+    massKg: 2,
+    initialVelocityMps: 1,
+    netForceN: 4,
+    direction: 'right',
+    physicalSeconds: 2
+  });
+}
+
 export function localChatQuestion(id, opening, conversationId) {
   if (opening.goal)
     return (
@@ -156,6 +175,7 @@ export function localChatQuestion(id, opening, conversationId) {
       createFractionQuestion(id, opening.goal) ||
       localDensityQuestion(id, conversationId, opening.goal) ||
       localPressureQuestion(id, conversationId, opening.goal) ||
+      localEnergyQuestion(id, conversationId, opening.goal) ||
       (opening.goal === '英文句子组织' && conversationId ? createSentenceQuestion(id, conversationId) : null) ||
       (opening.goal === '英文邮件写作' && conversationId ? createWritingQuestion(id, conversationId, 'email') : null)
     );

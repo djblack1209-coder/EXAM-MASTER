@@ -22,6 +22,8 @@ const messages = {
     'learning.chat.emailReady': '先写一版完整邮件，明确提交后保存原稿；反馈暂待核对。',
     'learning.chat.sentenceReady': '点选词块组织句子，明确提交后保存作答。',
     'learning.chat.densityCheck': '请按本题条件独立选择准确值，原有帮助经历保留。',
+    'learning.chat.energyHint':
+      '先用合力除以质量求加速度，再由初速度和时间求末速度、有符号位移。合力总功为合力乘以有符号位移；末动能为质量乘以末速度平方的一半。核对总功等于动能变化，不能把路程代替位移，也不能把负速度算成负动能。',
     'learning.chat.question': '你想先解决哪道题或哪个知识点？可以直接贴题。',
     'learning.chat.ready': '先从这道题开始。请发来你的完整答案，也可以说“带我一步步理解”。',
     'learning.chat.unsupported': '这道题暂不能自动核验。可以保留原题和作答，或先练一道可核验的题。',
@@ -1348,6 +1350,8 @@ const messages = {
     'learning.chat.sentenceReady': 'Choose the word tiles, then explicitly submit to save your sentence.',
     'learning.chat.densityCheck':
       'Choose the exact value for this question independently. Earlier help remains recorded.',
+    'learning.chat.energyHint':
+      'Divide net force by mass to find acceleration, then use initial velocity and time to find final velocity and signed displacement. Total work is net force times signed displacement; final kinetic energy is half the mass times final velocity squared. Check that total work equals the change in kinetic energy. Do not substitute distance for displacement or treat negative velocity as negative kinetic energy.',
     'learning.chat.question': 'Which question or topic would you like to work on first? You can paste the question.',
     'learning.chat.ready':
       'Start with this question. Send your complete answer, or ask me to work through it step by step.',
