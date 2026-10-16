@@ -469,6 +469,94 @@ describe.each([
       expect(request).not.toHaveBeenCalled();
     });
 
+    it('未作答时用不同请求ID重新选择主题复用同一题与计划项', async () => {
+      await send(`练习${topic}`, 'science-reselect-open');
+      const question = clone(store.activeQuestion);
+      const plans = clone(store.state.plans);
+      await send(`练习${topic}`, 'science-reselect-again');
+      expect(store.activeQuestion).toEqual(question);
+      expect(store.state.questions).toEqual([question]);
+      expect(store.state.plans).toEqual(plans);
+      expect(store.state.attempts).toEqual([]);
+      const repeated = clone(store.state);
+      await send(`练习${topic}`, 'science-reselect-again');
+      expect(store.state).toEqual(repeated);
+    });
+
+    it('不同请求ID的A→B→A切回未作答主题复用原题，不串题或新增计划', async () => {
+      await send(`练习${topic}`, 'science-return-a');
+      const conversationId = store.active.id;
+      const original = clone(store.activeQuestion);
+      const other = topic === '功与动能' ? '速度—时间图' : '功与动能';
+      await send(`练习${other}`, 'science-return-b');
+      expect(store.activeQuestion.scienceExercise.input.template).not.toBe(input.template);
+      const plans = clone(store.state.plans);
+      await send(`练习${topic}`, 'science-return-a-again');
+      expect(store.active.id).toBe(conversationId);
+      expect(store.activeQuestion).toEqual(original);
+      expect(store.state.questions).toHaveLength(2);
+      expect(store.state.plans).toEqual(plans);
+      expect(store.state.attempts).toEqual([]);
+    });
+
+    it.each(['submitted', 'helped'])('切回%s的主题沿关联链换条件，未用变式可复用，用过后继续换题', async (used) => {
+      await send(`练习${topic}`, 'science-used-open');
+      const originalKey = store.active.activeQuestionKey;
+      const original = clone(store.activeQuestion);
+      if (used === 'submitted') store.submit('A', true, 'science-used-answer', { chatEntry: true });
+      else {
+        await send('给我提示', 'science-used-help');
+        await send('恢复自动教法', 'science-used-auto');
+      }
+      const attempts = clone(store.state.attempts);
+      const hints = clone(store.active.pendingHints);
+      const other = topic === '功与动能' ? '速度—时间图' : '功与动能';
+      await send(`练习${other}`, 'science-used-other');
+      await send(`练习${topic}`, 'science-used-return');
+      const variantKey = store.active.activeQuestionKey;
+      expect(variantKey).not.toBe(originalKey);
+      expect(store.activeQuestion).toMatchObject({
+        parentQuestionKey: originalKey,
+        scienceExercise: { contract, conversationId: store.active.id, phase: 'independent', input: independentInput }
+      });
+      expect(store.activeQuestion.options).toContain(independentOption);
+      expect(store.active.pendingHints).toEqual([]);
+      expect(store.state.attempts).toEqual(attempts);
+      expect(store.state.questions.find((q) => q.id === original.id)).toEqual(original);
+      if (used === 'helped')
+        expect(store.active.helpQueues.find((entry) => entry.questionKey === originalKey)?.hints).toEqual(hints);
+      await send(`练习${other}`, 'science-used-other-again');
+      await send(`练习${topic}`, 'science-used-reuse-variant');
+      expect(store.active.activeQuestionKey).toBe(variantKey);
+      expect(store.state.questions).toHaveLength(3);
+      store.submit(independentAnswer, true, 'science-used-variant-answer', { chatEntry: true });
+      const saved = clone(store.state.attempts);
+      await send(`练习${topic}`, 'science-used-next-variant');
+      expect(store.active.activeQuestionKey).not.toBe(variantKey);
+      expect(store.activeQuestion.parentQuestionKey).toBe(variantKey);
+      expect(store.activeQuestion.scienceExercise.input).not.toEqual(independentInput);
+      expect(store.active.pendingHints).toEqual([]);
+      expect(store.state.attempts).toEqual(saved);
+    });
+
+    it('重新选择主题保留显式提示教法，新题获得的帮助继续阻止再次复用', async () => {
+      await send(`练习${topic}`, 'science-hint-reselect-open');
+      const originalKey = store.active.activeQuestionKey;
+      await send('给我提示', 'science-hint-reselect-help');
+      await send(`练习${topic}`, 'science-hint-reselect-return');
+      const helpedVariant = clone(store.activeQuestion);
+      const helpedKey = store.active.activeQuestionKey;
+      expect(helpedVariant.parentQuestionKey).toBe(originalKey);
+      expect(helpedVariant.scienceExercise.input).toEqual(independentInput);
+      expect(store.state.strategy.method).toBe('hint');
+      expect(store.active.pendingHints).toEqual([expect.objectContaining({ questionKey: helpedKey })]);
+      await send(`练习${topic}`, 'science-hint-reselect-next');
+      expect(store.activeQuestion.parentQuestionKey).toBe(helpedKey);
+      expect(store.activeQuestion.scienceExercise.input).not.toEqual(helpedVariant.scienceExercise.input);
+      expect(store.state.strategy.method).toBe('hint');
+      expect(store.state.attempts).toEqual([]);
+    });
+
     it('草稿零作答，错答/提示后订正/无提示新条件分别保存，未来未答与停止重开保持', async () => {
       const request = vi.spyOn(uni, 'request');
       await send(`练习${topic}`, 'science-open');
