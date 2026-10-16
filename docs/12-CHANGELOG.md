@@ -1,5 +1,37 @@
 # 重要变更
 
+## 2026-10-16 终审问题第三轮收敛（阶段5C）
+
+- 终审12项已实现修复，regress-1/order-1为同一问题；20项核心回归在`53160309`全部失败，双窗口探针的资料、续期、两种迁移与取消后继5个结果均为false。另保留日志、取消游客登录别名、明确清空资料与个人页只读回退的失败证据；回执在`tmp/stage5c/`。
+- 资料/令牌/格式迁移统一身份写锁与CAS，删除旧资料完整快照回写、迁移写后撤回和过期的登录原会话重验分支；失败登录只在仍拥有完整写入时还原原身份、全部兼容别名及启用标记，后继尝试继续有效。身份写入明确等待确认，只有保存成功才更新Auth/Profile内存；旧指纹不能覆盖新令牌。显式null资料按同一原语提交。
+- 暂不可用贯穿严格读、搜索/统计/收藏/登录判断及模型在途读取；键存在性交叉核对已安装H5运行时吞异常，已选运行时失败不读取另一套凭据。持续、单次或响应errorCode不可用都保留模型/预设/用量，收尾仍匹配的原loading；恢复后可显式重试。只读观察者先遇故障也标记在途读取，不能随后按普通失败清缓存。个人页回退不重新读取不可用身份；登录装饰器删除独立未登录跳转，复用统一三态守卫。
+- 布尔重置改为深度计数，嵌套只读刷新推迟；防抖整批删除改为逐项成功/换代确认，暂不可用保留原绑定。游客迁移按复制→核对→删除来源并确认→移除证明幂等收尾，中断及已有相同目标可重试。
+- 收藏弹窗/编辑器原session穿过Store到管理器，同账户换代亦拒绝；计划移除构造时会话和重复加载器，每次动作重读绑定分区，持久化成功后才发布内存/成功返回，删除确认保留原绑定。同类单例的init/用时检查及每类消费者清单见[04](04-API-DOCUMENTATION.md#用户数据持有者--绑定方式阶段5)，持久化顺序见[05](05-DATABASE-SCHEMAS.md#本机登录会话代号2026-10-16)。
+- 日志首标签统一静态，公共logger仅输出标签和有限数值，开发/正式均丢弃尾部字符串、对象与堆栈；全局新增错误的内存/存储/回调仅保留固定元数据。源码标签审计覆盖src全部logger入口，错误正文、账户、令牌与路径不进入新增日志。
+
+| 问题                | 已修复的回归测试（tests/unit）                                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| regress-1 / order-1 | `identity-cas-convergence`：profile-CAS、refresh-CAS；`session-final-convergence`：stale profile and token origins、clearing profile |
+| order-2             | `identity-cas-convergence`：cancelled-login-successor；`session-final-convergence`：cancelled guest login                            |
+| migrate-02          | `identity-cas-convergence`：plaintext-CAS、legacy-CAS                                                                                |
+| regress-2           | `session-final-convergence`：swallowed runtime read、installed H5 swallowed all/epoch errors                                         |
+| regress-3           | `session-final-convergence`：search and stats、login guards expose unavailable、profile readonly fallbacks                           |
+| regress-4           | `session-final-convergence`：cleanup logs；`session-log-privacy`：development/production logger、static labels、runtime logs         |
+| inflight-01         | `session-final-convergence`：models/usage unavailable completion、one-shot and typed unavailable responses                           |
+| migrate-01          | `session-final-convergence`：nested readonly reentry                                                                                 |
+| migrate-03          | `session-final-convergence`：timer/flush unavailable pending write retries                                                           |
+| migrate-04          | `session-final-convergence`：interrupted source/identity migration、copied target verified on retry                                  |
+| WRITES-12-1         | `session-final-convergence`：real rename prompt rejects same-account generation change                                               |
+| WRITES-12-2         | `session-final-convergence`：singleton new adjustment binds current session and confirms persistence                                 |
+
+本批源码新增640行、删除523行；身份整记录旧快照回写、迁移写后撤回、布尔重置、整批丢弃待写/证明、计划重复加载器与独立装饰器跳转，分别由锁内CAS、重入计数、逐项确认和统一守卫取代。包含回归与合同文档总计新增1261行、删除578行。
+
+`YOZI_ISOLATED_BUILD=1 npm test`（`full-final-source.json`）5065项中5059通过、6项既有专用Mongo环境跳过，268文件通过/1跳过，零失败及未处理拒绝；5000原答性能准备54.407秒通过。新增27项回归；首轮35项失败与两项未处理拒绝来自本批保存确认接口和旧的同步Token种子/身份别名/日志正文断言，已改为实际会话事务、等待确认与隐私合同，并保留原隔离/权限断言。个人页回退新增失败已修复，最后装饰器105项定向及同一最终源码全量重跑均通过；未调整阈值或跳过新增回归。
+
+源码lint、改动JS/夹具lint与提交钩子通过；最终H5/微信/App隔离构建与735文件公开产物扫描、微信/App产物检查通过。微信主包332文件/1934407字节，媒体19文件/181028字节，均低于2MB/200KB；只有既有微信选择器提醒。三端均确认包含个人页两处不可用保护与明确null资料的CAS分支；113份压缩题库重新生成后逐项比较解压JSON等价，恢复原生成源码，未引入无关题库变更。文档新增本地链接/锚点和`git diff --check`通过。
+
+复用`tmp/audit5/resources.log`记录本批PID/启动时间/用途与退出，依赖及已有环境继续复用；本轮未启动预览服务、浏览器标签或日常App。已核无活跃引用后回收本批基线源副本、编辑辅助及替代诊断494文件/32543922逻辑字节，不等同实时磁盘可用空间或RAM增量；最终测试/构建证据、当前隔离候选及原有回退材料保留。本轮没有推送、生产部署、短信、收费或日常App替换；真实账号、自然多窗口、对应设备与公开发布分别未验。Web Locks端执行共享独占协议，缺Web Locks运行时的多执行器并发未实测；游客来源证明仍仅会话内存，重开后不自动归属。
+
 ## 2026-10-16 会话复审收敛（阶段5B）
 
 - 在`3281a5b8`源上先复现10项确认问题和S1—S7；原多窗口探针先原样运行，再提炼为真实模块/Worker交错、同步重入、真实登录页及原生ReadableStream的确定性回归。新增31项，不放宽已有权限、来源、明确作答、预算或幂等断言。[持有者与同类排查](04-API-DOCUMENTATION.md#用户数据持有者--绑定方式阶段5)、[字段及顺序](05-DATABASE-SCHEMAS.md#本机登录会话代号2026-10-16)。
