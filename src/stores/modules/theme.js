@@ -1,3 +1,4 @@
+import { captureSession } from '@/services/auth-storage.js';
 /**
  * 主题状态管理
  * 支持 Wise 和 Bitget Wallet 两套主题
@@ -27,7 +28,7 @@ export const useThemeStore = defineStore('theme', () => {
   const setVisualStyle = (style) => {
     if (!['playful', 'future'].includes(style)) return;
     visualStyle.value = style;
-    storageService.save('learning_visual_style', style);
+    storageService.save('learning_visual_style', style, true, captureSession());
   };
 
   /**

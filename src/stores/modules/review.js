@@ -1,3 +1,4 @@
+import { captureSession, assertSession, checkSession } from '@/services/auth-storage.js';
 import { defineStore } from 'pinia';
 
 import {
@@ -61,10 +62,13 @@ export const useReviewStore = defineStore('review', {
     },
 
     async fetchQuestionBankStats() {
+      const session = captureSession();
+      assertSession(session);
       this.loading = true;
       this.lastError = null;
       try {
         const res = await getQuestionBankStats();
+        assertSession(session);
         if (isOk(res) && res.data) {
           this.questionBankStats = {
             total: Number(res.data.total || 0),
@@ -73,10 +77,11 @@ export const useReviewStore = defineStore('review', {
           return { success: true, data: this.questionBankStats, source: 'remote' };
         }
       } catch (error) {
+        assertSession(session);
         this.lastError = error;
         logger.warn('[reviewStore] remote stats failed, using local bank:', error);
       } finally {
-        this.loading = false;
+        if (checkSession(session) === 'current') this.loading = false;
       }
 
       this.questionBankStats = buildQuestionBankStats(localBank());
@@ -84,10 +89,13 @@ export const useReviewStore = defineStore('review', {
     },
 
     async browseQuestions(params = {}) {
+      const session = captureSession();
+      assertSession(session);
       this.loading = true;
       this.lastError = null;
       try {
         const res = await apiBrowseQuestions(params);
+        assertSession(session);
         if (isOk(res) && res.data) {
           const data = {
             list: Array.isArray(res.data.list) ? res.data.list : [],
@@ -100,10 +108,11 @@ export const useReviewStore = defineStore('review', {
           return { success: true, data, source: 'remote' };
         }
       } catch (error) {
+        assertSession(session);
         this.lastError = error;
         logger.warn('[reviewStore] remote question browse failed, using local bank:', error);
       } finally {
-        this.loading = false;
+        if (checkSession(session) === 'current') this.loading = false;
       }
 
       const data = filterBankQuestions(localBank(), params);
@@ -112,18 +121,22 @@ export const useReviewStore = defineStore('review', {
     },
 
     async fetchQuestionBankRandom(params = {}) {
+      const session = captureSession();
+      assertSession(session);
       this.loading = true;
       this.lastError = null;
       try {
         const res = await getQuestionBankRandom(params);
+        assertSession(session);
         if (isOk(res) && Array.isArray(res.data)) {
           return { success: true, data: res.data, source: 'remote' };
         }
       } catch (error) {
+        assertSession(session);
         this.lastError = error;
         logger.warn('[reviewStore] remote random questions failed, using local bank:', error);
       } finally {
-        this.loading = false;
+        if (checkSession(session) === 'current') this.loading = false;
       }
 
       return { success: true, data: sampleBankQuestions(localBank(), params), source: 'local' };

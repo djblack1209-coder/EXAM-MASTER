@@ -15,6 +15,8 @@ static ACTIONS: OnceLock<Mutex<Vec<Value>>> = OnceLock::new();
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct NotificationJob {
     pub id: String,
+    #[serde(default)]
+    pub login_epoch: Option<String>,
     pub due_at: u64,
     pub conversation_id: String,
     pub reminder_id: String,
@@ -30,7 +32,7 @@ fn validate_jobs(jobs: &[NotificationJob], now: u64) -> Result<(), String> {
     let mut ids = std::collections::HashSet::new();
     if jobs.len() > 64 { return Err("系统提醒最多64项，请缩短安排范围".into()); }
     for job in jobs {
-        if !identifier(&job.id, 160) || !identifier(&job.conversation_id, 160)
+        if job.login_epoch.as_ref().is_some_and(|epoch| !identifier(epoch, 120)) || !identifier(&job.id, 160) || !identifier(&job.conversation_id, 160)
             || !identifier(&job.reminder_id, 160) || !identifier(&job.generation, 160)
             || job.question_key.as_ref().is_some_and(|k| !identifier(k, 180))
             || !["study", "review", "recap"].contains(&job.kind.as_str())
@@ -136,7 +138,7 @@ pub fn take_learning_notification_actions(_state: State<'_, LearningNotification
 mod tests {
     use super::*;
     fn job(now: u64) -> NotificationJob {
-        NotificationJob { id: "reminder:1:2026-10-10".into(), due_at: now + 10000,
+        NotificationJob { login_epoch: None, id: "reminder:1:2026-10-10".into(), due_at: now + 10000,
             conversation_id: "conversation-1".into(), reminder_id: "reminder".into(), generation: "generation".into(),
             kind: "study".into(), day: "2026-10-10".into(), question_key: None }
     }

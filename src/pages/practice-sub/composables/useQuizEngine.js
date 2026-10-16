@@ -28,7 +28,7 @@ import {
   readQuizReviewHandoff,
   readSinglePracticeHandoff
 } from '@/services/quiz-session-contract.js';
-import { getUserId } from '@/services/auth-storage.js';
+import { getUserId, captureSession, assertSession } from '@/services/auth-storage.js';
 
 /**
  * @param {Object} [options]
@@ -38,6 +38,7 @@ import { getUserId } from '@/services/auth-storage.js';
  * @param {number}  [options.reviewRatio=0.2] - 复习题占比
  */
 export function useQuizEngine(options = {}) {
+  const session = captureSession();
   const { smartPicker = true, adaptiveMode = true, maxQuestions = 20, reviewRatio = 0.2 } = options;
 
   // ---- reactive state ----
@@ -89,9 +90,10 @@ export function useQuizEngine(options = {}) {
     const { mode = 'normal', singleId = '', reviewId = '', paperId = '' } = params;
     questions.value = [];
     const accept = (selected, key) => {
+      assertSession(session);
       if (!selected) return false;
       questions.value = selected;
-      if (key) storageService.remove(key);
+      if (key) storageService.remove(key, true, session);
       answerStartTime.value = Date.now();
       return true;
     };

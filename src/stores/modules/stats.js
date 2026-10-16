@@ -21,7 +21,7 @@ import {
   recordStudyTime as apiRecordStudyTime,
   updateStreak as apiUpdateStreak
 } from '@/services/api/domains/stats.api.js';
-import { getToken, getUserId } from '@/services/auth-storage.js';
+import { getToken, getUserId, captureSession, checkSession } from '@/services/auth-storage.js';
 import { logger } from '@/utils/logger.js';
 
 /** 缓存过期时间（毫秒） */
@@ -54,15 +54,21 @@ export const useStatsStore = defineStore('stats', () => {
   // ==================== 内部工具 ====================
 
   function sessionContext() {
-    const next = { owner: getUserId() || '', token: getToken() || '' };
-    if (!_identity || _identity.owner !== next.owner || _identity.token !== next.token) {
+    const session = captureSession();
+    const next = { owner: getUserId() || '', token: getToken() || '', session };
+    if (
+      !_identity ||
+      checkSession(_identity.session) === 'changed' ||
+      _identity.owner !== next.owner ||
+      _identity.token !== next.token
+    ) {
       clearCache();
       _identity = next;
     }
     return { revision: _revision, ...next };
   }
   function isCurrent(context) {
-    return sessionContext().revision === context.revision;
+    return checkSession(context.session) === 'current' && sessionContext().revision === context.revision;
   }
   function startRead(context) {
     _pendingReads.add(context);
@@ -113,7 +119,7 @@ export const useStatsStore = defineStore('stats', () => {
     startRead(context);
     error.value = null;
     try {
-      const res = await apiGetOverview();
+      const res = await apiGetOverview({ session: context.session });
       if (!isCurrent(context)) return _emptyOverview();
       if (res?.code === 0 && res.data) {
         overview.value = res.data;
@@ -149,7 +155,7 @@ export const useStatsStore = defineStore('stats', () => {
 
     startRead(context);
     try {
-      const res = await apiGetDailyStats({ days });
+      const res = await apiGetDailyStats({ days }, { session: context.session });
       if (!isCurrent(context)) return { stats: [], summary: {} };
       if (res?.code === 0 && res.data) {
         dailyStats.value = res.data.stats || [];
@@ -184,7 +190,7 @@ export const useStatsStore = defineStore('stats', () => {
 
     startRead(context);
     try {
-      const res = await apiGetTrend({ period });
+      const res = await apiGetTrend({ period }, { session: context.session });
       if (!isCurrent(context)) return null;
       if (res?.code === 0 && res.data) {
         trend.value = res.data;
@@ -213,7 +219,7 @@ export const useStatsStore = defineStore('stats', () => {
     }
 
     try {
-      const res = await apiGetRankInfo();
+      const res = await apiGetRankInfo({ session: context.session });
       if (!isCurrent(context)) return null;
       if (res?.code === 0 && res.data) {
         rankInfo.value = res.data;
@@ -237,7 +243,7 @@ export const useStatsStore = defineStore('stats', () => {
     if (!context.token || !minutes || minutes <= 0) return false;
 
     try {
-      const res = await apiRecordStudyTime(minutes);
+      const res = await apiRecordStudyTime(minutes, { session: context.session });
       if (!isCurrent(context)) return false;
       if (res?.code === 0) {
         // 更新本地缓存
@@ -266,7 +272,7 @@ export const useStatsStore = defineStore('stats', () => {
     if (!context.token) return null;
 
     try {
-      const res = await apiUpdateStreak();
+      const res = await apiUpdateStreak({ session: context.session });
       if (!isCurrent(context)) return null;
       if (res?.code === 0 && res.data) {
         // 更新本地缓存

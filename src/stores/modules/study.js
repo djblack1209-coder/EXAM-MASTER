@@ -17,7 +17,7 @@ import { ref, computed, onScopeDispose } from 'vue';
 import config from '@/config/index.js';
 const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
-import { getUserId } from '@/services/auth-storage.js';
+import { getUserId, captureSession, checkSession } from '@/services/auth-storage.js';
 
 import { summarizeQuizProgress } from '@/services/quiz-session-contract.js';
 
@@ -35,6 +35,7 @@ export const useStudyStore = defineStore('study', () => {
   /** @type {import('vue').Ref<Array<Object>>} 最近答题记录（最多 100 条） */
   const questionHistory = ref([]);
   let restoredOwner = null;
+  let session = captureSession();
 
   /** 近期逐题旧判定的比例；原累计汇总保持，但不再作为可核对分母。 */
   const legacySummary = computed(() =>
@@ -52,6 +53,7 @@ export const useStudyStore = defineStore('study', () => {
    */
   const restoreProgress = () => {
     $reset();
+    session = captureSession();
     restoredOwner = getUserId() || '';
     const cached = storageService.get(APP_CONFIG.cacheKeys.studyProgress, null, { migrateLegacy: false });
     if (cached?.progress && typeof cached.progress === 'object' && !Array.isArray(cached.progress)) {
@@ -67,7 +69,8 @@ export const useStudyStore = defineStore('study', () => {
         progress: studyProgress.value,
         history: questionHistory.value
       },
-      true
+      true,
+      session
     );
   };
 
@@ -76,7 +79,7 @@ export const useStudyStore = defineStore('study', () => {
    * @param {{ question?: Object, isCorrect?: boolean|null, timeSpent?: number, timestamp?: number }} attempt
    */
   const recordQuestionAttempt = (attempt = {}) => {
-    if (restoredOwner !== (getUserId() || '')) restoreProgress();
+    if (checkSession(session) === 'changed' || restoredOwner !== (getUserId() || '')) restoreProgress();
     const question = attempt.question || {};
     const now = Number(attempt.timestamp || Date.now());
     const today = new Date(now).toISOString().split('T')[0];

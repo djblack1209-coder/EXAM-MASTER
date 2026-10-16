@@ -1,3 +1,4 @@
+import { captureSession } from '@/services/auth-storage.js';
 /**
  * offline-queue.js 单元测试
  *
@@ -217,7 +218,7 @@ describe('OfflineQueue', () => {
 
       await queue.processQueue();
 
-      expect(rebuilder).toHaveBeenCalledWith({ url: '/api/test', method: 'POST' });
+      expect(rebuilder).toHaveBeenCalledWith({ url: '/api/test', method: 'POST' }, { session: captureSession() });
     });
 
     it('无 requestFn + 无 rebuilder → 跳过并移除', async () => {
@@ -339,8 +340,8 @@ describe('OfflineQueue', () => {
       localStorage.setItem(
         QUEUE_STORAGE_KEY,
         JSON.stringify([
-          { id: 'fresh', timestamp: now - 1000, priority: 'normal' },
-          { id: 'expired', timestamp: now - 25 * 60 * 60 * 1000, priority: 'normal' }
+          { id: 'fresh', session: captureSession(), timestamp: now - 1000, priority: 'normal' },
+          { id: 'expired', session: captureSession(), timestamp: now - 25 * 60 * 60 * 1000, priority: 'normal' }
         ])
       );
 

@@ -2427,7 +2427,11 @@ describe('学习空间的实际入口与目录', () => {
       const guest = JSON.parse(learning.exportData());
       expect(guest.owner).toBe('guest');
       expect(guest.attempts).toHaveLength(0);
-      storageService.save('EXAM_USER_ID', 'isolated-profile-user');
+      storageService.saveLoginSession({
+        userId: 'isolated-profile-user',
+        token: 'synthetic-profile-session-token',
+        userInfo: {}
+      });
       learning.refresh();
       expect(learning.exportData()).toBe(before);
       storageService.remove('EXAM_USER_ID');

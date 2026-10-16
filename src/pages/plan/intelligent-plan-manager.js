@@ -1,3 +1,4 @@
+import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
 // 智能学习计划管理器
 // 实现动态计划调整、多维度计划管理、智能提醒等功能
 
@@ -7,6 +8,7 @@ import { getComprehensiveReport, getStreakData } from '../practice-sub/utils/lea
 
 class IntelligentPlanManager {
   constructor() {
+    this._session = captureSession();
     this.plans = [];
     this.learningData = {};
     this.reminders = [];
@@ -14,6 +16,10 @@ class IntelligentPlanManager {
   }
 
   init() {
+    if (this.isInitialized && checkSession(this._session) === 'changed')
+      Object.assign(this, new IntelligentPlanManager());
+    if (!this.isInitialized) this._session = captureSession();
+    assertSession(this._session);
     this.loadPlans();
     this.loadLearningData();
     this.loadReminders();
@@ -32,6 +38,8 @@ class IntelligentPlanManager {
 
   // 加载学习数据
   async loadLearningData() {
+    const originSession = this._session;
+    assertSession(originSession);
     try {
       const report = getComprehensiveReport();
       const streakData = getStreakData();
@@ -450,6 +458,8 @@ class IntelligentPlanManager {
 
   // 获取智能提醒
   async getIntelligentReminders() {
+    const originSession = this._session;
+    assertSession(originSession);
     const intelligentReminders = [];
     const learningReport = getComprehensiveReport();
     const streakData = getStreakData();
@@ -531,7 +541,7 @@ class IntelligentPlanManager {
   // 保存计划
   savePlans() {
     try {
-      storageService.save('study_plans', this.plans);
+      storageService.save('study_plans', this.plans, true, this._session);
       logger.log('[IntelligentPlanManager] 计划保存成功:', this.plans.length);
     } catch (error) {
       logger.error('[IntelligentPlanManager] 计划保存失败:', error);
@@ -541,7 +551,7 @@ class IntelligentPlanManager {
   // 保存学习数据
   saveLearningData() {
     try {
-      storageService.save('learning_data', this.learningData);
+      storageService.save('learning_data', this.learningData, true, this._session);
     } catch (error) {
       logger.error('[IntelligentPlanManager] 学习数据保存失败:', error);
     }
@@ -550,7 +560,7 @@ class IntelligentPlanManager {
   // 保存提醒
   saveReminders() {
     try {
-      storageService.save('study_reminders', this.reminders);
+      storageService.save('study_reminders', this.reminders, true, this._session);
     } catch (error) {
       logger.error('[IntelligentPlanManager] 提醒保存失败:', error);
     }

@@ -1,3 +1,4 @@
+import { storageService } from '@/services/storageService.js';
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -117,7 +118,11 @@ describe('诗词调用接续', () => {
       if (change === 'conversation') store.selectedConversationId = null;
       if (change === 'question') store.generateVariant();
       if (change === 'owner') {
-        uni.setStorageSync('EXAM_USER_ID', 'poetry-other-fixture-owner');
+        storageService.saveLoginSession({
+          userId: 'poetry-other-fixture-owner',
+          token: 'fixture-peer-token',
+          userInfo: {}
+        });
         store.refresh();
       }
       if (change === 'records') {

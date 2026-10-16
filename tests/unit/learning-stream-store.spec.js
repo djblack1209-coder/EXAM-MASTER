@@ -1,3 +1,4 @@
+import { storageService } from '@/services/storageService.js';
 import { beforeEach, afterEach, it, expect, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { flushPromises, mount } from '@vue/test-utils';
@@ -500,21 +501,24 @@ it.each(['owner', 'epoch', 'model', 'stop', 'withdraw', 'hide'])(
     if (wrapper) wrappers.push(wrapper);
     try {
       const send = store.send('请讲解观点与依据');
+      const rejected = ['owner', 'epoch'].includes(change)
+        ? expect(send).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' })
+        : null;
       await flushPromises();
       harness.preview();
       await flushPromises();
       expect(store.streamPreview).toContain('观点');
-      if (change === 'owner') uni.setStorageSync('EXAM_USER_ID', 'other-synthetic-owner');
+      if (change === 'owner')
+        storageService.saveLoginSession({ userId: 'other-synthetic-owner', token: 'fixture-peer-token', userInfo: {} });
       else if (change === 'epoch') {
-        uni.removeStorageSync('_enc_EXAM_SESSION_EPOCH');
-        uni.setStorageSync('EXAM_SESSION_EPOCH', 'synthetic-changed-epoch');
+        storageService.saveLoginSession({ userId: 'stream-store-owner', token: 'stream-test-token', userInfo: {} });
       } else if (change === 'model') store.modelId = 'other-model';
       else if (change === 'stop') await store.send('请停止当前任务');
       else if (change === 'withdraw') store.sharingAllowed = false;
       else onHide.mock.calls.at(-1)[0]();
       await flushPromises();
       harness.complete();
-      if (['owner', 'epoch'].includes(change)) await expect(send).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      if (rejected) await rejected;
       else await send;
       expect(store.state.plans).toHaveLength(0);
       expect(store.state.attempts).toHaveLength(0);

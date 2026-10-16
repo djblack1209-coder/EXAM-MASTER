@@ -1,3 +1,4 @@
+import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
 /**
  * 单题计时器模块 - 采集实际作答间隔，提供限时提醒
  *
@@ -40,6 +41,7 @@ const DEFAULT_SETTINGS = {
  */
 class QuestionTimer {
   constructor() {
+    this._session = captureSession();
     this.settings = { ...DEFAULT_SETTINGS };
     this.currentTimer = null;
     this.startTime = 0;
@@ -63,6 +65,9 @@ class QuestionTimer {
    * 初始化
    */
   init() {
+    if (this.isInitialized && checkSession(this._session) === 'changed') Object.assign(this, new QuestionTimer());
+    if (!this.isInitialized) this._session = captureSession();
+    assertSession(this._session);
     const owner = getUserId() || '';
     if (this.isInitialized && this.owner === owner) return;
     if (this.currentTimer) clearInterval(this.currentTimer);
@@ -157,7 +162,10 @@ class QuestionTimer {
    * @returns {Object} 答题用时信息
    */
   _matches(token) {
-    return (token === undefined || token === this.token) && (!this.isInitialized || (getUserId() || '') === this.owner);
+    return (
+      (token === undefined || token === this.token) &&
+      (!this.isInitialized || (checkSession(this._session) === 'current' && (getUserId() || '') === this.owner))
+    );
   }
 
   _sample() {
@@ -402,7 +410,7 @@ class QuestionTimer {
   _saveSettings() {
     try {
       if (typeof uni !== 'undefined') {
-        storageService.save(STORAGE_KEYS.TIMER_SETTINGS, this.settings);
+        storageService.save(STORAGE_KEYS.TIMER_SETTINGS, this.settings, true, this._session);
       }
     } catch (e) {
       logger.warn('[QuestionTimer] 保存设置失败:', e);

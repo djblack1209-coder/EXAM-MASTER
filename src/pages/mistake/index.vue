@@ -255,7 +255,7 @@ import MistakeCard from './MistakeCard.vue';
 import MistakeReport from './MistakeReport.vue';
 import { normalizeMistakes as normalizeFields } from '@/utils/field-normalizer.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
-import { getUserId, getToken } from '@/services/auth-storage.js';
+import { captureSession, checkSession, getUserId, getToken } from '@/services/auth-storage.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 // --- 非响应式属性（模块级变量） ---
@@ -656,10 +656,12 @@ function startClusterTraining(cluster) {
 /** @param {number} index - 错题在列表中的索引 */
 async function removeMistake(mistake) {
   if (!mistake) return;
+  const session = captureSession();
   const ownerId = loadedOwnerId.value,
     id = mistake.id ?? mistake._id;
   const snapshot = JSON.stringify(mistake);
   const current = () =>
+    checkSession(session) === 'current' &&
     (getUserId() || '') === ownerId &&
     mistakes.value.some((item) => (item.id ?? item._id) === id && JSON.stringify(item) === snapshot);
   if (
@@ -696,8 +698,9 @@ async function removeMistake(mistake) {
         } catch (error) {
           logger.error('[mistake-book] 删除错题异常:', error);
           // 降级到本地删除
-          mistakes.value.splice(index, 1);
-          storageService.save('mistake_book', mistakes.value, true);
+          if (!current()) return;
+          mistakes.value = mistakes.value.filter((item) => (item.id ?? item._id) !== id);
+          storageService.save('mistake_book', mistakes.value, true, session);
           toast.info(t('mistake.copy47'));
         } finally {
           toast.hide();

@@ -13,7 +13,7 @@ import {
   isValidQuizSessionId,
   parseQuizSubmissionReceipt
 } from '@/services/quiz-session-contract.js';
-import { getUserId, getToken } from '@/services/auth-storage.js';
+import { getToken, captureSession, checkSession } from '@/services/auth-storage.js';
 
 /**
  * 记录答题数据到各个分析模块
@@ -39,9 +39,10 @@ export async function recordAnswerToAnalytics({
   canContinue = () => true
 }) {
   if (!currentQuestion) return null;
-  const owner = getUserId() || '';
+  const session = captureSession();
+  const owner = session?.owner === 'guest' ? '' : session?.owner || '';
   const token = getToken() || '';
-  const stillCurrent = () => (getUserId() || '') === owner && (getToken() || '') === token && canContinue();
+  const stillCurrent = () => checkSession(session) === 'current' && (getToken() || '') === token && canContinue();
   if (!stillCurrent()) return null;
 
   // 在任何异步操作前冻结本次明确提交，重试不读取后来的草稿。
@@ -67,6 +68,7 @@ export async function recordAnswerToAnalytics({
 
   try {
     await recordQuizLearningAttempt({
+      session,
       currentQuestion,
       sessionId,
       attemptId,
@@ -92,7 +94,7 @@ export async function recordAnswerToAnalytics({
   };
   let localSaved = false;
   try {
-    localSaved = (await saveOfflineAnswer(offlineAnswer)) === true;
+    localSaved = (await saveOfflineAnswer(offlineAnswer, session)) === true;
   } catch {
     logger.warn('[quiz-analytics] 离线原答保存未完成');
   }
@@ -102,11 +104,11 @@ export async function recordAnswerToAnalytics({
   // 访客不向受保护接口发送请求；账户、令牌或页面变化后不接收迟到回执。
   if (owner && token && isValidQuizSessionId(sessionId) && isValidQuizAttemptId(attemptId)) {
     try {
-      const response = await submitAnswer({ idempotencyKey: attemptId, data: submitted });
+      const response = await submitAnswer({ idempotencyKey: attemptId, data: submitted }, { session });
       if (!stillCurrent()) return null;
       submission = parseQuizSubmissionReceipt(response, attemptId, submitted) || submission;
       if (submission.status === 'received') {
-        localSaved = (await saveOfflineAnswer({ ...offlineAnswer, submission })) === true;
+        localSaved = (await saveOfflineAnswer({ ...offlineAnswer, submission }, session)) === true;
       }
     } catch {
       logger.warn('[quiz-analytics] 原答同步未完成，可沿原编号重试');

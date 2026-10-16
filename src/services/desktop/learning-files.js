@@ -1,3 +1,4 @@
+import { captureSession, assertSession } from '../auth-storage.js';
 import { isDesktopRuntime } from './runtime.js';
 import { invoke as invokeNative } from '@tauri-apps/api/core';
 
@@ -6,29 +7,34 @@ async function invoke(command, args) {
   return invokeNative(command, args);
 }
 
-function assertCurrent(isCurrent) {
+function assertCurrent(isCurrent, session) {
+  assertSession(session);
   if (!isCurrent()) throw new Error('账户或页面已变化，请重新选择文件');
 }
 
 // The system picker owns the path. JavaScript receives only a one-use selection ID.
-export async function saveDesktopLearningFile(kind, content, { isCurrent = () => true } = {}) {
-  assertCurrent(isCurrent);
+export async function saveDesktopLearningFile(
+  kind,
+  content,
+  { isCurrent = () => true, session = captureSession() } = {}
+) {
+  assertCurrent(isCurrent, session);
   const selection = await invoke('choose_learning_save', { kind });
   if (!selection) return { saved: false };
   try {
-    assertCurrent(isCurrent);
+    assertCurrent(isCurrent, session);
     await invoke('write_learning_selection', { selection: selection.id, kind, content });
-    assertCurrent(isCurrent);
+    assertCurrent(isCurrent, session);
     return { saved: true, name: selection.name };
   } finally {
     await invoke('discard_learning_selection', { selection: selection.id }).catch(() => undefined);
   }
 }
 
-export async function readDesktopLearningBackup({ isCurrent = () => true } = {}) {
-  assertCurrent(isCurrent);
+export async function readDesktopLearningBackup({ isCurrent = () => true, session = captureSession() } = {}) {
+  assertCurrent(isCurrent, session);
   const content = await invoke('read_learning_backup');
-  assertCurrent(isCurrent);
+  assertCurrent(isCurrent, session);
   return content;
 }
 
@@ -55,15 +61,15 @@ export async function discardDesktopMaterialFile(file) {
 }
 
 // Selection exposes metadata only. The native path remains bound to an expiring, one-use ID.
-export async function chooseDesktopMaterialFile({ isCurrent = () => true } = {}) {
-  assertCurrent(isCurrent);
+export async function chooseDesktopMaterialFile({ isCurrent = () => true, session = captureSession() } = {}) {
+  assertCurrent(isCurrent, session);
   const selected = await invoke('choose_learning_material');
   if (!selected) {
-    assertCurrent(isCurrent);
+    assertCurrent(isCurrent, session);
     return null;
   }
   try {
-    assertCurrent(isCurrent);
+    assertCurrent(isCurrent, session);
     return materialMetadata(selected);
   } catch (error) {
     await discardDesktopMaterialFile(selected);
@@ -71,20 +77,23 @@ export async function chooseDesktopMaterialFile({ isCurrent = () => true } = {})
   }
 }
 
-export async function readDesktopMaterialFile(file, { consent = false, isCurrent = () => true } = {}) {
-  assertCurrent(isCurrent);
+export async function readDesktopMaterialFile(
+  file,
+  { consent = false, isCurrent = () => true, session = captureSession() } = {}
+) {
+  assertCurrent(isCurrent, session);
   if (consent !== true) throw new Error('请先确认解析资料；所选正文未读取或发送');
   const selected = materialMetadata(file);
   try {
     const body = await invoke('read_learning_material', { selection: selected.id, consent: true });
-    assertCurrent(isCurrent);
+    assertCurrent(isCurrent, session);
     if (!(body instanceof ArrayBuffer) || body.byteLength !== selected.size || body.byteLength > MATERIAL_MAX_BYTES)
       throw new Error('文件读取回执无效，请重新选择；所选正文未发送');
     const bytes = new Uint8Array(body);
     let binary = '';
     for (let offset = 0; offset < bytes.length; offset += 32768)
       binary += String.fromCharCode(...bytes.subarray(offset, offset + 32768));
-    assertCurrent(isCurrent);
+    assertCurrent(isCurrent, session);
     return { name: selected.name, size: selected.size, contentBase64: btoa(binary) };
   } finally {
     await discardDesktopMaterialFile(selected);

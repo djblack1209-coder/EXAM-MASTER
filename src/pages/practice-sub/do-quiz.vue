@@ -649,7 +649,7 @@ import {
   getRecoverableQuizProgress,
   isQuizProgressComplete
 } from '@/composables/useQuizAutoSave.js';
-import { getUserId, getToken } from '@/services/auth-storage.js';
+import { getUserId, getToken, captureSession, checkSession } from '@/services/auth-storage.js';
 import { restoreQuizLearningAttempts } from '@/services/learning/quiz-learning-bridge.js';
 // ✅ 检查点 5.1: 导入分析服务
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
@@ -822,6 +822,7 @@ export default {
   },
   data() {
     return {
+      boundLoginSession: captureSession(),
       memoryState: null,
       fsrsPreview: null, // { again: {intervalDays}, hard: {intervalDays}, good: {intervalDays}, easy: {intervalDays} }
       tutorFeedback: '',
@@ -1413,7 +1414,11 @@ export default {
             questions: this.questions,
             answeredQuestions: this.answeredQuestions,
             sessionId,
-            canContinue: () => !this.quizPageClosed && this.sessionId === sessionId && (getUserId() || '') === owner
+            canContinue: () =>
+              checkSession(this.boundLoginSession) === 'current' &&
+              !this.quizPageClosed &&
+              this.sessionId === sessionId &&
+              (getUserId() || '') === owner
           })
             .then((result) => {
               if (result.restored) uni.$emit('conversationLearningUpdated');
@@ -1564,7 +1569,7 @@ export default {
       const accept = (questions, consumedKey) => {
         this.questions = questions;
         this.questionBankFingerprint = this.buildQuestionBankFingerprint(questions);
-        if (consumedKey) storageService.remove(consumedKey);
+        if (consumedKey) storageService.remove(consumedKey, true, this.boundLoginSession);
         this.startTimer();
         this.startQuestionTimer();
       };
@@ -1672,7 +1677,7 @@ export default {
       this.passageAnnotations = storageService.get('passage_annotations', {}) || {};
     },
     savePassageAnnotations() {
-      storageService.save('passage_annotations', this.passageAnnotations || {});
+      storageService.save('passage_annotations', this.passageAnnotations || {}, true, this.boundLoginSession);
     },
     isPassageSegmentSelected(segmentIndex) {
       return this.currentPassageAnnotations.some((item) => Number(item.segmentIndex) === Number(segmentIndex));
@@ -1832,7 +1837,8 @@ export default {
         this.currentIndex === index &&
         JSON.stringify(this.currentQuestion) === JSON.stringify(frozen) &&
         (getUserId() || '') === owner &&
-        (getToken() || '') === token;
+        (getToken() || '') === token &&
+        checkSession(this.boundLoginSession) === 'current';
       this._typewriter?.stopTyping();
       try {
         const result = await fetchAIAnalysis({ question: frozen, userChoice });
@@ -1872,7 +1878,7 @@ export default {
       const today = new Date().toISOString().split('T')[0];
       const stats = storageService.get('study_stats', {});
       stats[today] = (stats[today] || 0) + 1;
-      storageService.save('study_stats', stats);
+      storageService.save('study_stats', stats, true, this.boundLoginSession);
       // 更新今日答题计数（驱动首页每日目标环）
       const todayCount = parseInt(uni.getStorageSync('today_answer_count') || '0');
       const todayDate = uni.getStorageSync('today_answer_date') || '';
@@ -1915,7 +1921,8 @@ export default {
         this.currentIndex === index &&
         JSON.stringify(this.currentQuestion) === JSON.stringify(question) &&
         (getUserId() || '') === owner &&
-        (getToken() || '') === token;
+        (getToken() || '') === token &&
+        checkSession(this.boundLoginSession) === 'current';
       this.referenceObservationId ||= createQuizAttemptId();
       this.flashcardFlipped = true;
       this.flashcardFsrsPreview = null;
@@ -1980,7 +1987,8 @@ export default {
         this.currentIndex === index &&
         JSON.stringify(this.currentQuestion) === JSON.stringify(question) &&
         (getUserId() || '') === owner &&
-        (getToken() || '') === token;
+        (getToken() || '') === token &&
+        checkSession(this.boundLoginSession) === 'current';
       this.selfRatingObservationId ||= createQuizAttemptId();
       this.recordingObservation = true;
       this.observationError = '';
@@ -2636,7 +2644,8 @@ export default {
         !this.quizPageClosed &&
         this.sessionId === sessionId &&
         (getUserId() || '') === owner &&
-        (getToken() || '') === token;
+        (getToken() || '') === token &&
+        checkSession(this.boundLoginSession) === 'current';
       this.syncingAttemptIds.push(attemptId);
       try {
         const questionData = await recordAnalytics({
@@ -2762,13 +2771,16 @@ export default {
         return;
       }
 
-      const result = addQuestionNote({
-        questionId: this.currentQuestion.id || this.currentQuestion.question,
-        questionContent: this.currentQuestion.question,
-        content: this.noteContent.trim(),
-        tags: this.selectedNoteTags,
-        category: this.currentQuestion.category
-      });
+      const result = addQuestionNote(
+        {
+          questionId: this.currentQuestion.id || this.currentQuestion.question,
+          questionContent: this.currentQuestion.question,
+          content: this.noteContent.trim(),
+          tags: this.selectedNoteTags,
+          category: this.currentQuestion.category
+        },
+        this.boundLoginSession
+      );
 
       if (result.success) {
         toast.success(t('quiz.copy100'));

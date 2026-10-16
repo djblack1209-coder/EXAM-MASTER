@@ -1,3 +1,4 @@
+import { captureSession, assertSession } from '@/services/auth-storage.js';
 /**
  * 智能题目生成 Mixin（分包动态加载）
  * 从 practice/index.vue 抽离，减小主包体积
@@ -23,6 +24,9 @@ async function proxyAI(_action, _data) {
 }
 
 export const aiGenerationMixin = {
+  data() {
+    return { generationSession: captureSession() };
+  },
   methods: {
     // ==================== 文件导入 ====================
     chooseImportSource() {
@@ -151,18 +155,20 @@ export const aiGenerationMixin = {
     },
 
     saveUploadRecord(record) {
+      assertSession(this.generationSession);
       const records = storageService.get(this.uploadHistoryKey, []);
       const nextRecord = createImportRecord(record);
       records.unshift(nextRecord);
-      storageService.saveDebounced(this.uploadHistoryKey, records);
+      storageService.saveDebounced(this.uploadHistoryKey, records, true, this.generationSession);
       return nextRecord.id;
     },
 
     updateUploadRecordStatus(status) {
+      assertSession(this.generationSession);
       if (!this.currentUploadId) return;
       const records = storageService.get(this.uploadHistoryKey, []);
       const nextRecords = updateImportRecordStatus(records, this.currentUploadId, status);
-      storageService.saveDebounced(this.uploadHistoryKey, nextRecords);
+      storageService.saveDebounced(this.uploadHistoryKey, nextRecords, true, this.generationSession);
     },
 
     handleUpload(file) {

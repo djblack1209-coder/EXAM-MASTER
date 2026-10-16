@@ -1,3 +1,4 @@
+import { getLoginSessionEpoch } from '@/services/auth-storage.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, getActivePinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
@@ -186,9 +187,10 @@ describe('提醒日期、原任务、权限与回执', () => {
   it('冷启动领取系统点击只返回原任务一次，不替用户作答', async () => {
     host.desktop = true;
     const s = setup(),
-      job = s.reminderQueue()[0],
+      job = { ...s.reminderQueue()[0], loginEpoch: getLoginSessionEpoch() },
       opened = vi.fn();
     s.start('另一个学习目标');
+    storageService.save('learning_notification_consent_v1', { context: s.notificationContext() }, true);
     let queued = [job];
     const native = vi.fn(async (command, args) => {
       if (command === 'begin_learning_notifications') return 'native-session';
@@ -211,8 +213,9 @@ describe('提醒日期、原任务、权限与回执', () => {
   it('启动页完成前保留系统点击，学习入口就绪后只返回原任务一次', async () => {
     host.desktop = true;
     const s = setup(),
-      job = s.reminderQueue()[0];
+      job = { ...s.reminderQueue()[0], loginEpoch: getLoginSessionEpoch() };
     s.start('另一个学习目标');
+    storageService.save('learning_notification_consent_v1', { context: s.notificationContext() }, true);
     let queued = [job],
       route = '',
       splash;
@@ -266,7 +269,7 @@ describe('提醒日期、原任务、权限与回执', () => {
   it('停止后的迟到系统点击不切换目标、写回执或解除停止', async () => {
     host.desktop = true;
     const s = setup(),
-      job = s.reminderQueue()[0],
+      job = { ...s.reminderQueue()[0], loginEpoch: getLoginSessionEpoch() },
       opened = vi.fn();
     s.commit('task.stop', { conversationId: s.active.id });
     const current = s.start('另一个学习目标').id;
@@ -288,7 +291,7 @@ describe('提醒日期、原任务、权限与回执', () => {
   it.each(['停止', '改期', '账户切换', '恢复'])('启动等待期间%s后不返回旧任务或写打开回执', async (change) => {
     host.desktop = true;
     const s = setup(),
-      job = s.reminderQueue()[0],
+      job = { ...s.reminderQueue()[0], loginEpoch: getLoginSessionEpoch() },
       opened = vi.fn();
     let ready = false,
       queued = [job];
@@ -341,7 +344,7 @@ describe('提醒日期、原任务、权限与回执', () => {
   });
   it('已交卷的迟到学习提醒和篡改返回字段不切换当前目标', () => {
     const s = setup(),
-      job = s.reminderQueue()[0],
+      job = { ...s.reminderQueue()[0], loginEpoch: getLoginSessionEpoch() },
       group = s.startTraining(s.journeyContext(), 'arithmetic-add', 1);
     s.submitTraining(s.journeyContext(), group.id, ['12']);
     const current = s.start('另一个学习目标').id;
@@ -350,5 +353,35 @@ describe('提醒日期、原任务、权限与回执', () => {
     expect(() => s.openReminder({ ...job, conversationId: current, reminderId: 'wrong-reminder' })).toThrow();
     expect(s.selectedConversationId).toBe(current);
     expect(s.state.attempts).toHaveLength(1);
+  });
+});
+
+describe('阶段5通知入口绑定', () => {
+  it.each(['web', 'macos'])('writes-5: delayed %s click keeps its delivered epoch', async (channel) => {
+    await storageService.saveLoginSession({ userId: 'audit5-notice', token: 'fixture-only-token', userInfo: {} });
+    host.desktop = channel === 'macos';
+    const s = setup(),
+      opened = vi.fn();
+    let delivered;
+    const native = vi.fn(async (command, args) => {
+      if (command === 'begin_learning_notifications') return 'audit5-native';
+      if (command === 'learning_notification_permission') return { permission: 'granted' };
+      if (command === 'take_learning_notification_actions') return [];
+      if (command === 'replace_learning_notifications') {
+        if (args.jobs.length) delivered = args.jobs[0];
+        return { ok: true, cancelled: true, acceptedIds: args.jobs.map((job) => job.id) };
+      }
+    });
+    controller = createLearningNotifications(s, opened, native);
+    await controller.initialize();
+    await controller.allow();
+    const notice = shown[0];
+    const before = s.state.events.length;
+    await storageService.saveLoginSession({ userId: 'audit5-notice', token: 'fixture-only-token', userInfo: {} });
+    if (channel === 'web') notice.onclick();
+    else host.listener({ payload: delivered });
+    expect(opened).not.toHaveBeenCalled();
+    expect(s.state.events).toHaveLength(before);
+    expect(s.state.events.at(-1)?.data?.status).not.toBe('opened');
   });
 });

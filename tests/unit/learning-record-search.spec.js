@@ -265,10 +265,15 @@ describe('record location uses canonical facts', () => {
         removeStorageSync: undefined
       });
       localStorage.clear();
-      storageService.save('EXAM_USER_ID', 'search-peer', true);
+      storageService.saveLoginSession({ userId: 'search-peer', token: 'fixture-peer-token', userInfo: {} });
       const peerIdentity = localStorage.getItem('__exam_storage__:_enc_EXAM_USER_ID');
-      storageService.save('EXAM_USER_ID', 'search-current', true);
-      storageService.save('EXAM_TOKEN', 'synthetic-encrypted-search-token', true);
+      const peerToken = localStorage.getItem('__exam_storage__:_enc_EXAM_TOKEN');
+      const peerEpoch = localStorage.getItem('__exam_storage__:_enc_EXAM_SESSION_EPOCH');
+      storageService.saveLoginSession({
+        userId: 'search-current',
+        token: 'synthetic-encrypted-search-token',
+        userInfo: {}
+      });
       expect(storageService.get('EXAM_USER_ID')).toBe('search-current'); // Warm the former compat cache.
       const { store } = await storeRecords();
       const result = store.searchRecords('第一稿');
@@ -286,6 +291,8 @@ describe('record location uses canonical facts', () => {
         eventKey.startsWith('__exam_storage__:') ? '__exam_storage__:_enc_EXAM_USER_ID' : '_enc_EXAM_USER_ID',
         eventKey.startsWith('__exam_storage__:') ? peerIdentity : encrypted
       );
+      localStorage.setItem('__exam_storage__:_enc_EXAM_TOKEN', peerToken);
+      localStorage.setItem('__exam_storage__:_enc_EXAM_SESSION_EPOCH', peerEpoch);
       window.dispatchEvent(new StorageEvent('storage', { key: eventKey }));
       expect(storageService.get('EXAM_USER_ID')).toBe('search-peer');
       expect(store.state.owner).toBe('search-peer');
@@ -294,6 +301,7 @@ describe('record location uses canonical facts', () => {
       expect(() => store.openRecord(result.items[0].id, result.context)).toThrow();
       expect(localStorage.getItem('__exam_storage__:u_search-current_conversation_learning_v1')).toBe(oldFacts);
       // Removing an encrypted identity must not resurrect the warmed cached account.
+      localStorage.removeItem('__exam_storage__:_enc_EXAM_SESSION_EPOCH');
       localStorage.removeItem('_enc_EXAM_USER_ID');
       localStorage.removeItem('__exam_storage__:_enc_EXAM_USER_ID');
       window.dispatchEvent(new StorageEvent('storage', { key: eventKey }));
@@ -309,8 +317,14 @@ describe('record location uses canonical facts', () => {
     store.openRecord(result.items[0].id, result.context);
     storageService.remove('EXAM_TOKEN', true);
     expect(store.locatedRecord).toBeNull();
+    expect(store.state.owner).toBe('guest');
+    storageService.saveLoginSession({
+      userId: 'same-window-search-owner',
+      token: 'synthetic-search-token',
+      userInfo: {}
+    });
     store.openRecord(store.searchRecords('第一稿').items[0].id, store.searchRecords('第一稿').context);
-    storageService.save('EXAM_USER_ID', 'same-window-second-owner', true);
+    storageService.saveLoginSession({ userId: 'same-window-second-owner', token: 'fixture-peer-token', userInfo: {} });
     expect(store.state.owner).toBe('same-window-second-owner');
     expect(store.searchRecords('第一稿').items).toEqual([]);
     expect(store.locatedRecord).toBeNull();

@@ -1,3 +1,4 @@
+import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
 /**
  * 刷题手势操作模块 - 支持左右滑动切换题目
  *
@@ -31,6 +32,7 @@ const DEFAULT_SETTINGS = {
  */
 class SwipeGestureManager {
   constructor() {
+    this._session = captureSession();
     this.settings = { ...DEFAULT_SETTINGS };
     this.startX = 0;
     this.startY = 0;
@@ -54,6 +56,9 @@ class SwipeGestureManager {
    * @param {Object} options - 配置选项
    */
   init(options = {}) {
+    if (this.isInitialized && checkSession(this._session) === 'changed') Object.assign(this, new SwipeGestureManager());
+    if (!this.isInitialized) this._session = captureSession();
+    assertSession(this._session);
     if (this.isInitialized) return;
 
     this._loadSettings();
@@ -412,7 +417,7 @@ class SwipeGestureManager {
   _saveSettings() {
     try {
       if (typeof uni !== 'undefined') {
-        storageService.save(STORAGE_KEY, this.settings);
+        storageService.save(STORAGE_KEY, this.settings, true, this._session);
       }
     } catch (e) {
       logger.warn('[SwipeGesture] 保存设置失败:', e);

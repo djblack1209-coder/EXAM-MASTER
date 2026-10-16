@@ -1,3 +1,4 @@
+import { captureSession, assertSession } from '../auth-storage.js';
 import { assert } from './learning-domain.js';
 
 export const APP_CONNECTOR_CONTRACT = 'wenli-app-connector-v1';
@@ -113,7 +114,12 @@ function utf8Length(text) {
   }
   return bytes;
 }
-export function requestAppConnector(connection, url, { signal, method, body, timeout, limit }) {
+export function requestAppConnector(
+  connection,
+  url,
+  { signal, method, body, timeout, limit, session = captureSession() }
+) {
+  assertSession(session);
   const bridge = getAppConnectorBridge();
   assert(!signal?.aborted, 'CANCELLED', '连接请求已取消');
   const longMaterialRequest = timeout > 35000 && method === 'POST' && new URL(url).pathname === '/parse';
@@ -134,6 +140,13 @@ export function requestAppConnector(connection, url, { signal, method, body, tim
     let ended = false;
     const finish = (value, error) => {
       if (ended) return;
+      if (!error) {
+        try {
+          assertSession(session);
+        } catch (failure) {
+          error = failure;
+        }
+      }
       ended = true;
       clearTimeout(timer);
       signal?.removeEventListener('abort', cancel);
@@ -158,6 +171,7 @@ export function requestAppConnector(connection, url, { signal, method, body, tim
     signal?.addEventListener('abort', cancel, { once: true });
     try {
       assert(!signal?.aborted, 'CANCELLED', '连接请求已取消');
+      assertSession(session);
       bridge.request(
         {
           id,
@@ -172,6 +186,12 @@ export function requestAppConnector(connection, url, { signal, method, body, tim
         },
         (response) => {
           if (ended) return;
+          try {
+            assertSession(session);
+          } catch (error) {
+            finish(null, error);
+            return;
+          }
           try {
             assert(!signal?.aborted, 'CANCELLED', '连接请求已取消');
             assert(response?.id === id, 'INVALID_RESPONSE', '原生响应不属于本次请求');
@@ -254,8 +274,9 @@ function decodeStreamChunk(data) {
 export async function streamAppConnector(
   connection,
   address,
-  { signal, body, timeout = 45000, limit = APP_STREAM_MAX_BYTES, onHeaders, onChunk } = {}
+  { signal, body, timeout = 45000, limit = APP_STREAM_MAX_BYTES, onHeaders, onChunk, session = captureSession() } = {}
 ) {
+  assertSession(session);
   const bridge = getAppLearningStreamBridge();
   assert(!signal?.aborted, 'CANCELLED', '教学流请求已取消');
   let url;
@@ -310,6 +331,13 @@ export async function streamAppConnector(
       headers = null;
     const finish = (value, error) => {
       if (ended) return;
+      if (!error) {
+        try {
+          assertSession(session);
+        } catch (failure) {
+          error = failure;
+        }
+      }
       ended = true;
       clearTimeout(timer);
       signal?.removeEventListener('abort', cancel);
@@ -334,6 +362,7 @@ export async function streamAppConnector(
     signal?.addEventListener('abort', cancel, { once: true });
     try {
       assert(!signal?.aborted, 'CANCELLED', '教学流请求已取消');
+      assertSession(session);
       bridge.stream(
         {
           id,
@@ -348,6 +377,12 @@ export async function streamAppConnector(
         },
         (value) => {
           if (ended) return;
+          try {
+            assertSession(session);
+          } catch (error) {
+            finish(null, error);
+            return;
+          }
           try {
             assert(!signal?.aborted, 'CANCELLED', '教学流请求已取消');
             assert(Date.now() <= deadline, 'TIMEOUT', '教学流超时，实际用量仍须查询');

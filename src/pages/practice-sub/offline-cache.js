@@ -1,3 +1,5 @@
+import { captureSession, assertSession } from '@/services/auth-storage.js';
+import { storageService } from '@/services/storageService.js';
 /**
  * 离线缓存工具 — do-quiz / quiz-analytics-recorder 使用
  */
@@ -13,10 +15,12 @@ export function checkOfflineAvailability() {
   }
 }
 
-export async function saveOfflineAnswer(answerData) {
+export async function saveOfflineAnswer(answerData, session = captureSession()) {
   try {
     const key = 'EXAM_OFFLINE_ANSWERS';
-    const stored = uni.getStorageSync(key);
+    assertSession(session);
+    if ((answerData.userId || 'guest') !== session.owner) return false;
+    const stored = storageService.get(key, [], { session, migrateLegacy: false });
     const existing = stored === '' || stored == null ? [] : stored;
     if (!Array.isArray(existing)) return false;
     const index = isValidQuizAttemptId(answerData.attemptId)
@@ -31,8 +35,7 @@ export async function saveOfflineAnswer(answerData) {
       if (answerData.submission?.status !== 'received' || previous.submission?.status === 'received') return true;
       next[index] = { ...previous, submission: answerData.submission };
     } else next.push({ ...answerData, savedAt: Date.now() });
-    uni.setStorageSync(key, next);
-    return true;
+    return storageService.save(key, next, true, session);
   } catch (err) {
     logger.warn('[OfflineCache] saveOfflineAnswer failed:', err);
     return false;

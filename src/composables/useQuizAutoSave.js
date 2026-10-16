@@ -11,7 +11,7 @@
  */
 
 import storageService from '@/services/storageService.js';
-import { getUserId, getToken } from '@/services/auth-storage.js';
+import { captureSession, checkSession } from '@/services/auth-storage.js';
 import { logger } from '@/utils/logger.js';
 import {
   isValidQuizSessionId,
@@ -29,9 +29,8 @@ const DEBOUNCE_DELAY = 500;
 export function saveQuizProgress(progress, immediate = false, context = null) {
   if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
   saveDebounceTimer = null;
-  const owner = getUserId() || '',
-    token = getToken() || '';
-  const current = () => (getUserId() || '') === owner && (getToken() || '') === token;
+  const session = captureSession();
+  const current = () => checkSession(session) === 'current';
   let snapshot, frozenContext;
   try {
     snapshot = JSON.parse(JSON.stringify(progress));
@@ -39,15 +38,15 @@ export function saveQuizProgress(progress, immediate = false, context = null) {
   } catch {
     return false;
   }
-  if (immediate) return current() && doSaveProgress(snapshot, frozenContext);
+  if (immediate) return current() && doSaveProgress(snapshot, frozenContext, session);
   saveDebounceTimer = setTimeout(() => {
     saveDebounceTimer = null;
-    if (current()) doSaveProgress(snapshot, frozenContext);
+    if (current()) doSaveProgress(snapshot, frozenContext, session);
   }, DEBOUNCE_DELAY);
   return true;
 }
 
-function doSaveProgress(progress, context = null) {
+function doSaveProgress(progress, context = null, session = captureSession()) {
   try {
     if (progress.sessionId !== undefined && progress.sessionId !== '' && !isValidQuizSessionId(progress.sessionId)) {
       logger.warn('[QuizAutoSave] 会话标识无效，原记录已保留');
@@ -71,7 +70,7 @@ function doSaveProgress(progress, context = null) {
     if (progress.questionTiming) data.questionTiming = { ...progress.questionTiming };
     if (!isValidProgressData(data)) return false;
 
-    if (storageService.save(QUIZ_PROGRESS_KEY, data, true) !== true) return false;
+    if (storageService.save(QUIZ_PROGRESS_KEY, data, true, session) !== true) return false;
     const saved = storageService.get(QUIZ_PROGRESS_KEY, null, { migrateLegacy: false, throwOnError: true });
     if (JSON.stringify(saved) !== JSON.stringify(data)) return false;
 
@@ -124,12 +123,12 @@ export function loadQuizProgress(context = null) {
   }
 }
 
-export function clearQuizProgress() {
+export function clearQuizProgress(session = captureSession()) {
   if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
   saveDebounceTimer = null;
   try {
-    storageService.remove(QUIZ_PROGRESS_KEY);
-    storageService.remove(QUIZ_PROGRESS_TIMESTAMP_KEY);
+    storageService.remove(QUIZ_PROGRESS_KEY, true, session);
+    storageService.remove(QUIZ_PROGRESS_TIMESTAMP_KEY, true, session);
     logger.log('[QuizAutoSave] 进度已清除');
     return true;
   } catch (error) {
