@@ -1,5 +1,5 @@
 /**
- * Exam-Master App 端全量功能测试
+ * Yozi AI App 端全量功能测试
  * 通过 uni-app 页面生命周期和 API 模拟完整用户操作路径
  * 运行: npm run test:app-e2e
  */

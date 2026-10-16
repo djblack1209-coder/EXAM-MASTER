@@ -8,7 +8,7 @@
  * 3. 上传头像 (upload_avatar) - v2.0新增
  * 4. 获取/更新练习模式配置 (get_practice_config / update_practice_config) - v2.0新增
  *
- * @author Exam-Master Team
+ * @author Yozi AI Team
  * @version 2.0.0
  * @date 2026-02-05
  */

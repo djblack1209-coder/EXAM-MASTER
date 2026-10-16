@@ -17,7 +17,7 @@ describe('config/index.js', () => {
   describe('getEnv / getEnvNumber / getEnvBoolean', () => {
     it('getEnv 返回白名单客户端环境变量值', async () => {
       const { getEnv } = await import('@/config/index.js');
-      expect(getEnv('VITE_APP_NAME', 'default')).toBe('Exam-Master-Test');
+      expect(getEnv('VITE_APP_NAME', 'default')).toBe('Yozi-AI-Test');
     });
 
     it('getEnv 不暴露服务端专用 VITE 变量', async () => {

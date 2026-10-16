@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Baidu Pan group/share-link resource sync for EXAM-MASTER.
+Baidu Pan group/share-link resource sync for Yozi AI.
 
 This module intentionally implements the stable share-link route first. Group
 direct APIs remain an optional future collector and are not required by the
@@ -600,7 +600,7 @@ def run_self_test() -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Sync Baidu Pan share links into EXAM-MASTER Source Manifest."
+        description="Sync Baidu Pan share links into Yozi AI Source Manifest."
     )
     parser.add_argument("--mode", choices=["sharelink", "cookie", "both"], default="sharelink")
     parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY)

@@ -14,7 +14,10 @@ const root = fileURLToPath(new URL('../../', import.meta.url));
 const output = path.join(root, 'tmp/app-connector-validation');
 await mkdir(output, { recursive: true });
 const work = await mkdtemp(path.join(output, 'run-'));
-const javaHome = process.env.WENLI_TEST_JAVA_HOME || '/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home';
+const javaHome =
+  process.env.YOZI_TEST_JAVA_HOME ||
+  process.env.WENLI_TEST_JAVA_HOME ||
+  '/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home';
 const env = { PATH: process.env.PATH, TMPDIR: work };
 const token = randomBytes(32).toString('hex');
 const fixedOrigin = 'https://wenli-app.invalid';
@@ -58,7 +61,7 @@ const waitFor = async (predicate) => {
 };
 function client(exe, args) {
   const child = spawn(exe, args, { cwd: root, env, stdio: ['pipe', 'pipe', 'pipe'] });
-  child.wenliStartedAt = new Date().toISOString();
+  child.yoziStartedAt = new Date().toISOString();
   children.push(child);
   const pending = new Map(),
     counts = new Map(),
@@ -311,7 +314,7 @@ try {
     '8',
     '-d',
     classes,
-    'nativeplugins/Wenli-Connector/android/src/cn/wenli/connector/ConnectorTransport.java',
+    'nativeplugins/Yozi-Connector/android/src/cn/yozi/connector/ConnectorTransport.java',
     'tests/native/app-connector/ConnectorHarness.java'
   ]);
   if (process.platform !== 'darwin') throw new Error('此双内核验收需要macOS Foundation，当前平台未通过该项');
@@ -324,8 +327,8 @@ try {
     '-framework',
     'Foundation',
     '-I',
-    'nativeplugins/Wenli-Connector/ios/src',
-    'nativeplugins/Wenli-Connector/ios/src/WenliConnectorTransport.m',
+    'nativeplugins/Yozi-Connector/ios/src',
+    'nativeplugins/Yozi-Connector/ios/src/YoziConnectorTransport.m',
     'tests/native/app-connector/connector-harness.m',
     '-o',
     path.join(work, 'foundation-harness')
@@ -664,8 +667,8 @@ try {
   await rm(work, { recursive: true, force: true });
   const hashes = {};
   for (const file of [
-    'nativeplugins/Wenli-Connector/android/src/cn/wenli/connector/ConnectorTransport.java',
-    'nativeplugins/Wenli-Connector/ios/src/WenliConnectorTransport.m',
+    'nativeplugins/Yozi-Connector/android/src/cn/yozi/connector/ConnectorTransport.java',
+    'nativeplugins/Yozi-Connector/ios/src/YoziConnectorTransport.m',
     'tests/native/app-connector/ConnectorHarness.java',
     'tests/native/app-connector/connector-harness.m'
   ])
@@ -684,7 +687,7 @@ try {
       loopbackPorts,
       children: children.map((c) => ({
         pid: c.pid,
-        startedAt: c.wenliStartedAt,
+        startedAt: c.yoziStartedAt,
         consumer: 'private native connector fixture CLI',
         exitCode: c.exitCode,
         signal: c.signalCode

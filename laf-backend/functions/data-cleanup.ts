@@ -16,7 +16,7 @@
  * - 自动备份机制 (v2.0新增)
  *
  * @version 2.0.0
- * @author EXAM-MASTER Backend Team
+ * @author Yozi AI Backend Team
  */
 
 import cloud from '@lafjs/cloud';

@@ -182,7 +182,7 @@ export async function handleDesktopOAuth(ctx: any, deps: Dependencies) {
         }))
       )
         return fail(409, '本次桌面授权已取消，请重新登录');
-      return { code: 0, data: { desktopReady: true }, message: '授权已完成，请返回问理桌面应用' };
+      return { code: 0, data: { desktopReady: true }, message: '授权已完成，请返回Yozi AI桌面应用' };
     } catch {
       await change('exchanging', { phase: 'failed', reason: 'exchange' });
       return fail(500);

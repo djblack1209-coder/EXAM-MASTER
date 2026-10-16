@@ -10,7 +10,7 @@ import {
 } from '../../scripts/build/check-mp-main-package-usage.mjs';
 
 function makeBuildRoot() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-mp-main-'));
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'yozi-ai-mp-main-'));
 }
 
 describe('mp-weixin main package usage audit', () => {

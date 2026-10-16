@@ -27,7 +27,7 @@ describe('app artifact verifier', () => {
   it('accepts uni-app native app artifacts with relative runtime assets', () => {
     writeFixture({
       '__uniappview.html': '<script src="uni-app-view.umd.js"></script><link rel="stylesheet" href="app.css">',
-      'manifest.json': '{"name":"EXAM-MASTER"}',
+      'manifest.json': '{"name":"Yozi AI"}',
       'app-config-service.js': 'const __uniRoutes=[]',
       'app-service.js': 'console.log("ok")',
       'app.css': 'body{color:#132618}',
@@ -40,7 +40,7 @@ describe('app artifact verifier', () => {
   it('blocks absolute runtime asset paths and server-only env names', () => {
     writeFixture({
       '__uniappview.html': '<script src="/static/js/index.js"></script>',
-      'manifest.json': '{"name":"EXAM-MASTER"}',
+      'manifest.json': '{"name":"Yozi AI"}',
       'app-config-service.js': 'const __uniRoutes=[]',
       'app-service.js': 'const secretName="JWT_SECRET"'
     });

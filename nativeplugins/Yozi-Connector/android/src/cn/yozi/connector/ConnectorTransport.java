@@ -1,4 +1,4 @@
-package cn.wenli.connector;
+package cn.yozi.connector;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -21,7 +21,7 @@ public final class ConnectorTransport implements AutoCloseable {
     private final ScheduledExecutorService timers = Executors.newScheduledThreadPool(2, daemon());
     private final ExecutorService workers = new ThreadPoolExecutor(4, 4, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(4), daemon());
     private volatile boolean closed;
-    private static ThreadFactory daemon() { return r -> { Thread t = new Thread(r, "wenli-connector"); t.setDaemon(true); return t; }; }
+    private static ThreadFactory daemon() { return r -> { Thread t = new Thread(r, "yozi-connector"); t.setDaemon(true); return t; }; }
     public static Map<String,Object> capabilities() {
         Map<String,Object> v = new HashMap<>(); v.put("contract", CONTRACT); v.put("redirect", "reject");
         v.put("responseLimit", "bytes"); v.put("utf8", "strict"); v.put("tls", "system"); v.put("cancel", true);

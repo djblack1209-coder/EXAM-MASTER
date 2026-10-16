@@ -9,7 +9,7 @@ describe('wechat artifact secret scan', () => {
   it.each(['VITE_INVITE_SECRET', 'WX_SECRET', 'WX_MOBILE_SECRET', 'QQ_MINI_SECRET'])(
     'flags server-only %s in generated client artifacts',
     (token) => {
-      const root = mkdtempSync(join(tmpdir(), 'exam-master-secret-scan-'));
+      const root = mkdtempSync(join(tmpdir(), 'yozi-ai-secret-scan-'));
       try {
         mkdirSync(join(root, 'config'), { recursive: true });
         writeFileSync(join(root, 'config/index.js'), `const leak = "${token}";\n`, 'utf8');

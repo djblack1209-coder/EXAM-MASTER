@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================
-# Exam-Master MongoDB 恢复脚本
+# Yozi AI MongoDB 恢复脚本
 # 支持全量恢复和时间点恢复
 # ============================================
 
@@ -310,7 +310,7 @@ post_restore_verify() {
 # 显示帮助
 show_help() {
     cat << EOF
-Exam-Master MongoDB 恢复脚本
+Yozi AI MongoDB 恢复脚本
 
 用法:
     $0 <restore_type> [backup_file] [target_time]
@@ -347,7 +347,7 @@ main() {
     mkdir -p "${BACKUP_DIR}/logs"
     
     log "=========================================="
-    log "Exam-Master MongoDB 恢复开始"
+    log "Yozi AI MongoDB 恢复开始"
     log "恢复类型: ${RESTORE_TYPE}"
     log "=========================================="
     

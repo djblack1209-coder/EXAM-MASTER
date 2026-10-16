@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Incremental resource collector for EXAM-MASTER.
+Incremental resource collector for Yozi AI.
 
 Primary path:
   Baidu official app directory -> Source Manifest -> optional download queue

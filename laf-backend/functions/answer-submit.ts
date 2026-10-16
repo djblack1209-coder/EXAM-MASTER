@@ -17,7 +17,7 @@
  * - data: object - 操作数据
  *
  * @version 1.0.0
- * @author EXAM-MASTER Backend Team
+ * @author Yozi AI Backend Team
  */
 
 import cloud from '@lafjs/cloud';

@@ -11,7 +11,7 @@ function runGit(args, cwd) {
 }
 
 function createTrackedFixture() {
-  const root = mkdtempSync(join(tmpdir(), 'exam-master-tracked-secret-'));
+  const root = mkdtempSync(join(tmpdir(), 'yozi-ai-tracked-secret-'));
   runGit(['init', '-q'], root);
   runGit(['config', 'user.email', 'test@example.com'], root);
   runGit(['config', 'user.name', 'Test User'], root);

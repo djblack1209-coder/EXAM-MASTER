@@ -1,5 +1,5 @@
 """
-考研大师 — PDF→闪卡 自动化加工管线
+Yozi AI — PDF→闪卡 自动化加工管线
 功能：下载PDF → OCR提取 → 清洗匿名化 → 结构化解析 → 去重 → 输出JSON
 依赖：pip install ocrmac pymupdf
 仅限macOS（使用苹果原生OCR引擎）

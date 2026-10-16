@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Build the incremental cleaning queue for EXAM-MASTER source files.
+Build the incremental cleaning queue for Yozi AI source files.
 
 The queue is the handoff from Baidu Pan/source manifest scanning to the
 download, text extraction, AI structuring, answer-evidence matching, and

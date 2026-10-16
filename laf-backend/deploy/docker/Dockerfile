@@ -1,5 +1,5 @@
 # ============================================
-# Exam-Master 后端服务 Dockerfile
+# Yozi AI 后端服务 Dockerfile
 # 多阶段构建，优化镜像大小和安全性
 # ============================================
 
@@ -72,7 +72,7 @@ ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "functions/health-check.ts"]
 
 # ==================== 标签 ====================
-LABEL maintainer="Exam-Master DevOps Team" \
+LABEL maintainer="Yozi AI DevOps Team" \
       version="1.0.0" \
-      description="Exam-Master Backend Service" \
+      description="Yozi AI Backend Service" \
       org.opencontainers.image.source="https://github.com/djblack1209-coder/EXAM-MASTER-BACKEND"

@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================
-# Exam-Master 日志巡检脚本
+# Yozi AI 日志巡检脚本
 # 过滤 500/502 错误，分析 RPC 调用失败
 # ============================================
 
@@ -272,7 +272,7 @@ generate_report() {
     log_info "生成巡检报告: $REPORT_FILE"
     
     cat > "$REPORT_FILE" << EOF
-# Exam-Master 日志巡检报告
+# Yozi AI 日志巡检报告
 
 **生成时间**: $(date '+%Y-%m-%d %H:%M:%S')
 **检查范围**: 最近 ${HOURS} 小时
@@ -399,7 +399,7 @@ EOF
 # 显示帮助
 show_help() {
     cat << EOF
-Exam-Master 日志巡检脚本
+Yozi AI 日志巡检脚本
 
 用法: $0 [选项]
 
@@ -463,7 +463,7 @@ main() {
     RPC_LOG="${OUTPUT_DIR}/rpc-failures-$(date +%Y%m%d-%H%M%S).log"
     
     echo "============================================"
-    echo "  Exam-Master 日志巡检"
+    echo "  Yozi AI 日志巡检"
     echo "============================================"
     echo ""
     log_info "命名空间: $NAMESPACE"

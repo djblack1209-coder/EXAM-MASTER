@@ -5,7 +5,7 @@
  * 前端校验过的，后端必须再校验一遍（长度、类型、格式）
  *
  * @version 1.0.0
- * @author EXAM-MASTER Backend Team
+ * @author Yozi AI Backend Team
  */
 
 // ==================== 类型定义 ====================

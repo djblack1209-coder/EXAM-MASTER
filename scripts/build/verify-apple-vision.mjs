@@ -45,7 +45,7 @@ function command(exe, args, timeout = 45000) {
 try {
   assert.equal(process.platform, 'darwin', '真实macOS不可用');
   const common = ['clang', '-fobjc-arc', '-fmodules', '-Wall', '-Werror', '-mmacosx-version-min=14.0'];
-  const binary = path.join(work, 'wenli-apple-vision'),
+  const binary = path.join(work, 'yozi-apple-vision'),
     generator = path.join(work, 'generate-fixture');
   await command('xcrun', [
     ...common,
@@ -114,7 +114,7 @@ try {
     productionWrites: 0
   };
   for (const name of [
-    'wenli-apple-vision',
+    'yozi-apple-vision',
     'generate-fixture',
     'printed.png',
     'printed.jpg',

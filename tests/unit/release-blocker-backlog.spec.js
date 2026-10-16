@@ -98,7 +98,7 @@ describe('release blocker backlog', () => {
   });
 
   it('can skip markdown output for temporary read-only audits', async () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-release-backlog-'));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'yozi-ai-release-backlog-'));
     const questionAuditPath = path.join(tempDir, 'question-bank-release-audit.json');
     const flashcardQualityPath = path.join(tempDir, 'flashcard-quality-report.json');
     const externalAuditPath = path.join(tempDir, 'release-external-audit.json');
@@ -147,7 +147,7 @@ describe('release blocker backlog', () => {
   });
 
   it('merges repeated local source audit reports for the same backlog run', async () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-master-release-backlog-local-sources-'));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'yozi-ai-release-backlog-local-sources-'));
     const questionAuditPath = path.join(tempDir, 'question-bank-release-audit.json');
     const flashcardQualityPath = path.join(tempDir, 'flashcard-quality-report.json');
     const externalAuditPath = path.join(tempDir, 'release-external-audit.json');
@@ -1540,7 +1540,7 @@ describe('release blocker backlog', () => {
     const markdown = renderBacklogMarkdown(backlog);
 
     expect(backlog.verdict).toBe('passed');
-    expect(markdown).toContain('Exam-Master 发布遗留阻塞 Backlog');
+    expect(markdown).toContain('Yozi AI 发布遗留阻塞 Backlog');
     expect(markdown).toContain('专业课索引');
     expect(markdown).toContain('embeddedItems: 600');
     expect(markdown).toContain('fullIndexItems: 13644');

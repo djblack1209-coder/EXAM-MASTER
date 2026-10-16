@@ -1,5 +1,5 @@
 {
-  "description": "Exam-Master root config for WeChat DevTools",
+  "description": "Yozi AI root config for WeChat DevTools",
   "packOptions": {
     "ignore": []
   },
@@ -26,7 +26,7 @@
   "compileType": "miniprogram",
   "libVersion": "2.32.3",
   "appid": "wxd634d50ad63e14ed",
-  "projectname": "Exam-Master",
+  "projectname": "Yozi AI",
   "miniprogramRoot": "dist/build/mp-weixin/",
   "condition": {
     "search": {

@@ -1,7 +1,7 @@
-#import "WenliConnectorModule.h"
-#import "WenliConnectorTransport.h"
-#import "WenliMaterialFiles.h"
-@implementation WenliConnectorModule { WenliConnectorTransport *_transport;WenliMaterialFiles *_files;UIDocumentPickerViewController *_picker;NSString *_pickerId;UniModuleKeepAliveCallback _pickerCallback; }
+#import "YoziConnectorModule.h"
+#import "YoziConnectorTransport.h"
+#import "YoziMaterialFiles.h"
+@implementation YoziConnectorModule { YoziConnectorTransport *_transport;YoziMaterialFiles *_files;UIDocumentPickerViewController *_picker;NSString *_pickerId;UniModuleKeepAliveCallback _pickerCallback; }
 UNI_EXPORT_METHOD_SYNC(@selector(getCapabilities))
 UNI_EXPORT_METHOD(@selector(request:callback:))
 UNI_EXPORT_METHOD(@selector(stream:callback:))
@@ -10,8 +10,8 @@ UNI_EXPORT_METHOD(@selector(chooseMaterialFile:callback:))
 UNI_EXPORT_METHOD(@selector(readMaterialFile:callback:))
 UNI_EXPORT_METHOD(@selector(releaseMaterialFile:))
 UNI_EXPORT_METHOD(@selector(cancelFileOperation:))
-- (instancetype)init {if((self=[super init])){_transport=[WenliConnectorTransport new];_files=[WenliMaterialFiles new];}return self;}
-- (NSDictionary *)getCapabilities {NSMutableDictionary *caps=[WenliConnectorTransport.capabilities mutableCopy];caps[@"file"]=WenliMaterialFiles.capabilities;return caps;}
+- (instancetype)init {if((self=[super init])){_transport=[YoziConnectorTransport new];_files=[YoziMaterialFiles new];}return self;}
+- (NSDictionary *)getCapabilities {NSMutableDictionary *caps=[YoziConnectorTransport.capabilities mutableCopy];caps[@"file"]=YoziMaterialFiles.capabilities;return caps;}
 - (void)request:(NSDictionary *)options callback:(UniModuleKeepAliveCallback)callback {
     [_transport request:options completion:^(NSDictionary *value){dispatch_async(dispatch_get_main_queue(),^{if(callback)callback(value,NO);});}];
 }

@@ -1,5 +1,5 @@
 /**
- * EXAM-MASTER 独立 Express 服务器
+ * Yozi AI 独立 Express 服务器
  *
  * 将 Laf 云函数映射为 HTTP 路由:
  *   POST /函数名 → 执行对应云函数
@@ -283,7 +283,7 @@ async function registerFunctions() {
 
 async function main() {
   console.log('='.repeat(50));
-  console.log('EXAM-MASTER Standalone Server');
+  console.log('Yozi AI Standalone Server');
   console.log('='.repeat(50));
 
   // ==================== 进程级异常防护 ====================

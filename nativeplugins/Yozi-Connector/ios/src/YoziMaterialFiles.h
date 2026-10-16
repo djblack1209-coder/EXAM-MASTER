@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-@interface WenliMaterialFiles : NSObject
+@interface YoziMaterialFiles : NSObject
 + (NSDictionary *)capabilities;
 - (void)selectURL:(NSURL *)url identifier:(NSString *)identifier completion:(void (^)(NSDictionary *))completion;
 - (void)read:(NSDictionary *)options completion:(void (^)(NSDictionary *))completion;

@@ -18,18 +18,18 @@ if (typeof crypto.hash !== 'function') {
 }
 
 export default defineConfig({
-  envDir: process.env.WENLI_ISOLATED_BUILD === '1' ? false : undefined,
+  envDir: process.env.YOZI_ISOLATED_BUILD === '1' || process.env.WENLI_ISOLATED_BUILD === '1' ? false : undefined,
   define: { __YOZI_TOKENS__: JSON.stringify(readYoziTokens()) },
   plugins: [vue()],
 
   test: {
     // Isolated checks never load private env files; these are public test fixture values.
     env:
-      process.env.WENLI_ISOLATED_BUILD === '1'
+      process.env.YOZI_ISOLATED_BUILD === '1' || process.env.WENLI_ISOLATED_BUILD === '1'
         ? {
             VITE_API_BASE_URL: 'https://test.example.com',
             VITE_WX_APP_ID: 'wx_test_app_id',
-            VITE_APP_NAME: 'Exam-Master-Test',
+            VITE_APP_NAME: 'Yozi-AI-Test',
             VITE_PAGE_SIZE: '20',
             VITE_DEBUG_MODE: 'true',
             VITE_ENABLE_MOCK: 'false',
@@ -37,7 +37,7 @@ export default defineConfig({
             VITE_WS_PROD_URL: 'wss://test.example.com/ws/ranking'
           }
         : {},
-    maxWorkers: process.env.WENLI_ISOLATED_BUILD === '1' ? 1 : undefined,
+    maxWorkers: process.env.YOZI_ISOLATED_BUILD === '1' || process.env.WENLI_ISOLATED_BUILD === '1' ? 1 : undefined,
     // 测试环境
     environment: 'happy-dom',
 

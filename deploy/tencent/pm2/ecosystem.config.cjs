@@ -1,5 +1,5 @@
 /**
- * EXAM-MASTER PM2 生态系统配置
+ * Yozi AI PM2 生态系统配置
  *
  * 部署到 /opt/apps/exam-master/backend/ 后执行:
  *   pm2 start ecosystem.config.cjs

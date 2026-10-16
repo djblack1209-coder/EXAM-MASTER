@@ -1232,7 +1232,7 @@ def run_self_test() -> None:
         "year": 2030,
         "cards": [{"id": "future"}],
     }
-    with tempfile.TemporaryDirectory(prefix="exam-master-flashcard-quality-") as temp_dir:
+    with tempfile.TemporaryDirectory(prefix="yozi-ai-flashcard-quality-") as temp_dir:
         flashcard_dir = Path(temp_dir)
         write_json(flashcard_dir / "english1-2025.json", passing_payload)
         write_json(flashcard_dir / "english1-2025-support.json", support_payload)

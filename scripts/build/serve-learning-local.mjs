@@ -104,7 +104,7 @@ const frontend = createServer((req, res) => {
     // TEST_ONLY账号仅访问本轮固定隔离库；API密钥与服务端签名材料不写入此页面。
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.end(
-      `<!doctype html><meta charset="utf-8"><title>EXAM-MASTER 本机隔离验收</title><h1>本机隔离验收</h1><p>进入原项目候选界面。只使用合成学习记录和本轮隔离账号，模型密钥留在服务端。最多5次自带API请求（含已有2次）；不收费、不部署。</p><button id="enter">进入候选界面</button><script>document.getElementById('enter').onclick=()=>{localStorage.setItem('EXAM_USER_ID',${JSON.stringify(state.owner)});localStorage.setItem('EXAM_TOKEN',${JSON.stringify(token)});location.href='/#/pages/learning/index';};</script>`
+      `<!doctype html><meta charset="utf-8"><title>Yozi AI 本机隔离验收</title><h1>本机隔离验收</h1><p>进入原项目候选界面。只使用合成学习记录和本轮隔离账号，模型密钥留在服务端。最多5次自带API请求（含已有2次）；不收费、不部署。</p><button id="enter">进入候选界面</button><script>document.getElementById('enter').onclick=()=>{localStorage.setItem('EXAM_USER_ID',${JSON.stringify(state.owner)});localStorage.setItem('EXAM_TOKEN',${JSON.stringify(token)});location.href='/#/pages/learning/index';};</script>`
     );
     return;
   }

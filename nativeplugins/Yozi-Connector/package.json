@@ -1,5 +1,5 @@
 {
-  "name": "Wenli 受保护连接器",
+  "name": "Yozi AI 受保护连接器",
   "id": "Wenli-Connector",
   "version": "1.0.0",
   "description": "原生拒绝重定向、系统TLS、输出字节上限、严格UTF8与取消；无模型推理或文件权限",
@@ -10,7 +10,7 @@
         {
           "type": "module",
           "name": "Wenli-Connector",
-          "class": "cn.wenli.connector.WenliConnectorModule"
+          "class": "cn.yozi.connector.YoziConnectorModule"
         }
       ],
       "integrateType": "jar",
@@ -26,7 +26,7 @@
         {
           "type": "module",
           "name": "Wenli-Connector",
-          "class": "WenliConnectorModule"
+          "class": "YoziConnectorModule"
         }
       ],
       "integrateType": "library",

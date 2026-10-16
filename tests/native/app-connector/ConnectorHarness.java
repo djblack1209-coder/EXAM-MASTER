@@ -1,4 +1,4 @@
-import cn.wenli.connector.ConnectorTransport;
+import cn.yozi.connector.ConnectorTransport;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;

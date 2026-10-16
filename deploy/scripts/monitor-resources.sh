@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================
-# Exam-Master 资源监控脚本
+# Yozi AI 资源监控脚本
 # 用于压力测试期间实时监控 Pod CPU/Memory
 # 并记录 HPA 扩容响应时间
 # ============================================
@@ -173,7 +173,7 @@ generate_report() {
     log_info "生成监控报告: $report_file"
     
     cat > "$report_file" << EOF
-# Exam-Master 资源监控报告
+# Yozi AI 资源监控报告
 
 **生成时间**: $(date '+%Y-%m-%d %H:%M:%S')
 **命名空间**: $NAMESPACE
@@ -284,7 +284,7 @@ single_check() {
 # 显示帮助
 show_help() {
     cat << EOF
-Exam-Master 资源监控脚本
+Yozi AI 资源监控脚本
 
 用法: $0 [选项]
 
@@ -353,7 +353,7 @@ main() {
     LOG_FILE="${OUTPUT_DIR}/resource-monitor-$(date +%Y%m%d-%H%M%S).log"
     HPA_LOG="${OUTPUT_DIR}/hpa-events-$(date +%Y%m%d-%H%M%S).log"
     
-    log_info "Exam-Master 资源监控脚本"
+    log_info "Yozi AI 资源监控脚本"
     log_info "命名空间: $NAMESPACE"
     
     check_dependencies

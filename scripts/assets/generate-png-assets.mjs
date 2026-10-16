@@ -164,7 +164,7 @@ function promptForPath(assetPath) {
     return 'Modern exam-preparation illustration with study cards, progress paths, and abstract knowledge nodes, white and mint background, no people, no readable text.';
   }
   if (assetPath.includes('/images/') || assetPath.includes('/pwa-icons/')) {
-    return 'Brand or app image for EXAM-MASTER, abstract open book and upward progress path, mature fintech education style, no readable text.';
+    return 'Brand or app image for Yozi AI, abstract open book and upward progress path, mature fintech education style, no readable text.';
   }
   return 'Modern green study app asset, crisp mobile UI style, centered composition, no readable text.';
 }

@@ -1,4 +1,4 @@
-package cn.wenli.connector;
+package cn.yozi.connector;
 import android.app.Activity;
 import android.content.Intent;
 import com.alibaba.fastjson.JSONObject;
@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** SDK入口只暴露固定合同，不暴露任意反射或代码执行。 */
-public final class WenliConnectorModule extends UniDestroyableModule {
+public final class YoziConnectorModule extends UniDestroyableModule {
     private final ConnectorTransport transport = new ConnectorTransport();
     private final MaterialFiles files=new MaterialFiles();
     private static final int PICK_DOCUMENT=0x57E1;

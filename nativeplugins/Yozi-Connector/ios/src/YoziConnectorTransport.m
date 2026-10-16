@@ -1,7 +1,7 @@
-#import "WenliConnectorTransport.h"
+#import "YoziConnectorTransport.h"
 
-static NSString * const WenliOrigin = @"https://wenli-app.invalid";
-@interface WenliConnectorJob : NSObject <NSURLSessionDataDelegate>
+static NSString * const YoziOrigin = @"https://wenli-app.invalid";
+@interface YoziConnectorJob : NSObject <NSURLSessionDataDelegate>
 @property NSString *identifier;
 @property NSMutableData *data;
 @property NSUInteger limit;
@@ -18,7 +18,7 @@ static NSString * const WenliOrigin = @"https://wenli-app.invalid";
 - (void)fail:(NSString *)code;
 - (BOOL)event:(NSDictionary *)value;
 @end
-@implementation WenliConnectorJob
+@implementation YoziConnectorJob
 - (void)finish:(NSDictionary *)value {
     [self.lock lock]; if (self.finished) { [self.lock unlock]; return; } self.finished=YES;
     NSMutableDictionary *result=[value mutableCopy];
@@ -69,7 +69,7 @@ static NSString * const WenliOrigin = @"https://wenli-app.invalid";
 }
 @end
 
-@implementation WenliConnectorTransport { NSMutableDictionary<NSString *,WenliConnectorJob *> *_jobs; NSLock *_lock; BOOL _closed; }
+@implementation YoziConnectorTransport { NSMutableDictionary<NSString *,YoziConnectorJob *> *_jobs; NSLock *_lock; BOOL _closed; }
 + (NSDictionary *)capabilities {return @{@"contract":@"wenli-app-connector-v1",@"redirect":@"reject",@"responseLimit":@"bytes",@"utf8":@"strict",@"tls":@"system",@"cancel":@YES,@"materialParse":@{@"contract":@"yozi-material-parse-v1",@"timeoutMs":@100000},@"stream":@{@"contract":@"wenli-app-stream-v1",@"chunks":@"base64",@"sequence":@YES,@"maxBytes":@2097152,@"maxChunks":@256,@"timeoutMs":@45000}};}
 - (instancetype)init {if((self=[super init])){_jobs=[NSMutableDictionary new];_lock=[NSLock new];}return self;}
 - (void)request:(NSDictionary *)o completion:(void (^)(NSDictionary *))completion {
@@ -100,19 +100,19 @@ static NSString * const WenliOrigin = @"https://wenli-app.invalid";
     if(!valid){completion(@{@"id":identifier,@"code":@"INVALID_REQUEST"});return;}
     [_lock lock];
     if(_closed || _jobs[identifier] || _jobs.count>=4) {NSString *code=_closed?@"CANCELLED":_jobs[identifier]?@"REQUEST_CONFLICT":@"RATE_LIMIT";[_lock unlock];completion(@{@"id":identifier,@"code":code});return;}
-    WenliConnectorJob *job=[WenliConnectorJob new];job.identifier=identifier;job.data=[NSMutableData new];job.limit=limit.unsignedIntegerValue;job.lock=[NSRecursiveLock new];job.streaming=streaming;
-    __weak WenliConnectorTransport *weakSelf=self;
-    job.completion=^(NSDictionary *value){BOOL terminal=![value[@"kind"] isEqual:@"headers"] && ![value[@"kind"] isEqual:@"chunk"];WenliConnectorTransport *strong=weakSelf;if(strong && terminal){[strong->_lock lock];[strong->_jobs removeObjectForKey:identifier];[strong->_lock unlock];}completion(value);};
+    YoziConnectorJob *job=[YoziConnectorJob new];job.identifier=identifier;job.data=[NSMutableData new];job.limit=limit.unsignedIntegerValue;job.lock=[NSRecursiveLock new];job.streaming=streaming;
+    __weak YoziConnectorTransport *weakSelf=self;
+    job.completion=^(NSDictionary *value){BOOL terminal=![value[@"kind"] isEqual:@"headers"] && ![value[@"kind"] isEqual:@"chunk"];YoziConnectorTransport *strong=weakSelf;if(strong && terminal){[strong->_lock lock];[strong->_jobs removeObjectForKey:identifier];[strong->_lock unlock];}completion(value);};
     NSURLSessionConfiguration *config=NSURLSessionConfiguration.ephemeralSessionConfiguration;config.HTTPCookieStorage=nil;config.HTTPShouldSetCookies=NO;config.URLCache=nil;config.requestCachePolicy=NSURLRequestReloadIgnoringLocalCacheData;config.timeoutIntervalForRequest=timeout.doubleValue/1000;config.timeoutIntervalForResource=timeout.doubleValue/1000;
     NSOperationQueue *queue=[NSOperationQueue new];queue.maxConcurrentOperationCount=1;
     job.session=[NSURLSession sessionWithConfiguration:config delegate:job delegateQueue:queue];
-    NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url.URL];request.HTTPMethod=method;request.HTTPBody=payload;[request setValue:[@"Bearer " stringByAppendingString:token] forHTTPHeaderField:@"Authorization"];[request setValue:WenliOrigin forHTTPHeaderField:@"Origin"];[request setValue:@"identity" forHTTPHeaderField:@"Accept-Encoding"];if(payload)[request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url.URL];request.HTTPMethod=method;request.HTTPBody=payload;[request setValue:[@"Bearer " stringByAppendingString:token] forHTTPHeaderField:@"Authorization"];[request setValue:YoziOrigin forHTTPHeaderField:@"Origin"];[request setValue:@"identity" forHTTPHeaderField:@"Accept-Encoding"];if(payload)[request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     if(streaming)[request setValue:@"text/event-stream" forHTTPHeaderField:@"Accept"];
     job.task=[job.session dataTaskWithRequest:request];_jobs[identifier]=job;
     job.timer=dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER,0,0,dispatch_get_global_queue(QOS_CLASS_UTILITY,0));
-    __weak WenliConnectorJob *weakJob=job;dispatch_source_set_timer(job.timer,dispatch_time(DISPATCH_TIME_NOW,timeout.longLongValue*NSEC_PER_MSEC),DISPATCH_TIME_FOREVER,0);dispatch_source_set_event_handler(job.timer,^{[weakJob fail:@"TIMEOUT"];});dispatch_resume(job.timer);
+    __weak YoziConnectorJob *weakJob=job;dispatch_source_set_timer(job.timer,dispatch_time(DISPATCH_TIME_NOW,timeout.longLongValue*NSEC_PER_MSEC),DISPATCH_TIME_FOREVER,0);dispatch_source_set_event_handler(job.timer,^{[weakJob fail:@"TIMEOUT"];});dispatch_resume(job.timer);
     [_lock unlock];[job.task resume];
 }
-- (void)cancel:(NSString *)identifier {if(![identifier isKindOfClass:NSString.class])return;[_lock lock];WenliConnectorJob *job=_jobs[identifier];[_lock unlock];[job fail:@"CANCELLED"];}
-- (void)close {[_lock lock];_closed=YES;NSArray *jobs=_jobs.allValues;[_lock unlock];for(WenliConnectorJob *job in jobs)[job fail:@"CANCELLED"];}
+- (void)cancel:(NSString *)identifier {if(![identifier isKindOfClass:NSString.class])return;[_lock lock];YoziConnectorJob *job=_jobs[identifier];[_lock unlock];[job fail:@"CANCELLED"];}
+- (void)close {[_lock lock];_closed=YES;NSArray *jobs=_jobs.allValues;[_lock unlock];for(YoziConnectorJob *job in jobs)[job fail:@"CANCELLED"];}
 @end

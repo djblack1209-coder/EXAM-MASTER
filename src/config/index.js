@@ -664,7 +664,7 @@ const config = {
  */
 if (config.debug.enabled) {
   logger.log('\n' + '='.repeat(50));
-  logger.log('Exam-Master config');
+  logger.log('Yozi AI config');
   logger.log('='.repeat(50));
   logger.log('env:', config.env);
   logger.log('wxAppId:', config.wx.appId, `(${config._source.wxAppId})`);

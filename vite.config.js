@@ -287,7 +287,7 @@ export default defineConfig(({ command, mode }) => {
   // Uni reads this file during config; do not maintain a second native palette.
   fs.writeFileSync(path.resolve(__dirname, 'src/theme.json'), JSON.stringify(readYoziNativeTheme(), null, 2) + '\n');
   // 隔离核验只使用命令显式传入的配置，避免加载日常私有连接信息。
-  const isolatedBuild = process.env.WENLI_ISOLATED_BUILD === '1';
+  const isolatedBuild = process.env.YOZI_ISOLATED_BUILD === '1' || process.env.WENLI_ISOLATED_BUILD === '1';
   const env = isolatedBuild ? { ...process.env } : loadEnv(mode, process.cwd(), '');
   const platform = process.env.UNI_PLATFORM || env.UNI_PLATFORM || '';
   guardHBuilderMiniProgramHelpers(platform);
@@ -312,7 +312,7 @@ export default defineConfig(({ command, mode }) => {
   process.env.VITE_ROOT_DIR = viteRootDir;
 
   const isH5 = !platform || platform === 'h5';
-  const isDesktop = isH5 && process.env.WENLI_DESKTOP === '1';
+  const isDesktop = isH5 && (process.env.YOZI_DESKTOP === '1' || process.env.WENLI_DESKTOP === '1');
 
   console.log(`[Vite] Building for mode: ${mode}, command: ${command}, platform: ${platform || 'unknown'}`);
 
@@ -428,7 +428,7 @@ export default defineConfig(({ command, mode }) => {
       __APP_VERSION__: JSON.stringify(env.npm_package_version || '1.0.0'),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
       __BUILD_MODE__: JSON.stringify(mode),
-      __WENLI_DESKTOP__: JSON.stringify(isDesktop),
+      __YOZI_DESKTOP__: JSON.stringify(isDesktop),
       __ENABLE_GUEST_DEMO__: JSON.stringify(enableGuestDemo)
     },
 

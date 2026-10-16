@@ -1,1 +1,0 @@
--keep public class cn.wenli.connector.WenliConnectorModule { *; }

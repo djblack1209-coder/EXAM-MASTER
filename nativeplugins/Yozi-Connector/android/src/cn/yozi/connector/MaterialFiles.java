@@ -1,4 +1,4 @@
-package cn.wenli.connector;
+package cn.yozi.connector;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -32,7 +32,7 @@ public final class MaterialFiles implements AutoCloseable {
     private final ScheduledExecutorService timers=Executors.newScheduledThreadPool(1,daemon());
     private final ExecutorService cleanup=new ThreadPoolExecutor(2,2,0,TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(4),daemon());
     private boolean closed;
-    private static ThreadFactory daemon(){return r->{Thread t=new Thread(r,"wenli-material-file");t.setDaemon(true);return t;};}
+    private static ThreadFactory daemon(){return r->{Thread t=new Thread(r,"yozi-material-file");t.setDaemon(true);return t;};}
     public static Map<String,Object> capabilities(){Map<String,Object> v=new HashMap<>();v.put("contract",CONTRACT);v.put("selection","system");v.put("read","after_consent");v.put("handles","ephemeral");v.put("maxBytes",MAX_BYTES);v.put("boundedRead",true);v.put("cancel",true);return v;}
     private static Map<String,Object> result(String id,String code){Map<String,Object> r=new HashMap<>();r.put("id",id);if(code!=null)r.put("code",code);return r;}
     private static boolean validId(String id){return id!=null && id.matches("[A-Za-z0-9_-]{1,128}");}

@@ -4350,7 +4350,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "wenli-desktop"
+name = "yozi-ai-desktop"
 version = "2.2.0"
 dependencies = [
  "getrandom 0.3.4",

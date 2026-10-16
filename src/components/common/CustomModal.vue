@@ -127,8 +127,8 @@ nativeInput = false;
 // #endif
 const reducedMotion = ref(true);
 const instanceId = getCurrentInstance().uid;
-const titleId = `wenli-modal-title-${instanceId}`;
-const contentId = `wenli-modal-content-${instanceId}`;
+const titleId = `yozi-modal-title-${instanceId}`;
+const contentId = `yozi-modal-content-${instanceId}`;
 const motionDuration = parseInt(tokens.light['--t-state']);
 const popupStyle = computed(() =>
   props.position === 'bottom'

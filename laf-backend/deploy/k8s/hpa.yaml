@@ -1,5 +1,5 @@
 # ============================================
-# Exam-Master Backend HPA 自动扩缩容
+# Yozi AI Backend HPA 自动扩缩容
 # ============================================
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler

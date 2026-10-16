@@ -26,7 +26,7 @@ async function run(script, args, env = process.env) {
 }
 
 if (action === 'web') {
-  const env = { ...process.env, WENLI_DESKTOP: '1', UNI_OUTPUT_DIR: resolve(root, 'dist/build/desktop') };
+  const env = { ...process.env, YOZI_DESKTOP: '1', UNI_OUTPUT_DIR: resolve(root, 'dist/build/desktop') };
   await run('node_modules/@dcloudio/vite-plugin-uni/bin/uni.js', ['build', '-p', 'h5'], env);
   await run('scripts/build/copy-cdn-to-h5.mjs', [], env);
 } else {

@@ -1,4 +1,4 @@
-package cn.wenli.connector;
+package cn.yozi.connector;
 import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;

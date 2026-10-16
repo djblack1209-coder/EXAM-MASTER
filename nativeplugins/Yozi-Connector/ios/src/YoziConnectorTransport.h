@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 NS_ASSUME_NONNULL_BEGIN
-@interface WenliConnectorTransport : NSObject
+@interface YoziConnectorTransport : NSObject
 + (NSDictionary *)capabilities;
 - (void)request:(NSDictionary *)options completion:(void (^)(NSDictionary *))completion;
 - (void)stream:(NSDictionary *)options completion:(void (^)(NSDictionary *))completion;

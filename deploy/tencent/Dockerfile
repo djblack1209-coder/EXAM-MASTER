@@ -22,4 +22,4 @@ EXPOSE 3000
 USER nodejs
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "dist/standalone/server.js"]
-LABEL maintainer="EXAM-MASTER" description="EXAM-MASTER Backend Standalone Server"
+LABEL maintainer="Yozi AI" description="Yozi AI Backend Standalone Server"

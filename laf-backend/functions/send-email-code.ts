@@ -19,7 +19,7 @@ const SMTP_HOST = process.env.SMTP_HOST || 'smtp.qq.com';
 const SMTP_PORT = Number(process.env.SMTP_PORT || 465);
 const SMTP_USER = process.env.SMTP_USER || '';
 const SMTP_PASS = process.env.SMTP_PASS || '';
-const SMTP_FROM = process.env.SMTP_FROM || 'Exam-Master <noreply@exam-master.com>';
+const SMTP_FROM = process.env.SMTP_FROM || 'Yozi AI <noreply@exam-master.com>';
 const SMTP_RETRY_TIMES = Math.min(2, Math.max(1, Number(process.env.SMTP_RETRY_TIMES || 2)));
 const SMTP_RETRY_DELAY_MS = Math.max(200, Number(process.env.SMTP_RETRY_DELAY_MS || 800));
 
@@ -273,11 +273,11 @@ async function sendEmail(to, code, requestId) {
   const mailOptions = {
     from: SMTP_FROM,
     to,
-    subject: '【Exam-Master】邮箱验证码',
+    subject: '【Yozi AI】邮箱验证码',
     html: `
         <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
           <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #2E7D32; margin: 0;">Exam-Master</h1>
+            <h1 style="color: #2E7D32; margin: 0;">Yozi AI</h1>
             <p style="color: #666; margin-top: 8px;">AI助力，一战成硕</p>
           </div>
           
@@ -291,7 +291,7 @@ async function sendEmail(to, code, requestId) {
           
           <div style="text-align: center; margin-top: 30px; color: #999; font-size: 12px;">
             <p>如果您没有请求此验证码，请忽略此邮件</p>
-            <p>© 2026 Exam-Master. All rights reserved.</p>
+            <p>© 2026 Yozi AI. All rights reserved.</p>
           </div>
         </div>
       `
