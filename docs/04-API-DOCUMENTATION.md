@@ -6,13 +6,13 @@
 
 Store将结果绑定原记录生命周期。明确打开时先重读规范记录、核验生命周期和目标ID，再沿现有定位入口打开原会话/题目；旧版本及选中的旧稿完整呈现，判分使用当前有效更正，停止状态不自动恢复。搜索、翻页、语言切换和关闭原答不写事实；明确打开题目仅沿既有`question.focus`记录导航，不重交卷、重判或安排复习。换账户/清除/恢复后的旧结果拒绝，原答按纯文本呈现，不执行其中标记或链接。
 
-账户切换及相关记录存储通知先同步撤销搜索、筛选和已打开原答的投影，再读取规范记录；读取中只显示加载状态，失败后隐藏原账户正文并提供重试。版本不兼容不覆盖原存储，恢复读取不会重现旧账户的定位。同账户凭据续期和资料更新保留当前内容与定位。
+确认账户/记录变化后，存储通知先同步撤销搜索、筛选和已打开原答的投影，再读取规范记录；读取中只显示加载状态，失败后隐藏原账户正文并提供重试。版本不兼容不覆盖原存储，恢复读取不会重现旧账户的定位。同账户凭据续期和资料更新保留当前内容与定位。身份暂不可用时保留已展示投影并提示重试，不清连接或事实；本地取消可继续。
 
-身份通知统一由`storageService.onIdentityChange`提供，订阅者随Store释放取消；覆盖同窗口身份保存/删除、存储清空、当前账户隔离资料清理及兼容登录/登出/恢复事件与跨窗口通知。识别`EXAM_USER_ID`、`EXAM_TOKEN`、`EXAM_SESSION_EPOCH`、`userInfo`、`EXAM_USER_INFO`、`access_token`、`refresh_token`、`token_expire_time`及各自明文、`_enc_`、`__exam_storage__:`组合形式，忽略其他存储区。兼容存储的身份读取每次核对持久化值，不复用旧身份缓存；App/微信的uni/wx写入也直接通知，不依赖浏览器事件。通知仅可携带`type: logout/records`提示，不携带身份、代号或凭据值；除存储层明确标记的格式迁移外，跨窗口`oldValue/newValue`显示身份/代号删除或清空全部存储时发撤销提示，即使当前值已恢复也成立。
+身份通知统一由`storageService.onIdentityChange`提供，订阅者随Store释放取消；覆盖同窗口身份保存/删除、存储清空、当前账户隔离资料清理及兼容登录/登出/恢复事件与跨窗口通知。识别`EXAM_USER_ID`、`EXAM_TOKEN`、`EXAM_SESSION_EPOCH`、`userInfo`、`EXAM_USER_INFO`、`access_token`、`refresh_token`、`token_expire_time`及各自明文、`_enc_`、`__exam_storage__:`组合形式，忽略其他存储区。兼容存储的身份读取每次核对持久化值，不复用旧身份缓存；App/微信的uni/wx写入也直接通知，不依赖浏览器事件。通知仅可携带`type: logout/records`提示，不携带身份、代号或凭据值；除存储层明确标记的格式迁移外，跨窗口`oldValue/newValue`显示身份/代号删除或清空全部存储时发撤销提示，提示只促使消费者重读持久身份；已经绑定后续登录时，不因积压旧删除再撤销新会话。
 
-阶段5会话合同：`captureSession()`在动作入口返回冻结的`{owner, epoch}`，不含令牌。身份读取按“代号 → owner/令牌 → 代号”，前后不一致最多重读3次；代号记录同时核对owner与凭据SHA-256指纹。无法取得一致快照时暂不读写或发送；`checkSession`返回`current/changed/unavailable`。确认不同/缺失代号才撤销旧工作；读取异常、同代号下的凭据混合为`unavailable`，提示“登录状态暂不可读，请重试”，保留模型、连接、共享许可。已有凭据而已启用设备的代号缺失，按完整退出清除残留凭据；重挂载和缓存恢复不能补代号。只有从未启用过的旧设备允许一次升级，见[05](05-DATABASE-SCHEMAS.md#本机登录会话代号2026-10-16)。
+阶段5B会话合同：`captureSession()`返回冻结`{owner, epoch}`，不含令牌。新登录把账户/令牌/资料/代号作为同一加密记录提交，兼容别名不参与新记录的身份判定；旧格式继续有限稳定重读和凭据指纹校验。`current/changed/unavailable`分别表示当前、已撤销/换代与暂不可读；最后一种保留模型、连接、共享许可、已显示内容及离线队列，只阻止写入/外发。只读渲染与本地abort继续，重试后重读；不能把读取故障折成退出。
 
-登录写入先撤销旧代号，再保存身份/凭据，最后写入带校验信息的新代号并回读；有Web Locks时，所有窗口使用`exam-master:login-session-v1`独占锁串行保存，后写的整组登录生效。真正取得新登录结果才换代；`silentLogin`仅恢复缓存。同账户非空令牌刷新保留epoch并更新指纹，旧账户令牌请求取消；本地连接和历史计算不因续期失效。格式迁移先写、读回、再退休旧别名，不视为撤销。
+登录页、微信回调、静默登录在首个await前建立独立尝试；新尝试/退出/撤销使旧响应及排队事务失效。Web Lock取得后再核对原尝试/会话，完整提交后镜像别名；失败方不能删掉胜者。只恢复缓存不算新登录。非空令牌刷新保持epoch，资料更新不换代。明文/前缀/旧代号迁移比较源和撤销标识，写后复核、确认后删源；游客迁移只采用已证明的游客写入，未知旧全局值保留。[存储字段与顺序](05-DATABASE-SCHEMAS.md#本机登录会话代号2026-10-16)。
 
 两个统一边界：公共请求核心、`learningRequest`及教学流在实际传输前同步取得一份一致快照，令牌取自该快照，核对原session后立即发送，中间不await；采用响应前再检查。修改数据或携带用户正文必须显式传入原session，缺失拒绝；只读查询可在调用入口绑定，调用方采用结果仍检查自己的上下文。`save/saveDebounced/remove/saveBatch`接受session，使用`session.owner`解析分区，核对失败不写；防抖在入队绑定、落盘核对并丢弃旧项。同步短动作可在调用入口捕获，跨await/计时器/回调/锁的调用必须传递数据原session。账户分区不会在最后一刻改用当前ID。
 
@@ -22,43 +22,45 @@ Store将结果绑定原记录生命周期。明确打开时先重读规范记录
 
 以下是`src/`中持有用户内容、属主键写入或用户传输的覆盖清单；纯展示组件通过所属页面/Store接入，不独立重绑。原112个学习action的用时守卫继续保留，入口绑定同时覆盖Store以外的持有者。
 
-| 持有者（目录下的模块）                                                                                               | 绑定方式                                                                                                                |
-| -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `stores/modules/conversation-learning.js`全部action、模型/用量/诗词/搜索/流预览/资料/同步/历史缓存                   | Store绑定会话与重置代次；动作发起捕获、每次续段/回调和结果检查；模型save/test/remove在内部列表读取前核对原上下文        |
-| `stores/modules/study-engine.js`会话/分析/错题分组/计划                                                              | 状态绑定session；换代重置并重读分区；异步计划返回先核对原session，持久化显式传入                                        |
-| `stores/modules/study.js`进度与历史                                                                                  | 恢复时绑定，换账户/代号重读，保存使用绑定session                                                                        |
-| `stores/modules/stats.js`统计、趋势、排名和等待请求                                                                  | 缓存身份含session，结果检查原session与读取代次；API入口绑定其请求                                                       |
-| `stores/modules/review.js`题库列表/统计/抽题                                                                         | 每个异步入口捕获session，响应与本地降级前核对，旧finally不改新状态                                                      |
-| `stores/modules/profile.js`资料/计划进度；`auth.js`凭据；`user.js`门面                                               | 资料缓存订阅会话并随作用域释放；资料合并核对原绑定；真实登录统一事务、缓存恢复不换代；门面复用子Store                   |
-| `stores/modules/favorite.js`收藏视图，`utils/favorite/question-favorite.js`收藏/文件夹/笔记/交接                     | 管理器每次动作重读属主原件，事务和交接写入显式session，页面原owner校验继续保留                                          |
-| `services/storageService.js`错题互斥队列、云端同步、本机降级、复习交接                                               | 入队捕获session与请求凭据，等待/请求/本机保存前复核，API与本机写入携带同一session；不降级保存撤销任务                   |
-| `services/learning/learning-repository.js`规范事实、恢复/隐私/迁移/冲突/历史预览                                     | 同步操作入口绑定；现有存储代理把原session传入每笔save/remove/get；异步历史预览另绑定原session与取消/生命周期            |
-| `services/learning/history-storage.js`分页/目录/写入登记/清理                                                        | 共用Repository绑定代理，分页及恢复head不会改属主；清理保留写租约保护                                                    |
-| `services/learning/pending-upload-journal.js`待上传登记                                                              | 动作捕获并传入存储；原owner、写租约和回调上下文同时检查                                                                 |
-| `services/learning/quiz-learning-bridge.js`作答、查看、自评与批量恢复                                                | 在等待写租约前捕获session，等待后、每笔commit、批量每次迭代复核；Repository接收原绑定                                   |
-| `pages/practice-sub/quiz-analytics-recorder.js`明确原答与回执                                                        | 动作发起绑定，桥/离线答案/submit均传原session；旧会话与旧凭据不落回执或降级                                             |
-| `services/learning/learning-sync.js`pull/page/push、预算等待、冲突采用                                               | 整次同步绑定，进度回调之后再次检查；每个请求显式传session和原守卫                                                       |
-| `services/api/domains/_request-core.js`缓存/在途/重试；`learning.api.js`模型与学习请求                               | 发送时同一一致快照取令牌；重试保持原绑定；缓存、结果和取消均核对原会话                                                  |
-| `services/api/domains/practice.api.js/user.api.js/stats.api.js`领域动作、头像与成就重试                              | 同步动作入口捕获并传请求层；异步续段不改变绑定；成就重试改用属主键`achievement_retry_v1`，不恢复旧全局队列              |
-| `services/learning/learning-stream.js/local-connector.js/material-connector.js`流/模型/资料分批                      | 保留原Store守卫并传session，片段/最终结果检查；连接器响应、重定向、取消、预算合同保持                                   |
-| `services/learning/app-connector.js`原生请求/流桥；`services/desktop/learning-files.js`系统文件选择                  | 桥与文件操作入口绑定，选择/等待后的读写与每个原生回调检查；取消/丢弃文件选择可正常收尾                                  |
-| `services/learning/learning-notifications.js`许可/计时器/Web点击/桌面事件与冷启动领取                                | 许可、投递与点击固定原session/recordContext；桌面载荷包含loginEpoch，旧/缺失epoch事件拒绝；换代清理通知，回执沿原上下文 |
-| `utils/analytics/event-bus-analytics.js`事件/会话/留存/定时器                                                        | 初始化绑定session，换代清队列停计时器；track、批处理、保存检查原绑定；当前仅本地降级，无真实分析上报                    |
-| `utils/core/offline-queue.js`持久重试、网络恢复、请求重建                                                            | 每个队列项保存原session，恢复和执行前检查，重建函数接收原session；无绑定的历史项不重放                                  |
-| `pages/practice-sub/offline-cache.js/services/offline-cache-service.js`离线原答/题目/同步队列                        | 使用属主存储；原答验证owner并传session，待同步项绑定session；不自动恢复旧全局正文                                       |
-| `utils/auth/token-refresh-plugin.js`刷新Promise、401重试与预检定时器                                                 | 发起/计时器创建时绑定，等待后复核；清令牌执行完整撤销，旧操作不能刷新新账户                                             |
-| `utils/learning/adaptive-learning-engine.js/learning-goal.js`错题/历史/知识/目标/提醒                                | 单例初始化绑定，换代重新加载；异步目标回调检查原session；所有保存显式绑定                                               |
-| `pages/practice-sub/utils/learning-analytics.js/smart-question-picker.js/practice-mode-manager.js`分析/选题/练习会话 | 内存缓存和保存绑定session，异步成就与练习续段检查原绑定                                                                 |
-| `pages/practice-sub/question-note.js/question-timer.js/swipe-gesture.js`笔记/计时/手势设置                           | 初始化绑定与换代重读，存储显式session；计时回调同时检查原计时token与登录session                                         |
-| `services/fsrs-service.js`调度器参数、卡片对象                                                                       | 调度器绑定session；卡片对象用WeakMap保存原session；保存/删除显式绑定，不跨账户复用参数                                  |
-| `composables/useQuizAutoSave.js`、`pages/practice-sub/composables/useQuizEngine.js/ai-generation-mixin.js`           | 防抖入队绑定；引擎交接与页面导入状态固定原session，保存/清理传原绑定                                                    |
-| `pages/practice-sub/do-quiz.vue/question-bank.vue`原件/选择/参考/批量导入/页面回调                                   | 页面数据与加载动作绑定session；旧回调与换代操作拒绝，存储入口再核对；导航/页面生命周期校验保持                          |
-| `pages/mistake/index.vue`删除确认；`pages/plan/index.vue/intelligent-plan-manager.js`计划/提醒                       | 确认或异步生成前捕获session，回调/写入前检查，保留原件与失败状态                                                        |
-| `pages/learning/index.vue`及学习业务组件的对话/资料/记录视图                                                         | 业务动作统一经过学习Store原上下文；桌面选择额外经过绑定文件桥；搜索/日历只更新视图，不自行写学习事实                    |
-| `pages/login/index.vue/wechat-callback.vue/oauth-utils.js`；登录/资料设置页                                          | 新登录结果等待统一事务，OAuth原校验与一次消费保持；认证写入属于全局身份合同，其他用户写入仍走session入口                |
-| `App.vue`、`stores/modules/theme.js`、`composables/useTheme.js`、i18n、声效/触觉/吉祥物设置                          | 仅应用偏好或无正文状态；属主化外观设置在同步动作入口绑定，无延迟用户正文写入                                            |
-| `services/learning/learning-calendar.js`、`utils/core/network-monitor.js`、通知/网络事件总线                         | 日历只持时间；网络探测不携用户内容，恢复请求交给绑定队列；事件消费者沿上述原session                                     |
-| PWA/SW（构建配置、`public/sw-cache-cleanup.js`）及`question-dedup-worker.js`                                         | SW仅公开静态资源，无学习正文缓存/后台用户同步；去重worker不写属主存储或发网络，结果由原页面绑定接纳                     |
+| 持有者（目录下的模块）                                                                                               | 绑定方式                                                                                                                            |
+| -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `stores/modules/conversation-learning.js`全部action、模型/用量/诗词/搜索/流预览/资料/同步/历史缓存                   | Store绑定会话与重置代次；动作发起捕获、每次续段/回调和结果检查；模型save/test/remove在内部列表读取前核对原上下文                    |
+| `stores/modules/study-engine.js`会话/分析/错题分组/计划                                                              | 状态绑定session；换代重置并重读分区；异步计划返回先核对原session，持久化显式传入                                                    |
+| `stores/modules/study.js`进度与历史                                                                                  | 恢复时绑定，换账户/代号重读，保存使用绑定session                                                                                    |
+| `stores/modules/stats.js`统计、趋势、排名和等待请求                                                                  | 缓存身份含session，结果检查原session与读取代次；API入口绑定其请求                                                                   |
+| `stores/modules/review.js`题库列表/统计/抽题                                                                         | 每个异步入口捕获session，响应与本地降级前核对，旧finally不改新状态                                                                  |
+| `stores/modules/profile.js`资料/计划进度；`auth.js`凭据；`user.js`门面                                               | 资料缓存订阅会话并随作用域释放；资料合并核对原绑定；真实登录统一事务、缓存恢复不换代；门面复用子Store                               |
+| `stores/modules/favorite.js`收藏视图，`utils/favorite/question-favorite.js`收藏/文件夹/笔记/交接                     | 管理器每次动作重读属主原件，事务和交接写入显式session，页面原owner校验继续保留                                                      |
+| `services/storageService.js`错题互斥队列、云端同步、本机降级、复习交接                                               | 入队捕获session与请求凭据，等待/请求/本机保存前复核，API与本机写入携带同一session；不降级保存撤销任务                               |
+| `services/learning/learning-repository.js`规范事实、恢复/隐私/迁移/冲突/历史预览                                     | 同步操作入口绑定；现有存储代理把原session传入每笔save/remove/get；异步历史预览另绑定原session与取消/生命周期                        |
+| `services/learning/history-storage.js`分页/目录/写入登记/清理                                                        | 共用Repository绑定代理，分页及恢复head不会改属主；清理保留写租约保护                                                                |
+| `services/learning/pending-upload-journal.js`待上传登记                                                              | 动作捕获并传入存储；原owner、写租约和回调上下文同时检查                                                                             |
+| `services/learning/quiz-learning-bridge.js`作答、查看、自评与批量恢复                                                | 在等待写租约前捕获session，等待后、每笔commit、批量每次迭代复核；Repository接收原绑定                                               |
+| `pages/practice-sub/quiz-analytics-recorder.js`明确原答与回执                                                        | 动作发起绑定，桥/离线答案/submit均传原session；旧会话与旧凭据不落回执或降级                                                         |
+| `services/learning/learning-sync.js`pull/page/push、预算等待、冲突采用                                               | 整次同步绑定，进度回调之后再次检查；每个请求显式传session和原守卫                                                                   |
+| `services/api/domains/_request-core.js`缓存/在途/重试；`learning.api.js`模型与学习请求                               | 发送时同一一致快照取令牌；重试保持原绑定；缓存、结果和取消均核对原会话                                                              |
+| `services/api/domains/practice.api.js/user.api.js/stats.api.js`领域动作、头像与成就重试                              | 同步动作入口捕获并传请求层；异步续段不改变绑定；成就重试改用属主键`achievement_retry_v1`，不恢复旧全局队列                          |
+| `services/learning/learning-stream.js/local-connector.js/material-connector.js`流/模型/资料分批                      | 保留原Store守卫并传session，片段/最终结果检查；连接器响应、重定向、取消、预算合同保持                                               |
+| `services/learning/app-connector.js`原生请求/流桥；`services/desktop/learning-files.js`系统文件选择                  | 桥与文件操作入口绑定，选择/等待后的读写与每个原生回调检查；取消/丢弃文件选择可正常收尾                                              |
+| `services/learning/learning-notifications.js`许可/计时器/Web点击/桌面事件与冷启动领取                                | 许可、投递与点击固定原session/recordContext；桌面载荷包含loginEpoch，旧/缺失epoch事件拒绝；换代清理通知，回执沿原上下文             |
+| `utils/analytics/event-bus-analytics.js`事件/会话/留存/定时器                                                        | 初始化绑定session，换代清队列停计时器；track、批处理、保存检查原绑定；当前仅本地降级，无真实分析上报                                |
+| `utils/core/offline-queue.js`持久重试、网络恢复、请求重建                                                            | 每个队列项保存原session，恢复和执行前检查，重建函数接收原session；无绑定的历史项不重放                                              |
+| `pages/practice-sub/offline-cache.js/services/offline-cache-service.js`离线原答/题目/同步队列                        | 使用属主存储；原答验证owner并传session，待同步项绑定session；不自动恢复旧全局正文                                                   |
+| `utils/auth/token-refresh-plugin.js`刷新Promise、401重试与预检定时器                                                 | 发起/计时器创建时绑定，等待后复核；清令牌执行完整撤销，旧操作不能刷新新账户                                                         |
+| `utils/learning/adaptive-learning-engine.js/learning-goal.js`错题/历史/知识/目标/提醒                                | 单例初始化绑定，换代重新加载；异步目标回调检查原session；所有保存显式绑定                                                           |
+| `pages/practice-sub/utils/learning-analytics.js/smart-question-picker.js/practice-mode-manager.js`分析/选题/练习会话 | 内存缓存和保存绑定session，异步成就与练习续段检查原绑定                                                                             |
+| `pages/practice-sub/question-note.js/question-timer.js/swipe-gesture.js`笔记/计时/手势设置                           | 初始化绑定与换代重读，存储显式session；计时回调同时检查原计时token与登录session                                                     |
+| `services/fsrs-service.js`调度器参数、卡片对象                                                                       | 调度器绑定session；创建/读取/调度返回卡以WeakMap贯穿原session；未知卡的保存/调度须显式原session，禁止覆盖已有绑定；不跨账户复用参数 |
+| `composables/useQuizAutoSave.js`、`pages/practice-sub/composables/useQuizEngine.js/ai-generation-mixin.js`           | 防抖/生命周期保存与清除传页面原session；同账户换代拒绝旧页；引擎交接/导入状态固定原绑定                                             |
+| `pages/practice-sub/do-quiz.vue/question-bank.vue`原件/选择/参考/批量导入/页面回调                                   | 页面数据/加载/计数/日期沿原session分区；旧回调、同账户换代保存/清除拒绝，失败立即停止后续计数                                       |
+| `pages/mistake/index.vue`删除确认；`pages/plan/index.vue/intelligent-plan-manager.js`计划/提醒                       | 确认或异步生成前捕获session，回调/写入前检查，保留原件与失败状态                                                                    |
+| `pages/learning/index.vue`及学习业务组件的对话/资料/记录视图                                                         | 业务动作统一经过学习Store原上下文；桌面选择额外经过绑定文件桥；搜索/日历只更新视图，不自行写学习事实                                |
+| `pages/login/index.vue/wechat-callback.vue/oauth-utils.js`；登录/资料设置页                                          | 登录首个await前建立尝试，响应/锁内/采用均核对；OAuth一次消费保留；资料来自完整身份记录                                              |
+| `App.vue`、`stores/modules/theme.js`、`composables/useTheme.js`、i18n、声效/触觉/吉祥物设置                          | 仅应用偏好或无正文状态；属主化外观设置在同步动作入口绑定，无延迟用户正文写入                                                        |
+| `services/learning/learning-calendar.js`、`utils/core/network-monitor.js`、通知/网络事件总线                         | 日历只持时间；网络探测不携用户内容，恢复请求交给绑定队列；事件消费者沿上述原session                                                 |
+| PWA/SW（构建配置、`public/sw-cache-cleanup.js`）及`question-dedup-worker.js`                                         | SW仅公开静态资源，无学习正文缓存/后台用户同步；去重worker不写属主存储或发网络，结果由原页面绑定接纳                                 |
+
+阶段5B同类排查另覆盖`storageService`明文/兼容键/旧代号迁移和错题互斥分支、FSRS读取/调度/reviewAndSave/getDueCards、Repository恢复/游客/冲突/历史预览及同步、material-intake/connector→Store持久化、练习全部save/clear生命周期、离线队列初始化/执行/失败和流式最终清理。Repository及资料结果的调用方仍核对原上下文，未复现其他同类串户；纯解析返回值不单独授权保存。Store全部action的重入保护与只读/本地取消分类保持。
 
 回归守卫扩展现有`request-core.spec.js`：枚举源码的属主存储sink与传输sink，新出现的未绑定属主save/remove/debounce/batch或额外传输入口会失败。身份事务与纯应用偏好是明确例外；并发登录、混合快照、瞬时读取失败、防抖/批量以及18项审计场景另用真实入口回归，不以静态清单代替行为验证。
 
