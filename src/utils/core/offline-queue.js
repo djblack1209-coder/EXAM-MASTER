@@ -1,4 +1,4 @@
-import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
+import { captureSession, checkSession, assertSession, isSessionUnavailable } from '@/services/auth-storage.js';
 /**
  * 离线请求队列 (Offline Queue)
  *
@@ -447,79 +447,86 @@ class OfflineQueue {
     // 复制队列进行处理
     const toProcess = [...this.queue];
 
-    for (const item of toProcess) {
-      // 检查网络状态
-      if (!this.isOnline) {
-        logger.log('[OfflineQueue] 网络断开，暂停处理');
-        break;
-      }
-
-      try {
-        const status = checkSession(item.session);
-        if (status === 'unavailable') break;
-        if (status !== 'current') {
-          this.dequeue(item.id);
-          continue;
+    try {
+      for (const item of toProcess) {
+        // 检查网络状态
+        if (!this.isOnline) {
+          logger.log('[OfflineQueue] 网络断开，暂停处理');
+          break;
         }
-        // 获取请求函数
-        let requestFn = this.requestFnMap.get(item.id);
 
-        // ✅ 问题清单修复：函数引用丢失时，尝试从 requestData 重建
-        if (!requestFn && item.requestData && this._rebuilder) {
-          try {
-            logger.log('[OfflineQueue] 🔧 尝试从 requestData 重建请求: [省略]');
-            requestFn = () => this._rebuilder(item.requestData, { session: item.session });
-          } catch (rebuildErr) {
-            logger.log('[OfflineQueue] ⚠️ 请求重建失败: [省略]', rebuildErr);
+        try {
+          const status = checkSession(item.session);
+          if (status === 'unavailable') break;
+          if (status !== 'current') {
+            this.dequeue(item.id);
+            continue;
+          }
+          // 获取请求函数
+          let requestFn = this.requestFnMap.get(item.id);
+
+          // ✅ 问题清单修复：函数引用丢失时，尝试从 requestData 重建
+          if (!requestFn && item.requestData && this._rebuilder) {
+            try {
+              logger.log('[OfflineQueue] 🔧 尝试从 requestData 重建请求: [省略]');
+              requestFn = () => this._rebuilder(item.requestData, { session: item.session });
+            } catch (rebuildErr) {
+              logger.log('[OfflineQueue] ⚠️ 请求重建失败: [省略]', rebuildErr);
+            }
+          }
+
+          if (!requestFn) {
+            // 无法执行也无法重建，跳过
+            logger.log('[OfflineQueue] ⚠️ 请求 [省略] 无法执行（函数引用丢失且无法重建），跳过');
+            this.dequeue(item.id);
+            results.failed++;
+            continue;
+          }
+
+          logger.log('[OfflineQueue] 📡 处理请求: [省略]');
+
+          // 执行请求
+          assertSession(item.session);
+          await requestFn({ session: item.session });
+          assertSession(item.session);
+
+          // 成功，移除队列
+          this.dequeue(item.id);
+          results.processed++;
+
+          logger.log('[OfflineQueue] ✅ 请求成功: [省略]');
+        } catch (error) {
+          const status = checkSession(item.session);
+          if (status === 'unavailable' || isSessionUnavailable(error)) break;
+          if (status === 'changed') {
+            this.dequeue(item.id);
+            continue;
+          }
+          logger.error('[OfflineQueue] ❌ 请求失败: [省略]', error);
+
+          item.retryCount++;
+          results.errors.push({
+            id: item.id,
+            error: error.message || error
+          });
+
+          // 超过重试次数，移除
+          if (item.retryCount >= 3) {
+            logger.log('[OfflineQueue] 🗑️ 请求超过重试次数，移除: [省略]');
+            this.dequeue(item.id);
+            results.failed++;
+          } else {
+            // 更新重试次数
+            this._saveToStorage();
           }
         }
 
-        if (!requestFn) {
-          // 无法执行也无法重建，跳过
-          logger.log('[OfflineQueue] ⚠️ 请求 [省略] 无法执行（函数引用丢失且无法重建），跳过');
-          this.dequeue(item.id);
-          results.failed++;
-          continue;
-        }
-
-        logger.log('[OfflineQueue] 📡 处理请求: [省略]');
-
-        // 执行请求
-        assertSession(item.session);
-        await requestFn({ session: item.session });
-        assertSession(item.session);
-
-        // 成功，移除队列
-        this.dequeue(item.id);
-        results.processed++;
-
-        logger.log('[OfflineQueue] ✅ 请求成功: [省略]');
-      } catch (error) {
-        if (error.code === 'SESSION_UNAVAILABLE') break;
-        logger.error('[OfflineQueue] ❌ 请求失败: [省略]', error);
-
-        item.retryCount++;
-        results.errors.push({
-          id: item.id,
-          error: error.message || error
-        });
-
-        // 超过重试次数，移除
-        if (item.retryCount >= 3) {
-          logger.log('[OfflineQueue] 🗑️ 请求超过重试次数，移除: [省略]');
-          this.dequeue(item.id);
-          results.failed++;
-        } else {
-          // 更新重试次数
-          this._saveToStorage();
-        }
+        // 请求间隔，避免过快
+        await new Promise((resolve) => setTimeout(resolve, 100));
       }
-
-      // 请求间隔，避免过快
-      await new Promise((resolve) => setTimeout(resolve, 100));
+    } finally {
+      this.processing = false;
     }
-
-    this.processing = false;
 
     logger.log('[OfflineQueue] 📊 队列处理完成: 成功 [省略], 失败 [省略]');
 

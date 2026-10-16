@@ -111,6 +111,11 @@ class PracticeModeManager {
       throw new Error(`不支持的练习模式: ${modeId}`);
     }
 
+    const session = captureSession();
+    assertSession(session);
+    this._session = session;
+    this._operation = {};
+    this.practiceHistory = [];
     this.currentMode = modeConfig;
     this.currentSettings = {
       ...modeConfig.defaultSettings,
@@ -120,7 +125,7 @@ class PracticeModeManager {
     return {
       success: true,
       mode: modeConfig,
-      settings: this.currentSettings
+      settings
     };
   }
 
@@ -193,24 +198,29 @@ class PracticeModeManager {
   async startPracticeSession(options = {}) {
     const originSession = this._session;
     assertSession(originSession);
+    const operation = this._operation;
+    const mode = this.currentMode,
+      settings = this.currentSettings;
     const questions = await this.generatePracticeQuestions(options);
     assertSession(originSession);
+    if (this._operation !== operation)
+      throw Object.assign(new Error('练习已重新开始，旧结果未保存'), { code: 'CONTEXT_CHANGED' });
 
     const session = {
       id: `session_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
-      mode: this.currentMode.id,
-      modeName: this.currentMode.name,
+      mode: mode.id,
+      modeName: mode.name,
       startTime: Date.now(),
       questionCount: questions.length,
-      timeLimit: this.currentSettings.timeLimit,
+      timeLimit: settings.timeLimit,
       questions: questions,
       answeredQuestions: [],
       currentIndex: 0,
-      settings: this.currentSettings
+      settings
     };
 
     // 保存会话信息
-    storageService.save('current_practice_session', session, true, this._session);
+    storageService.save('current_practice_session', session, true, originSession);
 
     return session;
   }

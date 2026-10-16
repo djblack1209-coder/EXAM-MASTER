@@ -1,4 +1,4 @@
-import { captureSession, assertSession } from '@/services/auth-storage.js';
+import { captureSession, assertSession, checkSession, isSessionUnavailable } from '@/services/auth-storage.js';
 /**
  * 智能题目生成 Mixin（分包动态加载）
  * 从 practice/index.vue 抽离，减小主包体积
@@ -268,6 +268,8 @@ export const aiGenerationMixin = {
 
     // ==================== 智能题目生成 ====================
     startAI() {
+      this.generationSession = captureSession();
+      assertSession(this.generationSession);
       if (!this.fullFileContent && !this.fileName) {
         return toast.info('请先导入资料');
       }
@@ -306,6 +308,7 @@ export const aiGenerationMixin = {
         return;
       }
 
+      const session = this.generationSession;
       this.isRequestInFlight = true;
       const batchSize = this.batchQuestionCount;
 
@@ -319,20 +322,30 @@ export const aiGenerationMixin = {
       const sanitizedContent = this._sanitizeAIInput(chunk || this.fileName, MAX_CONTENT_LEN);
 
       try {
+        assertSession(session);
         logger.log('[practice] [智能] 调用后端代理生成题目...');
         const res = await proxyAI('generate_questions', {
           content: sanitizedContent,
           questionCount: batchSize
         });
+        assertSession(session);
+        if (this.generationSession !== session) return;
         this._processAIResponse(res);
       } catch (e) {
+        if (this.generationSession !== session) return;
+        const status = checkSession(session);
+        if (status === 'unavailable' || isSessionUnavailable(e)) return;
+        if (status === 'changed') {
+          this.isLooping = false;
+          return;
+        }
         this._consecutiveFailures++;
         this._handleGenerationError(e);
       } finally {
-        this.isRequestInFlight = false;
-        if (this.isLooping && !this.isPaused) {
+        if (this.generationSession === session) this.isRequestInFlight = false;
+        if (this.generationSession === session && this.isLooping && !this.isPaused) {
           setTimeout(() => {
-            if (this.isLooping && !this.isPaused) {
+            if (this.generationSession === session && this.isLooping && !this.isPaused) {
               this.generateNextBatch();
             }
           }, 1500);
