@@ -40,7 +40,7 @@ function lab(props = {}) {
   wrappers.push(w);
   return w;
 }
-const button = (w, label) => w.findAll('button').find((b) => b.text() === label);
+const button = (w, label) => w.findAll('button, [role="button"], [role="tab"]').find((b) => b.text() === label);
 const selected = (w, label) =>
   (button(w, label).attributes('aria-selected') ?? button(w, label).attributes('aria-pressed')) === 'true';
 const request = (w, id = 'visual-1', extra = {}) => ({
@@ -125,7 +125,7 @@ describe('当前题目决定互动学习的初始视图', () => {
     const w = lab({ question, recordScienceHelp: help });
     const before = JSON.stringify(w.props('state'));
     await button(w, '互动学习').trigger('tap');
-    expect(selected(w, '动态演示')).toBe(true);
+    expect(selected(w, '互动观察')).toBe(true);
     expect(help).not.toHaveBeenCalled();
     const prediction = MOTION_TEMPLATES.includes(input.template)
       ? '会转向'
@@ -148,12 +148,12 @@ describe('当前题目决定互动学习的初始视图', () => {
     const help = vi.fn(() => true);
     const w = lab({ question: q, recordScienceHelp: help });
     await button(w, '互动学习').trigger('tap');
-    expect(w.text()).toContain('当前题目演示未就绪');
-    expect(button(w, '播放演示')).toBeUndefined();
+    expect(w.text()).toContain('这道题的动画暂不可用');
+    expect(button(w, '播放动画')).toBeUndefined();
     expect(w.find('.scene').exists()).toBe(false);
     expect(help).not.toHaveBeenCalled();
     await button(w, '路程与位移').trigger('tap');
-    expect(w.text()).not.toContain('当前题目演示未就绪');
+    expect(w.text()).not.toContain('这道题的动画暂不可用');
     expect(w.find('.scene').exists()).toBe(true);
     expect(help).not.toHaveBeenCalled();
   });
@@ -164,11 +164,11 @@ describe('视图选择、迟到演示与上下文边界', () => {
     const w = lab();
     await button(w, '互动学习').trigger('tap');
     await button(w, '我猜不同').trigger('tap');
-    await button(w, '播放演示').trigger('tap');
+    await button(w, '播放动画').trigger('tap');
     const timers = vi.getTimerCount();
     expect(timers).toBe(1);
-    await button(w, '动态演示').trigger('tap');
-    expect(button(w, '暂停演示')).toBeTruthy();
+    await button(w, '互动观察').trigger('tap');
+    expect(button(w, '暂停动画')).toBeTruthy();
     expect(button(w, '我猜不同')).toBeUndefined();
     expect(vi.getTimerCount()).toBe(timers);
     await vi.advanceTimersByTimeAsync(1000);
@@ -190,9 +190,9 @@ describe('视图选择、迟到演示与上下文边界', () => {
       }
     });
     expect(w.find('.lab-content').exists()).toBe(true);
-    expect(selected(w, '动态演示')).toBe(true);
+    expect(selected(w, '互动观察')).toBe(true);
     expect(w.text()).toContain('恒定合力 6 N向左');
-    expect(button(w, '播放演示').attributes('disabled')).toBeDefined();
+    expect(button(w, '播放动画').attributes('disabled')).toBeDefined();
     expect(w.emitted('science')).toBeUndefined();
     expect(w.props('state').attempts).toEqual([]);
   });
@@ -213,10 +213,10 @@ describe('视图选择、迟到演示与上下文边界', () => {
     expect(selected(w, '学习关系图')).toBe(true);
     await button(w, '逐句带练').trigger('tap');
     expect(w.find('textarea').element.value).toBe('A private draft with  double spaces.');
-    await button(w, '查看新演示').trigger('tap');
-    expect(selected(w, '动态演示')).toBe(true);
+    await button(w, '查看新动画').trigger('tap');
+    expect(selected(w, '互动观察')).toBe(true);
     expect(w.text()).toContain('恒定合力 6 N向左');
-    expect(button(w, '查看新演示')).toBeUndefined();
+    expect(button(w, '查看新动画')).toBeUndefined();
     await button(w, '逐句带练').trigger('tap');
     expect(w.find('textarea').element.value).toBe('A private draft with  double spaces.');
     expect(store.exportData()).toBe(before);
@@ -229,7 +229,7 @@ describe('视图选择、迟到演示与上下文边界', () => {
     expect(w.find('.lab-content').exists()).toBe(false);
     await button(w, '互动学习').trigger('tap');
     expect(w.find('.force-lane').exists()).toBe(false);
-    expect(button(w, '查看新演示')).toBeTruthy();
+    expect(button(w, '查看新动画')).toBeTruthy();
   });
   it.each(['owner', 'conversation', 'id', 'version', 'context'])(
     '即使其他字段未变，%s切换也清空草稿/选择并拒绝旧请求',
@@ -274,22 +274,22 @@ describe('视图选择、迟到演示与上下文边界', () => {
     expect(w.find('.lab-content').exists()).toBe(false);
     await button(w, '互动学习').trigger('tap');
     expect(w.find('.force-lane').exists()).toBe(false);
-    await button(w, '查看新演示').trigger('tap');
+    await button(w, '查看新动画').trigger('tap');
     expect(w.find('.force-lane').exists()).toBe(true);
   });
   it('隐藏收回播放和草稿，保留本上下文明示视图；账户变化恢复题目默认', async () => {
     const q = createNoticeQuestion('q', 'c');
     const w = lab({ question: q });
     await button(w, '互动学习').trigger('tap');
-    await button(w, '动态演示').trigger('tap');
+    await button(w, '互动观察').trigger('tap');
     await button(w, '我猜不同').trigger('tap');
-    await button(w, '播放演示').trigger('tap');
+    await button(w, '播放动画').trigger('tap');
     expect(vi.getTimerCount()).toBe(1);
     await w.setProps({ visible: false });
     expect(vi.getTimerCount()).toBe(0);
     await w.setProps({ visible: true });
     await button(w, '互动学习').trigger('tap');
-    expect(selected(w, '动态演示')).toBe(true);
+    expect(selected(w, '互动观察')).toBe(true);
     await w.setProps({ context: 'other' });
     await button(w, '互动学习').trigger('tap');
     expect(selected(w, '逐句带练')).toBe(true);

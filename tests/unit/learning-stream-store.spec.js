@@ -257,7 +257,7 @@ it('合法提示后无效计划保留部分成功、失败收据和重开重试�
   });
   await expect(reopened.recoverModelResult()).rejects.toThrow('已保存1项操作');
   expect(reopened.exportData()).toBe(snapshot);
-  expect(reopened.error).toContain('后续操作未完成');
+  expect(reopened.error).toContain('其余未完成');
   expect(reopened.active.pendingHints).toHaveLength(1);
   expect(harness.fetch).toHaveBeenCalledOnce();
 });
@@ -558,7 +558,7 @@ it.each(['stop', 'hide'])('取消后的迟到错误不抢走%s页面焦点，原
     harness.preview();
     await flushPromises();
     if (change === 'stop') {
-      const stop = wrapper.findAll('button').find((button) => button.text().trim() === '停止当前任务');
+      const stop = wrapper.findAll('button').find((button) => button.attributes('aria-label') === '停止当前任务');
       await stop.trigger('keydown', { key: 'Enter' });
       expected = wrapper.get('#learning-stop-state').element;
     } else {

@@ -212,7 +212,7 @@ export default {
 
     /**
      * ✅ 2.4: 全局 API 错误拦截器
-     * 监听 lafService 发出的 authFailure 事件，统一处理认证失败
+     * 监听 API 请求核心发出的 authFailure 事件，统一处理认证失败
      */
     initApiErrorInterceptor() {
       let isRedirecting = false;

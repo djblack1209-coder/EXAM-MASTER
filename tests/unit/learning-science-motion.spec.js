@@ -71,7 +71,8 @@ const stubs = {
   text: { template: '<span><slot /></span>' },
   BaseIcon: true
 };
-const button = (wrapper, label) => wrapper.findAll('button').find((b) => b.text() === label);
+const button = (wrapper, label) =>
+  wrapper.findAll('button, [role="button"], [role="tab"]').find((b) => b.text() === label);
 describe('精确初速度与分段合力', () => {
   it.each([
     [motion, [4, 1], [0, 1], [-2, 1]],
@@ -497,8 +498,8 @@ describe('原图明确条件与实际控件', () => {
     expect(w.text()).toContain('时间 0 s / 4 s');
     expect(w.text()).toContain('观察帮助未保存');
     expect(w.text()).not.toContain('加速度 -1');
-    await button(w, '播放演示').trigger('tap');
-    expect(button(w, '暂停演示')).toBeUndefined();
+    await button(w, '播放动画').trigger('tap');
+    expect(button(w, '暂停动画')).toBeUndefined();
     expect(w.text()).toContain('时间 0 s / 4 s');
     recordScienceHelp.mockReturnValue(true);
     await button(w, '下一步').trigger('tap');
@@ -582,9 +583,9 @@ describe('原图明确条件与实际控件', () => {
         props: { state, question: state.questions[0], conversationId: 'c', context: 'ctx', recordHelp },
         global: { stubs }
       });
-    await button(w, '按原图演示').trigger('tap');
+    await button(w, '按原图观察').trigger('tap');
     await button(w, '初速度与转向').trigger('tap');
-    await button(w, '确认条件并演示').trigger('tap');
+    await button(w, '确认条件并观察').trigger('tap');
     expect(recordHelp).not.toHaveBeenCalled();
     expect(w.emitted('confirm')).toBeUndefined();
     for (const [selector, value] of [
@@ -604,15 +605,15 @@ describe('原图明确条件与实际控件', () => {
     const groups = w.findAll('.diagram-options');
     await groups
       .find((g) => g.attributes('aria-label') === '初速度方向')
-      .findAll('button')[1]
+      .findAll('button, [role="button"], [role="tab"]')[1]
       .trigger('tap');
     await w
-      .findAll('button')
+      .findAll('button, [role="button"], [role="tab"]')
       .filter((b) => b.text() === '向左')
       .at(-1)
       .trigger('tap');
     expect(recordHelp).not.toHaveBeenCalled();
-    await button(w, '确认条件并演示').trigger('tap');
+    await button(w, '确认条件并观察').trigger('tap');
     expect(recordHelp).toHaveBeenCalledOnce();
     expect(w.emitted('confirm')[0][0]).toEqual(visualRecipe(motion));
     w.unmount();

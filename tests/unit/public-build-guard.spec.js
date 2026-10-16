@@ -102,6 +102,12 @@ describe('public errors and statistics', () => {
       expect(publicError({ code })).toBe(t('ui.operationFailed'));
     expect(publicError(publicError({ code: 401 }))).toBe(t('ui.signInRequired'));
     expect(publicError(publicError(Error('服务连接不可用，学习记录已保存')))).toBe(t('ui.serviceUnavailable'));
+    expect(publicError(Error('答案、作答或批注区域不能自动用作独立校验资料'))).toBe(t('ui.materialAnswerRegion'));
+    expect(publicError(Error('请选择九位以内整数或最多六位小数的纯数值字段，不猜单位、分组符号或舍入'))).toBe(
+      t('ui.materialNumber')
+    );
+    expect(publicError(t('ui.partialOperations', { v0: 1 }))).toBe(t('ui.partialOperations', { v0: 1 }));
+    expect(publicError(t('ui.partialOperations', { v0: 'private-content' }))).toBe(t('ui.operationFailed'));
   });
   it('keeps legacy seeded caches but excludes them from real practice, counts and resume', () => {
     uni.clearStorageSync();

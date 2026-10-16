@@ -234,7 +234,8 @@ function lab(props = {}) {
     }
   });
 }
-const button = (wrapper, label) => wrapper.findAll('button').find((b) => b.text() === label);
+const button = (wrapper, label) =>
+  wrapper.findAll('button, [role="button"], [role="tab"]').find((b) => b.text() === label);
 describe('演示生命周期与逐句交互', () => {
   it('不自动播放，先预测；暂停、停止与账户变更回收定时器', async () => {
     vi.useFakeTimers();
@@ -242,16 +243,16 @@ describe('演示生命周期与逐句交互', () => {
       clears = vi.spyOn(globalThis, 'clearInterval');
     const wrapper = lab();
     await button(wrapper, '互动学习').trigger('tap');
-    expect(button(wrapper, '播放演示').attributes('disabled')).toBeDefined();
+    expect(button(wrapper, '播放动画').attributes('disabled')).toBeDefined();
     expect(intervals).not.toHaveBeenCalled();
     await button(wrapper, '我猜不同').trigger('tap');
-    await button(wrapper, '播放演示').trigger('tap');
+    await button(wrapper, '播放动画').trigger('tap');
     await vi.advanceTimersByTimeAsync(1500);
     expect(wrapper.text()).toContain('路程 2.5 m');
     const firstTimer = intervals.mock.results.at(-1).value;
-    await button(wrapper, '暂停演示').trigger('tap');
+    await button(wrapper, '暂停动画').trigger('tap');
     expect(clears).toHaveBeenCalledWith(firstTimer);
-    await button(wrapper, '播放演示').trigger('tap');
+    await button(wrapper, '播放动画').trigger('tap');
     const secondTimer = intervals.mock.results.at(-1).value;
     await wrapper.setProps({ stopped: true });
     expect(clears).toHaveBeenCalledWith(secondTimer);

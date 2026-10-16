@@ -816,7 +816,7 @@ export default {
       quizEngine: engine,
       engineGetOptionLabel: engine.getOptionLabel,
       engineIsCorrectOption: engine.isCorrectOption,
-      // ✅ reviewStore — 替代页面直接调用 lafService
+      // ✅ reviewStore 统一处理页面复习请求
       reviewStore
     };
   },

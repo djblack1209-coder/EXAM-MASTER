@@ -187,7 +187,7 @@ describe('自由原句的词义绑定与位置反馈', () => {
     const store = setup(false);
     await expect(store.requestVocabularyFeedback()).rejects.toThrow('提交');
     store.submit(answer, true, 'use-answer');
-    await expect(store.requestVocabularyFeedback()).rejects.toThrow('连接');
+    await expect(store.requestVocabularyFeedback()).rejects.toThrow('请先选择 AI 助手');
     cloud(store);
     store.sharingAllowed = false;
     await expect(store.requestVocabularyFeedback()).rejects.toThrow('流向');
@@ -356,7 +356,8 @@ describe('自由原句的词义绑定与位置反馈', () => {
     });
     api.generate.mockImplementation((body) => response(body));
     await store.requestVocabularyFeedback();
-    expect(store.error).toContain('保存失败');
+    expect(store.error).toBe('操作未完成，请重试。');
+    expect(store.error).not.toContain('合成保存失败');
     expect(store.state.attempts.at(-1).assistance).toBeUndefined();
     expect(api.generate).toHaveBeenCalledTimes(1);
   });

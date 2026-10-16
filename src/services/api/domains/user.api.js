@@ -248,7 +248,7 @@ export async function getAllAchievements() {
 
 /**
  * 解锁指定成就
- * ⚠️ 此处直接用 uni.getStorageSync 而非 storageService，因为 storageService → lafService 存在循环依赖
+ * ⚠️ 此处直接用 uni.getStorageSync 而非 storageService，避免 storageService 与 API 请求层循环依赖
  * @param {string} achievementId - 成就ID
  * @returns {Promise} 返回解锁结果
  */

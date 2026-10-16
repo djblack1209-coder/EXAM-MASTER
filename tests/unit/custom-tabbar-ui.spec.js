@@ -50,7 +50,14 @@ describe('custom tabbar visual interaction contract', () => {
     for (const [pagePath, activeProp] of tabPagePaths) {
       const pageSource = readFileSync(resolve(process.cwd(), pagePath), 'utf8');
 
-      expect(pageSource).toContain(`<CustomTabbar ${activeProp} />`);
+      if (pagePath.includes('/index/index.vue')) {
+        expect(pageSource).toContain(`<CustomTabbar ${activeProp} />`);
+      } else {
+        expect(pageSource).toContain('<LearningShell');
+        expect(pageSource).toContain(
+          pagePath.includes('/practice/') ? 'active="practice"' : ":active=\"settingsMode ? 'settings' : 'profile'\""
+        );
+      }
     }
   });
 });

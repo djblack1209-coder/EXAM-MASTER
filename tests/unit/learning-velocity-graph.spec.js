@@ -43,7 +43,8 @@ const stubs = {
   text: { template: '<span><slot /></span>' },
   BaseIcon: true
 };
-const button = (wrapper, label) => wrapper.findAll('button').find((b) => b.text().trim() === label);
+const button = (wrapper, label) =>
+  wrapper.findAll('button, [role="button"], [role="tab"]').find((b) => b.text().trim() === label);
 let stores;
 beforeEach(() => {
   uni.clearStorageSync();
@@ -444,7 +445,7 @@ describe('原图轴单位和确认边界', () => {
         global: { stubs }
       });
     try {
-      await button(wrapper, '按原图演示').trigger('tap');
+      await button(wrapper, '按原图观察').trigger('tap');
       await button(wrapper, '速度—时间图').trigger('tap');
       expect(wrapper.emitted('confirm')).toBeUndefined();
       expect(wrapper.findAll('input').every((i) => i.element.value === '')).toBe(true);
@@ -456,10 +457,12 @@ describe('原图轴单位和确认边界', () => {
         ['折点2速度', '-1']
       ])
         await wrapper.find(`input[aria-label="${label}"]`).setValue(value);
-      const confirm = wrapper.findAll('button').find((b) => b.text().includes('确认条件'));
+      const confirm = wrapper
+        .findAll('button, [role="button"], [role="tab"]')
+        .find((b) => b.text().includes('确认条件'));
       await confirm.trigger('tap');
       expect(wrapper.emitted('confirm')).toBeUndefined();
-      expect(wrapper.text()).toContain('演示帮助未保存');
+      expect(wrapper.text()).toContain('观察帮助未保存');
       record.mockReturnValue(true);
       await confirm.trigger('tap');
       expect(wrapper.emitted('confirm')[0][0].points).toEqual(

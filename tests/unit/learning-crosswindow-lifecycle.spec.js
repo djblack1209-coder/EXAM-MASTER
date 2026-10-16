@@ -200,7 +200,7 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
       first = store.loadModels();
     pending[0].fail({ errMsg: 'fixture failure' });
     expect((await first).success).toBe(false);
-    expect(store.modelListState).toMatchObject({ phase: 'error', message: '服务连接不可用，学习记录已保存' });
+    expect(store.modelListState).toMatchObject({ phase: 'error', message: '服务连接不可用，学习记录已保存。' });
     expect(pending).toHaveLength(1);
     const retry = store.loadModels();
     pending[1].success({ data: modelResult() });
@@ -311,7 +311,7 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
     await expect(store.loadModels()).resolves.toMatchObject({ success: false, code: 401 });
     expect(store.modelListState).toMatchObject({
       phase: 'error',
-      message: expect.stringContaining('本地学习无需登录')
+      message: '登录后可继续，本机记录保留。'
     });
     expect(transport).not.toHaveBeenCalled();
     expect(store.selectedMode).toBe('offline');

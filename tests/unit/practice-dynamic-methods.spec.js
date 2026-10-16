@@ -3,11 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { enableAutoUnmount, mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
 
-vi.mock('@/utils/practice/demo-bank.js', () => ({
-  isGuestDemoEnabled: () => false,
-  startGuestDemoPractice: vi.fn()
-}));
-
 vi.mock('@/utils/logger.js', () => ({
   logger: {
     log: vi.fn(),

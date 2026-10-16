@@ -354,7 +354,7 @@ describe('实际词块组件', () => {
       w = builderView(s, { recordHelp: fail });
     try {
       await buttons(w, '看句子提示').trigger('tap');
-      expect(w.text()).toContain('未保存');
+      expect(w.text()).toContain('操作未完成，请重试。');
       expect(w.text()).not.toContain('先找主语后的谓语');
       await w.setProps({ recordHelp: s.recordSentenceHelp });
       await buttons(w, '看句子提示').trigger('tap');

@@ -28,6 +28,19 @@ const render = (c, options = {}) => {
   wrappers.push(w);
   return w;
 };
+function renderDialog() {
+  let ui;
+  const w = render(
+    defineComponent({
+      setup() {
+        ui = usePageDialog();
+        return () => null;
+      }
+    })
+  );
+  return { w, ui };
+}
+
 beforeEach(() => {
   setActivePinia(createPinia());
   setLanguage('zh-CN');
@@ -174,15 +187,7 @@ describe('remaining page language and controls', () => {
 });
 describe('page scoped confirmations', () => {
   it('queues confirmations and preserves callbacks exactly once', async () => {
-    let ui;
-    const w = render(
-      defineComponent({
-        setup() {
-          ui = usePageDialog();
-          return () => null;
-        }
-      })
-    );
+    const { w, ui } = renderDialog();
     const success = vi.fn(),
       first = ui.modal.show({ title: 'First', success }),
       second = ui.modal.show({ title: 'Second' });
@@ -198,15 +203,7 @@ describe('page scoped confirmations', () => {
     w.unmount();
   });
   it('editable confirmation preserves the input for the existing rename callback', async () => {
-    let ui;
-    const w = render(
-      defineComponent({
-        setup() {
-          ui = usePageDialog();
-          return () => null;
-        }
-      })
-    );
+    const { w, ui } = renderDialog();
     const success = vi.fn(),
       result = ui.modal.show({ editable: true, success });
     ui.settleDialog(true, 'Renamed folder');
@@ -215,15 +212,7 @@ describe('page scoped confirmations', () => {
     w.unmount();
   });
   it('unmount resolves pending dialogs without executing business writes', async () => {
-    let ui;
-    const w = render(
-      defineComponent({
-        setup() {
-          ui = usePageDialog();
-          return () => null;
-        }
-      })
-    );
+    const { w, ui } = renderDialog();
     const success = vi.fn(),
       result = ui.modal.show({ success });
     w.unmount();

@@ -297,7 +297,6 @@ export default defineConfig(({ command, mode }) => {
   const isStaging = mode === 'staging';
   const isDevelopment = mode === 'development';
   const isAppPlus = platform === 'app' || platform === 'app-plus';
-  const enableGuestDemo = (isDevelopment || isolatedBuild) && env.VITE_ENABLE_MOCK === 'true';
   const enablePreview =
     (!platform || platform === 'h5') && (isDevelopment || isolatedBuild) && env.VITE_YOZI_COMPONENT_PREVIEW === '1';
 
@@ -425,11 +424,7 @@ export default defineConfig(({ command, mode }) => {
       'process.env.NODE_ENV': JSON.stringify(mode),
       __YOZI_PREVIEW__: JSON.stringify(enablePreview),
       'process.env.SENTRY_DSN': JSON.stringify(env.VITE_SENTRY_DSN || ''),
-      __APP_VERSION__: JSON.stringify(env.npm_package_version || '1.0.0'),
-      __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-      __BUILD_MODE__: JSON.stringify(mode),
-      __YOZI_DESKTOP__: JSON.stringify(isDesktop),
-      __ENABLE_GUEST_DEMO__: JSON.stringify(enableGuestDemo)
+      __YOZI_DESKTOP__: JSON.stringify(isDesktop)
     },
 
     // 路径别名
