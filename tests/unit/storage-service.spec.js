@@ -39,6 +39,63 @@ describe('storageService', () => {
     storageService = mod.storageService;
   });
 
+  describe('统一身份变化订阅', () => {
+    it.each([
+      'EXAM_USER_ID',
+      'EXAM_TOKEN',
+      'userInfo',
+      'EXAM_USER_INFO',
+      'access_token',
+      'refresh_token',
+      'token_expire_time'
+    ])('%s 的加密保存、全部浏览器别名与删除都通知，取消订阅后停止', (key) => {
+      const listener = vi.fn();
+      const stop = storageService.onIdentityChange(listener);
+      try {
+        expect(storageService.save(key, 'synthetic-identity-value', true)).toBe(true);
+        expect(uni.getStorageSync(key)).toBe('');
+        expect(uni.getStorageSync(`_enc_${key}`)).toBeTruthy();
+        expect(listener).toHaveBeenCalledTimes(1);
+        for (const alias of [key, `_enc_${key}`, `__exam_storage__:${key}`, `__exam_storage__:_enc_${key}`]) {
+          window.dispatchEvent(new StorageEvent('storage', { key: alias }));
+        }
+        expect(listener).toHaveBeenCalledTimes(5);
+        storageService.remove(key, true);
+        expect(listener).toHaveBeenCalledTimes(6);
+        window.dispatchEvent(new StorageEvent('storage', { key: 'theme_mode' }));
+        expect(listener).toHaveBeenCalledTimes(6);
+        stop();
+        storageService.save(key, 'later-synthetic-identity', true);
+        window.dispatchEvent(new StorageEvent('storage', { key: `_enc_${key}` }));
+        expect(listener).toHaveBeenCalledTimes(6);
+      } finally {
+        stop();
+      }
+    });
+    it('clear、当前账户资料清理与兼容登录事件共用通知；无关账户清理不通知', () => {
+      storageService.save('EXAM_USER_ID', 'identity-cleanup-owner', true);
+      storageService.save('temporary-data', 'synthetic', true);
+      const listener = vi.fn();
+      const stop = storageService.onIdentityChange(listener);
+      try {
+        storageService.clearUserData('another-owner');
+        expect(listener).not.toHaveBeenCalled();
+        storageService.clearUserData();
+        expect(listener).toHaveBeenCalledOnce();
+        for (const event of ['user:logout', 'loginStatusChanged', 'auth:userdata', 'auth:restore']) {
+          uni.$on.mock.calls.findLast(([name]) => name === event)[1]();
+        }
+        expect(listener).toHaveBeenCalledTimes(5);
+        window.dispatchEvent(new StorageEvent('storage', { key: null }));
+        expect(listener).toHaveBeenCalledTimes(6);
+        storageService.clear(true, { preserveGlobal: false });
+        expect(listener).toHaveBeenCalledTimes(7);
+      } finally {
+        stop();
+      }
+    });
+  });
+
   describe('旧错题请求的账户与保存边界', () => {
     it.each(['reply', 'throw', 'token'])('迟到新增 %s 不写入后来账户或新登录会话', async (outcome) => {
       uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
@@ -582,6 +639,18 @@ describe('storageService', () => {
         expect(wxStorageService.save('wx_key', 'wx_value')).toBe(true);
         expect(global.wx.setStorageSync).toHaveBeenCalledWith('wx_key', 'wx_value');
         expect(wxStorageService.get('wx_key')).toBe('wx_value');
+        const changed = vi.fn();
+        const stop = wxStorageService.onIdentityChange(changed);
+        try {
+          expect(wxStorageService.save('EXAM_USER_ID', 'synthetic-wx-owner', true)).toBe(true);
+          expect(runtimeStorage.EXAM_USER_ID).toBeUndefined();
+          expect(runtimeStorage._enc_EXAM_USER_ID).toBeTruthy();
+          expect(changed).toHaveBeenCalledOnce();
+          wxStorageService.remove('EXAM_USER_ID', true);
+          expect(changed).toHaveBeenCalledTimes(2);
+        } finally {
+          stop();
+        }
       } finally {
         global.uni = originalUni;
         global.wx = originalWx;

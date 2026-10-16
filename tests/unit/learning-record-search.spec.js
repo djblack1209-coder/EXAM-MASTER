@@ -35,6 +35,7 @@ afterEach(() => {
   for (const store of getActivePinia()?._s.values() || []) store.$dispose();
   learningWriteLease.release();
   setLanguage('zh-CN');
+  vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
 function fixture() {
@@ -165,6 +166,69 @@ async function storeRecords() {
   return { store, first };
 }
 describe('record location uses canonical facts', () => {
+  it.each(['EXAM_USER_ID', '_enc_EXAM_USER_ID', '__exam_storage__:EXAM_USER_ID', '__exam_storage__:_enc_EXAM_USER_ID'])(
+    'revokes cached originals on %s using real encrypted login writes and fresh compat identity reads',
+    async (eventKey) => {
+      // Keep the uni event/request surface while exercising the browser compat storage.
+      vi.stubGlobal('uni', {
+        ...uni,
+        getStorageSync: undefined,
+        setStorageSync: undefined,
+        removeStorageSync: undefined
+      });
+      localStorage.clear();
+      storageService.save('EXAM_USER_ID', 'search-peer', true);
+      const peerIdentity = localStorage.getItem('__exam_storage__:_enc_EXAM_USER_ID');
+      storageService.save('EXAM_USER_ID', 'search-current', true);
+      storageService.save('EXAM_TOKEN', 'synthetic-encrypted-search-token', true);
+      expect(storageService.get('EXAM_USER_ID')).toBe('search-current'); // Warm the former compat cache.
+      const { store } = await storeRecords();
+      const result = store.searchRecords('第一稿');
+      store.openRecord(result.items[0].id, result.context);
+      const search = computed(() => store.searchRecords('第一稿'));
+      const original = computed(() => store.locatedRecord);
+      expect(search.value.total).toBe(1);
+      expect(original.value.answer).toContain('第一稿');
+      const oldFacts = localStorage.getItem('__exam_storage__:u_search-current_conversation_learning_v1');
+      expect(localStorage.getItem('EXAM_USER_ID')).toBeNull();
+      expect(localStorage.getItem('__exam_storage__:EXAM_USER_ID')).toBeNull();
+      // Other windows write the same service-produced ciphertext; this window receives only StorageEvent.
+      const encrypted = JSON.parse(peerIdentity).value;
+      localStorage.setItem(
+        eventKey.startsWith('__exam_storage__:') ? '__exam_storage__:_enc_EXAM_USER_ID' : '_enc_EXAM_USER_ID',
+        eventKey.startsWith('__exam_storage__:') ? peerIdentity : encrypted
+      );
+      window.dispatchEvent(new StorageEvent('storage', { key: eventKey }));
+      expect(storageService.get('EXAM_USER_ID')).toBe('search-peer');
+      expect(store.state.owner).toBe('search-peer');
+      expect(search.value.items).toEqual([]);
+      expect(original.value).toBeNull();
+      expect(() => store.openRecord(result.items[0].id, result.context)).toThrow();
+      expect(localStorage.getItem('__exam_storage__:u_search-current_conversation_learning_v1')).toBe(oldFacts);
+      // Removing an encrypted identity must not resurrect the warmed cached account.
+      localStorage.removeItem('_enc_EXAM_USER_ID');
+      localStorage.removeItem('__exam_storage__:_enc_EXAM_USER_ID');
+      window.dispatchEvent(new StorageEvent('storage', { key: eventKey }));
+      expect(storageService.get('EXAM_USER_ID')).toBeNull();
+      expect(store.state.owner).toBe('guest');
+    }
+  );
+  it('invalidates encrypted same-window login, token removal and logout without a legacy auth event', async () => {
+    storageService.save('EXAM_USER_ID', 'same-window-search-owner', true);
+    storageService.save('EXAM_TOKEN', 'synthetic-search-token', true);
+    const { store } = await storeRecords();
+    const result = store.searchRecords('第一稿');
+    store.openRecord(result.items[0].id, result.context);
+    storageService.remove('EXAM_TOKEN', true);
+    expect(store.locatedRecord).toBeNull();
+    store.openRecord(store.searchRecords('第一稿').items[0].id, store.searchRecords('第一稿').context);
+    storageService.save('EXAM_USER_ID', 'same-window-second-owner', true);
+    expect(store.state.owner).toBe('same-window-second-owner');
+    expect(store.searchRecords('第一稿').items).toEqual([]);
+    expect(store.locatedRecord).toBeNull();
+    storageService.remove('EXAM_USER_ID', true);
+    expect(store.state.owner).toBe('guest');
+  });
   it.each(['user:logout', 'loginStatusChanged', 'auth:userdata', 'storage-account', 'storage-lifecycle'])(
     'synchronously hides cached search, filters and the open answer before a failed %s read, then recovers',
     async (event) => {

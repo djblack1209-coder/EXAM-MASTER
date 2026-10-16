@@ -78,6 +78,7 @@ import { computed, ref, shallowRef, onScopeDispose, watch } from 'vue';
 import { pendingUploadJournal } from '@/services/learning/pending-upload-journal.js';
 import { learningRepository, LEARNING_KEY } from '@/services/learning/learning-repository.js';
 import { getUserId, getToken } from '@/services/auth-storage.js';
+import { storageService } from '@/services/storageService.js';
 import {
   COMPUTE_CONTRACT,
   computeScopeFor,
@@ -870,10 +871,18 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       throw cause;
     }
   }
-  function reloadRecords() {
+  function reloadRecords({ identityChanged = false } = {}) {
     recordSearch.clear();
     recordLocation.value = null;
     conversationLocation.value = null;
+    if (identityChanged) {
+      recordReadState.value = 'loading';
+      recordSnapshotContext.value = null;
+      resetAccountResources();
+      resetModelResources();
+      cancelSync({ clearFeedback: true });
+      cancelHistory();
+    }
     try {
       return refresh();
     } catch {
@@ -886,8 +895,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       error.value = '本机记录已变化且暂不可读，请重新核对；旧资料动作已取消。';
     }
   }
-  const authEvents = ['user:logout', 'loginStatusChanged', 'auth:userdata'];
-  for (const event of authEvents) uni.$on?.(event, reloadRecords);
+  const stopIdentityChanges = storageService.onIdentityChange(() => reloadRecords({ identityChanged: true }), {
+    $on: (event, listener) => uni.$on?.(event, listener),
+    $off: (event, listener) => uni.$off?.(event, listener)
+  });
   const storageChanged = (event) => {
     const prefix = state.value.owner === 'guest' ? '' : `u_${state.value.owner}_`;
     const keys = [
@@ -897,8 +908,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       `${LEARNING_KEY}_sync_conflict`,
       `${LEARNING_KEY}_upload_pending`
     ].flatMap((key) => [`${prefix}${key}`, `__exam_storage__:${prefix}${key}`]);
-    keys.push('EXAM_USER_ID', '__exam_storage__:EXAM_USER_ID');
-    if (event.key !== null && !keys.includes(event.key)) return;
+    if (!keys.includes(event.key)) return;
     if (event.storageArea && event.storageArea !== window.localStorage) return;
     reloadRecords();
   };
@@ -910,7 +920,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     notificationObserver?.dispose();
     calendar.dispose();
     if (typeof window !== 'undefined') window.removeEventListener('storage', storageChanged);
-    for (const event of authEvents) uni.$off?.(event, reloadRecords);
+    stopIdentityChanges();
     controller?.abort();
     cancelModelReads();
     materialController?.abort();
