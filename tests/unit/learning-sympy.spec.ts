@@ -19,14 +19,14 @@ const processes = vi.hoisted(() => ({ spawn: vi.fn(), execFile: vi.fn() }));
 vi.mock('node:child_process', () => ({ ...processes, default: processes }));
 const scope = { ownerId: 'sympy-owner', conversationId: 'task-a', questionKey: 'q@1', attemptId: 'answer-a' };
 const runtime = { python: '/trusted/python', packages: '/trusted/packages' };
-function context() {
+function context(goal = '解方程 x^2-2=0', answer = 'sqrt(2)') {
   let state = emptyLearningState(scope.ownerId);
   for (const op of [
     { id: scope.conversationId, type: 'conversation.start', data: { goal: '解方程' } },
     {
       id: 'question-a',
       type: 'question.add',
-      data: { conversationId: scope.conversationId, question: createAlgebraQuestion('q', '解方程 x^2-2=0') }
+      data: { conversationId: scope.conversationId, question: createAlgebraQuestion('q', goal) }
     },
     {
       id: 'focus-a',
@@ -36,7 +36,7 @@ function context() {
     {
       id: scope.attemptId,
       type: 'attempt.submit',
-      data: { conversationId: scope.conversationId, answer: 'sqrt(2)', explicit: true }
+      data: { conversationId: scope.conversationId, answer, explicit: true }
     }
   ])
     state = applyLearningOperation(state, op).state;
@@ -195,6 +195,29 @@ describe('saved question and original-answer binding', () => {
     expect(JSON.stringify(first.input)).not.toContain('sqrt');
     expect(c.state.attempts[0].grade.status).toBe('pending');
     expect(JSON.stringify(c)).toBe(before);
+  });
+  it('keeps the declared symbol and original answer in request binding while sending only canonical coefficients', () => {
+    const named = context('解关于 t 的方程 2*t+3=9', 't=3');
+    const canonical = context('解方程 2*x+3=9', 'x=3');
+    const before = JSON.stringify(named);
+    const prepared = prepareSympyReference(named, scope);
+    expect(prepared.input).toEqual(prepareSympyReference(canonical, scope).input);
+    expect(prepared.requestId).not.toBe(prepareSympyReference(canonical, scope).requestId);
+    expect(JSON.stringify(prepared.input)).not.toMatch(/t=3|关于|symbol|ownerId/);
+    expect(named.state.attempts[0].answer).toBe('t=3');
+    expect(JSON.stringify(named)).toBe(before);
+  });
+  it('does not extend an unmarked historical question into the new named equation compute contract', () => {
+    const legacy = context('解关于 t 的方程 2*t+3=9', 't=3');
+    legacy.state.questions[0].source = { kind: 'model_generated' };
+    delete legacy.state.questions[0].algebra;
+    expect(() => prepareSympyReference(legacy, scope)).toThrow('UNSUPPORTED_QUESTION');
+    expect(processes.spawn).not.toHaveBeenCalled();
+  });
+  it('does not expand the equation-only compute permission to named linear inequalities', () => {
+    const named = context('解关于 t 的不等式 -2*t+6>0', 't<3');
+    expect(() => prepareSympyReference(named, scope)).toThrow('UNSUPPORTED_QUESTION');
+    expect(processes.spawn).not.toHaveBeenCalled();
   });
   it.each([
     [

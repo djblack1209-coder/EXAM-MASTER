@@ -269,7 +269,7 @@ it('page offers layout without enabling OCR, changing choices writes no facts, u
   try {
     await wrapper
       .findAll('button')
-      .find((b) => b.text() === '资料')
+      .find((b) => b.attributes('aria-label') === '导入资料')
       .trigger('tap');
     await wrapper
       .findAll('button')
@@ -290,7 +290,7 @@ it('page picker follows saved batches while the selected page and edited draft r
   const wrapper = mount(LearningPage);
   const button = (name) => wrapper.findAll('button').find((b) => b.text().trim() === name);
   try {
-    await button('资料').trigger('tap');
+    await wrapper.get('[aria-label="导入资料"]').trigger('tap');
     await button('用此资料练习').trigger('tap');
     await wrapper.get('textarea[aria-label="题目"]').setValue('保留正在编辑的草稿');
     store.commit('material.add', { material: material(2) });

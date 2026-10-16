@@ -1,15 +1,12 @@
 <template>
   <view
     ref="stage"
-    class="future-stage"
-    :class="[
-      theme.isDark ? 'theme-dark' : 'theme-light',
-      { 'entrance-pending': entrancePending, 'motion-paused': !interactive || mascotReducedMotion }
-    ]"
+    class="future-stage theme-light"
+    :class="[{ 'entrance-pending': entrancePending, 'motion-paused': !interactive || mascotReducedMotion }]"
     :style="$yoziInsets"
   >
     <!-- #ifdef H5 -->
-    <view class="sky" aria-hidden="true">
+    <view class="sky" aria-hidden="true" :style="{ backgroundImage: `url(${FUTURE_ASSETS.still})` }">
       <component
         :is="'video'"
         ref="skyVideo"
@@ -51,45 +48,44 @@
         ><YoziMascot pose="wave" size="medium" play="auto" :reduced-motion="!interactive"
       /></view>
     </view>
-    <BaseCard class="future-nav" surface="glass" padding="small" :aria-label="t('landing.navigation')">
+    <BaseCard class="future-nav" surface="glass" padding="small" :aria-label="landingPresentation.navigation">
       <view class="future-nav-items"
         ><BaseButton class="nav-link home" variant="quiet" align="start" @tap="open('web')">{{
-          t('landing.home')
+          landingPresentation.home
         }}</BaseButton>
         <BaseButton
           class="nav-link n1"
           variant="primary"
-          :label="t('landing.start')"
+          :label="landingPresentation.start"
           icon="arrow-right"
           @tap="open('start')"
-          >{{ t('landing.start') }}</BaseButton
+          >{{ landingPresentation.start }}</BaseButton
         >
         <BaseButton class="nav-link n2" variant="quiet" align="start" @tap="open('materials')">{{
-          t('landing.materials')
+          landingPresentation.materials
         }}</BaseButton>
         <BaseButton class="nav-link n3" variant="quiet" align="start" @tap="open('plan')">{{
-          t('landing.plan')
+          landingPresentation.plan
         }}</BaseButton>
         <view class="mode"
-          ><BaseChip v-model="interactive" :disabled="mascotReducedMotion">{{ t('landing.motion') }}</BaseChip></view
+          ><BaseChip v-model="interactive" :disabled="mascotReducedMotion">{{
+            landingPresentation.motion
+          }}</BaseChip></view
         >
       </view></BaseCard
     >
   </view>
 </template>
 <script setup>
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { BRAND } from '@/config/brand.js';
 import { FUTURE_ASSETS, bindFutureSky, runFutureEntrance } from '@/design/future-motion.js';
-import { t } from '@/i18n/index.js';
-import '@/i18n/messages/landing.js';
-import { useThemeStore } from '@/stores/modules/theme.js';
+import { landingPresentation } from '@/i18n/messages/landing.js';
 import { mascotReducedMotion } from '@/design/mascot-motion.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
-const theme = useThemeStore();
 const emit = defineEmits(['open']);
 const stage = ref(null);
 const skyVideo = ref(null);
@@ -99,7 +95,7 @@ let useEntrance = false;
 useEntrance = true;
 // #endif
 const entrancePending = ref(useEntrance);
-const ticker = computed(() => t('landing.ticker').repeat(5));
+const ticker = landingPresentation.ticker.repeat(5);
 let skyControl;
 let stopEntrance = () => undefined;
 let disposed = false;

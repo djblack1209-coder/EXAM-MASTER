@@ -282,7 +282,7 @@ function playPose(pose) {
   margin-bottom: var(--s-6);
 }
 .preview-title {
-  font: var(--weight-extrabold) var(--size-title-1)/var(--leading-title-1) var(--font-display);
+  font: var(--weight-display) var(--size-title-1)/var(--leading-title-1) var(--font-display);
 }
 .preview-grid {
   display: grid;

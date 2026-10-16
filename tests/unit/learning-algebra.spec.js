@@ -27,6 +27,115 @@ import { useConversationLearningStore } from '@/stores/modules/conversation-lear
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
 vi.mock('@dcloudio/uni-app', () => ({ onShow: vi.fn(), onHide: vi.fn(), onBackPress: vi.fn() }));
 const clone = (v) => JSON.parse(JSON.stringify(v));
+describe('显式单未知量方程沿独立版本完成作答与接续', () => {
+  it('旧导入的相同题干没有新合同标记时保持待核对，不因重放取得评分权威', () => {
+    const legacy = createAlgebraQuestion('legacy-named', '解关于 t 的方程 2*t+3=9');
+    legacy.source = { kind: 'model_generated' };
+    legacy.validation = null;
+    legacy.validationResult = { verified: false, wellPosed: false, solvable: null, evidenceId: ALGEBRA_CONTRACT };
+    delete legacy.algebra;
+    const normalized = normalizePrivateSyncOperation({
+      id: 'old-named',
+      type: 'question.add',
+      data: { question: legacy }
+    }).data.question;
+    expect(normalized.validation).toBeNull();
+    expect(normalized.algebra).toBeUndefined();
+    expect(gradeAnswer(normalized, 't=3').status).toBe('pending');
+    expect(algebraReferenceText(normalized)).toBeNull();
+    expect(createAlgebraVariant('old-variant', normalized)).toBeNull();
+    expect(localTeaching(normalized, 'explain')).toBeNull();
+  });
+  it.each([
+    ['解关于 t 的方程 2*t+3=9', 't=3', 'correct'],
+    ['解关于 y 的方程 y^2=4', 'y=-2或y=2', 'correct'],
+    ['解关于 y 的方程 y^2=4', 'y=2', 'partial'],
+    ['解关于 z 的方程 (z^2-1)/(z-1)=0', 'z=-1', 'correct'],
+    ['解关于 z 的方程 (z^2-1)/(z-1)=0', 'z=-1或z=1', 'wrong'],
+    ['整数解关于 n 的方程 2*n=1', '无解', 'correct'],
+    ['正数解关于 a 的方程 a^2=4', 'a=2', 'correct'],
+    ['解关于 f 的方程 \\frac{f}{2}=3', 'f=6', 'correct'],
+    ['解关于 r 的方程 r=\\frac{1}{2}', 'r=\\frac{1}{2}', 'correct'],
+    ['解关于 t 的方程 t/t=1', '任意实数，t≠0', 'correct']
+  ])('%s保留所声明的符号与精确数域', (goal, answer, outcome) => {
+    const q = createAlgebraQuestion('named', goal);
+    expect(q.algebra).toMatchObject({ contract: algebra.NAMED_EQUATION_CONTRACT, status: 'verified' });
+    expect(gradeAnswer(q, answer)).toMatchObject({
+      status: 'reliable',
+      outcome,
+      basis: algebra.NAMED_EQUATION_CONTRACT
+    });
+    expect(q.prompt).not.toContain('关于 x');
+  });
+  it('未知量不能暗换为x，多变量、无理根及超限继续待核对，旧合同不扩大', () => {
+    const q = createAlgebraQuestion('named', '解关于 t 的方程 2*t+3=9');
+    expect(gradeAnswer(q, 'x=3')).toMatchObject({ status: 'pending', basis: 'answer_variable_mismatch' });
+    expect(classifyResponse('t=3', q)).toBe('answer');
+    expect(classifyResponse('是不是t=3？', q)).not.toBe('answer');
+    for (const expression of ['t+y=3', 'x+t=3', 't^2=2', 't/0=1', `${'('.repeat(17)}t${')'.repeat(17)}=1`]) {
+      const unsupported = createAlgebraQuestion('unsupported', `解关于 t 的方程 ${expression}`);
+      expect(unsupported.validation).toBeNull();
+      expect(gradeAnswer(unsupported, 't=3').status).toBe('pending');
+    }
+    const old = createAlgebraQuestion('old', '解方程 2*t+3=9');
+    expect(old.algebra.contract).toBe(ALGEBRA_CONTRACT);
+    expect(old.validation).toBeNull();
+    expect(createAlgebraQuestion('legacy', '解方程 x=3').algebra.contract).toBe(ALGEBRA_CONTRACT);
+  });
+  it('同步重算原方程与符号，不接收伪造解或符号；未确认原资料与用户量表仍优先', () => {
+    const q = createAlgebraQuestion('named', '解关于 t 的方程 t^2=4');
+    q.validation.solution.values = [[999, 1]];
+    q.algebra.symbol = 'y';
+    const normalized = normalizePrivateSyncOperation({
+      id: 'named-import',
+      type: 'question.add',
+      data: { question: q }
+    }).data.question;
+    expect(normalized.algebra.symbol).toBe('t');
+    expect(gradeAnswer(normalized, 't=-2或t=2').outcome).toBe('correct');
+    expect(gradeAnswer({ ...normalized, uncertainties: [{ field: '未知量', resolved: false }] }, 't=2').status).toBe(
+      'pending'
+    );
+    expect(gradeAnswer({ ...normalized, rubric: { id: 'user-rubric' } }, 't=2').status).toBe('pending');
+    expect(gradeAnswer({ ...normalized, options: ['A. 2'] }, 't=2').status).toBe('pending');
+  });
+  it('参考中的限制用原符号；平移变式与数域变式独立重算', () => {
+    const q = createAlgebraQuestion('named', '解关于 t 的方程 t/t=1');
+    expect(algebraReferenceText(q)).toBe('任意实数，t≠0');
+    const translated = createAlgebraVariant('shift', createAlgebraQuestion('named', '解关于 t 的方程 2*t+3=9'));
+    expect(translated.parentQuestionKey).toBe('named@1');
+    expect(translated.prompt).toContain('(t+1)');
+    expect(gradeAnswer(translated, 't=2').outcome).toBe('correct');
+    expect(gradeAnswer(translated, 't=3').outcome).toBe('wrong');
+    const real = createAlgebraVariant('real', createAlgebraQuestion('integer', '整数解关于 n 的方程 2*n=1'));
+    expect(gradeAnswer(real, 'n=1/2').outcome).toBe('correct');
+    expect(createAlgebraVariant('constant', createAlgebraQuestion('constant', '解关于 t 的方程 1=1'))).toBeNull();
+  });
+  it('聊天提交、帮助后订正、无提示变式和普通仓库重开共用事实，零网络调用', async () => {
+    const store = useConversationLearningStore();
+    const request = vi.spyOn(uni, 'request');
+    store.start('解关于 t 的方程 2*t+3=9');
+    expect(store.state.attempts).toHaveLength(0);
+    await store.send('t=4', { id: 'named-first' });
+    await store.send('t=4', { id: 'named-first' });
+    expect(store.state.attempts).toHaveLength(1);
+    expect(store.state.attempts[0]).toMatchObject({ answer: 't=4', grade: { outcome: 'wrong' } });
+    await store.send('直接讲解');
+    await store.send('t=3');
+    expect(store.state.attempts[1]).toMatchObject({ answer: 't=3', grade: { outcome: 'correct' } });
+    expect(store.state.attempts[1].hints).toHaveLength(1);
+    store.generateVariant();
+    await store.send('t=2');
+    expect(store.state.attempts[2]).toMatchObject({ kind: 'variant', hints: [], grade: { outcome: 'correct' } });
+    const before = clone(store.state);
+    setActivePinia(createPinia());
+    const reopened = useConversationLearningStore();
+    expect(reopened.state.attempts).toEqual(before.attempts);
+    expect(reopened.state.events).toEqual(before.events);
+    expect(request).not.toHaveBeenCalled();
+    request.mockRestore();
+  });
+});
 beforeEach(() => {
   uni.clearStorageSync();
   setActivePinia(createPinia());

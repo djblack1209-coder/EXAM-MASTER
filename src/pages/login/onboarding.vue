@@ -61,7 +61,7 @@ import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import { computed, ref, onBeforeUnmount } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { storageService } from '@/services/storageService.js';
-import { openHomeTab } from '@/utils/home-navigation.js';
+import { openLearningEntry as openHomeTab } from '@/utils/home-navigation.js';
 
 const step = ref(0);
 const legacyMode = ref(false);
@@ -191,21 +191,25 @@ function skipOnboarding() {
 </script>
 <style scoped>
 .onboarding-page {
-  max-width: 560px;
+  width: 100%;
   box-sizing: border-box;
   min-height: 100vh;
   padding: var(--s-8) var(--s-5);
   margin: 0 auto;
   color: var(--ink);
-  background: var(--paper);
+  background: var(--canvas);
   font-family: var(--font-ui);
+}
+.onboarding-page > .base-card {
+  max-width: calc(var(--dialog-width) + var(--s-14) * 3);
+  margin-inline: auto;
 }
 .onboarding-stack {
   display: grid;
   gap: var(--s-5);
 }
 .onboarding-title {
-  font: var(--weight-bold) var(--size-title)/var(--leading-title) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-title-2)/var(--leading-title-2) var(--font-ui);
 }
 .onboarding-chips,
 .onboarding-row {

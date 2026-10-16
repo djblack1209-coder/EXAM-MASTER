@@ -506,6 +506,9 @@ def normalize_record(
 
     if draft_status:
         record["draftStatus"] = draft_status
+    if "publicUseEvidence" in raw:
+        # Preserve declared proof exactly; filenames/status never manufacture it.
+        record["publicUseEvidence"] = raw["publicUseEvidence"]
     if human_field_status:
         record["humanFieldStatus"] = human_field_status
     if (

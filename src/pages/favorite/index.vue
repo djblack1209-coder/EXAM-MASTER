@@ -5,7 +5,9 @@
     <!-- 导航栏 -->
     <view class="header-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <BaseButton class="nav-back" variant="secondary" @tap="goBack"><BaseIcon name="arrow-left" /></BaseButton>
+        <BaseButton class="nav-back" :label="$t('ui.back')" variant="secondary" @tap="goBack"
+          ><BaseIcon name="arrow-left"
+        /></BaseButton>
         <text class="nav-title">{{ $t('pages.favorite') }}</text>
         <view class="nav-actions">
           <BaseButton

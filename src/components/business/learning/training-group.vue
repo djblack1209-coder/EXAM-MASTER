@@ -1,5 +1,14 @@
 <template>
-  <BaseCard v-if="report" ref="root" class="training-panel" data-test="training-group" padding="none">
+  <BaseCard
+    v-if="report"
+    id="learning-training-panel"
+    ref="root"
+    class="training-panel"
+    data-test="training-group"
+    tabindex="-1"
+    role="region"
+    :aria-label="learningText(report.module.label)"
+  >
     <view class="training-heading">
       <view
         ><text class="training-title"
@@ -42,10 +51,12 @@
         class="training-question"
         padding="none"
       >
-        <text class="training-question-label"
-          >{{ t('learning.kq6') }}{{ index + 1 }}{{ t('learning.kg5')
-          }}{{ learningText(row.question.knowledgePoint || report.module.label) }}</text
-        >
+        <text class="training-question-label">{{
+          t('learning.trainingQuestionLabel', {
+            index: index + 1,
+            topic: learningText(row.question.knowledgePoint || report.module.label)
+          })
+        }}</text>
         <text class="training-prompt" selectable>{{ row.question.prompt }}</text>
         <BaseButton :disabled="locked" :aria-disabled="locked" variant="quiet" @tap="discuss(row.questionKey)">{{
           t('learning.k9a')
@@ -108,10 +119,12 @@
       >
       <view v-for="row in report.rows" :key="row.questionKey" class="training-result-row">
         <view class="training-result-heading"
-          ><text
-            >{{ t('learning.kq6') }}{{ row.index + 1 }}{{ t('learning.kg5')
-            }}{{ learningText(row.question.knowledgePoint || report.module.label) }}</text
-          >
+          ><text>{{
+            t('learning.trainingQuestionLabel', {
+              index: row.index + 1,
+              topic: learningText(row.question.knowledgePoint || report.module.label)
+            })
+          }}</text>
           <BaseTag
             :tone="row.grade.status !== 'reliable' ? 'apricot' : row.grade.outcome === 'correct' ? 'mint' : 'coral'"
             >{{ learningText(outcomeLabel(row.grade)) }}</BaseTag
@@ -119,15 +132,23 @@
         >
         <text class="training-prompt" selectable>{{ row.question.prompt }}</text>
         <text class="training-original" selectable>{{ t('learning.kcd') }}{{ row.attempt.answer }}</text>
-        <text class="training-meta">{{
-          row.grade.status === 'reliable' ? t('learning.k3n', { v0: row.grade.basis }) : t('learning.kpv')
-        }}</text>
+        <text v-if="row.grade.status !== 'reliable'" class="training-meta">{{ t('learning.kpv') }}</text>
         <view class="button-row">
           <BaseButton :disabled="locked" :aria-disabled="locked" variant="quiet" @tap="explain(row.questionKey)">{{
             t('learning.kdu')
           }}</BaseButton>
           <BaseButton variant="quiet" @tap="openQuestion(row.questionKey)">{{ t('learning.kd9') }}</BaseButton>
+          <BaseButton
+            v-if="row.grade.status === 'reliable'"
+            variant="quiet"
+            :aria-expanded="!!bases[row.questionKey]"
+            @tap="bases[row.questionKey] = !bases[row.questionKey]"
+            >{{ t('learning.viewGradingBasis') }}</BaseButton
+          >
         </view>
+        <text v-if="bases[row.questionKey]" class="training-meta" selectable>{{
+          t('learning.k3n', { v0: row.grade.basis })
+        }}</text>
         <text v-if="explanations[row.questionKey]" class="training-explanation" selectable>{{
           explanations[row.questionKey]
         }}</text>
@@ -151,7 +172,7 @@ import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { onShow, onHide } from '@dcloudio/uni-app';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { dayKey } from '@/services/learning/learning-domain.js';
@@ -161,7 +182,8 @@ const learning = useConversationLearningStore();
 const report = computed(() => learning.trainingResult),
   root = ref(null),
   answers = ref([]),
-  explanations = ref({});
+  explanations = ref({}),
+  bases = ref({});
 const message = ref(''),
   failed = ref(false),
   time = ref(Date.now());
@@ -204,6 +226,17 @@ function choiceValue(option, index) {
 function answerLimit(question) {
   return question.writingExercise ? writingAnswerLimit(question) : 8000;
 }
+function reveal(id = 'learning-training-panel') {
+  // #ifdef H5
+  const element = document.getElementById(id);
+  element?.scrollIntoView?.({ block: 'start', behavior: 'auto' });
+  element?.focus?.({ preventScroll: true });
+  // #endif
+  // #ifndef H5
+  uni.pageScrollTo?.({ selector: `#${id}`, duration: 0 });
+  // #endif
+}
+defineExpose({ reveal });
 function locate(index) {
   uni.pageScrollTo?.({ selector: `#training-question-${index}`, duration: 0 });
 }
@@ -234,9 +267,11 @@ function explain(key) {
     failed.value = true;
   }
 }
-function openQuestion(key) {
+async function openQuestion(key) {
   learning.focus(key);
   learning.selectTraining(null);
+  await nextTick();
+  reveal('active-learning-question');
 }
 function outcomeLabel(grade) {
   return grade?.status !== 'reliable'
@@ -248,6 +283,7 @@ watch(
   () => {
     answers.value = [];
     explanations.value = {};
+    bases.value = {};
     message.value = '';
     time.value = Date.now();
   }
@@ -268,7 +304,12 @@ onUnmounted(() => {
 <style scoped>
 .training-panel {
   margin-top: var(--s-8);
-  padding-top: var(--s-6);
+  scroll-margin-top: var(--s-5);
+  scroll-margin-bottom: calc(var(--learning-composer-height, var(--control-height)) + var(--s-6));
+}
+.training-panel:focus-visible {
+  outline: var(--border-selected) solid var(--focus);
+  outline-offset: var(--s-1);
 }
 .training-heading,
 .training-result-heading,
@@ -281,7 +322,7 @@ onUnmounted(() => {
 .training-title {
   display: block;
   font-size: var(--size-title-2);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
   line-height: 1.4;
 }
 .training-meta {
@@ -309,7 +350,7 @@ onUnmounted(() => {
 .training-question-label {
   display: block;
   font-size: var(--size-small);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
   margin-bottom: var(--s-3);
 }
 .training-prompt,
@@ -358,7 +399,7 @@ onUnmounted(() => {
 }
 .training-result-heading {
   font-size: var(--size-small);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
   margin-bottom: var(--s-3);
   flex-wrap: wrap;
 }

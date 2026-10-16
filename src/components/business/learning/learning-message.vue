@@ -125,7 +125,7 @@ const blocks = computed(() => {
 }
 .block-heading {
   font-size: var(--size-title-3);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
   line-height: 1.4;
   margin: var(--s-6) 0 var(--s-3);
 }
@@ -141,7 +141,7 @@ const blocks = computed(() => {
   flex-shrink: 0;
 }
 .text-emphasis {
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
 }
 .block-code {
   padding: var(--s-3);
@@ -165,7 +165,7 @@ const blocks = computed(() => {
   overflow-wrap: anywhere;
 }
 .table-heading {
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
 }
 @media (max-width: 520px) {
   .block-heading {

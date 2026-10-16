@@ -5,10 +5,12 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import QuestionBankPage from '@/pages/practice-sub/question-bank.vue';
 import storageService from '@/services/storageService.js';
 import { getPracticeNavigationTree } from '@/config/bank-registry.js';
+
+vi.mock('@dcloudio/uni-app', () => ({ onHide: vi.fn(), onShow: vi.fn(), onUnload: vi.fn() }));
 
 const source = readFileSync(resolve(process.cwd(), 'src/pages/practice-sub/question-bank.vue'), 'utf8');
 

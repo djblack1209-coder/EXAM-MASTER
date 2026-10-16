@@ -20,19 +20,18 @@
       <view class="dot dot-3" />
     </view>
 
-    <button v-if="showManualEntry" class="manual-entry" role="button" tabindex="0" @tap="openHomeTab">
-      <text class="manual-entry-title">进入首页</text>
-    </button>
+    <BaseButton v-if="showManualEntry" class="manual-entry" @tap="openHomeTab">进入首页</BaseButton>
   </view>
 </template>
 
 <script setup>
+import BaseButton from '@/components/base/base-button/base-button.vue';
 import { BRAND } from '@/config/brand.js';
 import { onMounted, onBeforeUnmount, ref } from 'vue';
 import { logger } from '@/utils/logger.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme';
 import { storageService } from '@/services/storageService.js';
-import { getCurrentRoute, openHomeTab as navigateHomeTab } from '@/utils/home-navigation.js';
+import { getCurrentRoute, openLearningEntry as navigateHomeTab } from '@/utils/home-navigation.js';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 
 const isDark = ref(initTheme());
@@ -152,14 +151,9 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  color: var(--text-primary, #31263f);
-  background: radial-gradient(ellipse at 50% 40%, var(--yozi-reading, #f8f6ff), var(--yozi-solid, #eae8fc) 70%);
-  font-family:
-    'DM Sans',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
+  color: var(--ink);
+  background: var(--canvas);
+  font-family: var(--font-ui);
 }
 .splash-main {
   display: flex;
@@ -173,7 +167,7 @@ onBeforeUnmount(() => {
   border-radius: 28px;
   overflow: hidden;
   margin-bottom: 24px;
-  background: var(--yozi-glass, rgba(248, 246, 255, 0.7));
+  background: var(--glass);
   box-shadow: var(--yozi-shadow);
 }
 .logo-img {
@@ -181,9 +175,8 @@ onBeforeUnmount(() => {
   height: 100%;
 }
 .brand-name {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font: var(--weight-display) var(--size-title-1)/var(--leading-title-1) var(--font-display);
+  letter-spacing: var(--tracking-title);
 }
 .loading-dots {
   position: absolute;
@@ -194,7 +187,7 @@ onBeforeUnmount(() => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--text-tertiary, #79698f);
+  background: var(--ink-3);
   animation: dotPulse 1.4s ease-in-out infinite;
 }
 .dot + .dot {
@@ -218,30 +211,9 @@ onBeforeUnmount(() => {
 }
 .manual-entry {
   position: absolute;
-  right: 28px;
-  bottom: max(112px, calc(env(safe-area-inset-bottom) + 84px));
-  left: 28px;
-  min-height: 44px;
-  margin: 0;
-  border-radius: 12px;
-  color: var(--yozi-button-ink, #fff);
-  background: var(--yozi-button, #7050b0);
-  box-shadow: var(--yozi-button-shadow);
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease;
-}
-.manual-entry-title {
-  font-size: 16px;
-  font-weight: 600;
-}
-.manual-entry:focus-visible {
-  outline: 2px solid var(--primary, #9972da);
-  outline-offset: 3px;
-}
-.manual-entry:active {
-  transform: translateY(2px);
-  transition-duration: 100ms;
+  right: var(--s-6);
+  left: var(--s-6);
+  bottom: max(calc(var(--s-14) * 2), calc(env(safe-area-inset-bottom) + var(--s-14) + var(--s-6)));
 }
 @media (prefers-reduced-motion: reduce) {
   .dot {
@@ -254,7 +226,7 @@ onBeforeUnmount(() => {
 }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .logo-clip {
-    background: var(--yozi-solid, #f8f6ff);
+    background: var(--paper);
   }
 }
 </style>

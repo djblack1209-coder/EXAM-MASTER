@@ -453,7 +453,7 @@ onBeforeUnmount(() => {
   justify-content: center;
 }
 .tab-label {
-  font: var(--weight-semibold) var(--size-caption)/var(--leading-caption) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-caption)/var(--leading-caption) var(--font-ui);
 }
 .red-dot {
   position: absolute;

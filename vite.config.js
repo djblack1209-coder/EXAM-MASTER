@@ -18,6 +18,45 @@ const uniCliSharedUtils = require('@dcloudio/uni-cli-shared/dist/utils.js');
 // 兼容 @dcloudio/vite-plugin-uni CJS/ESM 双层 default 问题
 const uni = typeof uniModule === 'function' ? uniModule : Reflect.get(Object(uniModule), 'default') || uniModule;
 
+// The installed braces advisory remains unresolved. Build tools still use it;
+// reject accidental inclusion in a client graph rather than waiving the audit.
+export function guardRuntimeBuildDependencies() {
+  return {
+    name: 'yozi:runtime-build-dependency-guard',
+    apply: 'build',
+    generateBundle() {
+      let checkedModules = 0;
+      for (const moduleId of this.getModuleIds()) {
+        checkedModules++;
+        const id = moduleId.replace(/\\/g, '/').replace(/\0/g, '').split('?')[0];
+        if (/^braces(?:\/|$)/i.test(id) || /(?:^|\/)node_modules\/braces(?:\/|$)/i.test(id)) {
+          this.error({
+            code: 'YOZI_UNSAFE_RUNTIME_DEPENDENCY',
+            message: 'Unresolved braces dependency cannot enter the client runtime module graph'
+          });
+        }
+      }
+      console.info(`[Yozi Dependency Guard] checked ${checkedModules} client modules; braces absent`);
+    }
+  };
+}
+
+export function adaptH5SlotFlags(enabled) {
+  return {
+    name: 'yozi:h5-slot-flags',
+    enforce: 'pre',
+    transform(code, id) {
+      if (!enabled || !/\/@dcloudio\/uni-h5-vue\/dist\/vue\.runtime\.(?:esm|cjs)\.js$/.test(id)) return;
+      if (!code.includes('@dcloudio/uni-h5-vue v3.4.21')) return;
+      const marker = 'def(children, "_", type);';
+      if (code.split(marker).length !== 2) throw new Error('Unexpected H5 slot flag implementation');
+      // The DCloud 3.4 runtime mutates this flag; shared 3.5 defaults to read-only.
+      // Preserve the original slot lifecycle without changing removal or error handling.
+      return code.replace(marker, 'def(children, "_", type, true);');
+    }
+  };
+}
+
 function guardHBuilderMiniProgramHelpers(platform) {
   const isRunByHBuilderX =
     Boolean(process.env.UNI_HBUILDERX_PLUGINS) && Boolean(process.env.RUN_BY_HBUILDERX || process.env.HX_Version);
@@ -264,6 +303,9 @@ export default defineConfig(({ command, mode }) => {
   const appInputDir = process.env.UNI_INPUT_DIR
     ? path.resolve(process.env.UNI_INPUT_DIR)
     : path.resolve(__dirname, 'src');
+  // uni's startup transform and generated component imports share this path.
+  // A relative input can miss the H5 entry or emit unresolved "src/..." imports.
+  process.env.UNI_INPUT_DIR = appInputDir;
   const viteRootDir = process.cwd();
   const shouldBypassNvueHtmlEntry = isAppPlus && isNvueCompiler;
 
@@ -281,6 +323,8 @@ export default defineConfig(({ command, mode }) => {
 
     plugins: [
       guardYoziPreviewRoute(isH5),
+      adaptH5SlotFlags(isH5),
+      guardRuntimeBuildDependencies(),
       uni(),
       copyCustomTabBar(),
       emitAppPackManifest(),
@@ -429,6 +473,7 @@ export default defineConfig(({ command, mode }) => {
       minify: isProduction || isStaging ? 'terser' : platform.startsWith('mp-') ? 'esbuild' : false,
 
       terserOptions: {
+        maxWorkers: 1,
         compress: {
           // 生产环境移除 console 和 debugger
           drop_console: isProduction,

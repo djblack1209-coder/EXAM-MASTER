@@ -7,6 +7,19 @@ import storageService from '@/services/storageService.js';
 import { loadBankData } from '@/pages/practice-sub/bank-data-loader.js';
 import { toast } from '@/utils/toast.js';
 
+const pageHooks = vi.hoisted(() => ({}));
+vi.mock('@dcloudio/uni-app', () => ({
+  onShow: (fn) => {
+    pageHooks.show = fn;
+  },
+  onHide: (fn) => {
+    pageHooks.hide = fn;
+  },
+  onUnload: (fn) => {
+    pageHooks.unload = fn;
+  }
+}));
+
 vi.mock('@/pages/practice-sub/bank-data-loader.js', () => ({
   loadBankData: vi.fn()
 }));
@@ -46,10 +59,97 @@ describe('question bank start flow', () => {
     wrapper.unmount();
   });
   beforeEach(() => {
+    for (const key of Object.keys(pageHooks)) delete pageHooks[key];
     loadBankData.mockReset();
     toast.success.mockReset();
     toast.error.mockReset();
     toast.info.mockReset();
+  });
+
+  it.each(['hide', 'unload', 'unmount'])(
+    'ignores a paper received after %s without writing or navigating',
+    async (leave) => {
+      let receive;
+      loadBankData.mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            receive = resolve;
+          })
+      );
+      const wrapper = mountQuestionBank();
+      await flushPromises();
+      await wrapper.find('.slot-action').trigger('tap');
+      const before = JSON.stringify(global.__mockStorage);
+      if (leave === 'unmount') wrapper.unmount();
+      else pageHooks[leave]?.();
+      receive({ cards: [{ id: 'late', question: '迟到题目的完整题干', options: ['甲', '乙'], answer: 'A' }] });
+      await flushPromises();
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+      expect(global.uni.navigateTo).not.toHaveBeenCalled();
+      expect(toast.success).not.toHaveBeenCalled();
+      expect(toast.error).not.toHaveBeenCalled();
+      if (leave !== 'unmount') wrapper.unmount();
+    }
+  );
+
+  it.each(['resolve', 'reject'])(
+    'keeps a new explicit load active when an abandoned request later %s',
+    async (outcome) => {
+      const pending = [];
+      loadBankData.mockImplementation(
+        () =>
+          new Promise((resolve, reject) => {
+            pending.push({ resolve, reject });
+          })
+      );
+      const wrapper = mountQuestionBank();
+      await flushPromises();
+      await wrapper.find('.slot-action').trigger('tap');
+      pageHooks.hide();
+      pageHooks.show();
+      expect(loadBankData).toHaveBeenCalledTimes(1);
+      await wrapper.find('.slot-action').trigger('tap');
+      expect(loadBankData).toHaveBeenCalledTimes(2);
+      const before = JSON.stringify(global.__mockStorage);
+      if (outcome === 'resolve')
+        pending[0].resolve({ cards: [{ id: 'old', question: '过期题目完整题干', answer: 'A' }] });
+      else pending[0].reject(new Error('abandoned load failed'));
+      await flushPromises();
+      expect(JSON.stringify(global.__mockStorage)).toBe(before);
+      expect(global.uni.navigateTo).not.toHaveBeenCalled();
+      expect(toast.error).not.toHaveBeenCalled();
+      await wrapper.find('.slot-action').trigger('tap');
+      expect(loadBankData).toHaveBeenCalledTimes(2);
+      pending[1].resolve({
+        cards: [{ id: 'current', question: '本次题目的完整题干', options: ['甲', '乙'], answer: 'A' }]
+      });
+      await flushPromises();
+      expect(storageService.get('quiz_review_handoff_v1').questions.map((q) => q.id)).toEqual(['current']);
+      expect(global.uni.navigateTo).toHaveBeenCalledTimes(1);
+      wrapper.unmount();
+    }
+  );
+
+  it('does not revive an abandoned result after returning to the page', async () => {
+    let receive;
+    loadBankData.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          receive = resolve;
+        })
+    );
+    const wrapper = mountQuestionBank();
+    await flushPromises();
+    await wrapper.find('.slot-action').trigger('tap');
+    const before = JSON.stringify(global.__mockStorage);
+    pageHooks.hide();
+    pageHooks.show();
+    receive({ cards: [{ id: 'old', question: '过期题目完整题干', answer: 'A' }] });
+    await flushPromises();
+    expect(JSON.stringify(global.__mockStorage)).toBe(before);
+    expect(global.uni.navigateTo).not.toHaveBeenCalled();
+    expect(loadBankData).toHaveBeenCalledTimes(1);
+    wrapper.unmount();
   });
 
   it('routes loaded papers through safe navigation with a verified question id set', async () => {

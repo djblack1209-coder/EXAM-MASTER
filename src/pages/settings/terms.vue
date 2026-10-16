@@ -6,11 +6,7 @@
     :class="{ 'dark-mode': isDark, 'theme-light': !isDark }"
   >
     <view class="top-nav">
-      <button class="nav-back" role="button" aria-label="返回" tabindex="0" @tap="goBack">
-        <text class="back-icon">
-          <BaseIcon name="arrow-left" :size="20" />
-        </text>
-      </button>
+      <BaseButton class="nav-back" variant="quiet" icon="arrow-left" icon-only :label="$t('ui.back')" @tap="goBack" />
       <text class="nav-title">{{ $t('pages.terms') }}</text>
     </view>
 
@@ -100,6 +96,7 @@
 
 <script setup>
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
 import { BRAND } from '@/config/brand.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
@@ -120,79 +117,59 @@ function goBack() {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .page-container {
   min-height: 100vh;
-  color: var(--text-main);
-  background: var(--yozi-background);
-  font-family: 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: var(--ink);
+  background: var(--canvas);
+  font: var(--weight-regular) var(--size-body)/var(--leading-body) var(--font-ui);
 }
 .top-nav {
-  @include em-mobile-topbar;
   display: flex;
   align-items: center;
-  padding: env(safe-area-inset-top, 0px) 16px 0;
-  height: calc(env(safe-area-inset-top, 0px) + 64px);
-  gap: 12px;
-}
-.nav-back {
-  @include em-mobile-pressable;
-  width: 44px;
-  height: 44px;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  border: 0;
-  background: var(--yozi-glass);
-  color: var(--text-main);
-  box-shadow: var(--yozi-control-shadow);
-}
-.nav-back::after {
-  border: 0;
-}
-.nav-back:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
+  padding: env(safe-area-inset-top, 0px) var(--s-4) 0;
+  height: calc(env(safe-area-inset-top, 0px) + var(--control-height) + var(--s-4));
+  gap: var(--s-3);
+  background: var(--glass);
+  backdrop-filter: blur(var(--glass-blur));
+  border-bottom: var(--border-thin) solid var(--glass-line);
 }
 .nav-title {
-  color: var(--text-main);
-  font-size: 17px;
-  font-weight: 700;
+  color: var(--ink);
+  font: var(--weight-ui-emphasis) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
 }
 .content-scroll {
-  height: calc(100vh - env(safe-area-inset-top, 0px) - 64px);
+  height: calc(100vh - env(safe-area-inset-top, 0px) - var(--control-height) - var(--s-4));
 }
 .content-section {
-  max-width: 76ch;
+  max-width: 72ch;
   margin: 0 auto;
-  padding: 20px 16px;
+  padding: var(--s-6) var(--s-4);
 }
 .update-date {
-  font-size: 12px;
-  color: var(--text-sub);
-  margin-bottom: 20px;
+  font-size: var(--size-caption);
+  color: var(--ink-3);
+  margin-bottom: var(--s-6);
   display: block;
-  line-height: 1.65;
+  line-height: var(--leading-small);
 }
 .section {
-  @include em-mobile-glass-surface(24px, 20px);
-  margin-bottom: 16px;
+  padding: var(--s-5);
+  border-radius: var(--r-md);
+  background: var(--paper);
+  margin-bottom: var(--s-4);
 }
 .section-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-main);
-  margin-bottom: 12px;
+  font: var(--weight-ui-emphasis) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
+  color: var(--ink);
+  margin-bottom: var(--s-3);
   display: block;
 }
 .section-text {
-  font-size: 14px;
-  color: var(--text-sub);
-  line-height: 1.8;
-  margin-bottom: 12px;
+  font-size: var(--size-body);
+  color: var(--ink-2);
+  line-height: var(--leading-body);
+  margin-bottom: var(--s-3);
   display: block;
   overflow-wrap: anywhere;
 }

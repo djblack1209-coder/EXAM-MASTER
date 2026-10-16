@@ -8,6 +8,17 @@
         :options="ranges.map((item) => ({ value: item.id, label: learningText(item.label) }))"
       />
     </view>
+    <view
+      v-if="message"
+      id="learning-review-feedback"
+      class="review-feedback"
+      tabindex="-1"
+      role="region"
+      :aria-label="learningText(message)"
+      ><BaseEmpty v-if="failed" state="error" :title="learningText(message)" mascot-size="small" /><text v-else>{{
+        learningText(message)
+      }}</text></view
+    >
     <template v-if="recap?.submitted"
       ><YoziMascot
         v-if="range === 'day' && recap.confirmed && recap.complete"
@@ -50,21 +61,20 @@
         <view v-for="module in recap.modules.filter((m) => m.completed)" :key="module.id" class="review-module">
           <view
             ><text class="review-module-title"
-              >{{ learningText(module.label) }} · {{ nextSizes[module.id] || module.suggestedSize
-              }}{{ t('learning.ko0') }}</text
+              >{{ learningText(module.label) }} · {{ nextSize(module) }}{{ t('learning.ko0') }}</text
             >
             <text class="review-meta"
               >{{ learningText(module.next) }}{{ t('learning.k38') }}{{ module.evidenceIds.length
               }}{{ t('learning.ki5') }}</text
             >
-            <label class="review-size"
-              ><text>{{ t('learning.k4t') }}</text
+            <view class="review-size"
               ><BaseInput
-                :model-value="nextSizes[module.id] || module.suggestedSize"
+                :model-value="nextSize(module)"
+                :readonly="!!planned(module.id)"
                 type="number"
                 :label="t('learning.kpa', { v0: learningText(module.label) })"
                 @input="nextSizes[module.id] = Number(inputValue($event))"
-            /></label>
+            /></view>
           </view>
           <BaseButton
             :disabled="locked || !!planned(module.id)"
@@ -78,12 +88,7 @@
       </view>
     </template>
     <BaseEmpty v-else state="empty" :title="t('learning.kgu')" mascot-size="small" pose="sleep" />
-    <BaseCard
-      v-if="learning.journeyInsights.comparisons.length"
-      class="review-calendar"
-      data-test="journey-comparison"
-      padding="none"
-    >
+    <BaseCard v-if="learning.journeyInsights.comparisons.length" class="review-calendar" data-test="journey-comparison">
       <text class="section-title">{{ t('learning.kcy') }}</text>
       <view v-for="row in learning.journeyInsights.comparisons" :key="row.moduleId" class="comparison-row">
         <text class="review-module-title">{{ learningText(row.label) }}</text>
@@ -116,10 +121,14 @@
       v-if="learning.journeyInsights.consolidation.length"
       class="review-calendar"
       data-test="journey-consolidation"
-      padding="none"
     >
       <text class="section-title">{{ t('learning.k7e') }}</text>
-      <view v-for="row in learning.journeyInsights.consolidation" :key="row.id" class="review-module">
+      <view
+        v-for="row in learning.journeyInsights.consolidation"
+        :key="row.id"
+        class="review-module"
+        :class="{ 'has-original': row.evidenceIds.includes(originalAttempt?.id) }"
+      >
         <view
           ><text class="review-module-title">{{ row.name }}</text
           ><text class="review-meta"
@@ -130,12 +139,31 @@
             >{{ t('learning.kti') }}{{ row.wrong }}{{ t('learning.ko3') }}{{ row.partial }}</text
           ></view
         >
-        <BaseButton :disabled="locked" :aria-disabled="locked" variant="quiet" @tap="consolidate(row)">
+        <BaseButton
+          :id="row.kind === 'pending' ? `learning-review-read-${row.id}` : undefined"
+          :disabled="row.kind === 'pending' ? busy : locked"
+          :aria-disabled="row.kind === 'pending' ? busy : locked"
+          variant="quiet"
+          @tap="consolidate(row)"
+        >
           {{ row.kind === 'pending' ? t('learning.kml') : t('learning.ku6') }}
         </BaseButton>
+        <BaseCard
+          v-if="row.kind === 'pending' && row.evidenceIds.includes(originalAttempt?.id)"
+          id="learning-review-original"
+          tabindex="-1"
+          role="region"
+          :aria-label="t('learning.kml')"
+          class="review-original"
+        >
+          <text class="review-summary" selectable>{{ questionPrompt(originalAttempt.questionKey) }}</text>
+          <text class="review-summary" selectable>{{ t('learning.kcd') }}{{ originalAttempt.answer }}</text>
+          <text class="review-meta">{{ t('learning.kpv') }}</text>
+          <BaseButton variant="quiet" @tap="closeOriginal(row)">{{ t('ui.close') }}</BaseButton>
+        </BaseCard>
       </view>
     </BaseCard>
-    <BaseCard class="review-calendar" padding="none">
+    <BaseCard class="review-calendar">
       <BaseButton :aria-expanded="handoffVisible" variant="quiet" @tap="handoffVisible = !handoffVisible">
         {{ handoffVisible ? t('learning.kuc') : t('learning.ksc') }}
       </BaseButton>
@@ -148,7 +176,7 @@
         multiline
       />
     </BaseCard>
-    <BaseCard class="review-calendar" padding="none">
+    <BaseCard class="review-calendar">
       <text class="section-title">{{ t('learning.krm') }}</text>
       <view class="calendar-days" :aria-label="t('learning.krm')">
         <view v-for="day in activity" :key="day.day" class="calendar-day">
@@ -158,7 +186,7 @@
         </view>
       </view>
     </BaseCard>
-    <BaseCard class="review-calendar" padding="none">
+    <BaseCard class="review-calendar">
       <text class="section-title">{{ t('learning.ka2') }}</text>
       <view v-for="group in future" :key="group.id" class="review-module">
         <view
@@ -168,7 +196,7 @@
             }}{{ group.submittedBy ? t('learning.kbr') : t('learning.k8j') }}</text
           ></view
         >
-        <BaseButton variant="quiet" @tap="learning.selectTraining(group.id)">{{ t('learning.kg7') }}</BaseButton>
+        <BaseButton variant="quiet" @tap="openTraining(group.id)">{{ t('learning.kg7') }}</BaseButton>
       </view>
       <view v-for="review in reviews" :key="review.id" class="review-module">
         <view
@@ -188,11 +216,6 @@
         pose="sleep"
       />
     </BaseCard>
-    <view v-if="message" class="review-feedback"
-      ><BaseEmpty v-if="failed" state="error" :title="learningText(message)" mascot-size="small" /><text v-else>{{
-        learningText(message)
-      }}</text></view
-    >
   </view>
 </template>
 <script setup>
@@ -205,7 +228,7 @@ import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { dayKey } from '@/services/learning/learning-domain.js';
 import { JOURNEY_MODULES, journeyDate } from '../../../../laf-backend/functions/_shared/learning-journey.js';
@@ -217,6 +240,12 @@ const root = ref(null),
   message = ref(''),
   failed = ref(false);
 const handoffVisible = ref(false);
+const originalAttemptId = ref(null);
+const originalAttempt = computed(() =>
+  learning.state.attempts.find(
+    (attempt) => attempt.id === originalAttemptId.value && attempt.conversationId === learning.active?.id
+  )
+);
 const ranges = [
   { id: 'module', label: '本模块' },
   { id: 'day', label: '今天' },
@@ -225,10 +254,8 @@ const ranges = [
 const recap = computed(() =>
   range.value === 'module' ? learning.moduleRecap : range.value === 'week' ? learning.weeklyRecap : learning.dailyRecap
 );
-const locked = computed(
-  () =>
-    !!learning.active?.stopped || learning.busy || learning.syncBusy || learning.materialBusy || learning.historyBusy
-);
+const busy = computed(() => learning.busy || learning.syncBusy || learning.materialBusy || learning.historyBusy);
+const locked = computed(() => !!learning.active?.stopped || busy.value);
 const future = computed(() => (learning.active?.trainingGroups || []).filter((g) => g.day > learning.journey.day));
 const reviews = computed(() => {
   const keys = new Set(
@@ -256,23 +283,52 @@ let unbind = () => undefined;
 const inputValue = (event) => event.detail?.value ?? event.target?.value ?? '';
 const moduleName = (id) => JOURNEY_MODULES.find((m) => m.id === id)?.label || '训练';
 const planned = (id) => future.value.find((g) => g.moduleId === id);
+const nextSize = (module) =>
+  planned(module.id)?.questionKeys.length || nextSizes.value[module.id] || module.suggestedSize;
 const questionPrompt = (key) => learning.state.questions.find((q) => `${q.id}@${q.version}` === key)?.prompt || '原题';
 const dateLabel = (at) => dayKey(at, learning.journey.timezone);
-function action(callback) {
+function reveal(id) {
+  // #ifdef H5
+  const element = document.getElementById(id);
+  element?.scrollIntoView?.({ block: 'start', behavior: 'auto' });
+  element?.focus?.({ preventScroll: true });
+  // #endif
+  // #ifndef H5
+  uni.pageScrollTo?.({ selector: `#${id}`, duration: 0 });
+  // #endif
+}
+async function action(callback, target = null) {
+  const conversationId = learning.selectedConversationId;
   try {
     callback();
     message.value = '';
     failed.value = false;
+    await nextTick();
+    if (target && learning.selectedConversationId === conversationId) reveal(target);
   } catch (error) {
     message.value = error.message;
     failed.value = true;
+    await nextTick();
+    if (learning.selectedConversationId === conversationId) reveal('learning-review-feedback');
   }
 }
 function confirm() {
   if (!locked.value) action(() => learning.confirmRecap(learning.journeyContext(), range.value));
 }
 function consolidate(row) {
-  if (!locked.value) action(() => learning.startWeakness(learning.journeyContext(), row.evidenceIds[0]));
+  if (row.kind === 'pending') {
+    if (!busy.value)
+      action(() => {
+        originalAttemptId.value = row.evidenceIds[0];
+      }, 'learning-review-original');
+  } else if (!locked.value)
+    action(() => learning.startWeakness(learning.journeyContext(), row.evidenceIds[0]), 'active-learning-question');
+}
+async function closeOriginal(row) {
+  const conversationId = learning.selectedConversationId;
+  originalAttemptId.value = null;
+  await nextTick();
+  if (learning.selectedConversationId === conversationId) reveal(`learning-review-read-${row.id}`);
 }
 function plan(module) {
   if (!locked.value)
@@ -288,7 +344,10 @@ function openReview(review) {
   action(() => {
     learning.focus(review.questionKey, learning.active.id, 'review');
     learning.selectTraining(null);
-  });
+  }, 'active-learning-question');
+}
+function openTraining(groupId) {
+  action(() => learning.selectTraining(groupId), 'learning-training-panel');
 }
 watch(
   () => learning.selectedConversationId,
@@ -296,6 +355,7 @@ watch(
     nextSizes.value = {};
     message.value = '';
     range.value = 'day';
+    originalAttemptId.value = null;
   }
 );
 onMounted(() => {
@@ -347,6 +407,22 @@ onUnmounted(() => unbind());
 .review-module-state {
   font-size: var(--size-caption);
   flex-shrink: 0;
+}
+.review-module > .review-original {
+  flex: 0 0 100%;
+  width: 100%;
+  scroll-margin-top: var(--s-6);
+}
+.review-module.has-original {
+  flex-wrap: wrap;
+}
+#learning-review-feedback:focus-visible,
+.review-original:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: var(--s-1);
+}
+#learning-review-feedback {
+  scroll-margin-top: var(--s-6);
 }
 .review-next,
 .review-calendar {

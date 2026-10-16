@@ -40,13 +40,13 @@ const paddingClass = computed(() => `padding-${props.padding}`);
 .base-card__body {
   padding: var(--s-5);
 }
-.padding-none .base-card__body {
+.padding-none > .base-card__body {
   padding: 0;
 }
-.padding-small .base-card__body {
+.padding-small > .base-card__body {
   padding: var(--s-3);
 }
-.padding-large .base-card__body {
+.padding-large > .base-card__body {
   padding: var(--s-6);
 }
 .base-card__header {
@@ -54,7 +54,7 @@ const paddingClass = computed(() => `padding-${props.padding}`);
 }
 .base-card__title {
   display: block;
-  font: var(--weight-bold) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
 }
 .base-card__subtitle {
   display: block;

@@ -18,6 +18,13 @@ import {
 } from '../../../laf-backend/functions/_shared/learning-arithmetic.js';
 export { createExactArithmeticVariant } from '../../../laf-backend/functions/_shared/learning-arithmetic.js';
 import { createFractionQuestion, fractionTeaching } from '../../../laf-backend/functions/_shared/learning-fraction.js';
+import { densityHelpContent } from '../../../laf-backend/functions/_shared/learning-density.js';
+import { pressureHelpContent } from '../../../laf-backend/functions/_shared/learning-pressure.js';
+import {
+  gradeScienceAnswer,
+  DENSITY_TRANSFER_CONTRACT,
+  PRESSURE_TRANSFER_CONTRACT
+} from '../../../laf-backend/functions/_shared/learning-science.js';
 export { createFractionVariant } from '../../../laf-backend/functions/_shared/learning-fraction.js';
 import { RUBRIC_CONTRACT, RUBRIC_EVIDENCE_CONTRACT } from '../../../laf-backend/functions/_shared/learning-rubric.js';
 export {
@@ -260,6 +267,12 @@ export function userDirective(raw, state, conversationId) {
     return { type: 'strategy.set', data: { ...common, method: 'example' } };
   if (/^(?:(?:给我|给点)?提示|给点线索)$/u.test(request))
     return { type: 'strategy.set', data: { ...common, method: 'hint' } };
+  if (
+    /^(?:这道题我不会[,，]\s*)?带我一步步理解$/u.test(request) ||
+    /^(?:walk me through (?:this question )?step by step|give me a hint)[.!]?$/iu.test(request) ||
+    (latest === 'hint' && /^(?:继续提示|再给一点提示)$/u.test(request))
+  )
+    return { type: 'strategy.set', data: { ...common, method: 'hint' } };
   if (/^(?:引导(?:我)?|问我|提问(?:我)?)$/u.test(request))
     return { type: 'strategy.set', data: { ...common, method: 'question' } };
   if (/^(?:换方法|换一种(?:方法|教法|讲法)?)$/u.test(request))
@@ -363,6 +376,20 @@ export function nextStrategy(state, attempt) {
 }
 
 export function localTeaching(question, method, level = 1) {
+  if ([DENSITY_TRANSFER_CONTRACT, PRESSURE_TRANSFER_CONTRACT].includes(question?.scienceExercise?.contract)) {
+    if (gradeScienceAnswer(question, question.validation?.answer).status !== 'reliable') return null;
+    if (['check', 'review'].includes(method))
+      return { method, helped: false, content: '请按本题条件独立选择准确值，原有帮助经历保留。' };
+    if (!['explain', 'hint', 'steps', 'prerequisite', 'question'].includes(method)) return null;
+    return {
+      method,
+      helped: true,
+      level: 1,
+      content: (question.scienceExercise.contract === PRESSURE_TRANSFER_CONTRACT
+        ? pressureHelpContent
+        : densityHelpContent)(question.scienceExercise.input)
+    };
+  }
   if (
     question?.materialExercise &&
     ['material-objective-v1', 'material-objective-v2', 'material-objective-v3'].includes(

@@ -7,6 +7,13 @@ function matchesLearningControl(button, label) {
   const text = button.find('.base-option__label');
   return key.exists() && text.exists() && `${key.text().trim()}. ${text.text().trim()}` === expected;
 }
+async function openLearningSettings(wrapper) {
+  const control = wrapper.find('.connection-pill');
+  if (control.attributes('aria-expanded') !== 'true') {
+    await control.trigger('tap');
+    await flushPromises();
+  }
+}
 import CustomModal from '@/components/common/CustomModal.vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, getActivePinia, setActivePinia } from 'pinia';
@@ -41,6 +48,8 @@ vi.mock('@dcloudio/uni-app', () => ({
 }));
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { learningRepository } from '@/services/learning/learning-repository.js';
+import { setLanguage } from '@/i18n/index.js';
+import { learningText } from '@/i18n/learning.js';
 import {
   emptyLearningState,
   applyLearningOperation,
@@ -344,9 +353,10 @@ it('词义未来题选择只填草稿，到期后实际提交保存review；自�
   }
 });
 describe('选择项与明确保存', () => {
-  function page() {
+  function page(attachTo) {
     const store = useConversationLearningStore();
     const wrapper = mount(LearningPage, {
+      attachTo,
       global: {
         stubs: {
           ...stubs,
@@ -377,42 +387,485 @@ describe('选择项与明确保存', () => {
     store.focus(result.questionKey);
     return result;
   }
-  it('学习设置可跳过，选择阶段教材在开始前不写记录，切换方向清除不兼容选项', async () => {
+  it('默认聊天不先选学段教材，示例只改草稿，发送后只澄清必要知识点', async () => {
     const p = page();
     try {
       const before = p.store.exportData();
-      await p.wrapper.get('[data-test="task-track-junior"]').trigger('tap');
-      await p.button('学习设置').trigger('tap');
-      await p.button('八年级', p.wrapper.get('[aria-label="年级或学习阶段"]')).trigger('tap');
-      await p.button('人教版', p.wrapper.get('[aria-label="教材或考试版本"]')).trigger('tap');
-      expect(p.wrapper.find('input[aria-label="自定义学习阶段"]').exists()).toBe(false);
+      expect(p.wrapper.findAll('#learning-composer')).toHaveLength(1);
+      expect(p.wrapper.find('[data-test="task-track-junior"]').exists()).toBe(false);
+      expect(p.wrapper.find('.goal-panel').exists()).toBe(false);
+      expect(p.wrapper.find('.today-layout').exists()).toBe(false);
+      await p.button('我想复习初二数学，先测测我的薄弱点').trigger('tap');
       expect(p.store.exportData()).toBe(before);
-      await p.wrapper.get('[data-test="task-track-ielts"]').trigger('tap');
-      expect(p.button('不指定', p.wrapper.get('[aria-label="年级或学习阶段"]')).attributes('aria-pressed')).toBe(
-        'true'
-      );
-      expect(p.button('不指定', p.wrapper.get('[aria-label="教材或考试版本"]')).attributes('aria-pressed')).toBe(
-        'true'
-      );
-      await p.button('12 + 8').trigger('tap');
-      await p.button('开始学习').trigger('tap');
-      expect(p.store.active.task).toMatchObject({ track: 'ielts', stage: null, edition: null });
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      expect(p.store.active.task).toBeUndefined();
+      expect(p.store.active.messages.at(-1).content).toContain('想先练哪个知识点');
       expect(p.store.state.attempts).toHaveLength(0);
     } finally {
       p.wrapper.unmount();
     }
   });
-  it('明确选择年级教材后保存原值，其他选项仍允许自由填写', async () => {
+  it.each([
+    ['我想复习初二语文', []],
+    ['我想复习初二', []],
+    ['我想复习高中历史', []],
+    ['I want to study history', []],
+    ['Explain the aftermath', []],
+    ['我想复习初二数学', ['方程', '一次不等式']],
+    ['I want to review mathematics', ['方程', '一次不等式']],
+    ['我想复习初中物理', ['密度']],
+    ['我想练习英语写作', ['英文邮件写作', '英文句子组织']]
+  ])('科目建议依据明确目标%s，未知或非数学目标不默认展示数学，保留自由输入', async (goal, topics) => {
     const p = page();
     try {
-      await p.wrapper.get('[data-test="task-track-junior"]').trigger('tap');
-      await p.button('学习设置').trigger('tap');
-      await p.button('八年级', p.wrapper.get('[aria-label="年级或学习阶段"]')).trigger('tap');
-      await p.button('其他', p.wrapper.get('[aria-label="教材或考试版本"]')).trigger('tap');
-      await p.wrapper.get('input[aria-label="自定义教材或考试"]').setValue('自选教材');
-      await p.wrapper.get('textarea[aria-label="学习目标"]').setValue('理解方向');
-      await p.button('开始学习').trigger('tap');
-      expect(p.store.active.task).toMatchObject({ track: 'junior', stage: '八年级', edition: '自选教材' });
+      await p.wrapper.get('.composer textarea').setValue(goal);
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      const suggestions = p.wrapper.find('.chat-topics');
+      expect(suggestions.exists() ? suggestions.findAll('button').map((button) => button.text().trim()) : []).toEqual(
+        topics
+      );
+      expect(suggestions.exists()).toBe(topics.length > 0);
+      expect(p.wrapper.get('.composer textarea').attributes('disabled')).toBeUndefined();
+      expect(p.store.active.goal).toBe(goal);
+      expect(p.store.state.questions).toHaveLength(0);
+      expect(p.store.state.attempts).toHaveLength(0);
+    } finally {
+      p.wrapper.unmount();
+    }
+  });
+  it('科目澄清后依据本次用户消息接续数学建议，保留首条学段目标和原会话', async () => {
+    const p = page();
+    try {
+      const input = () => p.wrapper.get('.composer textarea');
+      await input().setValue('我想复习初二');
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      const id = p.store.active.id;
+      expect(p.wrapper.find('.chat-topics').exists()).toBe(false);
+      await input().setValue('数学');
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      expect(p.store.active.id).toBe(id);
+      expect(p.store.active.goal).toBe('我想复习初二');
+      expect(
+        p.wrapper
+          .get('.chat-topics')
+          .findAll('button')
+          .map((button) => button.text().trim())
+      ).toEqual(['方程', '一次不等式']);
+      expect(p.store.state.questions).toHaveLength(0);
+      await input().setValue('改学历史');
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      expect(p.wrapper.find('.chat-topics').exists()).toBe(false);
+      await input().setValue('数学');
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      expect(p.store.active.goal).toBe('我想复习初二');
+      const before = p.store.exportData();
+      await p.button('一次不等式').trigger('tap');
+      expect(p.store.exportData()).toBe(before);
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      expect(p.store.active.id).toBe(id);
+      expect(p.store.active.goal).toBe('我想复习初二');
+      expect(p.store.activeQuestion.algebra.contract).toBe('safe-named-linear-inequality-v1');
+      expect(p.store.state.attempts).toHaveLength(0);
+    } finally {
+      p.wrapper.unmount();
+    }
+  });
+  it('英语写作目标提供邮件建议，选择只改草稿，明确提交才保存待核对原稿', async () => {
+    const p = page();
+    try {
+      const input = () => p.wrapper.get('.composer textarea');
+      await input().setValue('我想练习英语写作');
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      const conversationId = p.store.active.id;
+      const before = p.store.exportData();
+      expect(
+        p.wrapper
+          .get('.chat-topics')
+          .findAll('button')
+          .map((button) => button.text().trim())
+      ).toEqual(['英文邮件写作', '英文句子组织']);
+      await p.button('英文邮件写作').trigger('tap');
+      expect(p.store.exportData()).toBe(before);
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      expect(p.store.active.id).toBe(conversationId);
+      expect(p.store.activeQuestion.writingExercise.genreId).toBe('email');
+      expect(input().attributes('aria-label')).toBe('英文邮件作答');
+      const original = 'Dear Coordinator,\nCould we meet next Tuesday?\nThanks,\nMei  ';
+      await input().setValue(original);
+      expect(p.store.state.attempts).toHaveLength(0);
+      await p.button('提交答案').trigger('tap');
+      await flushPromises();
+      expect(p.store.state.attempts.at(-1)).toMatchObject({ answer: original, grade: { status: 'pending' } });
+      expect(p.store.state.reviews).toEqual([]);
+    } finally {
+      p.wrapper.unmount();
+    }
+  });
+  it('句子聊天：建议只填草稿，同会话明确发送后拼句，词块仍需明确提交', async () => {
+    const p = page();
+    try {
+      await p.store.send('我想练习英语写作', { chatEntry: true });
+      await flushPromises();
+      const id = p.store.active.id;
+      const originalGoal = p.store.active.goal;
+      const before = p.store.exportData();
+      await p.button('英文句子组织').trigger('tap');
+      expect(p.wrapper.get('.composer textarea').element.value).toBe('英文句子组织');
+      expect(p.store.exportData()).toBe(before);
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      expect(p.store.active.id).toBe(id);
+      expect(p.store.active.goal).toBe(originalGoal);
+      expect(p.wrapper.find('.sentence-builder').exists()).toBe(true);
+      expect(p.wrapper.text()).toContain('原创练习 · 只核对本题组合');
+      const opened = p.store.exportData();
+      for (const tile of ['opens', 'at eight', 'every morning']) await p.button(tile).trigger('tap');
+      expect(p.store.exportData()).toBe(opened);
+      expect(p.button('提交答案')).toBeUndefined();
+      await p.button('提交句子').trigger('tap');
+      await flushPromises();
+      expect(p.store.state.attempts).toHaveLength(1);
+      expect(p.store.state.attempts[0]).toMatchObject({
+        answer: 'The library opens at eight every morning.',
+        hints: [],
+        grade: { status: 'reliable', outcome: 'correct' }
+      });
+      await p.store.send('停止');
+      await flushPromises();
+      expect(p.button('提交句子').attributes('disabled')).toBeDefined();
+      expect(p.button('看句子提示').attributes('disabled')).toBeDefined();
+    } finally {
+      p.wrapper.unmount();
+    }
+  });
+  it('句子聊天：英文建议与开题说明复用双语，点击不保存事实', async () => {
+    const p = page();
+    try {
+      setLanguage('en');
+      await p.store.send('I want to practice English writing', { chatEntry: true });
+      await flushPromises();
+      const before = p.store.exportData();
+      expect(p.button('English sentence building')).toBeTruthy();
+      await p.button('English sentence building').trigger('tap');
+      expect(p.wrapper.get('.composer textarea').element.value).toBe('English sentence building');
+      expect(p.store.exportData()).toBe(before);
+      expect(learningText('点选词块组织句子，明确提交后保存作答。')).toBe(
+        'Choose the word tiles, then explicitly submit to save your sentence.'
+      );
+    } finally {
+      p.wrapper.unmount();
+      setLanguage('zh-CN');
+    }
+  });
+  it('句子页顶提示：真实主按钮不带聊天标记仍展示本题提示', async () => {
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const p = page(host);
+    try {
+      p.store.start('英文句子组织');
+      await flushPromises();
+      const before = JSON.parse(JSON.stringify(p.store.state));
+      const send = vi.spyOn(p.store, 'send');
+      await p.button('要个提示').trigger('tap');
+      await flushPromises();
+      expect(send).toHaveBeenCalledWith('提示');
+      expect(p.store.active.pendingHints).toHaveLength(1);
+      for (const key of ['attempts', 'questions', 'profile', 'strategy'])
+        expect(p.store.state[key]).toEqual(before[key]);
+      expect(p.wrapper.text()).toContain('先找主语后的谓语，再安排两个时间短语。');
+      expect(p.wrapper.text()).not.toContain('尚未连接模型，请先连接。');
+      await p.store.send('停止');
+      await flushPromises();
+      expect(p.button('要个提示').attributes('disabled')).toBeDefined();
+    } finally {
+      p.wrapper.unmount();
+      host.remove();
+    }
+  });
+  it('句子提示消息定位：较早分页后仍以含提示的真实气泡为焦点，不使用空锚点', async () => {
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const p = page(host);
+    try {
+      p.store.start('英文句子组织');
+      for (let index = 0; index < 51; index++)
+        p.store.commit('message.add', {
+          conversationId: p.store.active.id,
+          role: 'notice',
+          content: `较早的学习消息 ${index + 1}`
+        });
+      await flushPromises();
+      await p.button('更早消息').trigger('tap');
+      await flushPromises();
+      const empty = p.wrapper.get('#learning-chat-latest').element;
+      const before = JSON.parse(JSON.stringify(p.store.state));
+      await p.button('要个提示').trigger('tap');
+      await flushPromises();
+      const response = p.wrapper.get('.sentence-hint-target');
+      expect(response.text()).toContain('先找主语后的谓语，再安排两个时间短语。');
+      expect(response.attributes('id')).toBe(p.store.active.messages.at(-1).id);
+      expect(response.attributes('tabindex')).toBe('-1');
+      expect(response.element).not.toBe(empty);
+      expect(document.activeElement).toBe(response.element);
+      for (const key of ['attempts', 'questions', 'profile', 'strategy'])
+        expect(p.store.state[key]).toEqual(before[key]);
+      expect(p.store.active.pendingHints).toHaveLength(1);
+    } finally {
+      p.wrapper.unmount();
+      host.remove();
+    }
+  });
+  it('句子已存原答呈现：停止后三份原答随原反馈显示，页面重建与双语阅读不改事实', async () => {
+    let p = page();
+    const originals = [
+      'The library open at eight every morning.',
+      'The library opens at eight every morning.',
+      'Could you tell me where the meeting room is?'
+    ];
+    try {
+      p.store.start('英文句子组织');
+      p.store.submit(originals[0], true, 'saved-sentence-first');
+      p.store.recordSentenceHelp(p.store.writingContext());
+      const revision = p.store.submit(originals[1], true, 'saved-sentence-revision');
+      p.store.startSentenceTask(p.store.writingContext());
+      p.store.submit(originals[2], true, 'saved-sentence-independent');
+      p.store.commit(
+        'message.add',
+        {
+          conversationId: p.store.active.id,
+          role: 'notice',
+          content: '保留这份原答用于复习。',
+          attemptId: revision.id
+        },
+        'saved-sentence-comment'
+      );
+      p.store.commit('task.stop', { conversationId: p.store.active.id });
+      const before = p.store.exportData();
+      const check = () => {
+        const answers = p.wrapper.findAll('.sentence-saved-answer');
+        expect(answers).toHaveLength(3);
+        answers.forEach((answer, index) => expect(answer.element.textContent.endsWith(originals[index])).toBe(true));
+        expect(p.store.exportData()).toBe(before);
+        expect(p.store.active.stopped).toBe(true);
+      };
+      await flushPromises();
+      check();
+      expect(p.wrapper.findAll('.sentence-saved-answer').every((answer) => answer.text().includes('原答：'))).toBe(
+        true
+      );
+      p.wrapper.unmount();
+      p = page();
+      await flushPromises();
+      check();
+      setLanguage('en');
+      await flushPromises();
+      check();
+      expect(
+        p.wrapper.findAll('.sentence-saved-answer').every((answer) => answer.text().startsWith('Original answer:'))
+      ).toBe(true);
+    } finally {
+      p.wrapper.unmount();
+      setLanguage('zh-CN');
+    }
+  });
+  it('句子已存原答呈现：显示已存原文，未提交草稿及其他对话的关联消息不带出原答', async () => {
+    const p = page();
+    try {
+      p.store.start('英文句子组织');
+      const original = 'The library opens at eight every morning.  \n';
+      const attempt = p.store.submit(original, true, 'sentence-exact-original');
+      await flushPromises();
+      expect(p.wrapper.get('.sentence-saved-answer').element.textContent.endsWith(attempt.answer)).toBe(true);
+      p.store.start('英文句子组织');
+      p.store.commit(
+        'message.add',
+        {
+          conversationId: p.store.active.id,
+          role: 'notice',
+          content: '本题组合正确。',
+          questionKey: attempt.questionKey,
+          attemptId: attempt.id
+        },
+        'other-conversation-feedback'
+      );
+      p.store.commit(
+        'message.add',
+        { conversationId: p.store.active.id, role: 'notice', content: '本题组合正确。', attemptId: 'missing-sentence' },
+        'missing-sentence:feedback'
+      );
+      await flushPromises();
+      expect(p.wrapper.findAll('.sentence-saved-answer')).toHaveLength(0);
+      const before = p.store.exportData();
+      for (const tile of ['opens', 'at eight', 'every morning']) await p.button(tile).trigger('tap');
+      expect(p.wrapper.findAll('.sentence-saved-answer')).toHaveLength(0);
+      expect(p.store.exportData()).toBe(before);
+    } finally {
+      p.wrapper.unmount();
+    }
+  });
+  it('离线邮件直达参考：主按钮在聊天显示已有信件和出处，不改教法或首稿', async () => {
+    const p = page();
+    const request = vi.spyOn(uni, 'request');
+    try {
+      await p.store.send('英文邮件写作', { chatEntry: true });
+      const original = 'Dear Library Team,\n\nCould I renew the book?\n\nMei  ';
+      p.store.submit(original, true, 'direct-reference-first', { chatEntry: true });
+      await flushPromises();
+      const first = JSON.parse(JSON.stringify(p.store.state.attempts[0]));
+      const strategy = JSON.parse(JSON.stringify(p.store.state.strategy));
+      expect(p.button('读参考信件')).toBeTruthy();
+      expect(p.button('要个提示')).toBeUndefined();
+      await p.button('读参考信件').trigger('tap');
+      await flushPromises();
+      expect(p.store.state.strategy).toEqual(strategy);
+      expect(p.store.state.attempts[0]).toEqual(first);
+      expect(p.store.active.pendingHints).toHaveLength(1);
+      expect(p.store.active.pendingHints[0].reference.id).toBe('mcmurrey-inquiry-letter-body-en-v1');
+      expect(p.wrapper.text()).toContain('公开示例，仅供参考。');
+      expect(p.wrapper.text()).toContain('Dear Technical Support Department:');
+      expect(p.wrapper.text()).toContain('https://mcmassociates.io/textbook/examples/inquirex2c.html');
+      expect(p.store.state.events.some((event) => ['strategy.set', 'model.request'].includes(event.type))).toBe(false);
+      expect(p.store.state.reviews).toEqual([]);
+      expect(request).not.toHaveBeenCalled();
+    } finally {
+      p.wrapper.unmount();
+    }
+  });
+  it('离线邮件直达参考：英文说明sample，停止时仍明确标示参考且不可读', async () => {
+    const p = page();
+    try {
+      await p.store.send('英文邮件写作', { chatEntry: true });
+      setLanguage('en');
+      await flushPromises();
+      expect(p.button('Read sample email')).toBeTruthy();
+      expect(learningText('公开示例，仅供参考。')).toBe('Public sample for reference.');
+      await p.store.send('停止');
+      await flushPromises();
+      expect(p.button('Read sample email').attributes('disabled')).toBeDefined();
+      expect(p.store.active.pendingHints).toEqual([]);
+    } finally {
+      p.wrapper.unmount();
+      setLanguage('zh-CN');
+    }
+  });
+  it('物理目标只显示密度建议，点击只改草稿，发送后同会话明确提交才写原答', async () => {
+    const p = page();
+    try {
+      const input = () => p.wrapper.get('textarea[aria-label="消息或作答"]');
+      await input().setValue('我想复习初中物理');
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      const conversationId = p.store.active.id;
+      const before = p.store.exportData();
+      expect(p.wrapper.get('.chat-topics').text()).toBe('密度');
+      await p.button('密度').trigger('tap');
+      expect(input().element.value).toBe('密度');
+      expect(p.store.exportData()).toBe(before);
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      expect(p.store.active.id).toBe(conversationId);
+      expect(p.store.activeQuestion.subject).toBe('物理');
+      expect(p.store.state.attempts).toHaveLength(0);
+      await p.button('C. 2.4g/cm³').trigger('tap');
+      expect(p.store.state.attempts).toHaveLength(0);
+      await p.button('提交作答').trigger('tap');
+      await flushPromises();
+      expect(p.store.state.attempts.at(-1)).toMatchObject({ answer: 'C', grade: { outcome: 'correct' } });
+    } finally {
+      p.wrapper.unmount();
+    }
+  });
+  it('默认页从小步引导到贴题、原答订正和独立变式，明确提交同样获得一次可靠诗词', async () => {
+    const p = page();
+    try {
+      await p.button('这道题我不会，带我一步步理解').trigger('tap');
+      expect(p.store.state.conversations).toHaveLength(0);
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      const conversationId = p.store.active.id;
+      const input = () => p.wrapper.get('textarea[aria-label="消息或作答"]');
+      await input().setValue('题目：2x+3=9');
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      expect(p.store.active.pendingHints).toHaveLength(1);
+      await input().setValue('x=4');
+      await p.button('提交作答').trigger('tap');
+      await flushPromises();
+      expect(p.store.state.attempts[0].grade.outcome).toBe('wrong');
+      await p.button('要个提示').trigger('tap');
+      await input().setValue('x=3');
+      await p.button('提交作答').trigger('tap');
+      await flushPromises();
+      expect(p.store.state.attempts[1]).toMatchObject({ kind: 'revision', grade: { outcome: 'correct' } });
+      expect(p.store.state.attempts[1].hints).toHaveLength(1);
+      await p.wrapper
+        .findAll('button')
+        .find((button) => button.text().includes('变式'))
+        .trigger('tap');
+      await input().setValue('x=2');
+      await p.button('提交作答').trigger('tap');
+      await flushPromises();
+      expect(p.store.state.attempts[2]).toMatchObject({ kind: 'variant', hints: [], grade: { outcome: 'correct' } });
+      expect(p.store.active.messages.filter((message) => message.content.startsWith('妙哉妙哉'))).toHaveLength(1);
+      await p.button('停止当前任务').trigger('tap');
+      expect(p.store.active).toMatchObject({ id: conversationId, stopped: true });
+      expect(p.store.state.reviews.length).toBeGreaterThan(0);
+    } finally {
+      p.wrapper.unmount();
+    }
+  });
+  it('默认页贴题写入中断保留草稿，同一发送编号续接不误记作答', async () => {
+    const p = page();
+    const originalCommit = learningRepository.commit.bind(learningRepository);
+    let fail = true;
+    const spy = vi.spyOn(learningRepository, 'commit').mockImplementation((operation) => {
+      if (fail && operation.id.endsWith(':chat-plan')) {
+        fail = false;
+        throw new Error('synthetic interrupted chat plan');
+      }
+      return originalCommit(operation);
+    });
+    try {
+      await p.wrapper.get('textarea[aria-label="消息或作答"]').setValue('题目：2x+3=9');
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      expect(p.wrapper.get('textarea[aria-label="消息或作答"]').element.value).toBe('题目：2x+3=9');
+      expect(p.store.state.questions).toHaveLength(1);
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      expect(p.store.state.questions).toHaveLength(1);
+      expect(p.store.state.attempts).toHaveLength(0);
+      expect(p.store.currentPlan.tasks).toHaveLength(1);
+      expect(p.wrapper.get('textarea[aria-label="消息或作答"]').element.value).toBe('');
+    } finally {
+      spy.mockRestore();
+      p.wrapper.unmount();
+    }
+  });
+  it('新聊天不推断年级教材，原会话的显式学习范围保持', async () => {
+    const p = page();
+    try {
+      const original = p.store.start('理解方向', { track: 'junior', stage: '八年级', edition: '自选教材' });
+      p.store.selectedConversationId = null;
+      await flushPromises();
+      await p.wrapper.get('textarea[aria-label="消息或作答"]').setValue('我想复习初二数学');
+      await p.button('发送').trigger('tap');
+      await flushPromises();
+      expect(p.store.active.task).toBeUndefined();
+      expect(p.store.state.conversations.find((item) => item.id === original.id).task).toMatchObject({
+        track: 'junior',
+        stage: '八年级',
+        edition: '自选教材'
+      });
       expect(p.store.state.attempts).toHaveLength(0);
     } finally {
       p.wrapper.unmount();
@@ -421,6 +874,7 @@ describe('选择项与明确保存', () => {
   it('基础与时区只在保存时生效，自述基础不变成掌握证据', async () => {
     const p = page();
     try {
+      await openLearningSettings(p.wrapper);
       await p.button('目标与计划').trigger('tap');
       const before = p.store.exportData();
       await p.button('有些基础').trigger('tap');
@@ -444,6 +898,7 @@ describe('选择项与明确保存', () => {
   it('任务多选可取消，并保留自定义内容和历史计划，选择不会自动完成任务', async () => {
     const p = page();
     try {
+      await openLearningSettings(p.wrapper);
       await p.button('目标与计划').trigger('tap');
       await p.button('自定义任务').trigger('tap');
       await p.wrapper.get('textarea[aria-label="自定义今日任务"]').setValue('复盘实验');
@@ -540,9 +995,9 @@ describe('选择项与明确保存', () => {
   it('跨端输入的 detail.value 更新目标和原答，输入后仍需明确提交', async () => {
     const p = page();
     try {
-      await p.wrapper.get('textarea[aria-label="学习目标"]').trigger('input', { detail: { value: '12 + 8' } });
+      await p.wrapper.get('textarea[aria-label="消息或作答"]').trigger('input', { detail: { value: '12 + 8' } });
       expect(p.store.state.conversations).toHaveLength(0);
-      await p.button('开始学习').trigger('tap');
+      await p.button('发送').trigger('tap');
       expect(p.store.active.goal).toBe('12 + 8');
       await p.wrapper.get('textarea[aria-label="消息或作答"]').trigger('input', { detail: { value: '19' } });
       expect(p.store.state.attempts).toHaveLength(0);
@@ -578,6 +1033,7 @@ it('合并已经成功后新的学习事实清理过时回执，不误报旧备�
   const button = (label) => wrapper.findAll('button').find((b) => matchesLearningControl(b, label));
   const close = observeLearningDialogs(wrapper, (dialog) => dialog.success({ confirm: true }));
   try {
+    await openLearningSettings(wrapper);
     await button('记录与隐私').trigger('tap');
     await button('恢复备份').trigger('tap');
     await wrapper.get('textarea[aria-label="学习记录 JSON 备份"]').setValue(JSON.stringify(incoming));
@@ -630,6 +1086,7 @@ describe('同步等待与冲突确认', () => {
     p.store.refresh();
     const action = vi.spyOn(p.store, method);
     try {
+      await openLearningSettings(p.wrapper);
       await p.button('记录与隐私').trigger('tap');
       await p.button(label).trigger('tap');
       const old = p.dialogs.at(-1);
@@ -665,6 +1122,7 @@ describe('同步等待与冲突确认', () => {
       return { abort: vi.fn() };
     });
     try {
+      await openLearningSettings(p.wrapper);
       await p.button('记录与隐私').trigger('tap');
       await p.button('同步学习记录').trigger('tap');
       p.dialogs.at(-1).success({ confirm: true });
@@ -699,6 +1157,7 @@ describe('同步等待与冲突确认', () => {
       return { abort: vi.fn() };
     });
     try {
+      await openLearningSettings(p.wrapper);
       await p.button('记录与隐私').trigger('tap');
       await p.button('删除云端学习副本').trigger('tap');
       await p.button('同步学习记录').trigger('tap');
@@ -751,6 +1210,7 @@ describe('同步等待与冲突确认', () => {
       });
     };
     try {
+      await openLearningSettings(p.wrapper);
       await p.button('记录与隐私').trigger('tap');
       await p.button('同步学习记录').trigger('tap');
       p.dialogs.at(-1).success({ confirm: true });
@@ -783,6 +1243,7 @@ describe('同步等待与冲突确认', () => {
       return { abort: vi.fn() };
     });
     try {
+      await openLearningSettings(p.wrapper);
       await p.button('记录与隐私').trigger('tap');
       await p.button('同步学习记录').trigger('tap');
       p.dialogs.at(-1).success({ confirm: true });
@@ -820,6 +1281,7 @@ describe('网页备份文件与明确恢复', () => {
     const stop = observeLearningDialogs(wrapper, (dialog) => dialogs.push(dialog));
     const original = store.exportData();
     const open = async () => {
+      await openLearningSettings(wrapper);
       await button('记录与隐私').trigger('tap');
       await button('恢复备份').trigger('tap');
       await wrapper.get('textarea[aria-label="学习记录 JSON 备份"]').setValue('原输入');
@@ -977,6 +1439,7 @@ describe('备份预览的输入和页面边界', () => {
     const wrapper = mount(LearningPage, { global: { stubs } });
     const button = (name) => wrapper.findAll('button').find((item) => matchesLearningControl(item, name));
     const open = async () => {
+      await openLearningSettings(wrapper);
       await button('记录与隐私').trigger('tap');
       await button('恢复备份').trigger('tap');
     };
@@ -1595,6 +2058,7 @@ describe('学习空间的实际入口与目录', () => {
     const conversationId = store.active.id;
     const { wrapper, button } = dialogPage();
     try {
+      await openLearningSettings(wrapper);
       await button('记录使用的提示').trigger('tap');
       const modal = wrapper.getComponent(CustomModal);
       expect(modal.props('editable')).toBe(true);
@@ -1606,6 +2070,7 @@ describe('学习空间的实际入口与目录', () => {
       const hints = store.state.events.filter((event) => event.type === 'hint.add');
       expect(hints).toHaveLength(1);
       expect(hints[0].data).toMatchObject({ conversationId, content });
+      await openLearningSettings(wrapper);
       await button('记录使用的提示').trigger('tap');
       const old = wrapper.vm.dialogState;
       store.start('7 + 9');
@@ -1622,6 +2087,7 @@ describe('学习空间的实际入口与目录', () => {
     const original = { ...store.activeQuestion };
     const { wrapper, button } = dialogPage();
     try {
+      await openLearningSettings(wrapper);
       await button('校对题目').trigger('tap');
       let modal = wrapper.getComponent(CustomModal);
       expect(modal.get('textarea').element.value).toBe(original.prompt);
@@ -1629,6 +2095,7 @@ describe('学习空间的实际入口与目录', () => {
       await modal.get('.cancel-btn').trigger('tap');
       await flushPromises();
       expect(store.activeQuestion.prompt).toBe(original.prompt);
+      await openLearningSettings(wrapper);
       await button('校对题目').trigger('tap');
       modal = wrapper.getComponent(CustomModal);
       const prompt = '12 + 8 等于多少？\n请写出计算过程。';
@@ -1648,6 +2115,7 @@ describe('学习空间的实际入口与目录', () => {
     const conversationId = store.active.id;
     const { wrapper, button } = dialogPage();
     try {
+      await openLearningSettings(wrapper);
       await button('记录使用的提示').trigger('tap');
       const old = wrapper.vm.dialogState;
       store.correctQuestion(store.activeQuestion, { prompt: '另一版题干', uncertainties: [] }, '合成题目版本切换');
@@ -1665,6 +2133,7 @@ describe('学习空间的实际入口与目录', () => {
     store.start('12 + 8');
     const { wrapper, button } = dialogPage();
     try {
+      await openLearningSettings(wrapper);
       await button('记录使用的提示').trigger('tap');
       const old = wrapper.vm.dialogState;
       if (kind === 'hide') {
@@ -1677,6 +2146,7 @@ describe('学习空间的实际入口与目录', () => {
       await flushPromises();
       expect(wrapper.getComponent(CustomModal).props('visible')).toBe(false);
       expect(store.state.events.some((event) => event.type === 'hint.add')).toBe(false);
+      await openLearningSettings(wrapper);
       await button('记录使用的提示').trigger('tap');
       expect(wrapper.getComponent(CustomModal).props('visible')).toBe(true);
     } finally {
@@ -1977,13 +2447,14 @@ describe('学习空间的实际入口与目录', () => {
     try {
       loadHooks.callbacks.at(-1)({});
       await wrapper.find('.base-button--primary').trigger('tap');
-      const navigation = uni.switchTab.mock.calls.at(-1)[0];
+      const navigation = uni.redirectTo.mock.calls.at(-1)[0];
       wrapper.unmount();
       navigation.success?.();
       navigation.fail?.({ errMsg: 'late failure' });
       await vi.advanceTimersByTimeAsync(3000);
       expect(uni.reLaunch).not.toHaveBeenCalled();
-      expect(uni.redirectTo).not.toHaveBeenCalled();
+      expect(uni.redirectTo).toHaveBeenCalledTimes(1);
+      expect(uni.switchTab).not.toHaveBeenCalled();
       expect(vi.getTimerCount()).toBe(0);
     } finally {
       wrapper.unmount();
@@ -2019,6 +2490,7 @@ describe('学习空间的实际入口与目录', () => {
       }
     });
     const button = (label) => wrapper.findAll('button').find((node) => matchesLearningControl(node, label));
+    await openLearningSettings(wrapper);
     await button('记录与隐私').trigger('tap');
     await button('恢复备份').trigger('tap');
     await wrapper.find('[aria-label="学习记录 JSON 备份"]').setValue(content);
@@ -2032,7 +2504,7 @@ describe('学习空间的实际入口与目录', () => {
     expect(shell.find('.brand-mark').attributes('src')).toBe(BRAND.mark);
     shell.unmount();
   });
-  it('开始按钮向辅助工具说明禁用状态，填写目标后才创建学习记录', async () => {
+  it('聊天发送向辅助工具说明禁用状态，填写目标后才创建学习记录', async () => {
     const store = useConversationLearningStore();
     const wrapper = mount(LearningPage, {
       global: {
@@ -2043,11 +2515,11 @@ describe('学习空间的实际入口与目录', () => {
         }
       }
     });
-    const start = wrapper.find('.goal-actions .primary');
+    const start = wrapper.find('[aria-label="发送"]');
     expect(start.attributes('aria-disabled')).toBe('true');
     await start.trigger('tap');
     expect(store.state.conversations).toHaveLength(0);
-    await wrapper.find('[aria-label="学习目标"]').setValue('12 + 8');
+    await wrapper.find('[aria-label="消息或作答"]').setValue('12 + 8');
     expect(start.attributes('aria-disabled')).toBe('false');
     await start.trigger('tap');
     expect(store.active.goal).toBe('12 + 8');
@@ -2101,6 +2573,7 @@ describe('学习空间的实际入口与目录', () => {
       dialog = state;
     });
     const button = (label) => wrapper.findAll('button').find((node) => matchesLearningControl(node, label));
+    await openLearningSettings(wrapper);
     await button('记录与隐私').trigger('tap');
     await button('同步学习记录').trigger('tap');
     expect(dialog.title).toBe('登录后同步学习记录');
@@ -2130,8 +2603,8 @@ describe('学习空间的实际入口与目录', () => {
     vi.useFakeTimers();
     storageService.save('onboarding_completed', true);
     // 明确控制本次导航回执，避免异步推进时钟顺便触发另一轮恢复核验。
-    const previousSwitchTab = uni.switchTab;
-    uni.switchTab = vi.fn(() => Promise.resolve());
+    const previousRedirectTo = uni.redirectTo;
+    uni.redirectTo = vi.fn(() => Promise.resolve());
     const unrelated = setTimeout(() => undefined, 90000);
     const previousPages = globalThis.getCurrentPages;
     globalThis.getCurrentPages = vi.fn(() => [{ route: 'pages/splash/index' }]);
@@ -2140,8 +2613,8 @@ describe('学习空间的实际入口与目录', () => {
     const clear = vi.spyOn(globalThis, 'clearTimeout');
     try {
       await vi.advanceTimersByTimeAsync(1800);
-      expect(uni.switchTab).toHaveBeenCalledTimes(1);
-      const navigation = uni.switchTab.mock.calls[0][0];
+      expect(uni.redirectTo).toHaveBeenCalledTimes(1);
+      const navigation = uni.redirectTo.mock.calls[0][0];
       // Only this explicit acknowledgement owns the timers under test.
       // Other mounted UI/runner callbacks may schedule the same delays while the clock advances.
       const acknowledgementStart = schedule.mock.calls.length;
@@ -2161,10 +2634,10 @@ describe('学习空间的实际入口与目录', () => {
       expect(schedule.mock.calls).toHaveLength(scheduled);
       await vi.advanceTimersByTimeAsync(5000);
       expect(uni.reLaunch).not.toHaveBeenCalled();
-      expect(uni.redirectTo).not.toHaveBeenCalled();
+      expect(uni.redirectTo).toHaveBeenCalledTimes(1);
     } finally {
       wrapper.unmount();
-      uni.switchTab = previousSwitchTab;
+      uni.redirectTo = previousRedirectTo;
       globalThis.getCurrentPages = previousPages;
       schedule.mockRestore();
       clear.mockRestore();
@@ -2179,9 +2652,10 @@ describe('学习空间的实际入口与目录', () => {
     store.start('12 + 8');
     store.commit('task.stop', { conversationId: store.selectedConversationId });
     const before = store.exportData();
-    for (const name of ['switchTab', 'reLaunch', 'redirectTo']) {
+    for (const name of ['reLaunch', 'redirectTo']) {
       uni[name].mockImplementationOnce(({ fail }) => fail?.({ errMsg: `${name}:fail synthetic` }));
     }
+    uni.redirectTo.mockImplementationOnce(({ fail }) => fail?.({ errMsg: 'redirectTo:fail final fallback' }));
     const unrelated = setTimeout(() => undefined, 90000);
     const schedule = vi.spyOn(globalThis, 'setTimeout');
     const clear = vi.spyOn(globalThis, 'clearTimeout');
@@ -2194,7 +2668,8 @@ describe('学习空间的实际入口与目录', () => {
       expect(wrapper.text()).not.toContain('从提问，走向理解');
       expect(wrapper.text()).not.toContain('Yozi AI Team');
       await fallback.trigger('tap');
-      expect(uni.switchTab).toHaveBeenCalledTimes(2);
+      expect(uni.redirectTo).toHaveBeenCalledTimes(3);
+      expect(uni.switchTab).not.toHaveBeenCalled();
       expect(store.exportData()).toBe(before);
       const pageTimers = schedule.mock.calls.flatMap((call, index) =>
         [1800, 4200, 350, 1200, 2500].includes(call[1]) ? [schedule.mock.results[index].value] : []
@@ -2253,17 +2728,15 @@ describe('学习空间的实际入口与目录', () => {
       store.start('12 + 8');
       store.commit('task.stop', { conversationId: store.selectedConversationId });
       const original = JSON.parse(store.exportData());
-      const wrapper = mount(LearningLanding, { global: { stubs } });
-      await wrapper.find('[aria-label="开始学习"]').trigger('tap');
-      const topic = wrapper.findAll('button').find((item) => item.text().trim() === goal);
-      await topic.trigger('tap');
-      expect(topic.attributes('aria-pressed')).toBe('true');
-      expect(wrapper.find('textarea').element.value).toBe(goal);
+      let wrapper = mount(LearningLanding, { global: { stubs } });
+      await wrapper.get('.playful-contact-links button').trigger('tap');
+      expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/learning/index' }));
       expect(JSON.parse(store.exportData())).toEqual(original);
-      await wrapper
-        .findAll('button')
-        .find((item) => item.text().trim() === '开始学习')
-        .trigger('tap');
+      wrapper.unmount();
+      wrapper = mount(LearningPage, { global: { stubs: { ...stubs, LearningLab: true } } });
+      await wrapper.get('textarea[aria-label="消息或作答"]').setValue(goal);
+      expect(JSON.parse(store.exportData())).toEqual(original);
+      await wrapper.get('[aria-label="发送"]').trigger('tap');
       await flushPromises();
       expect(store.active.goal).toBe(goal);
       expect(store.activeQuestion).toMatchObject(
@@ -2303,15 +2776,9 @@ describe('学习空间的实际入口与目录', () => {
         .findAll('button')
         .find((b) => b.text() === '新对话')
         .trigger('tap');
-      await wrapper
-        .findAll('button')
-        .find((b) => b.text() === goal)
-        .trigger('tap');
+      await wrapper.get('textarea[aria-label="消息或作答"]').setValue(goal);
       expect(JSON.parse(store.exportData())).toEqual(before);
-      await wrapper
-        .findAll('button')
-        .find((b) => b.text() === '开始学习')
-        .trigger('tap');
+      await wrapper.get('[aria-label="发送"]').trigger('tap');
       await flushPromises();
       expect(store.activeQuestion.scienceExercise.contract).toBe(contract);
       expect(store.activeQuestion.options).toHaveLength(4);
@@ -2404,27 +2871,22 @@ describe('学习空间的实际入口与目录', () => {
     }
   );
   it('首页直接开始真实学习、保留来源口径，私人资料入口进入校对面板', async () => {
-    const wrapper = mount(LearningLanding, { global: { stubs } });
+    let wrapper = mount(LearningLanding, { global: { stubs } });
     const store = useConversationLearningStore();
-    await wrapper.find('[aria-label="开始学习"]').trigger('tap');
-    await wrapper
-      .findAll('button')
-      .find((button) => button.text().trim() === '英文通知写作')
-      .trigger('tap');
-    expect(wrapper.find('textarea').element.value).toBe('英文通知写作');
+    await wrapper.get('.playful-contact-links button').trigger('tap');
     expect(store.state.conversations).toHaveLength(0);
-    await wrapper.find('textarea').setValue('12 + 8');
-    const start = wrapper.findAll('button').find((button) => button.text().trim() === '开始学习');
-    await start.trigger('tap');
+    wrapper.unmount();
+    wrapper = mount(LearningPage, { global: { stubs } });
+    await wrapper.get('textarea[aria-label="消息或作答"]').setValue('12 + 8');
+    await wrapper.get('[aria-label="发送"]').trigger('tap');
     await flushPromises();
     expect(store.active.goal).toBe('12 + 8');
     expect(store.activeQuestion.validation.type).toBe('number');
     expect(store.summary.validAnswers).toBe(0);
     expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/learning/index' }));
     await wrapper.find('.library-materials').trigger('tap');
-    expect(uni.navigateTo).toHaveBeenLastCalledWith(
-      expect.objectContaining({ url: '/pages/learning/index?panel=materials' })
-    );
+    await flushPromises();
+    expect(wrapper.find('#material-intake').exists()).toBe(true);
     wrapper.unmount();
   });
   it('目录打开聚焦关闭按钮，Escape 关闭并恢复原按钮焦点', async () => {

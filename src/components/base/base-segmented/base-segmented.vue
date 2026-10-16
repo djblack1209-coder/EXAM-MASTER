@@ -101,7 +101,7 @@ function keydown(event) {
   border-radius: var(--r-pill);
   background: transparent;
   color: var(--ink-3);
-  font: var(--weight-semibold) var(--size-small)/1 var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-small)/1 var(--font-ui);
   white-space: nowrap;
 }
 .base-segmented button::after {

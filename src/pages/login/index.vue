@@ -1,9 +1,5 @@
 <template>
-  <view
-    class="login-page"
-    :class="{ 'dark-mode': themeStore.isDark, 'theme-light': !themeStore.isDark }"
-    :style="$yoziInsets"
-  >
+  <view class="login-page theme-light" :style="$yoziInsets">
     <PrivacyPopup />
     <view class="login-top">
       <BaseButton variant="quiet" icon="arrow-left" icon-only :label="t('login.back')" @tap="back" />
@@ -23,8 +19,10 @@
     </view>
     <view class="login-content">
       <view v-if="step === 'methods'" class="login-hero"
-        ><YoziMascot pose="wave" play="auto" size="medium" /><text class="login-title">{{ t('login.title') }}</text
-        ><text class="login-subtitle">{{ t('login.subtitle') }}</text></view
+        ><YoziMascot pose="wave" play="auto" size="medium" /><text class="login-title">{{
+          loginPresentation.title
+        }}</text
+        ><text class="login-subtitle">{{ loginPresentation.subtitle }}</text></view
       >
       <BaseCard surface="glass" class="login-panel">
         <view v-if="step === 'methods'" class="login-stack">
@@ -159,7 +157,7 @@
   </view>
 </template>
 <script setup>
-import './messages.js';
+import { loginPresentation } from './messages.js';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { onShow, onHide } from '@dcloudio/uni-app';
 import { t, currentLanguage, setLanguage } from '@/i18n/index.js';
@@ -170,7 +168,6 @@ import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
-import { useThemeStore } from '@/stores/modules/theme.js';
 import { useAuthStore } from '@/stores/modules/auth';
 import { useUserStore } from '@/stores/modules/user';
 import { storageService } from '@/services/storageService.js';
@@ -185,8 +182,7 @@ import { loginDesktopOAuth } from '@/services/desktop/oauth.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { openHomeTab } from '@/utils/home-navigation.js';
 import config from '@/config/index.js';
-const authStore = useAuthStore(),
-  themeStore = useThemeStore();
+const authStore = useAuthStore();
 const region = ref(readLoginRegion()),
   agreedToTerms = ref(false),
   step = ref('methods'),
@@ -640,7 +636,7 @@ onMounted(async () => {
 .login-title {
   display: block;
   font-size: var(--size-title-1);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-ui-emphasis);
   line-height: var(--leading-title-1);
 }
 .login-subtitle,

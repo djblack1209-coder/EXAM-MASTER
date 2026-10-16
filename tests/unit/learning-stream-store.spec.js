@@ -524,3 +524,58 @@ it.each(['owner', 'model', 'stop', 'withdraw', 'hide'])('App预览后%s变化拒
     store.$dispose();
   }
 });
+it.each(['stop', 'hide'])('取消后的迟到错误不抢走%s页面焦点，原答与预算事实保持', async (change) => {
+  const harness = setup('app'),
+    { store, bridge } = harness;
+  store.start('12 + 8');
+  store.submit('19', true);
+  const originals = JSON.stringify(store.state.attempts);
+  vi.spyOn(uni, 'request').mockImplementation((options) => {
+    options.success({ data: { success: true, data: { cancellationRecorded: true, status: 'reserved' } } });
+    return { abort: vi.fn() };
+  });
+  const wrapper = mount(LearningPage, {
+    attachTo: document.body,
+    global: {
+      stubs: {
+        view: { template: '<div><slot /></div>' },
+        text: { template: '<span><slot /></span>' },
+        LearningShell: { template: '<div><slot /></div>' },
+        NumberLine: true,
+        BaseIcon: true,
+        LearningOverview: true
+      }
+    }
+  });
+  wrappers.push(wrapper);
+  const otherPage = document.createElement('button');
+  otherPage.textContent = '另一页面当前操作';
+  document.body.append(otherPage);
+  let expected;
+  try {
+    const pending = store.send('直接讲解');
+    await flushPromises();
+    harness.preview();
+    await flushPromises();
+    if (change === 'stop') {
+      const stop = wrapper.findAll('button').find((button) => button.text().trim() === '停止当前任务');
+      await stop.trigger('keydown', { key: 'Enter' });
+      expected = wrapper.get('#learning-stop-state').element;
+    } else {
+      otherPage.focus();
+      expected = otherPage;
+      onHide.mock.calls.at(-1)[0]();
+    }
+    await pending;
+    await flushPromises();
+    expect(document.activeElement).toBe(expected);
+    expect(JSON.stringify(store.state.attempts)).toBe(originals);
+    expect(store.streamPreview).toBe('');
+    expect(store.error).toContain('取消');
+    expect(bridge.cancel).toHaveBeenCalledOnce();
+    expect(bridge.stream).toHaveBeenCalledOnce();
+    expect(harness.fetch).not.toHaveBeenCalled();
+  } finally {
+    otherPage.remove();
+  }
+});

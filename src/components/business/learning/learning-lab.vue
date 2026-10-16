@@ -1599,7 +1599,7 @@ onUnmounted(() => {
 .lab-title {
   display: block;
   font-size: var(--size-title-3);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
   line-height: 1.5;
 }
 .lab-prompt {
@@ -1663,7 +1663,7 @@ onUnmounted(() => {
 }
 .lane-label {
   font-size: var(--size-body);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
 }
 .force-track {
   position: relative;
@@ -1725,7 +1725,7 @@ onUnmounted(() => {
 }
 .scene-readout {
   justify-content: space-between;
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
 }
 .scene-video {
   width: 100%;
@@ -1809,7 +1809,7 @@ onUnmounted(() => {
 .map-node-title {
   display: block;
   font-size: var(--size-body);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-ui-emphasis);
   overflow-wrap: anywhere;
 }
 .map-evidence {

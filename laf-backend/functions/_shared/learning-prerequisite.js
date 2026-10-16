@@ -1,6 +1,6 @@
 import {
   createAlgebraQuestion,
-  deriveAlgebraQuestion,
+  deriveAlgebraQuestionFor,
   gradeAlgebraAnswer,
   parseInequalityAnswer,
   partitionAlgebraPredicates,
@@ -43,7 +43,7 @@ function legacySpecification(original) {
         : '原题乘法受阻，先用小数检查积的符号；错答尚不能确定具体错因'
     };
   }
-  const derived = deriveAlgebraQuestion(original.prompt);
+  const derived = deriveAlgebraQuestionFor(original);
   if (derived?.task === 'inequality' && derived.status === 'verified' && !derived.quadratic)
     return {
       topic: 'negative-inequality',
@@ -94,7 +94,7 @@ function supportedEvidence(original, attempt, contract) {
     return independent.status === 'reliable' && independent.outcome === 'wrong' && grade.outcome === 'wrong';
   }
   if (contract === QUADRATIC_PREREQUISITE_CONTRACT) {
-    const derived = deriveAlgebraQuestion(original.prompt);
+    const derived = deriveAlgebraQuestionFor(original);
     if (derived?.validation?.evidenceId !== QUADRATIC_INEQUALITY_CONTRACT) return false;
     const independent = gradeAlgebraAnswer(original, attempt.answer);
     return independent.status === 'reliable' && independent.outcome === 'wrong' && grade.outcome === 'wrong';
@@ -104,7 +104,7 @@ function supportedEvidence(original, attempt, contract) {
     const actual = integerAnswer(attempt.answer);
     return grade.outcome === 'wrong' && actual !== null && actual !== calculation.expected;
   }
-  const derived = deriveAlgebraQuestion(original.prompt);
+  const derived = deriveAlgebraQuestionFor(original);
   if (derived?.status !== 'verified') return false;
   // 旧v1/v2诊断只覆盖原一次式；二次式不能借用线性阈值小题冒充先修诊断。
   if (derived.validation.evidenceId === QUADRATIC_INEQUALITY_CONTRACT) return false;
@@ -154,10 +154,10 @@ function evidenceSpecification(original, attempt) {
       reason: '原答未通过独立加法检验，先用小整数检查基本运算；尚不能确定具体错因'
     };
   }
-  const derived = deriveAlgebraQuestion(original.prompt),
+  const derived = deriveAlgebraQuestionFor(original),
     rule = derived.validation;
   if (derived.task === 'inequality') {
-    const actual = parseInequalityAnswer(attempt.answer),
+    const actual = parseInequalityAnswer(attempt.answer, derived.symbol),
       expected = rule.solution.intervals;
     if (expected.length === 1 && actual.length === 1) {
       const a = actual[0],
@@ -272,7 +272,7 @@ function conditionSpecification(original, attempt) {
 }
 // 只比较可靠原答与完整精确解集的可观察差异，不把答案形状当作实际认知错因。
 function quadraticSpecification(original, attempt) {
-  const derived = deriveAlgebraQuestion(original.prompt),
+  const derived = deriveAlgebraQuestionFor(original),
     expected = derived.validation.solution.intervals,
     actual = parseInequalityAnswer(attempt.answer),
     geometry = (interval) => [interval.lower, interval.upper],
@@ -371,7 +371,7 @@ export function createPrerequisiteQuestion(id, original, attempts, conversationI
     ? MATERIAL_PREREQUISITE_CONTRACT
     : deriveConditionQuestion(original?.prompt)
       ? CONDITION_PREREQUISITE_CONTRACT
-      : deriveAlgebraQuestion(original?.prompt)?.quadratic
+      : deriveAlgebraQuestionFor(original)?.quadratic
         ? QUADRATIC_PREREQUISITE_CONTRACT
         : PREREQUISITE_CONTRACT;
   if (
@@ -547,7 +547,7 @@ export function createPrerequisiteVariant(id, original, diagnostic) {
     original.uncertainties?.some((u) => !u.resolved)
   )
     return null;
-  const derived = deriveAlgebraQuestion(original.prompt);
+  const derived = deriveAlgebraQuestionFor(original);
   if (derived?.task !== 'equation' || !derived.validation) return null;
   const [left, right] = derived.expression.split('='),
     domain = { real: '实数', integer: '整数', positive: '正数' }[derived.domain];

@@ -198,7 +198,7 @@ function compareSourceRoles(a, b) {
 }
 
 function buildSourceEvidenceLookup(questionAudit) {
-  const coverage = questionAudit?.sourceEvidence?.coverage;
+  const coverage = questionAudit?.sourceEvidence?.publicUseCoverage || questionAudit?.sourceEvidence?.coverage;
   const lookup = new Map();
   if (!coverage || typeof coverage !== 'object') return lookup;
 
@@ -233,7 +233,9 @@ function sourceEvidenceForSlot(sourceEvidenceLookup, track, year) {
 }
 
 function sourceCandidateDiagnostics(questionAudit, track, year) {
-  const coverageDiagnostics = questionAudit?.sourceEvidence?.coverage?.[track]?.missingYearDiagnostics?.[year];
+  const coverageDiagnostics =
+    questionAudit?.sourceEvidence?.publicUseCoverage?.[track]?.missingYearDiagnostics?.[year] ||
+    questionAudit?.sourceEvidence?.coverage?.[track]?.missingYearDiagnostics?.[year];
   const globalDiagnostics = questionAudit?.sourceEvidence?.candidateDiagnostics?.[track]?.[year];
   return (
     coverageDiagnostics ||
@@ -544,6 +546,7 @@ function sourceManifestRegistrationChecklist(localSourceAudit, manifestSamples =
     .filter(Boolean);
   const blockers = [];
   const hasSourceContentMismatch = sourceSamplesHaveBlocker(manifestSamples, 'source_content_mismatch');
+  const hasBrandedReference = sourceSamplesHaveBlocker(manifestSamples, 'branded_reference_rights_unverified');
 
   if (!localSourceAudit || diagnostics.status === 'not_available') {
     blockers.push('local_source_audit_not_available');
@@ -566,6 +569,9 @@ function sourceManifestRegistrationChecklist(localSourceAudit, manifestSamples =
   if (hasSourceContentMismatch) {
     blockers.push('manifest_candidate_source_content_mismatch');
   }
+  if (hasBrandedReference) {
+    blockers.push('manifest_candidate_branded_reference_rights_unverified');
+  }
 
   const readyForHumanVerification = blockers.length === 0;
 
@@ -584,13 +590,18 @@ function sourceManifestRegistrationChecklist(localSourceAudit, manifestSamples =
       ? 'Local paper/answer files are readable and unblocked. Current release gate counts Baidu Netdisk official_paper sources by auto-pairing remotePath plus content hash; verified source registry drafts are optional audit metadata, not a release prerequisite.'
       : hasSourceContentMismatch
         ? 'At least one manifest candidate is a known content mismatch. Keep it publish-blocked and add a visually verified replacement source before auto-pairing.'
-        : 'Resolve listed local-source blockers before the slot can be treated as an auto-paired official source.'
+        : hasBrandedReference
+          ? 'The branded reference copy lacks verified public-use rights and official scoring authority. Keep it blocked and verify a distinct replacement paper and answer source.'
+          : 'Resolve listed local-source blockers before the slot can be treated as an auto-paired official source.'
   };
 }
 
 function sourceEvidenceNextAction(localSourceAudit, afterEvidenceAction = '', manifestSamples = []) {
   if (sourceSamplesHaveBlocker(manifestSamples, 'source_content_mismatch')) {
     return sourceContentMismatchNextAction(manifestSamples, afterEvidenceAction);
+  }
+  if (sourceSamplesHaveBlocker(manifestSamples, 'branded_reference_rights_unverified')) {
+    return `替换未核验公开使用权与判分依据的品牌参考解析；核对同科目年份的新试卷与答案来源，原副本继续保留版权/质量阻断，再刷新 Source Manifest。${afterEvidenceAction}`;
   }
 
   const suffix = afterEvidenceAction || '';
@@ -860,7 +871,7 @@ function buildSourceEvidenceItems(
   localSourceAuditLookup = new Map(),
   localSourceAuditScopedYears = new Set()
 ) {
-  const coverage = questionAudit?.sourceEvidence?.coverage;
+  const coverage = questionAudit?.sourceEvidence?.publicUseCoverage || questionAudit?.sourceEvidence?.coverage;
   if (!coverage || typeof coverage !== 'object') return [];
 
   const items = [];
@@ -884,7 +895,10 @@ function buildSourceEvidenceItems(
           track,
           year,
           title: `${TRACK_LABELS[track] || track} ${year} 缺少可发布官方题源证据`,
-          nextAction: sourceEvidenceNextAction(localSourceAudit, '', candidateSamples),
+          nextAction: questionAudit?.sourceEvidence?.publicUseCoverage
+            ? '先取得对应原件的公开使用依据并逐份核验，登记 publicUseEvidence（原件SHA256、原始来源、许可/授权依据及公开分发范围）；题面与答案分文件时分别核验。自动配对、可下载或 verified/published 状态不代替许可。' +
+              sourceEvidenceNextAction(localSourceAudit, '', candidateSamples)
+            : sourceEvidenceNextAction(localSourceAudit, '', candidateSamples),
           evidence: {
             presentYears: row.presentYears || [],
             coverageRate: row.coverageRate || 0,
@@ -1638,6 +1652,8 @@ export function buildReleaseBlockerBacklog({
       ),
       sourceManifestPublishableOfficialPapers: questionAudit?.summary?.sourceManifestPublishableOfficialPapers || 0,
       sourceEvidenceGaps: questionAudit?.summary?.sourceManifestCoverageGapCount || 0,
+      sourcePublicUseGaps: questionAudit?.summary?.sourceManifestPublicUseCoverageGapCount || 0,
+      sourceAutoPairedSlots: questionAudit?.summary?.sourceManifestAutoPairedOfficialSourceSlots || 0,
       bankFileInventoryBlockers: questionAudit?.releaseReadiness?.blockers?.bankFileInventory || 0,
       unregisteredBankFileCount: questionAudit?.summary?.unregisteredBankFileCount || 0,
       missingBankFileCount: questionAudit?.summary?.missingBankFileCount || 0,
@@ -1790,7 +1806,7 @@ export function renderBacklogMarkdown(backlog) {
     `- 公共课阻塞槽位(去重): ${summary.publicCourseBlockedSlotCount}，publicCourseBlockerItems=${summary.publicCourseBlockerItemCount}（coverage/source evidence 可能描述同一槽位）`,
     `- 本地题源处理分布: pairedReadable=${localSourceSummary.pairedReadableSlots || 0}，answerBlocked=${localSourceSummary.answerBlockedSlots || 0}，paperBlocked=${localSourceSummary.paperBlockedSlots || 0}，missingAnswer=${localSourceSummary.missingAnswerSlots || 0}，missingPaper=${localSourceSummary.missingPaperSlots || 0}，needsOcr=${localSourceSummary.needsOcrSlots || 0}，blockedLocal=${localSourceSummary.blockedLocalFileSlots || 0}，unpairedReadable=${localSourceSummary.unpairedReadableSlots || 0}，missingLocalFiles=${localSourceSummary.missingLocalFileSlots || 0}，notAvailable=${localSourceSummary.notAvailableSlots || 0}`,
     `- Source Manifest 人工注册队列: readySlots=${registrationQueueSummary.readySlotCount || 0}，registryDrafts=${registrationQueueSummary.registryDraftCount || 0}，missingHumanFields=${registrationQueueSummary.missingHumanFieldCount || 0}，next=${registrationQueueSummary.nextSlotKey || 'none'}，nextDrafts=${registrationQueueSummary.nextDraftCount || 0}`,
-    `- source manifest 可发布官方题源: ${summary.sourceManifestPublishableOfficialPapers}，sourceEvidenceGaps=${summary.sourceEvidenceGaps}`,
+    `- source manifest 可发布官方题源: ${summary.sourceManifestPublishableOfficialPapers}，自动配对=${summary.sourceAutoPairedSlots || 0}，配对缺口=${summary.sourceEvidenceGaps}，公开使用证据缺口=${summary.sourcePublicUseGaps || 0}`,
     `- 题库文件/注册表一致性阻塞: ${summary.bankFileInventoryBlockers || 0}，unregistered=${summary.unregisteredBankFileCount || 0}，missing=${summary.missingBankFileCount || 0}`,
     `- 已开放题库证据阻塞题卡: ${summary.enabledBankAnswerEvidenceBlockers}`,
     `- 清洗题卡质量阻塞: ${summary.cleanedFlashcardBlockers}`,

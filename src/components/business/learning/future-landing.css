@@ -7,7 +7,7 @@
   inset: 0;
   overflow: hidden;
   isolation: isolate;
-  background: var(--canvas);
+  background: var(--scene-sky-fallback);
   color: var(--ink);
   font-family: var(--font-ui);
   font-synthesis: none;
@@ -26,7 +26,10 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: var(--canvas);
+  background-color: var(--scene-sky-fallback);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 .future-stage .sky .future-sky-video {
   position: absolute;
@@ -53,23 +56,23 @@
   pointer-events: none;
   -webkit-mask-image: linear-gradient(
     to bottom,
-    var(--ink) 0%,
-    var(--ink) 14%,
-    var(--ink) 50%,
-    var(--ink) 64%,
-    var(--ink) 74%,
-    var(--ink) 85%,
-    var(--ink) 100%
+    #000 0%,
+    #000 14%,
+    rgba(0, 0, 0, 0.97) 50%,
+    rgba(0, 0, 0, 0.82) 64%,
+    rgba(0, 0, 0, 0.71) 74%,
+    rgba(0, 0, 0, 0.52) 85%,
+    rgba(0, 0, 0, 0.45) 100%
   );
   mask-image: linear-gradient(
     to bottom,
-    var(--ink) 0%,
-    var(--ink) 14%,
-    var(--ink) 50%,
-    var(--ink) 64%,
-    var(--ink) 74%,
-    var(--ink) 85%,
-    var(--ink) 100%
+    #000 0%,
+    #000 14%,
+    rgba(0, 0, 0, 0.97) 50%,
+    rgba(0, 0, 0, 0.82) 64%,
+    rgba(0, 0, 0, 0.71) 74%,
+    rgba(0, 0, 0, 0.52) 85%,
+    rgba(0, 0, 0, 0.45) 100%
   );
 }
 .future-stage .marquee-track {
@@ -90,12 +93,12 @@
 .future-stage .marquee-run > span,
 .future-stage .marquee-run > uni-text {
   white-space: pre;
-  font-family: var(--font-display);
-  font-weight: 400;
+  font-family: var(--font-scene-ticker);
+  font-weight: var(--weight-regular);
   font-size: calc(334.73 * var(--m));
   letter-spacing: calc(-10.93 * var(--m));
   line-height: 0;
-  color: var(--violet-soft);
+  color: var(--scene-wordmark);
 }
 @keyframes future-marquee {
   from {
@@ -151,11 +154,14 @@
   position: absolute;
   left: 50%;
   top: calc(33.1 * var(--t));
-  color: var(--ink);
+  color: var(--paper);
   margin: 0;
   white-space: nowrap;
-  font: var(--weight-black) var(--size-display)/var(--leading-display) var(--font-display);
-  letter-spacing: -0.035em;
+  font-family: var(--font-scene-title);
+  font-weight: var(--weight-regular);
+  font-size: calc(75.31 * var(--t));
+  line-height: 1;
+  letter-spacing: calc(7.75 * var(--t));
   transform: translateX(-50%);
 }
 .future-stage .future-mascot {
@@ -314,7 +320,7 @@
   z-index: 1;
 }
 .future-stage .sky {
-  opacity: var(--landing-sky-opacity);
+  opacity: 1;
 }
 @media (max-width: 699px) {
   .future-stage .future-nav {

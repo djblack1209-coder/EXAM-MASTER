@@ -1,16 +1,20 @@
 <template>
-  <view
-    v-if="visible"
-    class="offline-indicator"
-    :class="[statusClass, { 'offline-indicator--expanded': expanded }]"
-    @tap="toggleExpand"
-  >
+  <view v-if="visible" class="offline-indicator" :class="[statusClass, { 'offline-indicator--expanded': expanded }]">
     <!-- 简洁模式 -->
-    <view class="offline-indicator__compact">
+    <view
+      class="offline-indicator__compact"
+      role="button"
+      tabindex="0"
+      :aria-label="statusText"
+      :aria-expanded="expanded"
+      @tap="toggleExpand"
+      @keydown.enter="toggleExpand"
+      @keydown.space.prevent="toggleExpand"
+    >
       <view class="offline-indicator__icon">
-        <BaseIcon v-if="isOffline" name="offline" :size="28" />
-        <BaseIcon v-else-if="isWeakNetwork" name="warning" :size="28" />
-        <BaseIcon v-else name="refresh" :size="28" />
+        <BaseIcon v-if="isOffline" name="offline" :size="20" />
+        <BaseIcon v-else-if="isWeakNetwork" name="warning" :size="20" />
+        <BaseIcon v-else name="refresh" :size="20" />
       </view>
       <text class="offline-indicator__text">
         {{ statusText }}
@@ -55,16 +59,18 @@
 
       <!-- 操作按钮 -->
       <view class="offline-indicator__actions">
-        <button
+        <BaseButton
           v-if="!isOffline && pendingCount > 0"
           class="action-btn action-btn--sync"
-          :disabled="isSyncing"
+          :loading="isSyncing"
           @tap.stop="handleSync"
         >
-          {{ isSyncing ? '同步中...' : '立即同步' }}
-        </button>
+          立即同步
+        </BaseButton>
 
-        <button class="action-btn action-btn--dismiss" @tap.stop="handleDismiss">暂时忽略</button>
+        <BaseButton class="action-btn action-btn--dismiss" variant="secondary" @tap.stop="handleDismiss"
+          >暂时忽略</BaseButton
+        >
       </view>
     </view>
   </view>
@@ -76,6 +82,7 @@ import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 import { networkMonitor, NETWORK_QUALITY } from '@/utils/core/network-monitor.js';
 import { offlineQueue } from '@/utils/core/offline-queue.js';
+import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 const props = defineProps({
@@ -364,162 +371,104 @@ defineExpose({ show, hide });
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.85);
-  border-radius: 24rpx;
-  padding: 16rpx 24rpx;
-
-  transition: all 0.3s ease;
-  max-width: 90vw;
-
-  // 默认顶部位置 - 统一使用 rpx 避免混用
-  top: calc(var(--status-bar-height, 88rpx) + 20rpx);
-
+  top: calc(var(--yozi-nav-top, var(--status-bar-height, 0px)) + var(--s-3));
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100vw - var(--s-4) * 2);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--lift-2);
+  font: var(--weight-regular) var(--size-small)/var(--leading-small) var(--font-ui);
   &--offline {
-    background: rgba(220, 53, 69, 0.9);
+    background: var(--coral-soft);
   }
-
   &--weak {
-    background: rgba(255, 193, 7, 0.9);
-
-    .offline-indicator__text {
-      color: var(--text-main);
-    }
+    background: var(--apricot-soft);
   }
-
   &--syncing {
-    background: rgba(23, 162, 184, 0.9);
+    background: var(--violet-soft);
   }
-
   &--online {
-    background: rgba(40, 167, 69, 0.9);
+    background: var(--mint-soft);
   }
-
-  &--expanded {
-    border-radius: 16rpx;
-    padding: 24rpx;
-  }
-
   &__compact {
     display: flex;
     align-items: center;
-    /* gap: 12rpx; -- removed tag-name selectors for WeChat component compat */
+    gap: var(--s-2);
+    min-height: var(--touch-min);
+    cursor: pointer;
   }
-
+  &__compact:focus-visible {
+    outline: var(--border-selected) solid var(--focus);
+    outline-offset: var(--focus-offset);
+  }
   &__icon {
-    font-size: 32rpx;
-    line-height: 1;
+    display: flex;
+    flex: none;
   }
-
   &__text {
-    font-size: 26rpx;
-    color: var(--text-inverse);
-    font-weight: 500;
+    color: var(--ink);
+    font-weight: var(--weight-ui-emphasis);
   }
-
   &__badge {
-    background: var(--bg-card);
-    color: var(--text-main);
-    font-size: 20rpx;
-    padding: 4rpx 12rpx;
-    border-radius: 20rpx;
-    font-weight: bold;
+    background: var(--paper);
+    color: var(--ink);
+    padding: var(--s-1) var(--s-2);
+    border-radius: var(--r-pill);
+    font-variant-numeric: tabular-nums;
   }
-
   &__details {
-    margin-top: 20rpx;
-    padding-top: 20rpx;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: var(--s-3);
+    padding-top: var(--s-3);
+    border-top: var(--border-thin) solid var(--line-strong);
   }
-
   &__detail-item {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16rpx;
-
-    .detail-label {
-      font-size: 24rpx;
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .detail-value {
-      font-size: 24rpx;
-      color: var(--text-inverse);
-      font-weight: 500;
-    }
+    gap: var(--s-3);
+    margin-bottom: var(--s-3);
   }
-
   &__actions {
     display: flex;
-    /* gap: 16rpx; -- removed tag-name selectors for WeChat component compat */
-    margin-top: 20rpx;
-
-    .action-btn {
-      flex: 1;
-      height: 64rpx;
-      line-height: 64rpx;
-      font-size: 24rpx;
-      border-radius: 32rpx;
-      border: none;
-
-      &--sync {
-        background: var(--bg-card);
-        color: var(--text-main);
-
-        &:disabled {
-          opacity: 0.6;
-        }
-      }
-
-      &--dismiss {
-        background: rgba(255, 255, 255, 0.2);
-        color: var(--text-inverse);
-      }
-    }
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-4);
   }
 }
-
+.detail-label {
+  color: var(--ink-2);
+}
+.detail-value {
+  color: var(--ink);
+  font-weight: var(--weight-ui-emphasis);
+}
 .quality-indicator {
   display: flex;
-  /* gap: 4rpx; -- removed tag-name selectors for WeChat component compat */
   align-items: flex-end;
+  gap: var(--s-1);
 }
-
 .quality-bar {
-  width: 8rpx;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 4rpx;
-
-  &--1 {
-    height: 12rpx;
-  }
-  &--2 {
-    height: 18rpx;
-  }
-  &--3 {
-    height: 24rpx;
-  }
-  &--4 {
-    height: 30rpx;
-  }
-
-  &--active {
-    background: var(--text-inverse);
-  }
+  width: var(--s-1);
+  background: var(--line-strong);
+  border-radius: var(--r-xs);
 }
-
-// 动画
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
+.quality-bar--1 {
+  height: var(--s-2);
 }
-
-.offline-indicator--syncing .icon-syncing {
-  animation: pulse 1s ease-in-out infinite;
+.quality-bar--2 {
+  height: var(--s-3);
+}
+.quality-bar--3 {
+  height: var(--s-4);
+}
+.quality-bar--4 {
+  height: var(--s-5);
+}
+.quality-bar--active {
+  background: var(--violet-ink);
 }
 </style>

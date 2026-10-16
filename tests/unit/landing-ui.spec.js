@@ -4,8 +4,9 @@ import { createPinia } from 'pinia';
 import { nextTick } from 'vue';
 import PlayfulLanding from '@/components/business/learning/playful-landing.vue';
 import FutureLanding from '@/components/business/learning/future-landing.vue';
-import { initI18n, setLanguage, t } from '@/i18n/index.js';
+import { initI18n, setLanguage, t, currentLanguage } from '@/i18n/index.js';
 import { landingMessages } from '@/i18n/messages/landing.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
 import { setMascotReducedMotion } from '@/design/mascot-motion.js';
 
 vi.mock('@dcloudio/uni-app', () => ({ onHide: vi.fn(), onShow: vi.fn() }));
@@ -60,10 +61,12 @@ describe('landing language, entry and mascot behavior', () => {
     }
   });
   it.each([PlayfulLanding, FutureLanding])(
-    'switches mounted fixed labels and accessible names to English',
+    'keeps aesthetic labels English without changing learning language',
     async (component) => {
       render(component);
-      expect(wrapper.text()).toContain('开始学习');
+      expect(wrapper.text()).toContain('Start learning');
+      expect(currentLanguage.value).toBe('zh-CN');
+      expect(t('landing.topic.function')).toBe('函数运算带练');
       setLanguage('en');
       await nextTick();
       expect(wrapper.text()).toContain('Start learning');
@@ -101,28 +104,41 @@ describe('landing language, entry and mascot behavior', () => {
       expect(mascot.attributes('data-moving')).toBe('false');
     }
   );
-  it('keeps the Playful main heading above navigation, with exact bilingual line breaks', async () => {
+  it('keeps the original English Playful heading and badge in both locales', async () => {
     render(PlayfulLanding);
     const heading = wrapper.get('.playful-jobs > .playful-job-title');
+    expect(wrapper.get('.playful-badge').text()).toBe('have a fresh idea?');
     expect(heading.attributes('role')).toBe('heading');
     expect(heading.attributes('aria-level')).toBe('1');
-    expect(heading.element.textContent).toBe('从一个问题\n到真正理解');
+    expect(heading.element.textContent).toBe('imagination\nmeets craft');
     expect(heading.element.nextElementSibling.classList.contains('playful-nav')).toBe(true);
     setLanguage('en');
     await nextTick();
-    expect(heading.element.textContent).toBe('From one question\nto real understanding');
+    expect(heading.element.textContent).toBe('imagination\nmeets craft');
   });
-  it('keeps Future brand heading and both scrolling learning/practice/review runs', async () => {
+  it('keeps Future brand heading and two exact original ticker runs', async () => {
     render(FutureLanding);
     expect(wrapper.get('.intro .name[role=heading]').text()).toBe('Yozi AI');
     const runs = wrapper.findAll('.marquee-run > *');
     expect(runs).toHaveLength(2);
-    expect(runs.every((run) => run.text().includes('学习 · 练习 · 复习'))).toBe(true);
+    expect(runs.every((run) => run.text() === 'BRANDING·PRODUCT·UI/UX·'.repeat(5))).toBe(true);
     setLanguage('en');
     await nextTick();
-    expect(runs.every((run) => run.text().includes('LEARNING · PRACTICE · REVIEW'))).toBe(true);
+    expect(runs.every((run) => run.text() === 'BRANDING·PRODUCT·UI/UX·'.repeat(5))).toBe(true);
     expect(wrapper.find('.scene-assembly .scene').exists()).toBe(true);
   });
+  it.each([PlayfulLanding, FutureLanding])(
+    'keeps display light while preserving dark reading preference',
+    async (component) => {
+      render(component);
+      const theme = useThemeStore();
+      theme.isDark = true;
+      await nextTick();
+      expect(wrapper.classes()).toContain('theme-light');
+      expect(wrapper.classes()).not.toContain('theme-dark');
+      expect(theme.isDark).toBe(true);
+    }
+  );
   it('Future motion chip pauses the mascot without changing the learning entry', async () => {
     render(FutureLanding);
     await wrapper.get('.base-chip').trigger('keydown', { key: ' ' });

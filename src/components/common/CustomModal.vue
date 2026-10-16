@@ -245,7 +245,7 @@ onUnmounted(() => {
 .modal-title {
   display: block;
   color: var(--ink);
-  font: var(--weight-bold) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
 }
 .modal-content {
   display: block;

@@ -25,7 +25,9 @@
 
     <view v-if="!isLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleSafeRight + 'px' }">
-        <BaseButton class="nav-back" variant="secondary" @tap="goBack"><BaseIcon name="arrow-left" /></BaseButton>
+        <BaseButton class="nav-back" :label="$t('ui.back')" variant="secondary" @tap="goBack"
+          ><BaseIcon name="arrow-left"
+        /></BaseButton>
         <text class="nav-title">{{ $t('pages.plan') }}</text>
         <BaseButton
           class="nav-add"

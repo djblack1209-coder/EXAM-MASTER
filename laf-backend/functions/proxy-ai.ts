@@ -481,13 +481,15 @@ export async function runLearningModelTask(
         ? { upstreamStatus: error.upstreamStatus, upstreamCode: error.upstreamCode || null }
         : {}),
       message:
-        error.code === 'CANCELLED'
-          ? '模型任务已取消；已产生的供应商费用仍按实际用量或待结算保存，未执行教学工具'
-          : error.code === 'RATE_LIMITED'
-            ? '指定模型当前限流，学习记录已保留；稍后手动重试或主动选择其他模型，不会自动切换或收费'
-            : error.code === 'BYOK_LIMIT'
-              ? '自带API调用次数达到服务端安全上限；已有材料、复习和统计仍可使用，不会自动切换或收费'
-              : '模型任务未完成，学习记录已保留；请检查连接或用量状态'
+        error.code === 'SSRF_BLOCKED' && error.executionStage === 'not_called'
+          ? '当前网络无法安全连接模型，本次未调用模型。请检查网络后重新发送，原答已保留。'
+          : error.code === 'CANCELLED'
+            ? '模型任务已取消；已产生的供应商费用仍按实际用量或待结算保存，未执行教学工具'
+            : error.code === 'RATE_LIMITED'
+              ? '指定模型当前限流，学习记录已保留；稍后手动重试或主动选择其他模型，不会自动切换或收费'
+              : error.code === 'BYOK_LIMIT'
+                ? '自带API调用次数达到服务端安全上限；已有材料、复习和统计仍可使用，不会自动切换或收费'
+                : '模型任务未完成，学习记录已保留；请检查连接或用量状态'
     };
   } finally {
     execution?.stop();

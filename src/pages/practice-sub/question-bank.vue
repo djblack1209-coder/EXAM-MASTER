@@ -7,7 +7,7 @@
   >
     <view class="navbar">
       <view class="navbar-inner" :style="{ paddingTop: statusBarHeight + 'px' }">
-        <BaseButton class="nav-back" data-learning-toggle variant="secondary" @tap="goBack"
+        <BaseButton class="nav-back" :label="$t('ui.back')" data-learning-toggle variant="secondary" @tap="goBack"
           ><BaseIcon name="arrow-left"
         /></BaseButton>
         <text class="nav-title">{{ t('quiz.copy102') }}</text>
@@ -248,6 +248,7 @@ import BaseButton from '@/components/base/base-button/base-button.vue';
 import '@/styles/yozi-pages.scss';
 
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
+import { onHide, onShow, onUnload } from '@dcloudio/uni-app';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { safeNavigateBack, safeNavigateTo } from '@/utils/safe-navigate';
 import { getPracticeNavigationTree } from '@/config/bank-registry.js';
@@ -272,12 +273,25 @@ const _themeHandler = (_mode) => {
 };
 uni.$on('themeUpdate', _themeHandler);
 onBeforeUnmount(() => {
+  leavePage();
   unbindKeyboard();
   uni.$off('themeUpdate', _themeHandler);
 });
 
 const statusBarHeight = ref(getStatusBarHeight());
 const loadingBankId = ref('');
+let pageActive = true;
+let loadSequence = 0;
+function leavePage() {
+  pageActive = false;
+  loadSequence += 1;
+  loadingBankId.value = '';
+}
+onHide(leavePage);
+onUnload(leavePage);
+onShow(() => {
+  pageActive = true;
+});
 const selectedSubjectKey = ref('');
 const selectedTrackId = ref('');
 const loadedBankIds = ref(new Set(readLocalArray('loaded_flashcard_banks')));
@@ -508,6 +522,7 @@ function buildGapNextStep(slot) {
 }
 
 async function loadPaper(paper) {
+  if (!pageActive) return null;
   if (!ownerMatches()) {
     toast.info(t('quiz.copy143'));
     return null;
@@ -519,18 +534,21 @@ async function loadPaper(paper) {
   if (loadingBankId.value) return null;
 
   loadingBankId.value = paper.id;
+  const requestSequence = ++loadSequence;
+  const requestIsCurrent = () => pageActive && requestSequence === loadSequence;
   try {
     const data = await loadBankData(paper.id);
+    if (!requestIsCurrent()) return null;
     if (!ownerMatches()) {
       toast.info(t('quiz.copy143'));
       return null;
     }
     const adapter = {
       get: (key) => {
-        if (!ownerMatches()) throw new Error('CONTEXT_CHANGED');
+        if (!requestIsCurrent() || !ownerMatches()) throw new Error('CONTEXT_CHANGED');
         return storageService.get(key, [], { migrateLegacy: false, throwOnError: true });
       },
-      set: (key, value) => ownerMatches() && storageService.save(key, value, true) === true
+      set: (key, value) => requestIsCurrent() && ownerMatches() && storageService.save(key, value, true) === true
     };
     const result = importFlashcardsToBank(data, adapter, {
       paperId: paper.id,
@@ -547,13 +565,18 @@ async function loadPaper(paper) {
     refreshLocalPaperStats();
     const changed = result.imported + (result.updated || 0);
     toast.success(changed > 0 ? t('quiz.copy145', { v0: changed }) : t('quiz.copy146'));
-    return result;
+    return { ...result, requestSequence };
   } catch (error) {
+    if (!requestIsCurrent()) return null;
+    if (!ownerMatches()) {
+      toast.info(t('quiz.copy143'));
+      return null;
+    }
     logger.error('[QuestionBank] load paper failed:', error);
     toast.error(t('quiz.copy147'));
     return null;
   } finally {
-    loadingBankId.value = '';
+    if (requestIsCurrent()) loadingBankId.value = '';
   }
 }
 
@@ -575,7 +598,7 @@ function getPaperQuestionIds(paper) {
 }
 
 function startLoadedPaper(paper, loadResult) {
-  if (!loadResult || !ownerMatches()) return false;
+  if (!loadResult || !pageActive || loadResult.requestSequence !== loadSequence || !ownerMatches()) return false;
   try {
     const ids = getPaperQuestionIds(paper);
     if (ids.length === 0) {

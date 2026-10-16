@@ -41,9 +41,8 @@ onMounted(doRender);
 <style lang="scss" scoped>
 .rich-text-wrap {
   width: 100%;
-  line-height: 1.7;
-  font-size: 30rpx;
-  color: var(--text-primary, #1a1a1a);
+  font: var(--weight-regular) var(--size-body)/var(--leading-body) var(--font-ui);
+  color: var(--ink);
   word-break: break-word;
   overflow: hidden;
 }
@@ -58,15 +57,8 @@ onMounted(doRender);
 .rich-text-wrap :deep(.katex-display) {
   display: block;
   text-align: center;
-  margin: 16rpx 0;
+  margin: var(--s-2) 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-}
-
-// ---- 深色模式覆盖 ----
-
-.dark .rich-text-wrap,
-.theme-dark .rich-text-wrap {
-  color: var(--text-primary, #e2e8f0);
 }
 </style>

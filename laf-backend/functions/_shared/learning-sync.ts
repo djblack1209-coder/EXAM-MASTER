@@ -72,6 +72,18 @@ export async function syncLearningOperations(db: any, userId: string, operations
       if (!stored) throw new AccountError('DATABASE_UNAVAILABLE', '学习同步数据库不可用');
     }
     let state = await decodeServerHistory(stored.state, userId);
+    // A read can seed an empty account before its first real device sync.
+    // Use that first write's timezone; never rebase existing learning facts.
+    if (
+      stored.revision === 0 &&
+      state.revision === 0 &&
+      operations.length > 0 &&
+      Object.values(state)
+        .filter(Array.isArray)
+        .every((items: any[]) => items.length === 0)
+    ) {
+      state = emptyLearningState(userId, timezone);
+    }
     const batch = createLearningOperationBatch(state, Math.max(1, operations.length));
     const accepted = [];
     let changed = false;

@@ -39,7 +39,7 @@ function tempManifestPath(items = []) {
   return manifest;
 }
 
-async function reportForCard(card, bankId = 'math1-2099') {
+async function reportForCard(card, bankId = 'math1-2099', sources = []) {
   const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
   const bankDir = tempDir('exam-master-qb-digest-');
   fs.writeFileSync(path.join(bankDir, `${bankId}.json`), JSON.stringify({ cards: [card] }));
@@ -47,11 +47,13 @@ async function reportForCard(card, bankId = 'math1-2099') {
     minYear: 2099,
     maxYear: 2099,
     tracks: ['math1'],
-    sourceManifest: tempManifestPath(),
+    sourceManifest: tempManifestPath(sources),
     bankDir,
     banks: [
       {
         id: bankId,
+        enabled: true,
+        quality: 'ready',
         subjectKey: bankId.startsWith('english') ? 'english' : 'math',
         track: bankId.split('-')[0],
         year: bankId.split('-')[1],
@@ -74,7 +76,90 @@ function digestCard() {
   };
 }
 
+function publicUseSource(overrides = {}) {
+  const source = {
+    sourceId: 'synthetic-public-use',
+    eligible: true,
+    status: 'verified',
+    sourceType: 'official_paper',
+    sourceRole: 'paper_answer',
+    track: 'math1',
+    year: 2099,
+    sourceUrl: 'https://example.invalid/original.pdf',
+    contentHash: textDigest('synthetic source bytes'),
+    riskFlags: [],
+    ...overrides
+  };
+  source.publicUseEvidence = {
+    contract: 'public-course-public-use-v1',
+    basis: 'permission',
+    scope: 'public_course_redistribution',
+    sourceHash: source.contentHash,
+    sourceUrl: source.sourceUrl,
+    evidenceUrl: 'https://example.invalid/permission',
+    verifiedAt: '2020-01-01T00:00:00Z',
+    verifiedBy: 'synthetic-verifier',
+    note: 'Synthetic permission covers this exact file.'
+  };
+  return source;
+}
+
 describe('question bank release gate', () => {
+  it('keeps the last release slot blocked when only automatic pairing and a licence label exist', async () => {
+    const source = publicUseSource({ status: 'published', licenseStatus: 'public_use_verified' });
+    delete source.publicUseEvidence;
+    const report = await reportForCard(digestCard(), 'math1-2099', [source]);
+    expect(report.summary.coverageGapCount).toBe(0);
+    expect(report.summary.answerEvidenceBlockerCount).toBe(0);
+    expect(report.summary.gradingBlockerCount).toBe(0);
+    expect(report.summary.sourceManifestAutoPairedOfficialSourceSlots).toBe(1);
+    expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(0);
+    expect(report.releaseReadiness.blockers.sourcePublicUse).toBe(1);
+    expect(report.releaseReadiness.canPublish).toBe(false);
+  });
+
+  it('accepts a complete declared public-use proof and rejects substitution or private-only scope', async () => {
+    const source = publicUseSource();
+    const accepted = await reportForCard(digestCard(), 'math1-2099', [source]);
+    expect(accepted.summary.sourceManifestPublishableOfficialPapers).toBe(1);
+    expect(accepted.releaseReadiness.canPublish, JSON.stringify(accepted.releaseReadiness)).toBe(true);
+    for (const change of [
+      { sourceHash: textDigest('another file') },
+      { sourceUrl: 'https://example.invalid/another.pdf' },
+      { scope: 'personal_use' },
+      { evidenceUrl: 'javascript:alert(1)' },
+      { evidenceUrl: ['https://example.invalid/permission'] },
+      { verifiedBy: '' },
+      { note: '' },
+      { verifiedAt: 'not-a-date' },
+      { contract: 'unknown' },
+      { basis: 'downloadable' }
+    ]) {
+      const item = { ...source, publicUseEvidence: { ...source.publicUseEvidence, ...change } };
+      const report = await reportForCard(digestCard(), 'math1-2099', [item]);
+      expect(report.releaseReadiness.canPublish, JSON.stringify(change)).toBe(false);
+      expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(0);
+    }
+    const discovered = await reportForCard(digestCard(), 'math1-2099', [{ ...source, status: 'discovered' }]);
+    expect(discovered.releaseReadiness.canPublish).toBe(false);
+  });
+
+  it('requires separate public-use proof for both files in a question/answer pair', async () => {
+    const paper = publicUseSource({ sourceRole: 'paper' });
+    const answer = publicUseSource({
+      sourceId: 'synthetic-answer',
+      sourceRole: 'answer',
+      contentHash: textDigest('answer bytes')
+    });
+    const report = await reportForCard(digestCard(), 'math1-2099', [paper, answer]);
+    expect(report.releaseReadiness.canPublish, JSON.stringify(report.releaseReadiness)).toBe(true);
+    const mismatched = { ...answer, publicUseEvidence: paper.publicUseEvidence };
+    expect((await reportForCard(digestCard(), 'math1-2099', [paper, mismatched])).releaseReadiness.canPublish).toBe(
+      false
+    );
+    const branded = { ...paper, riskFlags: ['brand_leak'], sourceRole: 'paper_answer' };
+    expect((await reportForCard(digestCard(), 'math1-2099', [branded])).releaseReadiness.canPublish).toBe(false);
+  });
   it('keeps both supplemented references blocked even after rewriting their candidate evidence', async () => {
     const payload = JSON.parse(fs.readFileSync(path.resolve('data/flashcards/politics-2023.json'), 'utf8'));
     for (const number of [10, 11]) {
@@ -410,7 +495,7 @@ describe('question bank release gate', () => {
     expect(report.summary.sourceManifestStatus).toBe('present');
     expect(report.summary.sourceEvidencePolicy).toBe('baidu_netdisk_official_paper_auto_pair_v1');
     expect(report.summary.sourceManifestTotalSources).toBe(3);
-    expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(2);
+    expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(0);
     expect(report.summary.sourceManifestAutoPairedOfficialSourceSlots).toBe(2);
     expect(report.summary.sourceManifestCoverageGapCount).toBe(16);
     expect(report.summary.pendingCoverageBlockerCount).toBe(0);
@@ -529,7 +614,7 @@ describe('question bank release gate', () => {
       banks: []
     });
 
-    expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(1);
+    expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(0);
     expect(report.summary.sourceManifestCoverageGapCount).toBe(0);
     expect(report.sourceEvidence.coverage.math1.presentYears).toEqual([2099]);
     expect(report.sourceEvidence.candidateDiagnostics.math1[2099]).toMatchObject({
@@ -638,6 +723,54 @@ describe('question bank release gate', () => {
       publishBlocked: true,
       riskFlags: ['manual_review_required', 'source_content_mismatch']
     });
+  });
+
+  it('blocks the branded math2 2021 copy even after its release metadata is rewritten', async () => {
+    const { buildQuestionBankReleaseReport } = await import('../../scripts/build/question-bank-release-gate.mjs');
+    const base = {
+      sourceId: 'renamed-copy',
+      eligible: true,
+      status: 'published',
+      sourceType: 'official_paper',
+      sourceRole: 'paper_answer',
+      track: 'math2',
+      year: 2021,
+      remotePath: '/replacement/2021-math2-paper-answer.pdf',
+      contentHash: 'different',
+      answerEvidenceStatus: 'matched',
+      riskFlags: [],
+      legalReview: { publishBlocked: false }
+    };
+    const identities = [
+      { sourceId: 'src_1b0fd1f2d5c9741193305511' },
+      { contentHash: '46f076305pf181eb53d3f3c01172fdd7' },
+      { sha256: 'a9db41a6703e349215044e39c980c99fecbb8386321bdf206ee002502e61c068' },
+      { fileSha256: 'sha256:a9db41a6703e349215044e39c980c99fecbb8386321bdf206ee002502e61c068' },
+      { remotePath: '/EXAM-MASTER/【完整版】数学二真题答案解析/2021考研数学二真题 .pdf' }
+    ];
+    for (const identity of identities) {
+      const report = buildQuestionBankReleaseReport({
+        minYear: 2021,
+        maxYear: 2021,
+        tracks: ['math2'],
+        banks: [],
+        sourceManifest: tempManifestPath([{ ...base, ...identity }])
+      });
+      expect(report.summary.sourceManifestPublishableOfficialPapers).toBe(0);
+      expect(report.summary.sourceManifestCoverageGapCount).toBe(1);
+      const diagnostics = report.sourceEvidence.coverage.math2.missingYearDiagnostics[2021];
+      expect(diagnostics.autoPairEligibleCandidateCount).toBe(0);
+      expect(diagnostics.blockReasons.branded_reference_rights_unverified).toBe(1);
+      expect(diagnostics.sampleCandidates[0].publishBlocked).toBe(true);
+    }
+    const replacement = buildQuestionBankReleaseReport({
+      minYear: 2021,
+      maxYear: 2021,
+      tracks: ['math2'],
+      banks: [],
+      sourceManifest: tempManifestPath([base])
+    });
+    expect(replacement.sourceEvidence.coverage.math2.presentYears).toEqual([2021]);
   });
 
   it('keeps self-study draft banks as pending release blockers even when source evidence is complete', async () => {

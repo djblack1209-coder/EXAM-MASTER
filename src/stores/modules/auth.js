@@ -6,7 +6,7 @@
  */
 
 import { readLoginRegion } from '@/services/auth-region.js';
-import { defineStore } from 'pinia';
+import { defineStore, getActivePinia } from 'pinia';
 import { ref } from 'vue';
 import config from '@/config/index.js';
 const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
@@ -24,6 +24,7 @@ import { toast } from '@/utils/toast.js';
 export const useAuthStore = defineStore('auth', () => {
   const token = ref('');
   const isLogin = ref(false);
+  let authLifecycle = 0;
 
   // 需要 userInfo 引用来判断登录状态，由 facade 注入
   let _userInfoRef = null;
@@ -43,6 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
    * 设置 Token
    */
   const setToken = (newToken) => {
+    authLifecycle++;
     token.value = newToken;
     syncLoginStatus();
     storageService.save(APP_CONFIG.cacheKeys.token, newToken, true);
@@ -145,6 +147,8 @@ export const useAuthStore = defineStore('auth', () => {
    * 登出
    */
   const logout = () => {
+    const cleanupLifecycle = ++authLifecycle;
+    const pinia = getActivePinia();
     // 清理会话缓存，学习事实留在账户隔离键中；删除由用户另行确认。
     storageService.clearUserData(undefined, { preserveLearning: true });
     token.value = '';
@@ -168,12 +172,16 @@ export const useAuthStore = defineStore('auth', () => {
           import('./stats.js'),
           import('./favorite.js')
         ]);
-        useStatsStore().clearCache();
-        // favorite store 没有 clearCache，手动重置
-        const favStore = useFavoriteStore();
-        favStore.favorites = [];
-        favStore.total = 0;
-        favStore.stats = { totalCount: 0, reviewedCount: 0, needReviewCount: 0, withNoteCount: 0 };
+        if (
+          cleanupLifecycle !== authLifecycle ||
+          token.value ||
+          _userInfoRef?.value ||
+          storageService.get('EXAM_USER_ID', null) ||
+          storageService.get(APP_CONFIG.cacheKeys.token, null)
+        )
+          return;
+        useStatsStore(pinia).clearCache();
+        useFavoriteStore(pinia).$reset();
         // invite store 已移除
       } catch (_e) {
         // 清理失败不影响登出流程
@@ -280,6 +288,7 @@ export const useAuthStore = defineStore('auth', () => {
    * 重置 store 状态到初始值（Setup Store 手动实现）
    */
   const $reset = () => {
+    authLifecycle++;
     token.value = '';
     isLogin.value = false;
   };

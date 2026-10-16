@@ -198,7 +198,7 @@ watch(
 }
 .evidence-highlight {
   background: var(--violet-soft);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-ui-emphasis);
   text-decoration: underline;
 }
 .answer-segment {

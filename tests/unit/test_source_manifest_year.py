@@ -7,6 +7,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.baidu.source_manifest import merge_manifest, normalize_record  # noqa: E402
+from scripts.baidu.source_quality import apply_source_quality_overrides  # noqa: E402
+from scripts.baidu.manifest_quality import analyze_manifest  # noqa: E402
+from scripts.baidu.cleaning_queue import build_cleaning_queue  # noqa: E402
 
 
 class SourceManifestYearTest(unittest.TestCase):
@@ -222,6 +225,106 @@ class SourceManifestYearTest(unittest.TestCase):
         self.assertEqual(item["missingHumanFields"], ["evidenceNote", "sourceUrl", "verifiedBy"])
         self.assertEqual(item["draftStatus"], "requires_human_verification")
         self.assertEqual(item["humanFieldStatus"], "requires_human_input")
+
+    def test_manifest_rediscovery_keeps_branded_math2_2021_copy_blocked(self):
+        now = "2026-10-14T00:00:00Z"
+        item = normalize_record(
+            {
+                "fs_id": 98250198221619,
+                "path": "/EXAM-MASTER/【完整版】数学二真题答案解析/2021考研数学二真题 .pdf",
+                "server_filename": "2021考研数学二真题 .pdf",
+                "size": 1_959_340,
+                "contentHash": "46f076305pf181eb53d3f3c01172fdd7",
+            },
+            provider="baidu_pan",
+            source_channel="netdisk_full_path",
+            now=now,
+        )
+        stale = dict(item, riskFlags=[], legalReview={}, sourceQuality={}, status="published")
+        merged, _ = merge_manifest({"items": [stale]}, [item], now)
+        result = merged["items"][0]
+        self.assertEqual(result["status"], "published")
+        self.assertTrue(result["legalReview"]["publishBlocked"])
+        self.assertTrue(result["legalReview"]["copyrightReviewRequired"])
+        self.assertEqual(
+            result["sourceQuality"]["blockReason"], "branded_reference_rights_unverified"
+        )
+
+    def test_branded_copy_identity_and_hash_survive_metadata_changes(self):
+        identities = [
+            {"sourceId": "src_1b0fd1f2d5c9741193305511"},
+            {"contentHash": "46f076305pf181eb53d3f3c01172fdd7"},
+            {"sha256": "a9db41a6703e349215044e39c980c99fecbb8386321bdf206ee002502e61c068"},
+            {"fileSha256": "sha256:a9db41a6703e349215044e39c980c99fecbb8386321bdf206ee002502e61c068"},
+            {"remotePath": "/EXAM-MASTER/【完整版】数学二真题答案解析/2021考研数学二真题 .pdf"},
+        ]
+        for identity in identities:
+            with self.subTest(identity=identity):
+                original = dict(identity, riskFlags=[], legalReview={"publishBlocked": False})
+                blocked = apply_source_quality_overrides(original)
+                self.assertTrue(blocked["legalReview"]["publishBlocked"])
+                self.assertIn("brand_leak", blocked["riskFlags"])
+                self.assertIn("copyright_review_required", blocked["riskFlags"])
+                self.assertEqual(original["riskFlags"], [])
+
+    def test_branded_copy_override_does_not_block_distinct_same_year_source(self):
+        source = {"track": "math2", "year": 2021, "sourceId": "replacement", "sha256": "other"}
+        self.assertEqual(apply_source_quality_overrides(source), source)
+
+    def test_manifest_quality_rejects_stale_published_branded_copy(self):
+        report = analyze_manifest(
+            {"items": [{
+                "sourceId": "src_1b0fd1f2d5c9741193305511",
+                "track": "math2",
+                "year": 2021,
+                "eligible": True,
+                "status": "published",
+                "sourceType": "official_paper",
+                "sourceRole": "paper_answer",
+                "contentHash": "different",
+                "remotePath": "/renamed/2021-math2-paper-answer.pdf",
+                "answerEvidenceStatus": "matched",
+                "riskFlags": [],
+                "legalReview": {"publishBlocked": False},
+            }]},
+            tracks=["math2"],
+            years=[2021],
+        )
+        self.assertEqual(report["summary"]["publishableOfficialPapers"], 0)
+        self.assertEqual(report["coverage"]["math2"]["missingYears"], [2021])
+        self.assertFalse(report["releaseReadiness"]["canPublish"])
+
+    def test_branded_copy_requeues_completed_download_for_review(self):
+        source = {
+            "sourceId": "src_1b0fd1f2d5c9741193305511",
+            "sourceType": "official_paper",
+            "fileName": "2021考研数学二真题.pdf",
+            "extension": ".pdf",
+            "track": "math2",
+            "year": 2021,
+            "eligible": True,
+            "status": "discovered",
+            "fingerprint": "unchanged-copy",
+            "sourceChannel": "netdisk_full_path",
+            "fsId": 98250198221619,
+            "remotePath": "/renamed/2021-math2.pdf",
+            "riskFlags": [],
+        }
+        queue = build_cleaning_queue(
+            {"items": [source]},
+            previous_queue={"tasks": [{
+                "sourceId": source["sourceId"],
+                "fingerprint": source["fingerprint"],
+                "action": "download_and_extract",
+                "status": "completed",
+            }]},
+            raw_inbox_dir=Path("/not-used"),
+            now="2026-10-14T00:00:00Z",
+        )
+        task = queue["tasks"][0]
+        self.assertEqual(task["action"], "manual_review")
+        self.assertEqual(task["status"], "pending")
+        self.assertEqual(task["statusReason"], "legal_or_quality_review_required")
 
     def test_manifest_blocks_known_mislabeled_math2_2016_source(self):
         item = normalize_record(

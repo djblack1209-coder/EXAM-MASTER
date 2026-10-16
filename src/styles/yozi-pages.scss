@@ -38,12 +38,12 @@
     padding: var(--s-3) var(--s-4);
   }
   :where(.nav-title, .navbar-title, .hero-title, .practice-title, .page-title) {
-    font: var(--weight-bold) var(--size-title-1)/var(--leading-title-1) var(--font-display);
+    font: var(--weight-display) var(--size-title-1)/var(--leading-title-1) var(--font-display);
     color: var(--ink);
   }
   :where(.section-title, .card-title, .plan-name, .fsrs-title, .bank-name, .slot-title) {
     display: block;
-    font: var(--weight-bold) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
+    font: var(--weight-ui-emphasis) var(--size-title-3)/var(--leading-title-3) var(--font-ui);
   }
   :where(.main-scroll, .scroll-body, .scroll-container, .quiz-scroll) {
     display: block;

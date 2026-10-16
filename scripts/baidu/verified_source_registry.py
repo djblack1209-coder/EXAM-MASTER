@@ -17,6 +17,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.baidu.source_quality import public_use_evidence_errors
+except ModuleNotFoundError:  # Direct script execution.
+    from source_quality import public_use_evidence_errors
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REGISTRY = PROJECT_ROOT / "data" / "verified-source-registry.json"
@@ -166,7 +171,7 @@ def normalize_source(source: dict[str, Any], *, registry_path: Path, now: str) -
     )
     verified_by, evidence_note = require_human_verified_fields(source)
 
-    return {
+    result = {
         "id": str(source.get("id") or f"{track}_{year}_{local_path.stem}"),
         "path": str(source.get("remotePath") or local_path),
         "localPath": str(local_path),
@@ -186,6 +191,12 @@ def normalize_source(source: dict[str, Any], *, registry_path: Path, now: str) -
         "verifiedBy": verified_by,
         "evidenceNote": evidence_note,
     }
+    if "publicUseEvidence" in source:
+        result["publicUseEvidence"] = source["publicUseEvidence"]
+        errors = public_use_evidence_errors(result)
+        if errors:
+            raise ValueError("; ".join(errors))
+    return result
 
 
 def build_verified_source_export(

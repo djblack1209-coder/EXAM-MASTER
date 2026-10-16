@@ -4,7 +4,89 @@
 
 ## 当前候选与本机资源
 
-上游安全接续复用以下四端候选与共享依赖镜像；当前网页入口为`/static/js/index-CPYdZDqk.js`，普通PWA升级后原5答/37事件逐字导出保持。根DCloud系列统一`3.0.0-alpha-5030120260930001`、官方Vue与九个内部包3.5.43、selector-parser 7.1.6、source-map-js 1.2.2；DCloud定制H5运行时仍3.4.21，继承的Vite peer差异由本地构建/实际页面分别验收。107相关/4631全量、四端构建、微信/App审计及14高审计剩余见`verification.json.upstreamSecurity`；braces未发布修复，release门禁未通过。`upstream-before.package{,-lock}.json`与`upstream-leaf.package{,-lock}.json`是可解析且摘要核验的元数据回退对，恢复时在隔离环境沿相应锁文件安装，不覆盖学习源码或当资料备份。日常App/原生归档未更新，临时资源已收尾。
+Mac聊天QA有限运行已通过并正常收尾，程序候选仅保留`native-field-qa.chat-first.zip`及原9项清单/恢复链；`chat-first-qa.noindex/Yozi AI 核验.app`已精确注销并回收，不是日常安装。QA当前真实25原答（旧18、启动时额外1、本机3、web合并3），只读分页核对原279操作与旧原答/资料保持；`chat-first-native-after-reopen.json`为0600的新完整快照并已隔离重放。额外记录的更早创建来源不由日期推断。当前真实回执在`verification.json.chatFirstPoetry.defaultChatEntry.macRuntime`；用户4212和唯一日常App未替换，无UI/服务仍由本批占用。
+
+Mac聊天QA程序为`chat-first-qa.noindex/Yozi AI 核验.app`，前端Byvko-2Y（CDN2588项）和原缓存单worker离线锁定编译通过；归档`native-field-qa.chat-first.zip`摘要32feb9250df1c476d895fa5a32292215ab63498e6d89647eb55c816adc58b697，完整读回/实际还原、9项元数据与严格签名通过，原壳8项内容不变。沿旧QA标识/资料域，仅QA回环4215，不安装日常入口。程序当前未运行，实际Mac路径须新独占时段；回执沿`verification.json.chatFirstPoetry.defaultChatEntry.macQaCandidate`，原生待交付字段见native-candidate-receipt.json。
+
+当前默认聊天网页候选为`chat-first-h5-next/static/js/index-kJM8CjTv.js`；显式导航修正后18项定向、H5/CDN2588项/407模块、微信422模块及App370/4模块通过，微信主包335文件1872848字节、媒体19文件181028字节。新鲜隔离网页的完整有限学习路径已实际通过，中英文/390窄屏/键盘、停止普通重开与重复备份预览分别有回执；3原答/35事件前缀保持，明确取回旧题后仅追加1条定位事件。自有tab7/58222/PID85217已正常关闭并回收，视口复原，用户4212/PID99455仍在。下文h4为保留的导航失败对照；当前同源Mac前端需要包含此修正后再打包，日常App/UUID与旧成功恢复链保持。
+
+2026-10-15导航修正前的默认聊天隔离H5为`chat-first-h5`、入口`index-h4LDfXmq.js`，8文件289项相关检查通过，CDN2588项复制，407客户端模块未含braces；仅回环4215、备用为空，首次UI未完成学习路径，未更新用户4212。原UI阶段已释放，自有tab6/4216及协调探针tab1/52766均已关闭，用户4212/PID99455保持。新鲜来源核对HTML所引static/js/index-h4LDfXmq.js与源码/镜像一致，旧4216品牌偏差未复现，原因未证实；引导按钮正常点击无跳转，完整路径未验。微信/App脚本产物为`chat-first-weixin`/`chat-first-app`：当前根仓检查器通过，微信主包335文件1872803字节、媒体19文件181028字节；App两阶段370/4模块检查通过。旧镜像缺少检查器导入模块的失败已保留，复用微信产物从根仓现有脚本检查，不重编已成功的微信。主包检查器现沿`UNI_OUTPUT_DIR`检查实际隔离目录，不设置时保持原默认目录；App检查器通过既有导出函数传入当前绝对目录。设备/原生、真实模型、14项依赖风险和公开发布仍未闭环。Mac隔离QA前端准备沿原回执，不替换日常App；最新状态以`verification.json.chatFirstPoetry.defaultChatEntry`为准。
+
+2026-10-15当前导航修正：`home-navigation.js`首跳由计算属性API调用改为显式`uni.redirectTo`/`uni.switchTab`，使H5摇树导入保持；按钮事件与公开学习页守卫本身已接通。18项实际H5注入编译器/导航及引导离页检查通过，原386/289项未重复运行；仅同步该文件到既有build-source，Rust身份适配保持。修正H5候选使用`chat-first-h5-next`，继续回环4215/空备用与原CDN复制，已构建kJM8CjTv（CDN2588项/407模块），再登记有限UI路径；当前没有UI许可，不新开浏览器或修改用户入口。状态见原`verification.json.chatFirstPoetry.defaultChatEntry.onboardingNavigationRepair`。
+
+2026-10-15换题域已实际复核9文件386项通过；原385通过/1失败及修正后首次75未启动均留原日志。默认页面接入后的8文件289项另计，当前引导导航缺陷沿上段定向修正，不以域检查代替实际学习闭环。旧候选Bnq9B0BN不包含聊天入口，不用于新版报验收。
+
+聊天诗词目前仅源内1条已核对古籍缓存，默认学习页已显式传入`chatEntry:true`；在线palemoky/chinese-poetry-api适配与许可仍待接续。`chat-first-core-checks.log`/`chat-first-core-final.log`沿原日志追加，历史379/285项不与新结果累加；无新增真实模型、短信、收费或生产授权。
+
+正常CLI继续使用唯一 `/Users/blackdj/Documents/Codex/2026-10-14/gei-s/work/heavy_gate.py`，capacity1 FIFO、worker1、每项目最多一请求，返回75保存断点，不循环重排。最新直接人类指令要求已授权工作按准备状态连续衔接，Yozi为当前主要批次；新UI保持原PAUSED独占交接，不与自有重型步骤并跑。共享客户端/MCP、用户预览与必要服务保留。
+
+2026-10-14单未知量一次不等式已完成9文件328项、JS静态、后端编译打包及H5隔离构建；输出 `named-linear-inequality-backend` / `named-linear-inequality-h5`，H5入口index-Bnq9B0BN.js、仅回环4215且备用为空，复制CDN2588项，不部署/不启动新服务。build-source两项共享模块已同步，原Rust身份适配保持；旧桌面输入只对应此前方程批次，不能直接用于新功能原生包。原队列 `8fccad04e99f4f2cb79644e6f28c9c3d` 只排队以143退出；恢复后 `22abab3c86874333a7af6397174445d7` 实际通过，原日志追加保留。现有4212及唯一Mac均未替换，实际界面、其他端与Mac同源候选/原资料核对继续待办；最新事实沿 `verification.json.namedLinearInequality`。
+
+2026-10-14单未知量方程为当前网页批次，已补“题目显式新合同标记”的历史边界；旧未标记同题干不升级。H5最终入口index-CuRSLEE0，具体字段沿verification.json.namedEquation.h5Install，原4212/PID99455（10:02:59）继续运行，用户原5答/43事件正常PWA更新重开逐字同，重连后IAB3/2保留。日常App仍为下述local-progress已验版本，网页与Mac暂不同版。原生先行包因版本边界源码变更已过期，native-candidate-receipt.pendingNamedEquationCandidate明确requires_rebuild、无可安装新归档；不可使用先行包安装日常入口。
+
+当前待原生接续输入为`named-equation-desktop` / `named-equation-desktop-qa`（QA仅回环4215），最终三份前端各复制2588项CDN。最新后端隔离产物`named-equation-backend`已编译/打包，不运行或部署。最终9文件310项相关检查通过；JS静态无错误，TS沿后端编译器，既有ESLint忽略TS警告保留。旧两次jobs1原生构建的归档/还原/签名证据仅属版本边界补齐前，不替代最新源码编译和实际验收；本轮不再原生重编。
+
+独立QA曾核对原9会话/18答/1材料/279事件原生导出相同，随后新题/1份错答有实际界面证据；完整订正/变式/最终重开因无屏幕坐标及观察错误未完成。QA自身正常退出，资料域和新增原答保留。日常原保存窗口观察失败，客户暂不便处理；原PID59054后续缺失，退出原因未验，没有重开/替换日常程序。H5新增`h5-before-named-equation`；旧两份H5回退继续保留，待Mac同源完成后再按配对关系收口。最终版本额外隔离网页部分正确/订正/变式/停止重开为7答/73事件，旧4答/48事件事实前缀保持；该隔离页和仅回环静态服务已收尾。过期归档、临时App、4214及重复导出共1320234645逻辑字节的精确收尾沿verification.json.namedEquation.cleanup；当前有效程序/资料/UUID、恢复链和Rust缓存保持。
+
+2026-10-14题源权利核查仅追加本机verified-source-registry中四条研招网登记的说明，未生成或合并正式来源清单。9项登记检查及dry-run通过；内存导出核对9条、四条政策说明与实际摘要保持，实际题源门禁摘要/阻断与public-use-gate.json一致，公开使用0/127。当前客户端、4212/PID99455与恢复映射继续沿下述旧统计交付；无新构建/服务/下载。核查字段沿verification.json.sourceRightsReview；该本机登记受忽略规则保护，不强行加入Git或连同原件提交。
+
+2026-10-14旧统计账户/访客隔离为当前客户端交付：H5 `dist/build/h5` 入口index-CTVOsgjl，桌面当前前端 `local-progress-desktop` 入口index-rpvBH8Qs；两份最终前端各复制2588项CDN。日常当前归档 `desktop-candidate.local-progress.zip`（b1b5828bd2d12901ca29c04ed231d261d74c3353fd322a97db1158918f982d6b），签名可执行文件d9f06dc2ad2653ab5d59f471268a0511d4f4e3d1684492c93956097444f1f629，完整读回及实际还原运行后已更新唯一日常入口。原UUID、其余8项内容及9项元数据保持；网页5答/43事件正常更新重开、日常Mac四节点32答/444事件分别逐字同。5文件128项相关检查通过；本批账户切换/访客迁移由Store/存储隔离回归覆盖，实际页面只核对展示和原资料重开，没有新实际登录。
+
+4212仍为PID99455（Wed Oct 14 10:02:59 2026），当前IAB2/6已更新；用户Chrome4消费者保留，旧页可在本人方便时关闭重开启用新版。临时4214已正常停止，临时App已正常退出并撤销注册。最新两份完整日常回退为account-stats / bank-lifecycle归档；H5回退为h5-before-local-progress / h5-before-account-stats。原固定程序/资料与QA hint依赖链保留；QA最新仍为前批account-stats归档，本批没有新QA身份构建。当前恢复与回收映射沿verification.json.localProgressIsolation及native-candidate-receipt.json，后续构建复用镜像但须显式覆盖到当前前端路径；下文客户端候选与PID均为历史。
+
+2026-10-14公开题源门禁增量只改来源登记、清单传递、发布检查与缺口工具，没有新网页/Mac候选。新实际报告为 `tmp/stage1-mobile-20261011/public-use-gate.json` / `public-use-backlog.json`：119自动配对、8配对缺口，与公开使用覆盖0/127及127证据缺口分别记录；113槽位/3901卡不变。两命令预期退出2，不运行完整release:gate或写正式数据。56项JS与25项Python通过；当前候选、服务及配对恢复材料继续沿下文账户统计交付映射。
+
+2026-10-14账户统计隔离同源交付为当前候选：H5 `dist/build/h5` 入口index-WVrkCzd2，桌面当前前端 `account-stats-desktop` 入口index-DTVJtLTe；已复制2588项CDN。日常归档 `desktop-candidate.account-stats.zip`（5716ce226d8a6e3b4e96921622e750ffc3d775c417b33e7cac5513ac2c8ccff5），独立QA归档 `native-field-qa.account-stats.zip`（3113a2ae2edb991f4101722db08b765513f6b44a83b109ae11c9ac25d7f719f5）完整读回及实际还原启动通过。唯一日常入口 `/Users/blackdj/Applications/Yozi AI.app` 只更新程序文件，身份与资料UUID保持；日常四节点原32答/444事件、QA切换前后18答/279事件、网页正常PWA重开后5答/43事件逐字同。41项专项与两端真实本机合成账号切换通过；无新增可靠作答、模型/SMS或生产调用。
+
+当前4212服务为PID99455（Wed Oct 14 10:02:59 2026），复用原静态目录并原子换产物，未因更新重启；先前66083已随客户端中断退出。当前用户IAB2/3保留；合成验收4215/4383/27189及测试App已正常退出，后续启动仍须重新核对PID与启动时间。QA归档内仅本机4215地址，不能安装为日常入口。当前完整回退为日常bank-lifecycle / desktop-candidate.zip，H5为h5-before-account-stats / h5-before-bank-lifecycle；原程序固定基线、私人资料与QA hint依赖链继续保留。精确清理与恢复映射沿verification.json.accountStatsIsolation，程序回执native-candidate-receipt.json；以下旧候选和进程均属历史，不能据此操作当前资源。
+
+2026-10-14移动装配准备预查（客户现已延后iPhone，不继续索取SDK）：现有iOS build-only因实际DCloud头/依赖未配置退出2，没有生成包或改App。当前已安装DCloud包和App资源的compilerVersion均5.31；匹配/兼容SDK组合仍未验，不能沿历史5.08说明直接装配。当前准备状态、所需路径与官方来源要求集中[09B](09B-APP-CONNECTOR.md#移动-sdk-编译)，未新增运行资源或移动候选，继续复用下述原交付入口。
+
+2026-10-14依赖边界增量：Vite构建对客户端模块图中的braces执行拒绝，当前H5实际检查405模块；40项工具链用例及日志调整后1项通过。2955个H5文件与原交付一致，包含2588项CDN资源，因此未切换网页/原生候选。临时验证输出回收，构建日志为 `tmp/stage1-mobile-20261011/dependency-runtime-h5.log`，完整范围沿verification.json.dependencyRuntimeBoundary。该检查不覆盖所有动态路径、构建工具输入、后端或其他端；旧14项high审计继续阻塞，没有安装、降级或安全豁免。隔离build-source的Vite配置同步当前规则，原生资料域与资料不动。
+
+2026-10-14来源准入增量仅改既有Python/JS质量工具及缺口说明，没有重建网页或App。当前题源门禁报告为 `tmp/stage1-mobile-20261011/source-admission-gate.json`，113槽位/3901卡、14题库覆盖与8来源缺口，预期退出2；对应缺口报告为 `source-admission-backlog.json`，其余输入沿原基线，不是本轮完整发布验收。实际核对的2021数学二品牌参考副本按ID/原路径/网盘摘要/实际SHA256保持阻断，原PDF与正式清单不改；来源替代需独立核验，不能靠重命名或清空风险字段解除。当前原生候选仍为下述题库路径已交付版本。
+
+客户重启GPT客户端后，原4212/PID61062和端口监听均确认已消失；已恢复相同 `dist/build/h5` 静态产物，当时恢复PID66083（Wed Oct 14 08:53:14 2026）、会话75806，后续已退出，当前身份见本节顶部。HTTP200且首页逐字对应CnwTjKNy文件。只保留这份用户预览，不启动4214，不改原资料或日常App；此记录取代下文历史批次的运行中PID描述，历史验收本身不变。
+
+2026-10-14题库路径同源交付已完成：原4212现为H5入口index-CnwTjKNy，桌面前端index-DudxDdLt，唯一日常Mac入口已更新。当前日常候选为 `tmp/stage1-mobile-20261011/desktop-candidate.bank-lifecycle.zip`（摘要 `9ef69644deee1a90fe0c699011ae25ec18e10ed6f201a2eae5d7e73c59d5613b`），QA候选为 `native-field-qa.bank-lifecycle.zip`（摘要 `1831695d968296028b9b317dcc16c2ff5b18687908879b16dcc858e20260d7c3`）；两份归档均完整读回、实际还原启动。日常原27会话/32原答/3资料/444事件在更新前、归档还原、安装后及普通重开逐字一致；QA旧17答/275事件前缀保持，新增1份待核对原答后18答/279事件普通重开逐字同，网页原5答/43事件正常PWA更新重开保持。只有日常可执行文件内容改变，身份、资料UUID、其他8项内容与9项模式/纳秒/xattrs及严格签名保持。新鲜重复导出核验后归并到原0600私有基线，程序归档不包含学习资料。
+
+当前程序回退沿前一完整 `desktop-candidate.zip`、原native目录 `Yozi AI.english-presentation-before.app.zip`，另保留原 `Yozi AI.app.zip` 和私有资料基线。QA前一完整包 `native-field-qa.zip` 与原hint增量依赖继续保留。H5现位于 `dist/build/h5`，两份完整回退为 `h5-before-bank-lifecycle` / `h5-next-candidate`；旧第三份 `h5-visual-before` 已被替代回收。当前映射与保留依据为verification.json.questionBankDesktopDelivery.retention；下文原模板字段只表示前一阶段的历史映射。
+
+4212继续复用PID61062（Wed Oct 14 02:46:39 2026），未关闭或重启；当前IAB2/3为已交付体验页，4214未重新启动。临时两身份App正常收尾并撤销注册，回收已验程序副本、被替代的第三份H5/程序回退、重复导出及临时装配状态，共1078793277逻辑字节；实际可用空间分阶段独立观测，不能当作释放RAM或精确归因的回收量。源码、未提交修改、原资料、当前候选、必要恢复链及Rust构建缓存保留。全过程单份重型作业；Vite压缩maxWorkers=1，Cargo --jobs 1。当前完整依据沿verification.json.questionBankDesktopDelivery与native-candidate-receipt.json。
+
+前一原模板审美校准交付基线（历史映射）：H5当时为index-DM1VBLNI、桌面index-DJehSXII；唯一日常Mac入口已更新，英文展示、原色天空和完整离线资源保持。日常desktop-candidate.zip摘要 `442d6a9296d0e147f648694a9702e696707dd6de826772a8beed78bb3c890192`；QA native-field-qa.zip摘要 `9832a5be755ab2edbd9c97359c8fb5298c2cc8f76aef2d8be8b4a26f8cc21224`。两身份完整归档实际启动与普通重开分别保持QA17答/275事件和日常27目标/32答/3资料/444事件；用户网页正常更新重开后5答/43事件逐字一致。仅原子替换可执行文件，身份、权限、资料UUID及其他8项元数据保持，9项清单与严格签名通过。对应完整摘要与清单沿native-candidate-receipt.json及verification.json.fullDelivery.visualCalibration。
+
+前一阶段当时的两份完整日常回滚在原native目录 `Yozi AI.english-presentation-before.app.zip` 与 `Yozi AI.visual-calibration-before.app.zip`，另保留原已试还原 `Yozi AI.app.zip` 和原私有记录基线；QA保留visual-full-before / visual-before及原hint基线。ZIP还原应用对应纳秒字符串清单，不把程序归档当资料备份。历史旧程序路径只表示当时证据，当前恢复与回收关系集中在visualCalibration.retention和各cleanup字段。
+
+本机4212预览复用PID61062（2026-10-14 02:46:39），当前IAB3/4及观察到的用户Chrome消费者保留。临时4214、QA/日常核验进程与已启动临时包正常退出并撤销注册；源代码、原资料、当前依赖和必要恢复基线保持。以上已核验冗余回收合计7640884464逻辑字节；各阶段实际可用空间观测独立记账，不等同释放RAM。多项目负载期间观察连接曾超时，随后恢复；保留原构建，没有重启共享客户端或按端口/名称结束进程。
+
+2026-10-13取消焦点交付（历史映射）：H5入口index-hDG6dMA5、桌面index-CTyBcBst；唯一日常Mac入口已更新。当前desktop-candidate.zip摘要 `4a238b8751a25dfe901ac6cdae18e959e6f21c9045045b3936d67f3fb091bde7`，签名程序 `f4a56d243e4786d341f42c00418546f80aca7b5c252daa3e3fe8ce76bda5893e`；最近完整配对回滚为原native目录 `Yozi AI.cancel-focus-before.app.zip` 与原learning-records.before.json。QA当前native-field-qa.zip摘要 `18f1a6dae999eac1550b416d2d7daf7f31469d8b19718787936b5d4c31911dc6`，前一完整包native-field-qa.cancel-before.zip；当前资料cancel-qa-final.json为17答/257事件，原230事件完整前缀与17原答保持，实际归档启动和普通重开通过。ZIP还原继续须应用对应9项模式/纳秒/xattrs清单；程序归档不包含私人资料。
+
+用户IAB3/30已正常加载hDG6dMA5，原5答/43事件逐字保持；共享预览PID15258及用户Chrome会话保持。45项相关检查、当前H5/微信/App和两身份原生实际验收分别成立，未全量复测或供应商/短信/生产调用。日常32答/444事件四次完整导出均对应原0600私有基线，重复文件已核验后归并。当前依据沿verification.json.fullDelivery.cancellationFocus及native-candidate-receipt.json；下文同源失败等批次属于历史映射。
+
+2026-10-13模型失败界面同源交付（历史映射）：日常网页index-DaKcbRHv、桌面前端index-BIpUMfME，唯一Mac入口已更新。日常desktop-candidate.zip摘要f4f90c7a8bb349cf904d5e9e5e6bda7771946084c4144f07c05520bc3274336f，签名程序3706b77fcd2e4d4206637098ba8d9e6af1982e39bcf05a9240fb6ac27501ddd3；前一配对回滚为原native目录Yozi AI.model-failure-before.app.zip，与未变的learning-records.before.json配对。QA当前native-field-qa.zip摘要9d7b71fe3a980c1512c21193e81646278ccc691eab6a5290504ea48b124dc207，前一成功程序native-field-qa.model-before.zip；最终17答/230事件在delivery-qa-final.json。两身份归档完整读回、实际启动、元数据与严格签名通过；日常32答/444事件更新前/还原/安装后/普通重开逐字相同，用户网页5答/43事件更新逐字相同。模拟本机连接失败仅1次、上游0，不计为真实AI通过；已通过的117项复用，没有全量或真实模型/SMS/生产请求。本轮资源和收尾沿verification.json.fullDelivery.localDelivery，临时程序已退出，前一H5保留CAKB；静态预览15258继续供IAB3/28和原Chrome使用。以下段落保留前批历史含义。
+
+2026-10-13模型失败恢复初验批次（历史，后续同源交付见上文）：隔离API绑定H5在tmp/stage1-mobile-20261011/public-model-ui/，实际脚本index-BMQzuENc；当前后端backend-fraction-current已重新编译并沿package-runtime.mjs完成ESM适配。此批未更新用户4212预览或日常Mac，二者继续用下文复习与复盘版本。两次合成请求上游未调用，2原答/32事件在full-model-ui-final.json；原断点、两个未调用账本及失败/重开证据沿verification.json.fullDelivery。临时后端/控制/静态/Mongo与合成数据库正常收尾，预览15258和共享Mongo27017保留；候选与必要恢复材料保留。外部发布门禁新增LEARNING_VAULT_KEY格式检查，只输出字段名；源码预查不加载生产环境。
+
+2026-10-13复习与复盘批次（历史交付基线，当前见上文）：网页index-CAKBk2RF、桌面index-Bcs4CPym；固定Mac入口已同源码更新。复测/巩固/未来题组入口定位，待核对原答只读展开，复盘错误可见，保存后题量以实际安排显示。日常desktop-candidate.zip摘要 `14ae7ec5e2332e38f2b94ecdad18024e5ae0861bd0bdd68a2ce231a922a13b8d`，签名程序 `2dc05d8bc36d829703bc20efc28d04a3ffbeeaec2c84b2df6da59366c91c705c`；最新配对回滚为原native目录 `Yozi AI.ui-review-before.app.zip`。QA当前native-field-qa.zip摘要 `cb3d478389ec97bc90ac3c9e77c2161e6047c3a4b1eb608a64249ae407aace48`，前一14答/188事件程序保全在native-field-qa.recovery.zip；当前17答/220事件在review-qa-independent-final.json，原提示标记保留。两身份归档完整读回和实际还原通过。
+
+独立网页4答/71事件、QA17答/220事件普通重开保持；日常27目标/32答/3资料/444事件更新前/还原/更新后/重开逐字相同，用户网页5答/43事件正常PWA更新逐字相同。当前实际短间隔到期复测未更改系统时间，不冒称自然次日。预览仍15258/2026-10-13 18:16:03，用户消费者IAB3/20和原Chrome4标签；当前资源、收尾与技术依据沿verification.json.reviewClosure与native-candidate-receipt.json，下方出错恢复段落为前批历史映射。无模型、短信或生产调用。
+
+2026-10-13出错恢复批次（历史映射）：网页index-BM6UA4sq、桌面index-bTa4-Fdk；唯一Mac入口已同源码更新。路线错误移到保存动作附近，失败后显示/焦点交接，取消不保存；原共享校验、事实结构与权限保持。当前日常归档desktop-candidate.zip摘要 `0c276b1ef2f76e927a9718da15d7539c37de8ce47cf69eb3ae6db27e16cf8c70`，最新配对完整回滚为原native目录 `Yozi AI.ui-recovery-before.app.zip`，与原learning-records.before.json配对；更早正式历史与必要恢复链保留。QA当前native-field-qa.zip（摘要cc521368…），前一成功首次使用包为native-field-qa.first-use.zip；当前14答/188事件与前批逐字相同，实际恢复通过。
+
+独立网页实际坏备份拒绝/取消/明确恢复/重复新增0/未完成交卷/停止重开为3答/52事件，原答保持；用户网页正常PWA关闭重开仍5答/43事件。日常更新前、实际归档恢复、更新后和普通重开27目标/32答/3资料/444事件逐字相同，原深色、停止和提醒暂停保留。同步失败只运行既有1项模拟响应专项，本轮无真实云端、模型/SMS或生产调用。服务由旧4654退出后沿原命令恢复为15258/2026-10-13 18:16:03；用户消费者为IAB3/13及既有Chrome4标签，保留回环预览。当前依据沿verification.json.recoveryClosure与native-candidate-receipt.json，下方首次使用等段落为历史批次。
+
+2026-10-13首次使用与接续修正（前一批次，当前映射见上文）：当前H5入口index-CruRBbnp、桌面入口index-DEm3b1YW；唯一日常Mac入口已按同一源码更新。原身份/UUID、权限、9项模式/纳秒/xattrs和严格签名保持，只有可执行文件改变。日常27目标/32原答/3资料/444事件在更新前、归档实际还原、更新后与普通重开完整导出逐字相同，原深色、停止和提醒暂停保持。用户网页5答/43事件经正常PWA关闭重开更新逐字相同，没有清缓存。新独立网页3答/38事件已完成首次入口、取消/明确保存、交卷、结果/依据/原题、停止/重开/明确接续；独立Mac14答/188事件保持旧原答及168事件前缀，新增合成目标/路线/未交卷题组与停止恢复，实际归档恢复逐字相同，未并入日常。依据沿 `verification.json.firstUseClosure` 与 `native-candidate-receipt.json`；其余下方段落仅表示历史映射。
+
+当前日常归档 `tmp/stage1-mobile-20261011/desktop-candidate.zip` 摘要 `852a3d9294f627388dfaadfbc041262d8d1f644d2514ddc7623c3205e0c669c7`、签名程序 `bfbcaad4b2291ad9d4d5936868b035bd1462f788cb2e7c25b1fb823d4375a146`；最新完整成功回滚在原配对目录 `Yozi AI.ui-first-use-before.app.zip`，与原 `learning-records.before.json` 配对（本次新鲜导出相同）。前一UI、写作、地区等正式历史回滚保留。独立QA当前 `native-field-qa.zip`（摘要c3769b6c…），前一14答/168事件程序保全在 `native-field-qa.ui-before.zip`；更早的previous/region/hint是历史映射，不回写旧证据。当前H5及前一完整p5回退各保留一份，自有原生包/中间程序和重复导出正常收尾；原生缓存继续使用正确日常UUID。用户未体验、自然次日、真实模型、其他设备与生产单独记录，无模型/SMS/生产调用。
+
+2026-10-13分数路径收口（历史批次，当前见上文）：H5/微信/App产物沿 `tmp/stage1-mobile-20261011/dist/build/{h5,mp-weixin,app}`，最新UI/UX候选H5入口为 `/static/js/index-p5pLPGZc.js`，前一分数技术批次的index-ClIESzE0仅为历史证据；该分数/UI阶段未更新桌面前端与原生日常程序，随后同版交付见上文。构建镜像的学习页与Vite配置逐字对应根源码。当前源码后端重新编译和打包为 `tmp/stage1-mobile-20261011/backend-fraction-current/`，显式隔离Mongo URI与 `DB_NAME=exam_learning_isolated`；不以旧 `backend/` 的初步结果代替当前验收。181相关单测、10项当前真实后端检查、实际网页登录/交卷/停止/重开/恢复及授权同步通过；空服务端首次写入保留原洛杉矶时区，已有事实不重建。私人同步补全 `publishable:false` 是原合同规范化，不改原答；缺鉴权沿现有HTTP200/body401拒绝，探针按业务拒绝核对。依据沿 `verification.json.fractionPath`、`fraction-path-current-http.json` 与公开合成导出；自然次日、模型语义及设备/生产另验。
+
+本机规则学习预览为 [127.0.0.1:4212](http://127.0.0.1:4212/#/pages/learning/index)，仅绑定回环，消费者为本轮用户体验。验收后端/Mongo正常退出；预览不提供实时同步、模型或短信。当前静态服务PID、启动时间与标签页记在现有回执 `reviewClosure.resources`；中断前的 `fractionPath.previewDelivery` 是历史身份，重用前须查消费者与端口。保留期间不当闲置删除。停止后可用系统自带Python恢复静态预览：`python3 -m http.server 4212 --bind 127.0.0.1 --directory /Users/blackdj/Desktop/EXAM-MASTER/tmp/stage1-mobile-20261011/dist/build/h5`；不新建常驻服务。Mac当前同版交付已完成，后续继续沿既有身份/配对恢复规则。
+
+H5构建将 `UNI_INPUT_DIR` 统一为绝对路径，避免入口漏挂载/组件路径失配。Vite只适配已识别DCloud H5 3.4.21的内部插槽标记，使其可按原生命周期更新；官方Vue/shared 3.5.43及SSR安全行为保留，不修改上游文件、不吞渲染异常。回归用真实内核复现只读标记失败并验证更新、清空、重挂；未采用运行时空节点屏蔽或编译器降级试验。
+
+10月12日上游安全批次复用四端候选与共享依赖镜像；当时网页入口为`/static/js/index-CPYdZDqk.js`，普通PWA升级后原5答/37事件逐字导出保持。根DCloud系列统一`3.0.0-alpha-5030120260930001`、官方Vue与九个内部包3.5.43、selector-parser 7.1.6、source-map-js 1.2.2；DCloud定制H5运行时仍3.4.21，继承的Vite peer差异由本地构建/实际页面分别验收。107相关/4631全量、四端构建、微信/App审计及14高审计剩余见`verification.json.upstreamSecurity`；braces未发布修复，release门禁未通过。`upstream-before.package{,-lock}.json`与`upstream-leaf.package{,-lock}.json`是可解析且摘要核验的元数据回退对，恢复时在隔离环境沿相应锁文件安装，不覆盖学习源码或当资料备份。日常App/原生归档未更新，临时资源已收尾。
 
 前序减法/除法与FSRS接续复用同一前端、后端和隔离镜像目录；当时网页脚本`/static/js/index-l6zBXLJf.js`，5份原答/37事件及停止备份在`arithmetic-ui-stopped.json`，独立HTTP回执在`arithmetic-http-result.json`。源码及锁文件采用官方ts-fsrs 5.4.2，后端正文原样携带MIT许可。日常App与固定原生归档仍为上一已验程序，本轮四端前端构建不等于原生安装更新。字段核验、模型断点与全部原恢复映射继续保留。临时资源与收尾沿`verification.json.arithmeticClosure`记录。
 
@@ -24,7 +106,7 @@
 
 随后材料/编排增量已更新上述四端前端目录，后端共享合同没有变化。正常重开后公开保存可用，取得新鲜备份并完成当前源码试还原、同身份原子更新、更新后与普通重开后导出逐字对照；签名归档由 `desktop-candidate.next.zip` 提升为固定 `desktop-candidate.zip`，全部文件/权限读回通过。物理阶段成功程序保留在同恢复目录 `Yozi AI.physics.app.zip`，与 `learning-records.before.json` 配对；所有新鲜导出确认与此完整资料逐字相同后，仅回收重复副本，观察时间和原路径留于机器回执。此前保存禁用在本轮三次公开保存中未重现，根因仍未证明。客户确认DCloud SDK尚未准备，对应设备门禁保持。
 
-地区增量继续复用该目录与原生缓存。当前固定归档 `desktop-candidate.zip` 摘要 `793b3ff7205384e8c916f4d655f65a06fa7fd10a60a68c38f7dfdb0fdfb3be8d`，对应签名程序 `7e5259da0925feb6eda9e6cc82cea1f57e77cbe9ead5034d35c6bb51dc3926dd`；上一侧栏程序独立回滚为同恢复目录的 `Yozi AI.sidebar.app.zip`（摘要37901921…、程序16f80f2f…），与原 `learning-records.before.json` 配对。提示、材料/编排和物理等必要历史回滚保持。独立字段核验当前归档为 `tmp/stage1-mobile-20261011/native-field-qa.zip`（摘要f417f95b…），对应QA资料域51922026-1010-4272-9129-357388911307；上一侧栏QA归档为 `native-field-qa.previous.zip`（摘要e4fe767a…），前序提示归档原875cd837…移至 `native-field-qa.hint.zip`保全。当前10答/120事件完整事实在 `native-due-after.json`，前序7答断点保持；旧日志路径只代表当时映射。日常更新前、更新后、普通重开及中间回滚后的新鲜导出均与原完整444事件逐字相同，重复导出确认后回收，观察路径和摘要仍留于机器回执。两种身份归档均已完整读回及实际试还原。可启动临时包已回收，不保留第二个可见入口；当前缓存raw为正确资料UUID的日常身份，不能混用QA身份。两种公开资料分别核验，不将合成10答并入日常32答。
+地区增量当时继续复用该目录与原生缓存。当时固定归档 `desktop-candidate.zip` 摘要 `793b3ff7205384e8c916f4d655f65a06fa7fd10a60a68c38f7dfdb0fdfb3be8d`，对应签名程序 `7e5259da0925feb6eda9e6cc82cea1f57e77cbe9ead5034d35c6bb51dc3926dd`；上一侧栏程序独立回滚为同恢复目录的 `Yozi AI.sidebar.app.zip`（摘要37901921…、程序16f80f2f…），与原 `learning-records.before.json` 配对。提示、材料/编排和物理等必要历史回滚保持。独立字段核验当前归档为 `tmp/stage1-mobile-20261011/native-field-qa.zip`（摘要f417f95b…），对应QA资料域51922026-1010-4272-9129-357388911307；上一侧栏QA归档为 `native-field-qa.previous.zip`（摘要e4fe767a…），前序提示归档原875cd837…移至 `native-field-qa.hint.zip`保全。当前10答/120事件完整事实在 `native-due-after.json`，前序7答断点保持；旧日志路径只代表当时映射。日常更新前、更新后、普通重开及中间回滚后的新鲜导出均与原完整444事件逐字相同，重复导出确认后回收，观察路径和摘要仍留于机器回执。两种身份归档均已完整读回及实际试还原。可启动临时包已回收，不保留第二个可见入口；当前缓存raw为正确资料UUID的日常身份，不能混用QA身份。两种公开资料分别核验，不将合成10答并入日常32答。
 
 当前隔离源码镜像保留原CDN素材的APFS克隆作为后续构建输入，原素材不变。`copy-cdn-to-h5.mjs` 的cpSync会保留源目录符号链接，不能将源根简单链接到镜像，否则复制到已存在static时返回EEXIST；本轮镜像缺路径及该链接尝试的失败均保留。使用原素材的实际副本/克隆后标准H5构建通过，底层四端构建继续按下文隔离路径执行，不改上游或放宽产物检查。
 
@@ -32,7 +114,7 @@
 
 2026-10-12 的App连接器 `--build-only` 预检确认本机Apple SDK和配对iPhone/iPad可见，但DCloud Android类路径及iOS `DCUniModule.h` 未配置，未装配出插件。只阻塞对应原生设备验收；不绕过历史下载限制、不升级/恢复/重新配对设备。微信预算脚本按cwd下的 `dist/build/mp-weixin` 检查，不接受 `UNI_OUTPUT_DIR`；隔离候选须在上述阶段目录运行。临时Vite回放必须显式 `configFile:false`、`envDir:false`、`optimizeDeps:{noDiscovery:true,include:[]}`，避免默认环境加载和全仓入口扫描。
 
-本机验收产物都在忽略目录 `tmp/visual-build-20261001/resume-rubric-evidence-20261004/`，资源身份与回收记录沿其中的 `server.json`。当前前端与后端候选为 `journey-candidate/`（`dist/build/{h5,h5-ui-sync,desktop,mp-weixin,app}`、`backend`、实际两日恢复备份与原生归档），上一完整候选 `grammar-help-candidate/` 保留为回退，`bank-original-candidate/backend` 为必要后端基线；更早 `remaining-view-candidate/dist/` 已由两份候选覆盖，核对无消费者后已回收。Mac 原生构建继续复用 Rust 缓存 `desktop-material-prerequisite-target/`；独立 `cn.wangshiliang.wenli.qa.journey` 核验后归档为 `journey-candidate/desktop-qa.zip`，核验App已撤销注册并回收，不保留第二个可见入口。日常程序先仅更新可执行文件，后经客户明确授权修复同身份本机签名；完整重开记录及日常身份的退出提醒/一次返回均已核对，配对恢复链在`yozi-before/learning-journey/native/`。可选运行时在 `languagetool-trial/`、`docling-trial/`、`sympy-trial/`，阶段进度图渲染器在 `plantuml-renderer/`，生成当前完整图须设置 `PLANTUML_LIMIT_SIZE=12000` 与原 `PLANTUML_SECURITY_PROFILE=SANDBOX`（[官方图像尺寸说明](https://plantuml.com/faq)）。此前默认4096像素高度已截断底部；现1035×5606像素，剩余待办/说明/图例完整，Apple Vision CLI 在 `tmp/apple-vision-builds/`。日常程序 `/Users/blackdj/Applications/Yozi AI.app` 的回滚归档在 `yozi-before/*/native/`，按"最近两份已试还原"及必要增量依赖链保留。
+本机验收产物都在忽略目录 `tmp/visual-build-20261001/resume-rubric-evidence-20261004/`，资源身份与回收记录沿其中的 `server.json`。当前前端与后端候选为 `journey-candidate/`（`dist/build/{h5,h5-ui-sync,desktop,mp-weixin,app}`、`backend`、实际两日恢复备份与原生归档），上一完整候选 `grammar-help-candidate/` 保留为回退，`bank-original-candidate/backend` 为必要后端基线；更早 `remaining-view-candidate/dist/` 已由两份候选覆盖，核对无消费者后已回收。Mac 原生构建继续复用 Rust 缓存 `desktop-material-prerequisite-target/`；独立 `cn.wangshiliang.wenli.qa.journey` 核验后归档为 `journey-candidate/desktop-qa.zip`，核验App已撤销注册并回收，不保留第二个可见入口。日常程序先仅更新可执行文件，后经客户明确授权修复同身份本机签名；完整重开记录及日常身份的退出提醒/一次返回均已核对，配对恢复链在`yozi-before/learning-journey/native/`。可选运行时在 `languagetool-trial/`、`docling-trial/`、`sympy-trial/`，阶段进度图渲染器在 `plantuml-renderer/`，生成当前完整图须设置 `PLANTUML_LIMIT_SIZE=12000` 与原 `PLANTUML_SECURITY_PROFILE=SANDBOX`（[官方图像尺寸说明](https://plantuml.com/faq)）。此前默认4096像素高度已截断底部；本轮更新后1015×7540像素，剩余待办/说明/图例完整，Apple Vision CLI 在 `tmp/apple-vision-builds/`。日常程序 `/Users/blackdj/Applications/Yozi AI.app` 的回滚归档在 `yozi-before/*/native/`，按"最近两份已试还原"及必要增量依赖链保留。
 
 2026-10-10 整理时，已被以上候选覆盖的 29 份旧候选构建和 4 份更早的原生回滚归档（共约 9.7 GB）移入废纸篓 `~/.Trash/EXAM-MASTER-cleanup-20261010/`，清单在 `tmp/cleanup-20261010/trash-manifest.tsv`；清空废纸篓前可原样移回。
 
@@ -44,13 +126,13 @@
 
 后端先 `tsc --outDir` 到隔离目录，再用 `laf-backend/standalone/package-runtime.mjs --output <项目 tmp 内相对路径>` 打包；绝对路径、`..` 和符号链接会被拒绝。打包成功后再链接既有 `standalone/node_modules`，不安装新包。`verify-backend-http.mjs` 固定使用正式 dist 和测试端口，不直接用于隔离候选。
 
-Mac日常原生候选当前沿 `tmp/stage1-mobile-20261011/build-source`（Rust主入口与仓库只差既定 `data_store_identifier`）、`native-config.json`、原 `CARGO_TARGET_DIR=desktop-material-prerequisite-target` 和 `--no-bundle --no-sign -- --offline --locked --jobs 2`，只生成程序、不生成新的可见 `.app`。构建前精确核对该一行适配及其余Cargo/业务组件摘要，不能只传相同identifier却从仓库根构建。QA身份仍采用独立资料UUID。更新唯一入口前：先归档当前程序与配对学习记录并试还原（逐文件、模式、链接、扩展属性一致），确认程序无消费者后只原子替换可执行文件，标识、资料、图标和元数据保持。
+Mac日常原生候选当前沿 `tmp/stage1-mobile-20261011/build-source`（Rust主入口与仓库只差既定 `data_store_identifier`）、`native-config.json`、原 `CARGO_TARGET_DIR=desktop-material-prerequisite-target` 和 `--no-bundle --no-sign -- --offline --locked --jobs 1`，只生成程序、不生成新的可见 `.app`。构建前精确核对该一行适配及其余Cargo/业务组件摘要，不能只传相同identifier却从仓库根构建。QA身份仍采用独立资料UUID。更新唯一入口前：先归档当前程序与配对学习记录并试还原（逐文件、模式、链接、扩展属性一致），确认程序无消费者后只原子替换可执行文件，标识、资料、图标和元数据保持。
 
 前序日常界面更新沿`desktop-fields-v3-config.json`及原资料UUID，desktop/API备用地址均为空、不加载私有环境文件。已试还原的完整程序归档与learning-records.before.json保持；wenli-desktop.pre-ui-update.rollback是APFS增量副本，依赖完整归档的其余元数据，不能单独恢复整包。程序暂存严格核对后同目录原子更新，模式/xattrs/mtime保持。随后首次通知申请在许可前拒绝，客户明确批准同身份本机签名修复；先保存完整APFS回滚daily-before-signing.rollback.noindex及revision438公开备份，再在未注册暂存包执行`codesign --force --sign - --identifier cn.wangshiliang.wenli.localqa93d5ef76c442 --timestamp=none <暂存App路径>`。只安装签名程序和Contents/\_CodeSignature，既有内容/元数据与资料保持；暂存及唯一入口的`codesign --verify --strict --verbose=2 <App路径>`均通过。当前为ad-hoc、无TeamIdentifier，不代表正式签名/公证或自动赋予后续重签权限。
 
 learning-records.before-signing.json与learning-records.after-signing.json完整字节相同；最终learning-records.after-reminder.json经公开导出、原事实前缀核对和内存试还原444操作，合成目标已停止、提醒已暂停、本次打开仅1、新增原答0。私有记录0600；签名暂存已核对与安装内容相同、无消费者后回收，必要完整回滚和配对资料保留。程序、记录与实际提醒证明见[08](08-TESTING-INFRA.md)。本轮preview10725、Mongo677、backend15408及日常进程均已关闭，合成数据库保留供后续独立复核，重新使用时须核对消费者再启用隔离配置。
 
-前序独立系统通知核验使用 `tauri.js build --config tmp/visual-build-20261001/resume-rubric-evidence-20261004/journey-candidate/desktop-qa.json --bundles app --no-sign -- --offline --locked --jobs 2`，沿同一CARGO_TARGET_DIR。配置beforeBuildCommand为空，必须先用底层uni CLI重建隔离desktop前端并复制CDN，不能依赖旧目录。该归档已试解包、逐文件及codesign严格核对；测试App已退出并撤销注册，当时的完整App与desktop中间输出已回收，后续desktop目录已为本次更新重新生成。原生独立资料域、必要快照和失败日志保留；独立QA与本次日常identity的退出送达分别记录，不以一种身份代替另一种。
+前序独立系统通知核验使用 `tauri.js build --config tmp/visual-build-20261001/resume-rubric-evidence-20261004/journey-candidate/desktop-qa.json --bundles app --no-sign -- --offline --locked --jobs 1`，沿同一CARGO_TARGET_DIR。配置beforeBuildCommand为空，必须先用底层uni CLI重建隔离desktop前端并复制CDN，不能依赖旧目录。该归档已试解包、逐文件及codesign严格核对；测试App已退出并撤销注册，当时的完整App与desktop中间输出已回收，后续desktop目录已为本次更新重新生成。原生独立资料域、必要快照和失败日志保留；独立QA与本次日常identity的退出送达分别记录，不以一种身份代替另一种。
 
 完整回归使用现有 Vitest 串行参数，原 20 秒容量门槛不放宽；相关回归与完整回归分别记录，不把较早的全量结果当成后续改动的证据。
 
@@ -83,6 +165,8 @@ learning-records.before-signing.json与learning-records.after-signing.json完整
 当前已生成 `src/static/learning-media/distance-return.mp4`（640×360、24fps、6秒），不包含模型调用或用户资料。微信媒体预算现在也计算 mp4/webm，不能靠忽略视频扩展绕过200KB合同；仅微信产物把当前品牌导出替换为专属128px图标/768px插画，网页/App源素材保持完整。隔离构建须明确 `UNI_OUTPUT_DIR`，再运行隐私注入、主包全文件/媒体审计；标准 npm 构建入口会写正式目录，不能用于本批隔离核验。
 
 ## 题库来源修复工具
+
+公开使用声明合同集中[14](14-MODEL-PRIVACY-COST.md#公共题源的公开使用证据2026-10-14)。`verified_source_registry.py` 对提供的publicUseEvidence核对本机原件实际SHA256及出处，失败不写导出；未提供时仅登记候选。source_manifest.py保留该字段，不能凭状态制造证明。运行 `node scripts/build/question-bank-release-gate.mjs --output tmp/明确报告.json --fail-on-blockers` 后，将报告显式传入 `node scripts/build/release-blocker-backlog.mjs --question-audit tmp/明确报告.json --output tmp/明确缺口.json --no-markdown --fail-on-blockers`，只写选定报告，不代表部署或生产授权。当前publicUseCoverage提供逐槽位原因；旧auto-pair coverage仅供候选定位，许可与评分来源分别核验。
 
 `answer_evidence_repair.py --restore-politics-reference` 必须同时给出 `--question-source`、`--answer-source`，沿 `--target`/`--write`，不能与 companion 修复混用；只接受两份已登记 raw-inbox PDF 的实际 SHA256，政治主来源题目/答案 PDF 各限 32 MiB。可选 `--supplement-source` 仅限登记的 2023 考研政治补充参考 PDF（10 页、≤1 MiB），只补 10/11 题；已补充的候选再执行时必须显式带同一补充来源。结果 `sourceRole=publisher_reference`、`scoringAuthority=false`、`rightsStatus=not_verified`，两个公共门禁继续以 `reference_only_authority` 拒绝。
 

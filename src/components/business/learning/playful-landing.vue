@@ -1,42 +1,38 @@
 <template>
-  <view
-    class="playful-footer"
-    :class="theme.isDark ? 'theme-dark' : 'theme-light'"
-    :aria-label="t('landing.space')"
-    :style="$yoziInsets"
-  >
+  <view class="playful-footer theme-light" :aria-label="landingPresentation.space" :style="$yoziInsets">
     <view class="playful-background" aria-hidden="true">
       <YoziMascot pose="wave" size="large" play="auto" />
     </view>
     <view class="playful-jobs">
-      <text
-        class="playful-headline playful-job-title"
-        :class="{ 'playful-job-title--english': currentLanguage === 'en' }"
-        role="heading"
-        aria-level="1"
-        >{{ t('landing.headline') }}</text
-      >
-      <view class="playful-nav" :aria-label="t('landing.navigation')">
+      <text class="playful-badge">{{ landingPresentation.badge }}</text>
+      <text class="playful-headline playful-job-title playful-job-title--english" role="heading" aria-level="1">{{
+        landingPresentation.headline
+      }}</text>
+      <view class="playful-nav" :aria-label="landingPresentation.navigation">
         <BaseButton
           v-for="item in navigation"
           :key="item.id"
           variant="quiet"
           align="start"
           @tap="$emit('open', item.id)"
-          >{{ t(item.key) }}</BaseButton
+          >{{ landingPresentation[item.key] }}</BaseButton
         >
       </view>
     </view>
     <view class="playful-logo" role="img" :aria-label="BRAND.name">
-      <image :src="theme.isDark ? BRAND.markOnDark : BRAND.mark" mode="aspectFit" :alt="BRAND.name" />
+      <image :src="BRAND.mark" mode="aspectFit" :alt="BRAND.name" />
       <text>{{ BRAND.english }}</text>
     </view>
     <view class="playful-contact">
-      <BaseButton variant="secondary" @tap="$emit('open', 'desktop')">{{ t('landing.desktop') }}</BaseButton>
+      <BaseButton variant="secondary" @tap="$emit('open', 'desktop')">{{ landingPresentation.desktop }}</BaseButton>
       <view class="playful-contact-links">
-        <BaseButton variant="primary" :label="t('landing.start')" icon="arrow-right" @tap="$emit('open', 'start')">{{
-          t('landing.start')
-        }}</BaseButton>
+        <BaseButton
+          variant="primary"
+          :label="landingPresentation.start"
+          icon="arrow-right"
+          @tap="$emit('open', 'start')"
+          >{{ landingPresentation.start }}</BaseButton
+        >
       </view>
       <view class="playful-socials">
         <BaseButton
@@ -45,7 +41,7 @@
           variant="quiet"
           icon-only
           :icon="item.icon"
-          :label="t(item.key)"
+          :label="landingPresentation[item.key]"
           @tap="$emit('open', item.id)"
         />
       </view>
@@ -54,23 +50,20 @@
 </template>
 <script setup>
 import { BRAND } from '@/config/brand.js';
-import { t, currentLanguage } from '@/i18n/index.js';
-import '@/i18n/messages/landing.js';
-import { useThemeStore } from '@/stores/modules/theme.js';
+import { landingPresentation } from '@/i18n/messages/landing.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 defineEmits(['open']);
-const theme = useThemeStore();
 const navigation = [
-  { id: 'start', key: 'landing.learn' },
-  { id: 'mistake', key: 'landing.mistakes' },
-  { id: 'plan', key: 'landing.plan' },
-  { id: 'study-detail', key: 'landing.history' }
+  { id: 'start', key: 'learn' },
+  { id: 'mistake', key: 'mistakes' },
+  { id: 'plan', key: 'plan' },
+  { id: 'study-detail', key: 'history' }
 ];
 const actions = [
-  { id: 'materials', key: 'landing.materials', icon: 'folder' },
-  { id: 'connections', key: 'landing.connections', icon: 'settings' },
-  { id: 'account', key: 'landing.account', icon: 'users' }
+  { id: 'materials', key: 'materials', icon: 'folder' },
+  { id: 'connections', key: 'connections', icon: 'settings' },
+  { id: 'account', key: 'account', icon: 'users' }
 ];
 </script>
 <style scoped>
@@ -80,8 +73,8 @@ const actions = [
   padding-top: 6.54vw;
   isolation: isolate;
   overflow: hidden;
-  color: var(--ink);
-  background: var(--canvas);
+  color: var(--playful-ink);
+  background: var(--playful-canvas);
   font-family: var(--font-ui);
   font-synthesis: none;
 }
@@ -92,9 +85,17 @@ const actions = [
   margin-left: 8.65vw;
   width: 25vw;
 }
+.playful-badge {
+  display: inline-flex;
+  border-radius: var(--r-pill);
+  background: var(--playful-badge);
+  padding: var(--s-1) var(--s-2);
+  font-size: var(--size-small);
+  line-height: var(--leading-small);
+}
 .playful-headline {
   display: block;
-  font: var(--weight-black) var(--size-display)/var(--leading-display) var(--font-display);
+  font: var(--weight-display) var(--size-display)/var(--leading-display) var(--font-display);
 }
 .playful-job-title {
   width: max-content;
@@ -127,7 +128,7 @@ const actions = [
   flex: none;
 }
 .playful-logo text {
-  font: var(--weight-black) var(--size-display)/var(--leading-display) var(--font-display);
+  font: var(--weight-display) var(--size-display)/var(--leading-display) var(--font-display);
   letter-spacing: -0.035em;
 }
 .playful-contact {
@@ -175,6 +176,7 @@ const actions = [
 }
 @media (max-width: 700px) {
   .playful-footer {
+    background: var(--playful-mobile-canvas);
     display: flex;
     flex-direction: column;
     gap: var(--s-8);

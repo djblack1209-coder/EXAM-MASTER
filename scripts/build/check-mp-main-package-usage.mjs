@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const projectRoot = process.cwd();
-const buildRoot = path.join(projectRoot, 'dist', 'build', 'mp-weixin');
+const buildRoot = path.resolve(projectRoot, process.env.UNI_OUTPUT_DIR || 'dist/build/mp-weixin');
 
 const mediaExtensions = new Set([
   '.png',

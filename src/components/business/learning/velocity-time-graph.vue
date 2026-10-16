@@ -207,7 +207,7 @@ onUnmounted(() => {
   width: 100%;
 }
 .graph-title {
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-ui-emphasis);
   font-size: var(--size-small);
 }
 .graph-points {

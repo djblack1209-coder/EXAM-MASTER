@@ -712,6 +712,7 @@ function auditPublishedBanks({ banks, bankDir }) {
 }
 
 const SOURCE_EVIDENCE_POLICY = 'baidu_netdisk_official_paper_auto_pair_v1';
+const PUBLIC_USE_EVIDENCE_POLICY = 'public-course-public-use-v1';
 const VALID_MANIFEST_SOURCE_STATUSES = new Set(['discovered', 'verified', 'published']);
 const VALID_SOURCE_ROLES = new Set(['paper', 'answer', 'paper_answer']);
 const BLOCKING_SOURCE_RISK_FLAGS = new Set([
@@ -732,6 +733,17 @@ const KNOWN_SOURCE_QUALITY_OVERRIDES = [
     remotePathContains: ['/【完整版】数学二真题答案解析/2016考研数学二真题 .pdf'],
     riskFlags: ['source_content_mismatch', 'manual_review_required'],
     blockReason: 'source_content_mismatch'
+  },
+  {
+    sourceIds: new Set(['src_1b0fd1f2d5c9741193305511']),
+    contentHashes: new Set([
+      '46f076305pf181eb53d3f3c01172fdd7',
+      'a9db41a6703e349215044e39c980c99fecbb8386321bdf206ee002502e61c068',
+      'sha256:a9db41a6703e349215044e39c980c99fecbb8386321bdf206ee002502e61c068'
+    ]),
+    remotePathContains: ['/【完整版】数学二真题答案解析/2021考研数学二真题 .pdf'],
+    riskFlags: ['brand_leak', 'copyright_review_required', 'manual_review_required'],
+    blockReason: 'branded_reference_rights_unverified'
   }
 ];
 
@@ -907,6 +919,44 @@ function isAutoPairableManifestSource(item) {
   return manifestSourceAnalysis(item).autoPairEligible;
 }
 
+function publicUseBlockReasons(item) {
+  const proof = item?.publicUseEvidence;
+  if (!proof || typeof proof !== 'object' || Array.isArray(proof)) return ['publicUseEvidence=missing'];
+  const reasons = [];
+  if (!['verified', 'published'].includes(item.status)) reasons.push('publicUseEvidence.sourceStatus=unverified');
+  if (proof.contract !== PUBLIC_USE_EVIDENCE_POLICY) reasons.push('publicUseEvidence.contract=unsupported');
+  if (proof.scope !== 'public_course_redistribution') reasons.push('publicUseEvidence.scope=not_public_redistribution');
+  if (!['public_domain', 'open_license', 'permission'].includes(proof.basis))
+    reasons.push('publicUseEvidence.basis=unverified');
+  const hash = sourceHash(item);
+  if (!/^sha256:[a-f0-9]{64}$/.test(hash || '') || proof.sourceHash !== hash)
+    reasons.push('publicUseEvidence.sourceHash=mismatch_or_missing');
+  const sourceUrl = String(item.sourceUrl || '').trim();
+  if (proof.sourceUrl !== sourceUrl) reasons.push('publicUseEvidence.sourceUrl=mismatch');
+  for (const [field, value] of [
+    ['sourceUrl', sourceUrl],
+    ['evidenceUrl', proof.evidenceUrl]
+  ]) {
+    try {
+      if (typeof value !== 'string') throw new Error('invalid');
+      const url = new URL(value);
+      if (url.protocol !== 'https:' || !url.hostname || url.username || url.password) throw new Error('invalid');
+    } catch {
+      reasons.push(`publicUseEvidence.${field}=invalid`);
+    }
+  }
+  for (const field of ['verifiedBy', 'note']) {
+    if (typeof proof[field] !== 'string' || !proof[field].trim()) reasons.push(`publicUseEvidence.${field}=missing`);
+  }
+  if (
+    typeof proof.verifiedAt !== 'string' ||
+    !/(?:Z|[+-]\d{2}:\d{2})$/.test(proof.verifiedAt) ||
+    !Number.isFinite(Date.parse(proof.verifiedAt))
+  )
+    reasons.push('publicUseEvidence.verifiedAt=invalid');
+  return reasons;
+}
+
 function sourceCandidateSample(item, analysis) {
   const qualityOverride = sourceQualityOverrideForItem(item);
   return {
@@ -917,6 +967,8 @@ function sourceCandidateSample(item, analysis) {
     inferredSourceRole: analysis.inferredRole || '',
     roleSource: analysis.roleSource || '',
     autoPairEligible: analysis.autoPairEligible === true,
+    publicUseVerified: analysis.autoPairEligible === true && publicUseBlockReasons(item).length === 0,
+    publicUseBlockReasons: publicUseBlockReasons(item),
     answerEvidenceStatus: item.answerEvidenceStatus || '',
     riskFlags: [
       ...new Set([...(Array.isArray(item.riskFlags) ? item.riskFlags : []), ...(qualityOverride?.riskFlags || [])])
@@ -1068,6 +1120,18 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
       eligibleSources: 0,
       publishableOfficialPapers: 0,
       autoPairedOfficialSourceSlots: 0,
+      publicUseEvidencePolicy: PUBLIC_USE_EVIDENCE_POLICY,
+      publicUseCoverageGapCount: Object.values(requiredYearsByTrack).reduce((sum, years) => sum + years.length, 0),
+      publicUseCoverage: Object.fromEntries(
+        tracks.map((track) => [
+          track,
+          {
+            presentYears: [],
+            missingYears: requiredYearsForTrack(requiredYearsByTrack, track),
+            coverageRate: 0
+          }
+        ])
+      ),
       coverageGapCount: Object.values(requiredYearsByTrack).reduce(
         (sum, requiredYears) => sum + requiredYears.length,
         0
@@ -1085,7 +1149,9 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
   const manifest = readJson(sourceManifest);
   const items = Array.isArray(manifest.items) ? manifest.items : [];
   const autoPairable = items.filter(isAutoPairableManifestSource);
+  const publicUseSources = autoPairable.filter((item) => publicUseBlockReasons(item).length === 0);
   const coverage = {};
+  const publicUseCoverage = {};
   const candidateDiagnostics = buildCandidateDiagnostics(items, tracks, requiredYearsByTrack);
 
   for (const track of tracks) {
@@ -1112,6 +1178,29 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
       ),
       coverageRate: requiredYears.length ? Number((presentYears.length / requiredYears.length).toFixed(4)) : 1
     };
+    const publicYears = requiredYears.filter((year) => slotHasAutoPairedOfficialSource(publicUseSources, track, year));
+    const publicMissingYears = requiredYears.filter((year) => !publicYears.includes(year));
+    publicUseCoverage[track] = {
+      presentYears: publicYears,
+      missingYears: publicMissingYears,
+      coverageRate: requiredYears.length ? Number((publicYears.length / requiredYears.length).toFixed(4)) : 1,
+      missingYearDiagnostics: Object.fromEntries(
+        publicMissingYears.map((year) => {
+          const slot = candidateDiagnostics[track]?.[year] || {
+            candidateCount: 0,
+            blockReasons: {},
+            sampleCandidates: []
+          };
+          const blockReasons = { ...slot.blockReasons };
+          for (const item of autoPairable.filter((value) => candidateSlotMatches(value, track, [year]))) {
+            for (const reason of publicUseBlockReasons(item)) blockReasons[reason] = (blockReasons[reason] || 0) + 1;
+          }
+          // A valid licence for the answer cannot cover a different question file (or vice versa).
+          blockReasons['publicUseEvidence.completePair=missing'] = 1;
+          return [year, { ...slot, blockReasons }];
+        })
+      )
+    };
   }
 
   addSlotPairDiagnostics(candidateDiagnostics, coverage, tracks);
@@ -1124,9 +1213,12 @@ function loadSourceManifestEvidence({ sourceManifest, tracks, minYear, maxYear }
     totalSources: items.length,
     eligibleSources: items.filter((item) => item?.eligible).length,
     autoPairableOfficialSources: autoPairable.length,
-    publishableOfficialPapers: Object.values(coverage).reduce((sum, row) => sum + row.presentYears.length, 0),
+    publishableOfficialPapers: Object.values(publicUseCoverage).reduce((sum, row) => sum + row.presentYears.length, 0),
     autoPairedOfficialSourceSlots: Object.values(coverage).reduce((sum, row) => sum + row.presentYears.length, 0),
     coverageGapCount: Object.values(coverage).reduce((sum, row) => sum + row.missingYears.length, 0),
+    publicUseEvidencePolicy: PUBLIC_USE_EVIDENCE_POLICY,
+    publicUseCoverageGapCount: Object.values(publicUseCoverage).reduce((sum, row) => sum + row.missingYears.length, 0),
+    publicUseCoverage,
     candidateDiagnostics,
     coverage
   };
@@ -1164,6 +1256,7 @@ export function buildQuestionBankReleaseReport(options = {}) {
     coverageGapCount === 0 &&
     pendingCoverageBlockerCount === 0 &&
     sourceEvidence.coverageGapCount === 0 &&
+    sourceEvidence.publicUseCoverageGapCount === 0 &&
     evidence.answerEvidenceBlockerCount === 0 &&
     evidence.gradingBlockerCount === 0 &&
     bankFileInventory.blockerCount === 0;
@@ -1193,6 +1286,7 @@ export function buildQuestionBankReleaseReport(options = {}) {
       sourceManifestPublishableOfficialPapers: sourceEvidence.publishableOfficialPapers,
       sourceManifestAutoPairedOfficialSourceSlots: sourceEvidence.autoPairedOfficialSourceSlots,
       sourceManifestCoverageGapCount: sourceEvidence.coverageGapCount,
+      sourceManifestPublicUseCoverageGapCount: sourceEvidence.publicUseCoverageGapCount,
       registeredBankCount: bankFileInventory.registeredBankCount,
       bankFileCount: bankFileInventory.bankFileCount,
       unregisteredBankFileCount: bankFileInventory.unregisteredBankFileCount,
@@ -1212,6 +1306,7 @@ export function buildQuestionBankReleaseReport(options = {}) {
         coverage: coverageGapCount,
         pendingCoverage: pendingCoverageBlockerCount,
         sourceEvidence: sourceEvidence.coverageGapCount,
+        sourcePublicUse: sourceEvidence.publicUseCoverageGapCount,
         answerEvidence: evidence.answerEvidenceBlockerCount,
         grading: evidence.gradingBlockerCount,
         bankFileInventory: bankFileInventory.blockerCount
@@ -1251,6 +1346,7 @@ export function run(argv = process.argv.slice(2)) {
       `coverageGaps=${summary.coverageGapCount} ` +
       `pendingCoverageBlockers=${summary.pendingCoverageBlockerCount} ` +
       `sourceEvidenceGaps=${summary.sourceManifestCoverageGapCount} ` +
+      `sourcePublicUseGaps=${summary.sourceManifestPublicUseCoverageGapCount} ` +
       `answerEvidenceBlockers=${summary.answerEvidenceBlockerCount} ` +
       `gradingBlockers=${summary.gradingBlockerCount} ` +
       `bankFileInventoryBlockers=${report.releaseReadiness.blockers.bankFileInventory} ` +

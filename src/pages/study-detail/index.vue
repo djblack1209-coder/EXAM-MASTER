@@ -15,7 +15,7 @@
         <text class="navbar-title" :class="{ 'title-visible': scrolled }">{{ $t('pages.stats') }}</text>
         <view class="navbar-right">
           <!-- 主题切换按钮 -->
-          <BaseButton class="theme-toggle" variant="secondary" @tap="toggleTheme"
+          <BaseButton class="theme-toggle" :label="$t('ui.toggleTheme')" variant="secondary" @tap="toggleTheme"
             ><BaseIcon :name="isDark ? 'sun' : 'moon'"
           /></BaseButton>
         </view>

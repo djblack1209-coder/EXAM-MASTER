@@ -9,6 +9,8 @@ import storageService from '@/services/storageService.js';
 import { loadBankData } from '@/pages/practice-sub/bank-data-loader.js';
 import { toast } from '@/utils/toast.js';
 
+vi.mock('@dcloudio/uni-app', () => ({ onHide: vi.fn(), onShow: vi.fn(), onUnload: vi.fn() }));
+
 beforeEach(() => setActivePinia(createPinia()));
 
 vi.mock('@/pages/practice-sub/bank-data-loader.js', () => ({

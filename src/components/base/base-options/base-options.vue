@@ -159,14 +159,14 @@ function keydown(event) {
   background: var(--paper-sunk);
   box-shadow: inset 0 0 0 var(--border-thin) var(--line-strong);
   color: var(--ink-2);
-  font: var(--weight-semibold) var(--size-small)/1 var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-small)/1 var(--font-ui);
 }
 .base-option__label {
   flex: 1;
 }
 .base-option__status {
   margin-left: auto;
-  font: var(--weight-semibold) var(--size-caption)/var(--leading-caption) var(--font-ui);
+  font: var(--weight-ui-emphasis) var(--size-caption)/var(--leading-caption) var(--font-ui);
 }
 .base-option[data-state='selected'] {
   background: var(--violet-soft);
