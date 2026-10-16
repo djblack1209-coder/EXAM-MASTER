@@ -758,6 +758,7 @@ function normalizePracticeQuestion(q, index, options = {}) {
 }
 
 function quizRecordOwnerMatches(page) {
+  if (checkSession(page.boundLoginSession) !== 'current') return false;
   if (page.quizOwnerId !== null && page.quizOwnerId !== undefined) return (getUserId() || '') === page.quizOwnerId;
   return (page.mode !== 'legacy_review' && !page.resumeProgressIdentity) || (getUserId() || '') === page.resumeOwnerId;
 }
@@ -1456,7 +1457,7 @@ export default {
 
       // 如果已完成所有题目，清除进度
       if (this.hasAnswered && isQuizProgressComplete(this)) {
-        clearQuizProgress();
+        clearQuizProgress(this.boundLoginSession);
         logger.log('[do-quiz] 练习已完成，清除进度');
         return;
       }
@@ -1481,7 +1482,8 @@ export default {
               : undefined
         },
         immediate,
-        this.quizProgressContext
+        this.quizProgressContext,
+        this.boundLoginSession
       );
 
       if (success) {
@@ -1873,22 +1875,18 @@ export default {
       });
     },
     async updateStudyStats() {
-      // 仅累计明确作答次数，不将参考匹配写入掌握度或估算学习时长。
-      // 更新学习热力图数据
+      const session = this.boundLoginSession;
+      if (checkSession(session) !== 'current') return false;
       const today = new Date().toISOString().split('T')[0];
-      const stats = storageService.get('study_stats', {});
+      const options = { session, migrateLegacy: false };
+      const stats = storageService.get('study_stats', {}, options);
       stats[today] = (stats[today] || 0) + 1;
-      storageService.save('study_stats', stats, true, this.boundLoginSession);
-      // 更新今日答题计数（驱动首页每日目标环）
-      const todayCount = parseInt(uni.getStorageSync('today_answer_count') || '0');
-      const todayDate = uni.getStorageSync('today_answer_date') || '';
-      if (todayDate !== today) {
-        // 日期变更，重置计数
-        uni.setStorageSync('today_answer_count', '1');
-        uni.setStorageSync('today_answer_date', today);
-      } else {
-        uni.setStorageSync('today_answer_count', String(todayCount + 1));
-      }
+      if (!storageService.save('study_stats', stats, true, session)) return false;
+      const date = storageService.get('today_answer_date', '', options);
+      const count = Number.parseInt(storageService.get('today_answer_count', '0', options), 10) || 0;
+      if (!storageService.save('today_answer_count', String(date === today ? count + 1 : 1), true, session))
+        return false;
+      return storageService.save('today_answer_date', today, true, session);
     },
     formatFsrsInterval(days) {
       return formatInterval(days);
@@ -2112,7 +2110,7 @@ export default {
           return;
         }
         // ✅ P0-3: 练习完成，清除进度
-        clearQuizProgress();
+        clearQuizProgress(this.boundLoginSession);
 
         // ✅ 检查点 5.1: 追踪完成练习事件
         analytics.trackConversion('COMPLETE_SESSION', {
@@ -2171,7 +2169,7 @@ export default {
         return;
       }
       this.showResumeModal = false;
-      clearQuizProgress();
+      clearQuizProgress(this.boundLoginSession);
       this.resumeProgressIdentity = '';
       this.resumeOwnerId = this.mode === 'legacy_review' ? getUserId() || '' : '';
       this.startTimer();

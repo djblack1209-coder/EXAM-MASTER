@@ -256,3 +256,41 @@ describe('实际客户端适配，不自动重试消费', () => {
     expect(task.abort).toHaveBeenCalled();
   });
 });
+
+it.each(['changed', 'cancelled'])('inflight-4: cleanup await rejects %s success', async (kind) => {
+  const { storageService } = await import('@/services/storageService.js');
+  storageService.saveLoginSession({ userId: 'stream-owner', token: 'fixture-token', userInfo: {} });
+  const session = captureSession(),
+    controller = new AbortController();
+  let release: any;
+  const cleanup = new Promise<void>((r) => {
+    release = r;
+  });
+  let cleaning: any;
+  const entered = new Promise<void>((r) => {
+    cleaning = r;
+  });
+  const reader = new ReadableStream<Uint8Array>({
+    start(c) {
+      c.enqueue(
+        new TextEncoder().encode(start() + event('preview', 2, { text: 'fixture', provisional: true }) + result())
+      );
+      c.close();
+    }
+  }).getReader();
+  vi.spyOn(reader, 'cancel').mockImplementation(async () => {
+    cleaning();
+    await cleanup;
+  });
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => ({ headers: { get: () => 'text/event-stream' }, body: { getReader: () => reader } }))
+  );
+  const pending = generateLearningTurnStream(body, { platform: 'h5', session, signal: controller.signal });
+  await entered;
+  if (kind === 'changed')
+    storageService.saveLoginSession({ userId: 'stream-owner', token: 'fixture-token', userInfo: {} });
+  else controller.abort();
+  release();
+  expect(await pending).toMatchObject({ success: false, error: kind === 'changed' ? 'CONTEXT_CHANGED' : 'CANCELLED' });
+});

@@ -128,6 +128,17 @@ export async function generateLearningTurnStream(body, options = {}) {
     controller?.abort();
     task?.abort();
   };
+  const releaseReader = async () => {
+    const activeReader = reader;
+    reader = null;
+    try {
+      await activeReader.cancel();
+    } catch {
+      /* 断开的流已释放 */
+    } finally {
+      activeReader.releaseLock();
+    }
+  };
   try {
     check(!options.signal?.aborted, 'CANCELLED', '请求已取消');
     token = sessionForRequest(session).token;
@@ -215,7 +226,12 @@ export async function generateLearningTurnStream(body, options = {}) {
         }
       }
       decoder.end();
-      if (streaming) return consumer.end();
+      if (streaming) {
+        const result = consumer.end();
+        await releaseReader();
+        assertCurrent();
+        return result;
+      }
       let rejected;
       try {
         rejected = JSON.parse(json);
@@ -327,13 +343,6 @@ export async function generateLearningTurnStream(body, options = {}) {
   } finally {
     clearTimeout(timer);
     options.signal?.removeEventListener('abort', abort);
-    if (reader) {
-      try {
-        await reader.cancel();
-      } catch {
-        /* 断开的流已释放 */
-      }
-      reader.releaseLock();
-    }
+    if (reader) await releaseReader();
   }
 }

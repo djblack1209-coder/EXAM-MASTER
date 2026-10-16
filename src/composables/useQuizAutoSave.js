@@ -26,10 +26,10 @@ const PROGRESS_EXPIRE_TIME = 24 * 60 * 60 * 1000;
 let saveDebounceTimer = null;
 const DEBOUNCE_DELAY = 500;
 
-export function saveQuizProgress(progress, immediate = false, context = null) {
+export function saveQuizProgress(progress, immediate = false, context = null, session = captureSession()) {
+  if (checkSession(session) !== 'current') return false;
   if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
   saveDebounceTimer = null;
-  const session = captureSession();
   const current = () => checkSession(session) === 'current';
   let snapshot, frozenContext;
   try {
@@ -71,7 +71,7 @@ function doSaveProgress(progress, context = null, session = captureSession()) {
     if (!isValidProgressData(data)) return false;
 
     if (storageService.save(QUIZ_PROGRESS_KEY, data, true, session) !== true) return false;
-    const saved = storageService.get(QUIZ_PROGRESS_KEY, null, { migrateLegacy: false, throwOnError: true });
+    const saved = storageService.get(QUIZ_PROGRESS_KEY, null, { migrateLegacy: false, throwOnError: true, session });
     if (JSON.stringify(saved) !== JSON.stringify(data)) return false;
 
     logger.log('[QuizAutoSave] 进度已保存:', {
@@ -124,6 +124,7 @@ export function loadQuizProgress(context = null) {
 }
 
 export function clearQuizProgress(session = captureSession()) {
+  if (checkSession(session) !== 'current') return false;
   if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
   saveDebounceTimer = null;
   try {

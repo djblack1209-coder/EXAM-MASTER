@@ -259,7 +259,9 @@ function _deserializeCard(obj) {
  * @param {import('ts-fsrs').Card} card - ts-fsrs Card 对象
  * @returns {boolean} 是否保存成功
  */
-export function saveCardState(questionId, card, session = cardSessions.get(card) || captureSession()) {
+export function saveCardState(questionId, card, session = cardSessions.get(card)) {
+  if (!session || checkSession(session) !== 'current') return false;
+  if (cardSessions.has(card) && checkSession(cardSessions.get(card)) !== 'current') return false;
   if (!questionId) {
     logger.warn('[FSRSService] saveCardState: questionId 为空');
     return false;
@@ -277,11 +279,13 @@ export function saveCardState(questionId, card, session = cardSessions.get(card)
  */
 export function loadCardState(questionId) {
   if (!questionId) return null;
-  const raw = storageService.get(_cardKey(questionId), null);
+  const session = assertSession(captureSession());
+  const raw = storageService.get(_cardKey(questionId), null, { session });
   if (!raw || typeof raw !== 'object' || !raw.due) return null;
   try {
     const card = _deserializeCard(raw);
-    cardSessions.set(card, captureSession());
+    assertSession(session);
+    cardSessions.set(card, session);
     return card;
   } catch (e) {
     logger.warn('[FSRSService] 反序列化卡片失败', questionId, e);
@@ -323,12 +327,14 @@ export function removeCardState(questionId, session = captureSession()) {
  *   - intervalDays: 距离下次复习的天数
  * @throws {Error} 评分值无效时抛出
  */
-export function scheduleCard(card, rating, now = new Date()) {
+export function scheduleCard(card, rating, now = new Date(), session = cardSessions.get(card)) {
+  assertSession(session);
   checkSchedulerSession();
   if (cardSessions.has(card)) assertSession(cardSessions.get(card));
   const numericRating = _normalizeRating(rating);
   const result = currentScheduler().repeat(card, now);
   const chosen = result[numericRating];
+  cardSessions.set(chosen.card, cardSessions.get(card) || session);
 
   return {
     card: chosen.card,
