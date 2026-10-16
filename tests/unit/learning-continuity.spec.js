@@ -225,7 +225,7 @@ describe('资料异步结果与云端删除确认', () => {
     );
     try {
       const result = store.importFile({ size: 100, contentBase64: 'TEST_ONLY', name: '合成材料' });
-      const rejected = expect(result).rejects.toThrow('已取消');
+      const rejected = expect(result).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
       uni.setStorageSync('EXAM_USER_ID', 'u2');
       store.refresh();
       finish({

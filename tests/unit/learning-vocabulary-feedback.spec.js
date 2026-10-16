@@ -242,6 +242,7 @@ describe('自由原句的词义绑定与位置反馈', () => {
         });
       });
       const pending = store.requestVocabularyFeedback();
+      pending.catch(() => undefined);
       await Promise.resolve();
       expect(store.busy).toBe(true);
       if (change === 'stop') await store.send('停止当前任务');
@@ -255,7 +256,8 @@ describe('自由原句的词义绑定与位置反馈', () => {
       }
       if (change === 'cancel') store.cancel();
       resolve(response(body));
-      await pending;
+      if (change === 'account') await expect(pending).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      else await pending;
       expect(store.state.attempts.find((a) => a.id === 'use-answer')?.assistance).toBeUndefined();
     });
   it('原请求恢复只读取结果并幂等；不重新生成', async () => {

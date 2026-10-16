@@ -57,6 +57,7 @@ export const LEARNING_TOOLS = Object.freeze({
   stop: { version: '1.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 }
 });
 export function executeLearningTool(repository, call, context) {
+  context.assertCurrent?.();
   const tool = LEARNING_TOOLS[call?.name];
   assert(tool, 'UNKNOWN_TOOL', '工具不在允许清单中');
   assert(context.permissions.includes(tool.permission), 'FORBIDDEN', '没有此工具权限');
@@ -165,6 +166,7 @@ export function executeLearningTool(repository, call, context) {
             (assessmentQuestion?.vocabularyReview?.phase === 'usage' && call.arguments.rubricId)
           ? RUBRIC_EVIDENCE_CONTRACT
           : undefined;
+      context.assertCurrent?.();
       const outcome = repository.commit({
         id: call.id,
         type,
@@ -194,7 +196,8 @@ export function executeLearningTool(repository, call, context) {
         'IDEMPOTENCY_CONFLICT',
         '原工具收据与重试任务不一致'
       );
-    if (!priorReceipt)
+    if (!priorReceipt) {
+      context.assertCurrent?.();
       repository.commit({
         id: `${call.id}:receipt`,
         type: 'execution.record',
@@ -205,8 +208,10 @@ export function executeLearningTool(repository, call, context) {
           durationMs: Date.now() - started
         }
       });
+    }
     return { success: true, result, executionId: `${call.id}:receipt` };
   } catch (error) {
+    context.assertCurrent?.();
     repository.commit({
       id: `${call.id}:failure`,
       type: 'execution.record',

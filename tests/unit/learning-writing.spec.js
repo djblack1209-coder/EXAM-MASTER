@@ -724,6 +724,7 @@ describe('仅评阅原答的辅助模型请求', () => {
         });
       });
       const pending = store.requestWritingFeedback();
+      pending.catch(() => undefined);
       await Promise.resolve();
       expect(store.busy).toBe(true);
       if (change === 'cancel') store.cancel();
@@ -735,7 +736,8 @@ describe('仅评阅原答的辅助模型请求', () => {
         store.refresh();
       }
       resolve(response(body));
-      await pending;
+      if (change === 'account') await expect(pending).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      else await pending;
       expect(store.state.attempts.find((a) => a.id === 'a')?.assistance).toBeUndefined();
     });
 });

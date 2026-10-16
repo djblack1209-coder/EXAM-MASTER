@@ -5,6 +5,7 @@ import { storageService, StorageService } from '@/services/storageService.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { getLoginSessionEpoch } from '@/services/auth-storage.js';
 import { obfuscate } from '@/utils/crypto/cipher.js';
+import { parsePastedMaterial } from '@/services/learning/material-intake.js';
 const epochKey = `${LEARNING_KEY}_lifecycle`;
 function pair() {
   const map = new Map();
@@ -150,7 +151,11 @@ function notify() {
 }
 describe('模型列表与用量读取的实际请求生命周期', () => {
   function requests() {
-    uni.setStorageSync('EXAM_TOKEN', 'fixture-only-token');
+    storageService.saveLoginSession({
+      userId: 'synthetic-crosswindow-owner',
+      token: 'fixture-only-token',
+      userInfo: {}
+    });
     const pending = [];
     vi.spyOn(uni, 'request').mockImplementation((options) => {
       const abort = vi.fn();
@@ -269,9 +274,9 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
     const pending = requests(),
       promise = store.loadModels();
     const rejected = expect(promise).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
-    uni.setStorageSync('EXAM_USER_ID', 'synthetic-second-owner');
+    uni.setStorageSync('_enc_EXAM_USER_ID', obfuscate('synthetic-second-owner'));
     learningRepository.read();
-    uni.setStorageSync('EXAM_USER_ID', 'synthetic-crosswindow-owner');
+    uni.setStorageSync('_enc_EXAM_USER_ID', obfuscate('synthetic-crosswindow-owner'));
     pending[0].success({ data: modelResult('old-account') });
     await rejected;
     expect(store.models).toEqual([]);
@@ -283,7 +288,11 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
       storageService.save('EXAM_USER_ID', 'synthetic-second-owner', true);
       const peerIdentity = uni.getStorageSync('_enc_EXAM_USER_ID');
       storageService.save('EXAM_USER_ID', 'synthetic-crosswindow-owner', true);
-      storageService.save('EXAM_TOKEN', 'synthetic-encrypted-lifecycle-token', true);
+      storageService.saveLoginSession({
+        userId: 'synthetic-crosswindow-owner',
+        token: 'synthetic-encrypted-lifecycle-token',
+        userInfo: {}
+      });
       expect(uni.getStorageSync('EXAM_USER_ID')).toBe('');
       const before = store.exportData();
       const promise = store.loadModels();
@@ -302,6 +311,11 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
       await rejected;
       // Even an A -> B -> A change and an adapter that ignores abort cannot revive the old read.
       storageService.save('EXAM_USER_ID', 'synthetic-crosswindow-owner', true);
+      storageService.saveLoginSession({
+        userId: 'synthetic-crosswindow-owner',
+        token: 'fixture-only-token',
+        userInfo: {}
+      });
       pending[0].success({ data: modelResult('late-old-account') });
       await Promise.resolve();
       expect(store.models).toEqual([]);
@@ -521,7 +535,7 @@ describe('加密同账户会话与凭据请求边界', () => {
     expect(transport.mock.calls[0][1].signal.aborted).toBe(true);
     expectReset();
     resolve({ ok: true, text: async () => JSON.stringify({ success: true, data: { message: '撤销前的迟到正文' } }) });
-    await promise;
+    await expect(promise).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
     expect(store.exportData()).toBe(facts);
     expect(store.active.messages.some((m) => m.content === '撤销前的迟到正文')).toBe(false);
     expect(store.busy).toBe(false);
@@ -539,8 +553,8 @@ describe('加密同账户会话与凭据请求边界', () => {
     if (kind === 'changed') peerLogin();
     else uni.removeStorageSync('_enc_EXAM_SESSION_EPOCH');
     resolve({ ok: true, text: async () => JSON.stringify({ success: true, data: { message: '事件未达的迟到正文' } }) });
-    await promise;
-    expect(store.exportData()).toBe(facts);
+    await expect(promise).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+    expect(kind === 'removed' ? learningRepository.exportData() : store.exportData()).toBe(facts);
     expect(store.active.messages.some((m) => m.content === '事件未达的迟到正文')).toBe(false);
     expect(getLoginSessionEpoch()).toBe(kind === 'removed' ? null : 'synthetic-peer-login-epoch');
   });
@@ -592,6 +606,235 @@ describe('加密同账户会话与凭据请求边界', () => {
     expect(getLoginSessionEpoch()).toBeTruthy();
     expect(store.state.owner).toBe('synthetic-crosswindow-owner');
     expect(store.state.attempts.at(-1).answer).toBe('19');
+    expect(store.exportData()).toBe(facts);
+  });
+  it('审计P1：通知未到的新操作先撤销旧配置，零外发和零学习写入', async () => {
+    session();
+    store.selectedMode = 'local';
+    const transport = vi.fn();
+    vi.stubGlobal('fetch', transport);
+    const facts = store.exportData();
+    peerLogin();
+    await expect(store.send('这次应要求重新授权')).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+    expectReset();
+    expect(transport).not.toHaveBeenCalled();
+    expect(store.exportData()).toBe(facts);
+    await store.send('新操作只做离线学习');
+    expect(transport).not.toHaveBeenCalled();
+  });
+  it.each(['changed', 'removed', 'cancelled'])(
+    '审计P2：原件删除在%s后不写material.original-deleted，忽略abort也拒收',
+    async (kind) => {
+      session();
+      const fileId = 'a'.repeat(64),
+        material = parsePastedMaterial('合成私人原件', 'epoch-original');
+      material.original = { connectorFileId: fileId, connectorOrigin: 'http://127.0.0.1:8765' };
+      store.commit('material.add', { material });
+      learningRepository.deleteMaterial(store.previewMaterialDeletion(material.id), true, 'epoch-deletion');
+      store.refresh();
+      const deletion = store.state.materialDeletions.at(-1);
+      let resolve;
+      const transport = vi.fn(() => new Promise((done) => (resolve = done)));
+      vi.stubGlobal('fetch', transport);
+      const promise = store.retryOriginalDeletion(deletion.deletionId, true);
+      const rejected = expect(promise).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      const facts = learningRepository.exportData();
+      if (kind === 'changed') peerLogin();
+      else if (kind === 'removed') uni.removeStorageSync('_enc_EXAM_SESSION_EPOCH');
+      else store.cancelMaterial();
+      resolve({ ok: true, text: async () => JSON.stringify({ success: true, data: { fileId, deleted: true } }) });
+      await rejected;
+      expect(learningRepository.exportData()).toBe(facts);
+      expect(learningRepository.read().materialDeletions.at(-1).originalStatus).toBe('pending');
+      expect(transport.mock.calls[0][1].signal.aborted).toBe(true);
+    }
+  );
+  it('审计P2：明文令牌刷新加密后重放全部真实迁移事件，本地请求和授权保持', async () => {
+    session();
+    uni.removeStorageSync('_enc_EXAM_TOKEN');
+    uni.setStorageSync('EXAM_TOKEN', originalToken);
+    store.selectedMode = 'local';
+    const epoch = getLoginSessionEpoch(),
+      before = config();
+    let resolve;
+    const transport = vi.fn(() => new Promise((done) => (resolve = done)));
+    vi.stubGlobal('fetch', transport);
+    const promise = store.send('解释当前合成题');
+    const events = [];
+    const originalSet = uni.setStorageSync.getMockImplementation(),
+      originalRemove = uni.removeStorageSync.getMockImplementation();
+    vi.spyOn(uni, 'setStorageSync').mockImplementation((key, value) => {
+      const oldValue = uni.getStorageSync(key) || null;
+      originalSet(key, value);
+      events.push({ key, oldValue, newValue: value });
+    });
+    vi.spyOn(uni, 'removeStorageSync').mockImplementation((key) => {
+      const oldValue = uni.getStorageSync(key) || null;
+      originalRemove(key);
+      if (oldValue !== null) events.push({ key, oldValue, newValue: null });
+    });
+    const set = localStorage.setItem.getMockImplementation(),
+      remove = localStorage.removeItem.getMockImplementation();
+    vi.spyOn(localStorage, 'setItem').mockImplementation((key, value) => {
+      const oldValue = localStorage.getItem(key);
+      set(key, value);
+      events.push({ key, oldValue, newValue: value });
+    });
+    vi.spyOn(localStorage, 'removeItem').mockImplementation((key) => {
+      const oldValue = localStorage.getItem(key);
+      remove(key);
+      if (oldValue !== null) events.push({ key, oldValue, newValue: null });
+    });
+    expect(storageService.save('EXAM_TOKEN', renewedToken, true)).toBe(true);
+    expect(events.some((event) => event.key === 'EXAM_TOKEN' && event.newValue === null)).toBe(true);
+    for (const event of events) window.dispatchEvent(new StorageEvent('storage', event));
+    expect(getLoginSessionEpoch()).toBe(epoch);
+    expect(config()).toEqual(before);
+    expect(transport.mock.calls[0][1].signal.aborted).toBe(false);
+    resolve({
+      ok: true,
+      text: async () => JSON.stringify({ success: true, data: { message: '迁移后有效的本地回复' } })
+    });
+    await promise;
+    expect(store.active.messages.some((message) => message.content === '迁移后有效的本地回复')).toBe(true);
+    expect(Object.keys(global.__mockStorage).some((key) => key.startsWith('__exam_identity_migration_v1:'))).toBe(
+      false
+    );
+  });
+  it('全部导出action在无通知换代后先完整重置，写入/请求全拒绝，只读操作可重读', async () => {
+    session();
+    const actions = Object.keys(store).filter((name) => !/^[$_]/.test(name) && typeof store[name] === 'function');
+    expect(actions.length).toBeGreaterThan(90);
+    const safeReads = new Set([
+      'reloadRecords',
+      'refresh',
+      'searchRecords',
+      'dismissLocatedRecord',
+      'scopedSummary',
+      'recordContext',
+      'materialContext',
+      'journeyContext',
+      'writingContext',
+      'oatutorContext',
+      'computeReferenceContext',
+      'sentenceCanSubmit',
+      'vocabularyTaskFor',
+      'vocabularyCanSubmit',
+      'scienceCanSubmit',
+      'writingCanSubmit',
+      'reminderQueue',
+      'notificationContext',
+      'observeCalendar',
+      'attachNotifications',
+      'exportData',
+      'isSyncConflictCurrent',
+      'exportSyncConflict',
+      'cancel',
+      'cancelMaterial',
+      'cancelSync',
+      'cancelHistory',
+      'cancelModelReads'
+    ]);
+    const transport = vi.fn();
+    vi.stubGlobal('fetch', transport);
+    const request = vi.spyOn(uni, 'request');
+    for (const [index, name] of actions.entries()) {
+      store.$dispose();
+      uni.clearStorageSync();
+      session();
+      const before = JSON.stringify(global.__mockStorage);
+      peerLogin(`peer_traversal_epoch_${index}`);
+      const afterLogin = JSON.stringify(global.__mockStorage);
+      let result;
+      try {
+        result = store[name]();
+      } catch (failure) {
+        result = Promise.reject(failure);
+      }
+      if (safeReads.has(name)) await Promise.resolve(result).catch(() => undefined);
+      else await expect(result).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      expectReset();
+      expect(JSON.stringify(global.__mockStorage), name).toBe(afterLogin);
+      expect(before).not.toBe(afterLogin);
+    }
+    expect(transport).not.toHaveBeenCalled();
+    expect(request).not.toHaveBeenCalled();
+  });
+  it('恢复副本写完后换代，在下一笔事实存储前拒写并完整重置', () => {
+    session();
+    const facts = store.exportData(),
+      save = storageService.save.bind(storageService);
+    vi.spyOn(storageService, 'save').mockImplementation((key, ...args) => {
+      const result = save(key, ...args);
+      if (key === `${LEARNING_KEY}_recovery`) peerLogin();
+      return result;
+    });
+    expect(() =>
+      store.commit('profile.set', { field: 'foundation', value: '不能落盘', source: 'self_report', scope: '本题' })
+    ).toThrow();
+    expectReset();
+    expect(learningRepository.exportData()).toBe(facts);
+  });
+  it('完整重置立即拒绝忽略abort的旧请求，新授权可操作且旧finally不解锁新请求', async () => {
+    session();
+    store.selectedMode = 'local';
+    const connection = JSON.parse(JSON.stringify(store.localConnection)),
+      replies = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise((resolve) => replies.push(resolve)))
+    );
+    const old = store.send('旧会话请求');
+    const rejected = expect(old).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+    peerLogin();
+    expect(() => store.ensureSessionCurrent()).toThrow();
+    await rejected;
+    expect(store.busy).toBe(false);
+    store.localConnection = connection;
+    store.selectedMode = 'local';
+    store.sharingAllowed = true;
+    const fresh = store.send('新会话授权后的请求');
+    expect(replies).toHaveLength(2);
+    replies[0]({ ok: true, text: async () => JSON.stringify({ success: true, data: { message: '旧请求不得保存' } }) });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(store.busy).toBe(true);
+    replies[1]({ ok: true, text: async () => JSON.stringify({ success: true, data: { message: '新会话正常保存' } }) });
+    await fresh;
+    expect(store.active.messages.some((message) => message.content === '旧请求不得保存')).toBe(false);
+    expect(store.active.messages.some((message) => message.content === '新会话正常保存')).toBe(true);
+    expect(store.busy).toBe(false);
+  });
+  it('Store初始化期间另一窗口换代，完整建立资源后再重读，不使用未初始化引用', () => {
+    session();
+    const facts = store.exportData();
+    store.$dispose();
+    const lifecycle = learningRepository.lifecycleContext.bind(learningRepository);
+    let changed = false;
+    vi.spyOn(learningRepository, 'lifecycleContext').mockImplementation(() => {
+      if (!changed) {
+        changed = true;
+        peerLogin('synthetic-initialization-peer-epoch');
+      }
+      return lifecycle();
+    });
+    setActivePinia(createPinia());
+    store = useConversationLearningStore();
+    expect(() => store.ensureSessionCurrent()).not.toThrow();
+    expectReset();
+    expect(store.exportData()).toBe(facts);
+  });
+  it('换代后重新确认的通知上下文绑定持久代号，普通Store重开仍保持', () => {
+    session();
+    const previous = store.prepareNotificationConsent();
+    peerLogin();
+    expect(() => store.ensureSessionCurrent()).toThrow();
+    const renewed = store.prepareNotificationConsent();
+    expect(renewed).not.toBe(previous);
+    const facts = store.exportData();
+    store.$dispose();
+    setActivePinia(createPinia());
+    store = useConversationLearningStore();
+    expect(store.notificationContext()).toBe(renewed);
     expect(store.exportData()).toBe(facts);
   });
   it.each(['same-window', 'encrypted-storage', 'compat-encrypted-storage'])(
@@ -808,8 +1051,7 @@ describe('加密同账户会话与凭据请求边界', () => {
       expect(store.localConnection).toBeNull();
       expect(store.materialConnection).toBeNull();
       expect(store.sharingAllowed).toBe(false);
-      storageService.save('EXAM_USER_ID', 'synthetic-crosswindow-owner', true);
-      storageService.save('EXAM_TOKEN', originalToken, true);
+      storageService.saveLoginSession({ userId: 'synthetic-crosswindow-owner', token: originalToken, userInfo: {} });
       pending[0].success({ data: models('late-pre-logout') });
       await Promise.resolve();
       expect(store.models).toEqual([]);

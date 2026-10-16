@@ -46,6 +46,20 @@ import {
 } from '../../laf-backend/functions/_shared/learning-quiz-original.js';
 
 const LOCAL_COMPAT_PREFIX = '__exam_storage__:';
+const IDENTITY_MIGRATION_PREFIX = '__exam_identity_migration_v1:';
+
+// Storage events preserve each writer's order. Bracket only format changes, without identity values.
+// A real logout outside the bracket still revokes even if login has already been restored.
+function migrateIdentityKeys(keys, write) {
+  if (!keys.length || typeof localStorage === 'undefined') return write();
+  const marker = `${IDENTITY_MIGRATION_PREFIX}${globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)}`;
+  localStorage.setItem(marker, JSON.stringify(keys));
+  try {
+    return write();
+  } finally {
+    localStorage.removeItem(marker);
+  }
+}
 
 function createUniCompat() {
   const memoryStore = new Map();
@@ -72,8 +86,13 @@ function createUniCompat() {
   const writeLocal = (key, value) => {
     try {
       if (typeof localStorage === 'undefined') return true;
-      localStorage.setItem(`${keyPrefix}${key}`, JSON.stringify({ value }));
-      if (isIdentityStorageKey(key)) localStorage.removeItem(key);
+      const migrating = isIdentityStorageKey(key) && localStorage.getItem(key) !== null;
+      migrateIdentityKeys(migrating ? [key] : [], () => {
+        const serialized = JSON.stringify({ value });
+        localStorage.setItem(`${keyPrefix}${key}`, serialized);
+        if (localStorage.getItem(`${keyPrefix}${key}`) !== serialized) throw new Error('兼容存储未确认，旧副本保留');
+        if (isIdentityStorageKey(key)) localStorage.removeItem(key);
+      });
       return true;
     } catch {
       return false;
@@ -333,19 +352,23 @@ function migratePlainSensitiveKey(key) {
       return false;
     }
 
-    const existingEncrypted = uni.getStorageSync(`_enc_${key}`);
-    if (existingEncrypted === '' || existingEncrypted === null || existingEncrypted === undefined) {
-      const encrypted = obfuscate(plainValue);
-      if (encrypted === null || deobfuscate(encrypted) === null) {
+    return migrateIdentityKeys([key, `${LOCAL_COMPAT_PREFIX}${key}`], () => {
+      const existingEncrypted = uni.getStorageSync(`_enc_${key}`);
+      if (existingEncrypted === '' || existingEncrypted === null || existingEncrypted === undefined) {
+        const encrypted = obfuscate(plainValue);
+        if (encrypted === null || deobfuscate(encrypted) === null) {
+          return false;
+        }
+        uni.setStorageSync(`_enc_${key}`, encrypted);
+      } else if (deobfuscate(existingEncrypted) === null) {
         return false;
       }
-      uni.setStorageSync(`_enc_${key}`, encrypted);
-    } else if (deobfuscate(existingEncrypted) === null) {
-      return false;
-    }
 
-    uni.removeStorageSync(key);
-    return true;
+      if (deobfuscate(uni.getStorageSync(`_enc_${key}`)) === null) return false;
+
+      uni.removeStorageSync(key);
+      return true;
+    });
   } catch {
     return false;
   }
@@ -491,10 +514,34 @@ class StorageService {
       }
     ]);
     for (const [event, handler] of authListeners) eventBus.$on?.(event, handler);
+    const migrations = new Map();
     const storageChanged = (event) => {
       if (event.storageArea && event.storageArea !== window.localStorage) return;
-      if (event.key === null) changed({ type: 'logout' });
-      else if (isIdentityStorageKey(event.key)) changed(identityWasRemoved(event) ? { type: 'logout' } : undefined);
+      if (event.key?.startsWith(IDENTITY_MIGRATION_PREFIX)) {
+        if (event.newValue === null) migrations.delete(event.key);
+        else {
+          try {
+            const keys = JSON.parse(event.newValue);
+            if (Array.isArray(keys) && keys.length <= 4 && keys.every(isIdentityStorageKey))
+              migrations.set(event.key, new Set(keys));
+          } catch {
+            /* Invalid markers cannot suppress revocation. */
+          }
+        }
+        return;
+      }
+      if (event.key === null) {
+        migrations.clear();
+        changed({ type: 'logout' });
+      } else if (isIdentityStorageKey(event.key)) {
+        const removed = identityWasRemoved(event);
+        if (removed) {
+          for (const keys of migrations.values()) {
+            if (keys.delete(event.key)) return;
+          }
+        }
+        changed(removed ? { type: 'logout' } : undefined);
+      }
     };
     if (typeof window !== 'undefined') window.addEventListener('storage', storageChanged);
     return () => {
@@ -640,14 +687,22 @@ class StorageService {
       if (isSensitiveKey(key)) {
         const encrypted = obfuscate(value);
         if (encrypted !== null) {
-          uni.setStorageSync(`_enc_${rk}`, encrypted);
-          // 清理旧的明文存储（迁移期间）
-          try {
-            uni.removeStorageSync(rk);
-          } catch {
-            /* ignore */
-          }
-          return true;
+          const plain = uni.getStorageSync(rk);
+          const hasPlain =
+            (plain !== '' && plain !== null && plain !== undefined) ||
+            uni.getStorageInfoSync?.().keys?.includes(rk) === true;
+          return migrateIdentityKeys(hasPlain ? [rk, `${LOCAL_COMPAT_PREFIX}${rk}`] : [], () => {
+            uni.setStorageSync(`_enc_${rk}`, encrypted);
+            if (JSON.stringify(deobfuscate(uni.getStorageSync(`_enc_${rk}`))) !== JSON.stringify(value))
+              throw new Error('加密存储未确认，旧副本保留');
+            // 清理旧的明文存储（迁移期间）
+            try {
+              if (hasPlain) uni.removeStorageSync(rk);
+            } catch {
+              /* ignore */
+            }
+            return true;
+          });
         }
       }
       uni.setStorageSync(rk, value);
@@ -728,11 +783,12 @@ class StorageService {
             const dec = deobfuscate(legacyEnc);
             if (dec !== null) {
               // 自动迁移到带前缀的 key
-              this.save(key, dec, true);
-              try {
-                uni.removeStorageSync(`_enc_${key}`);
-              } catch {
-                /* ignore */
+              if (this.save(key, dec, true)) {
+                try {
+                  uni.removeStorageSync(`_enc_${key}`);
+                } catch {
+                  /* ignore */
+                }
               }
               return dec;
             }
@@ -750,11 +806,12 @@ class StorageService {
           const legacyValue = read(key);
           if (legacyValue !== '' && legacyValue !== null && legacyValue !== undefined) {
             // 自动迁移到带前缀的 key
-            this.save(key, legacyValue, true);
-            try {
-              uni.removeStorageSync(key);
-            } catch {
-              /* ignore */
+            if (this.save(key, legacyValue, true)) {
+              try {
+                uni.removeStorageSync(key);
+              } catch {
+                /* ignore */
+              }
             }
             return legacyValue;
           }

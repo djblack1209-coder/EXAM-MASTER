@@ -5,6 +5,7 @@ import poetryCache from '../../learning/poetry-cache.json';
 
 // 学习模型请求固定到用户选择的后端，不使用跨服务自动故障切换，不记录消息和密钥。
 export function learningRequest(path, body, options = {}) {
+  options.assertCurrent?.();
   if (options.signal?.aborted) return Promise.resolve({ success: false, code: 499, message: '请求已取消，未再次发送' });
   if (options.expectedOwner && getUserId() !== options.expectedOwner)
     return Promise.resolve({ success: false, code: 409, message: '用户已切换，未发送旧账户记录' });
@@ -15,6 +16,12 @@ export function learningRequest(path, body, options = {}) {
     let abort;
     const finish = (value) => {
       if (abort) options.signal?.removeEventListener('abort', abort);
+      try {
+        options.assertCurrent?.();
+      } catch {
+        resolve({ success: false, code: 409, message: '登录会话已变化，旧响应未采用' });
+        return;
+      }
       resolve(
         getLoginSessionEpoch() !== session || (options.expectedOwner && getUserId() !== options.expectedOwner)
           ? { success: false, code: 409, message: '账户已切换，未读取旧账户响应' }

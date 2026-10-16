@@ -404,11 +404,12 @@ describe('分批备份恢复与同步', () => {
     const backup = content({ ...large, owner: 'guest' });
     try {
       const pending = store.previewRestore(backup);
+      const rejected = expect(pending).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
       uni.setStorageSync('EXAM_USER_ID', 'history-other-owner');
       store.refresh();
       uni.removeStorageSync('EXAM_USER_ID');
       store.refresh();
-      await expect(pending).rejects.toMatchObject({ code: 'CANCELLED' });
+      await rejected;
       expect(store.state.owner).toBe('guest');
       expect(store.state.events).toHaveLength(0);
       store.start('12 + 8');

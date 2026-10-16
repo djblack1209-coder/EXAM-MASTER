@@ -514,7 +514,8 @@ it.each(['owner', 'epoch', 'model', 'stop', 'withdraw', 'hide'])(
       else onHide.mock.calls.at(-1)[0]();
       await flushPromises();
       harness.complete();
-      await send;
+      if (['owner', 'epoch'].includes(change)) await expect(send).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      else await send;
       expect(store.state.plans).toHaveLength(0);
       expect(store.state.attempts).toHaveLength(0);
       expect(store.streamPreview).toBe('');

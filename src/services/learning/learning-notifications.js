@@ -107,6 +107,7 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
     assert(!disposed && context() === expected, 'CONTEXT_CHANGED', '账户或记录已变化，旧通知许可未保存');
     assert(result === 'granted', 'NOTIFICATION_PERMISSION', '通知未获授权，请在系统设置中允许后重试');
     assert(learning.notificationContext() === identity, 'CONTEXT_CHANGED', '学习记录已恢复，旧通知许可未保存');
+    learning.ensureSessionCurrent?.();
     assert(storageService.save(CONSENT_KEY, { context: identity }, true), 'STORAGE_FAILED', '通知许可未保存，请重试');
     trustedIdentity = identity;
     return refresh();

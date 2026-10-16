@@ -1,5 +1,5 @@
 import { storageService } from '../storageService.js';
-import { getUserId } from '../auth-storage.js';
+import { getUserId, getLoginSessionEpoch } from '../auth-storage.js';
 import { learningRepository } from './learning-repository.js';
 import { assert } from './learning-domain.js';
 export const UPLOAD_PENDING_KEY = 'conversation_learning_v1_upload_pending';
@@ -59,11 +59,17 @@ export function createPendingUploadJournal(
     return JSON.parse(JSON.stringify(entries));
   }
   function save(entries, expectedOwner) {
+    const session = getLoginSessionEpoch();
     assert(owner() === expectedOwner, 'CONTEXT_CHANGED', '账户已变化，原导入待办保留');
     validateEntries(entries);
     write();
     const journal = { owner: owner(), contract: 'wenli-upload-journal-v1', entries };
     assert(JSON.stringify(journal).length <= 25000, 'RESOURCE_LIMIT', '导入待办已达上限，请先处理未确认原件');
+    assert(
+      getLoginSessionEpoch() === session && owner() === expectedOwner,
+      'CONTEXT_CHANGED',
+      '登录会话已变化，导入待办未写入'
+    );
     assert(storage.save(UPLOAD_PENDING_KEY, journal, true), 'STORAGE_FAILED', '导入待办保存失败，未继续发送或确认完成');
   }
   return {

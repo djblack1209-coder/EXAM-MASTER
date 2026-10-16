@@ -382,7 +382,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     });
     try {
       const result = store.loadUsage();
-      const rejected = expect(result).rejects.toThrow('用户已切换');
+      const rejected = expect(result).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
       uni.setStorageSync('EXAM_USER_ID', 'owner-after');
       store.refresh();
       request.success({ data: { success: true, data: { cost: { spent: 123 } } } });

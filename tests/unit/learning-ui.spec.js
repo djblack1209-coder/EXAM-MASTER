@@ -1624,7 +1624,7 @@ describe('备份预览的输入和页面边界', () => {
 });
 describe('模型读取的页内状态与离开保护', () => {
   function page() {
-    uni.setStorageSync('EXAM_TOKEN', 'fixture-only-token');
+    storageService.saveLoginSession({ userId: 'ui-model-read-owner', token: 'fixture-only-token', userInfo: {} });
     const requests = [];
     const transport = vi.spyOn(uni, 'request').mockImplementation((options) => {
       const abort = vi.fn();
@@ -1727,7 +1727,7 @@ describe('模型读取的页内状态与离开保护', () => {
   it('未登录就近提供登录入口，记录返回模型面板的位置且不发起模型请求', async () => {
     const { requests, transport, store, wrapper } = page();
     try {
-      uni.removeStorageSync('EXAM_TOKEN');
+      storageService.remove('EXAM_TOKEN', true);
       await flushPromises();
       await wrapper
         .findAll('button')
@@ -2388,7 +2388,11 @@ describe('学习空间的实际入口与目录', () => {
   it('账户弹窗取消保留登录和学习事实，确认退出隔离显示并保留原账户记录', async () => {
     const user = useUserStore();
     user.isLogin = true;
-    storageService.save('EXAM_USER_ID', 'isolated-profile-user');
+    storageService.saveLoginSession({
+      userId: 'isolated-profile-user',
+      token: 'synthetic-profile-session-token',
+      userInfo: {}
+    });
     const learning = useConversationLearningStore();
     learning.start('12 + 8');
     learning.submit('19', true, 'profile-dialog-answer');
