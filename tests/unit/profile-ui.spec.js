@@ -63,3 +63,50 @@ describe('profile panel navigation across page registration', () => {
     expect(consumeProfilePanel()).toBeNull();
   });
 });
+
+it('order-03: mounted profile reacts to unavailable, recovery and revoked login without stale alias fallback', async () => {
+  const { createPinia, setActivePinia } = await import('pinia');
+  const { mount } = await import('@vue/test-utils');
+  const { nextTick } = await import('vue');
+  const { storageService } = await import('@/services/storageService.js');
+  const { useUserStore } = await import('@/stores/modules/user.js');
+  uni.clearStorageSync();
+  const pinia = createPinia();
+  setActivePinia(pinia);
+  storageService.saveLoginSession({
+    userId: 'profile-fixture',
+    token: 'fixture-profile-token',
+    userInfo: { id: 'profile-fixture', nickName: '保留昵称' }
+  });
+  const user = useUserStore();
+  await user.setUserInfo({ id: 'profile-fixture', nickName: '保留昵称' });
+  user.restoreUserInfo();
+  const wrapper = mount(ProfilePage, {
+    global: {
+      plugins: [pinia],
+      stubs: { LearningShell: { template: '<div><slot/></div>' }, CustomModal: true, CustomTabbar: true, image: true }
+    }
+  });
+  try {
+    expect(wrapper.vm.isLoggedIn).toBe(true);
+    user.sessionStatus = 'unavailable';
+    await nextTick();
+    expect(wrapper.vm.isLoggedIn).toBeNull();
+    expect(wrapper.get('[role="status"]').text()).toContain('暂不可用');
+    expect(wrapper.text()).not.toContain('未登录');
+    expect(user.userInfo.nickName).toBe('保留昵称');
+    user.sessionStatus = 'current';
+    await nextTick();
+    expect(wrapper.vm.isLoggedIn).toBe(true);
+    expect(wrapper.find('[role="status"]').exists()).toBe(false);
+    uni.removeStorageSync('_enc_EXAM_SESSION_EPOCH');
+    user.sessionStatus = 'changed';
+    user.isLogin = false;
+    await nextTick();
+    expect(wrapper.vm.isLoggedIn).toBe(false);
+    expect(wrapper.text()).toContain('登录后同步学习轨迹');
+  } finally {
+    wrapper.unmount();
+    for (const store of pinia._s.values()) store.$dispose();
+  }
+});

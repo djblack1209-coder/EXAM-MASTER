@@ -273,11 +273,11 @@ it('migrate-04: copied target is verified on retry before source proof retiremen
   expect(storageService.get('study_stats')).toEqual({ count: 11 });
   expect(originalRead('study_stats')).toBe('');
 });
-it('regress-1/order-1: stale profile and token origins cannot overwrite refreshed identity', async () => {
+it('regress-01/order-02: same owner and epoch binding survives credential renewal', async () => {
   const session = captureSession();
   expect(await storageService.save('EXAM_TOKEN', 'fixture-rotated', true, session)).toBe(true);
-  expect(await storageService.save('userInfo', { id: 'account-1', nickname: 'stale' }, true, session)).toBe(false);
-  expect(await storageService.save('EXAM_TOKEN', 'fixture-obsolete', true, session)).toBe(false);
+  expect(await storageService.save('userInfo', { id: 'account-1', nickname: 'renewed' }, true, session)).toBe(true);
+  expect(checkSession(session)).toBe('current');
   expect(storageService.get('EXAM_TOKEN')).toBe('fixture-rotated');
 });
 it.each(['all', 'epoch'])('regress-2: installed H5 swallowed %s errors remain unavailable', (how) => {

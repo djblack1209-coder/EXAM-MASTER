@@ -77,7 +77,13 @@ import {
 import { computed, ref, shallowRef, onScopeDispose, watch } from 'vue';
 import { pendingUploadJournal } from '@/services/learning/pending-upload-journal.js';
 import { learningRepository, LEARNING_KEY } from '@/services/learning/learning-repository.js';
-import { getUserId, getToken, checkSession, readSessionSnapshot } from '@/services/auth-storage.js';
+import {
+  getUserId,
+  getToken,
+  checkSession,
+  readSessionSnapshot,
+  isSessionFormatMigration
+} from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import {
   COMPUTE_CONTRACT,
@@ -173,7 +179,8 @@ export function learningId(prefix = 'learn') {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
 }
 export const useConversationLearningStore = defineStore('conversation-learning', () => {
-  storageService.getSessionEpoch();
+  const sessionUpgrade = storageService.getSessionEpoch();
+  sessionUpgrade?.catch?.(() => undefined);
   const initialSnapshot = readSessionSnapshot();
   let boundSession = initialSnapshot.status === 'current' ? initialSnapshot.session : null;
   let sessionEpoch = boundSession?.epoch || null;
@@ -235,7 +242,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       streamPlatform !== 'unsupported'
   );
   let controller = null;
-  let controllerUsesAccountToken = false;
   let pendingCloudCall = null;
   let computeRequest = null;
   const pendingUploads = ref(boundSession ? pendingUploadJournal.list() : []);
@@ -280,7 +286,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
   }
   function loginContext() {
-    return JSON.stringify([sessionEpoch, sessionRevision]);
+    return JSON.stringify([boundSession?.owner, sessionRevision]);
   }
   // Notifications accelerate revocation. Every operation and result checks persisted identity itself.
   function ensureSessionCurrent(expectedSession = operationSessions.at(-1), signal, { readOnly = false } = {}) {
@@ -308,6 +314,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       return loginContext();
     }
     const epoch = snapshot.session.epoch;
+    if (isSessionFormatMigration(boundSession, snapshot)) {
+      boundSession = snapshot.session;
+      sessionEpoch = epoch;
+    }
     const identity = {
       owner: snapshot.session.owner === 'guest' ? null : snapshot.session.owner,
       token: snapshot.token
@@ -323,14 +333,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
     // A revoked authenticated session must not be silently upgraded here. Guests can study offline.
     assert(readOnly || !identity.token || epoch, 'CONTEXT_CHANGED', '登录会话已撤销，请重新登录');
-    if (identity.token !== observedIdentity.token) {
-      observedIdentity = identity;
-      cancelModelReads(undefined, 'CONTEXT_CHANGED');
-      cancelModelActions();
-      if (controllerUsesAccountToken) controller?.abort('CREDENTIALS_CHANGED');
-      poetryController?.abort();
-      if (syncRequest) cancelSync();
-    }
+    observedIdentity = identity;
     assert(
       expectedSession === undefined || expectedSession === loginContext(),
       'CONTEXT_CHANGED',
@@ -530,8 +533,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       return false;
     }
   });
+  let lastComputeContext = null;
   function computeReferenceContext() {
-    return JSON.stringify([recordContext(), state.value.revision, selectedConversationId.value, getToken()]);
+    if (readSessionSnapshot().status === 'unavailable') return lastComputeContext;
+    lastComputeContext = JSON.stringify([recordContext(), state.value.revision, selectedConversationId.value]);
+    return lastComputeContext;
   }
   watch(
     [() => state.value, selectedConversationId],
@@ -677,7 +683,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   function reminderQueue(at = Date.now()) {
     return reminderJobs(state.value, at, { dayKey });
   }
-  const notificationContext = () => JSON.stringify([learningRepository.notificationConsentContext(), sessionEpoch]);
+  let lastNotificationContext = null;
+  const notificationContext = () => {
+    if (readSessionSnapshot().status === 'unavailable') return lastNotificationContext;
+    lastNotificationContext = JSON.stringify([learningRepository.notificationConsentContext(), sessionEpoch]);
+    return lastNotificationContext;
+  };
   function prepareNotificationConsent() {
     ensureSessionCurrent();
     idleRecords();
@@ -944,7 +955,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     selectedTrainingId.value = null;
     controller = null;
     computeRequest = null;
-    controllerUsesAccountToken = false;
     localConnectionController = null;
     materialController = null;
     materialConnectionController = null;
@@ -1834,7 +1844,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const epoch = `revision_${state.value.revision}`;
     computeRequest = request;
     controller = request.controller;
-    controllerUsesAccountToken = true;
     busy.value = true;
     error.value = '';
     try {
@@ -1897,7 +1906,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       if (computeRequest === request) computeRequest = null;
       if (controller === request.controller) {
         controller = null;
-        controllerUsesAccountToken = false;
         busy.value = false;
       }
     }
@@ -2392,7 +2400,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     streamPreview.value = '';
     const mode = selectedMode.value,
       requestedModelId = modelId.value;
-    controllerUsesAccountToken = mode === 'cloud';
     const lifecycle = learningRepository.lifecycleRevision();
     const conversationId = selectedConversationId.value;
     const requestedQuestionKey = activeQuestion.value ? questionKey(activeQuestion.value) : null;
@@ -2611,7 +2618,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       if (controller === requestController) {
         busy.value = false;
         controller = null;
-        controllerUsesAccountToken = false;
         pendingCloudCall = null;
         if (requestController.signal.reason !== 'CREDENTIALS_CHANGED') streamPreview.value = '';
       }
@@ -2815,7 +2821,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const session = loginContext();
     const requestController = new AbortController();
     controller = requestController;
-    controllerUsesAccountToken = true;
     busy.value = true;
     streamPreview.value = '';
     const assertRecovery = () => {
@@ -2881,7 +2886,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       if (controller === requestController) {
         busy.value = false;
         controller = null;
-        controllerUsesAccountToken = false;
         streamPreview.value = '';
       }
     }
@@ -4193,7 +4197,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     'cancelModelReads'
   ]);
   for (const [name, action] of Object.entries(exposed)) {
-    if (typeof action !== 'function' || action === ensureSessionCurrent) continue;
+    if (
+      typeof action !== 'function' ||
+      action === ensureSessionCurrent ||
+      ['cancelHistory', 'cancelMaterial', 'cancelModelReads', 'cancelSync'].includes(name)
+    )
+      continue;
     const run = (...args) => {
       const check = (session) => ensureSessionCurrent(session, undefined, { readOnly: readOnlyActions.has(name) });
       const session = check();

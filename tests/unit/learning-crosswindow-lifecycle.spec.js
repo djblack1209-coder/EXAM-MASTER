@@ -851,7 +851,7 @@ describe('加密同账户会话与凭据请求边界', () => {
     expect(store.exportData()).toBe(facts);
   });
   it.each(['same-window', 'encrypted-storage', 'compat-encrypted-storage'])(
-    '%s续期只取消绑定旧令牌的列表/用量读取，保留配置原答并以新令牌显式重试',
+    '%s续期保留同账户进行中读取，新读取使用新令牌',
     async (source) => {
       // Produce peer ciphertext with the real service before attaching this Store.
       store.$dispose();
@@ -861,8 +861,6 @@ describe('加密同账户会话与凭据请求边界', () => {
       const pending = requests(),
         list = store.loadModels(),
         readUsage = store.loadUsage();
-      const rejectedList = expect(list).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
-      const rejectedUsage = expect(readUsage).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
       const before = config(),
         facts = store.exportData(),
         original = store.locatedRecord;
@@ -885,20 +883,17 @@ describe('加密同账户会话与凭据请求边界', () => {
           })
         );
       }
-      await Promise.all([rejectedList, rejectedUsage]);
-      expect(pending).toHaveLength(2); // No automatic replay.
-      expect(pending.every((request) => request.abort.mock.calls.length === 1)).toBe(true);
+      expect(pending).toHaveLength(2);
+      expect(pending.every((request) => request.abort.mock.calls.length === 0)).toBe(true);
       expect(config()).toEqual(before);
       expect(store.locatedRecord).toBe(original);
       expect(store.exportData()).toBe(facts);
+      pending[0].success({ data: models('continued-model') });
+      pending[1].success({ data: usage });
+      await Promise.all([list, readUsage]);
+      expect(store.models[0].id).toBe('continued-model');
       const retry = store.loadModels();
       expect(pending[2].header.Authorization).toBe(`Bearer ${renewedToken}`);
-      pending[0].success({ data: models('late-old-token') });
-      pending[1].success({ data: usage });
-      await Promise.resolve();
-      expect(store.models).toEqual(before.models);
-      expect(store.usage).toEqual(before.usage);
-      expect(store.modelListState.phase).toBe('loading');
       pending[2].success({ data: models('fresh-token-model') });
       await retry;
       expect(store.models[0].id).toBe('fresh-token-model');
@@ -960,45 +955,43 @@ describe('加密同账户会话与凭据请求边界', () => {
     expect(store.active.messages.at(-1).content).toBe('本地模型继续完成');
     expect(store.busy).toBe(false);
   });
-  it.each(['refresh', 'same-token', 'profile'])('%s只在云端生成绑定旧令牌时撤销，并拒绝其迟到正文', async (kind) => {
+  it.each(['refresh', 'same-token', 'profile'])('%s同账户云端生成继续完成', async (kind) => {
     session();
     const pending = requests(),
       promise = store.send('请再解释一下'),
       before = config();
     expect(pending[0].url).toMatch(/\/proxy-ai$/);
     store.streamPreview = '已显示的临时预览';
-    const facts = store.exportData();
     change(kind);
     expect(config()).toEqual(before);
-    expect(pending[0].abort).toHaveBeenCalledTimes(kind === 'refresh' ? 1 : 0);
+    expect(pending[0].abort).not.toHaveBeenCalled();
     pending[0].success({ data: { success: true, data: { message: '云端生成已完成', tools: [] } } });
     await promise;
-    expect(store.active.messages.some((message) => message.content === '云端生成已完成')).toBe(kind !== 'refresh');
-    if (kind === 'refresh') {
-      expect(store.exportData()).toBe(facts);
-      expect(store.streamPreview).toBe('已显示的临时预览');
-    }
+    expect(store.active.messages.some((message) => message.content === '云端生成已完成')).toBe(true);
     expect(store.busy).toBe(false);
     expect(store.modelId).toBe('explicit-model');
     expect(store.selectedMode).toBe('cloud');
     expect(store.sharingAllowed).toBe(true);
   });
-  it('续期取消旧令牌同步且不自动重放、不覆盖本机事实或连接', async () => {
+  it('续期保留同账户进行中同步，不自动重放且保留原答', async () => {
     session();
     const pending = requests(),
       promise = store.syncRecords(true);
-    const rejected = expect(promise).rejects.toThrow();
     const before = config(),
       facts = store.exportData();
     expect(pending[0].url).toMatch(/\/learning-sync$/);
     change('refresh');
-    expect(pending[0].abort).toHaveBeenCalledOnce();
+    expect(pending[0].abort).not.toHaveBeenCalled();
     expect(config()).toEqual(before);
-    pending[0].success({ data: { success: true, data: { state: learningRepository.read() } } });
-    await rejected;
+    const { normalizePrivateSyncOperation } = await import('@/services/learning/learning-domain.js');
+    const remote = learningRepository.read();
+    remote.events = remote.events.map(normalizePrivateSyncOperation);
+    pending[0].success({ data: { success: true, data: { state: remote } } });
+    await promise;
     expect(pending).toHaveLength(1);
-    expect(store.exportData()).toBe(facts);
-    expect(config()).toEqual(before);
+    const previous = JSON.parse(facts);
+    for (const field of ['attempts', 'questions', 'plans', 'profile'])
+      expect(store.state[field]).toEqual(previous[field]);
     expect(store.syncBusy).toBe(false);
   });
   it.each(['refresh', 'same-token', 'profile'])('%s不取消不依赖账户凭据的本机历史校验', async (kind) => {

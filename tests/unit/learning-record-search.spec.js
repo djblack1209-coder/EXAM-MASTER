@@ -269,6 +269,7 @@ describe('record location uses canonical facts', () => {
       const peerIdentity = localStorage.getItem('__exam_storage__:_enc_EXAM_USER_ID');
       const peerToken = localStorage.getItem('__exam_storage__:_enc_EXAM_TOKEN');
       const peerEpoch = localStorage.getItem('__exam_storage__:_enc_EXAM_SESSION_EPOCH');
+      const peerRevocation = localStorage.getItem('__exam_storage__:EXAM_SESSION_REVOCATION');
       storageService.saveLoginSession({
         userId: 'search-current',
         token: 'synthetic-encrypted-search-token',
@@ -293,6 +294,7 @@ describe('record location uses canonical facts', () => {
       );
       localStorage.setItem('__exam_storage__:_enc_EXAM_TOKEN', peerToken);
       localStorage.setItem('__exam_storage__:_enc_EXAM_SESSION_EPOCH', peerEpoch);
+      localStorage.setItem('__exam_storage__:EXAM_SESSION_REVOCATION', peerRevocation);
       window.dispatchEvent(new StorageEvent('storage', { key: eventKey }));
       expect(storageService.get('EXAM_USER_ID')).toBe('search-peer');
       expect(store.state.owner).toBe('search-peer');

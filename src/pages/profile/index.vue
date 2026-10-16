@@ -28,6 +28,9 @@
               <BaseButton v-if="isLoggedIn === false" class="login-hint" variant="secondary" @tap="goLogin">{{
                 t('dashboard.copy98')
               }}</BaseButton>
+              <text v-else-if="isLoggedIn === null" class="login-hint" role="status">{{
+                t('dashboard.sessionUnavailable')
+              }}</text>
               <text v-else class="login-hint">{{ t('dashboard.copy99') }}</text>
             </view>
           </view>
@@ -172,7 +175,10 @@ export default {
 
     isLoggedIn() {
       const isLogin = this.userStore?.isLogin;
-      if (readSessionSnapshot().status === 'unavailable') return null;
+      const status = this.userStore?.sessionStatus;
+      const snapshot = readSessionSnapshot();
+      if (status === 'unavailable' || snapshot.status === 'unavailable') return null;
+      if (status === 'changed' || snapshot.status === 'changed') return false;
       return !!(isLogin || storageService.get('EXAM_USER_ID'));
     },
 

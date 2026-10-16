@@ -120,7 +120,7 @@ it.each(['failed', 'owner', 'original', 'version', 'authority', 'question'])(
   }
 );
 it.each(['stop', 'cancel', 'token', 'owner', 'new-answer', 'switch-task'])(
-  'rejects late %s changes and cancels the transport where observed',
+  'honors original binding after %s changes; renewal continues and changed context rejects',
   async (kind) => {
     let resolve;
     let sentSignal;
@@ -131,7 +131,7 @@ it.each(['stop', 'cancel', 'token', 'owner', 'new-answer', 'switch-task'])(
       return new Promise((r) => (resolve = r));
     });
     const promise = store.requestGrammarHelp(true);
-    const rejected = expect(promise).rejects.toThrow();
+    const rejected = kind === 'token' ? null : expect(promise).rejects.toThrow();
     await vi.waitFor(() => expect(resolve).toBeTypeOf('function'));
     if (kind === 'stop') store.commit('task.stop', { conversationId: store.active.id });
     if (kind === 'cancel') store.cancel();
@@ -144,8 +144,15 @@ it.each(['stop', 'cancel', 'token', 'owner', 'new-answer', 'switch-task'])(
     if (kind === 'switch-task') store.start('计算 2 + 2');
     const before = clone(store.state);
     resolve(response(b));
-    await rejected;
-    expect(clone(store.state)).toEqual(before);
+    if (kind === 'token') {
+      await promise;
+      expect(sentSignal.aborted).toBe(false);
+      expect(store.state.attempts).toEqual(before.attempts);
+      expect(store.active.messages.some((m) => m.upstreamReference)).toBe(true);
+    } else {
+      await rejected;
+      expect(clone(store.state)).toEqual(before);
+    }
     expect(store.busy).toBe(false);
     if (kind !== 'token') expect(sentSignal.aborted).toBe(true);
   }

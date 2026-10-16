@@ -26,7 +26,13 @@ if (!isMainThread) {
   parentPort.on('message', async ({ command, id }) => {
     let result;
     try {
-      if (command === 'login') result = { accepted: !!a.login(workerData.number) };
+      if (command === 'login' || command === 'login-same') {
+        result = { accepted: !!a.login(command === 'login-same' ? 1 : workerData.number) };
+        a.origin = a.auth.captureSession();
+      }
+      if (command === 'save-profile')
+        result = { saved: a.storage.save('userInfo', { id: 'account-1', nickname: 'old' }, true, a.origin) };
+      if (command === 'session-status') result = { status: a.auth.checkSession(a.origin) };
       if (command === 'inspect') {
         const snap = a.auth.readSessionSnapshot();
         const info = a.storage.get('userInfo', null);
@@ -117,23 +123,41 @@ if (!isMainThread) {
     b = spawn(2);
   await Promise.all([a.ready, b.ready]);
   try {
-    const pausedProfile = b.until((m) => m.method === 'set' && m.args[0] === '__exam_storage__:_enc_userInfo');
-    const second = b.run('login');
-    await pausedProfile;
-    const first = await a.run('login');
-    const pausedToken = b.until((m) => m.method === 'set' && m.args[0] === '__exam_storage__:_enc_EXAM_TOKEN');
-    b.release();
-    await Promise.race([pausedToken, second]);
-    const inspected = await a.run('inspect');
-    out(
-      'R1-two-real-login-transactions-credentials',
-      first.accepted && inspected.accepted && inspected.credentialsConsistent
-    );
-    out('R1-two-real-login-transactions-profile', inspected.profileConsistent);
-    const data = JSON.parse(map.get('__exam_storage__:u_account-1_account_profile_v1') || 'null')?.value;
-    out('R1-foreign-profile-never-enters-origin-partition', !(inspected.persisted && data?.id === 'account-2'));
-    if (b.pending) b.release();
-    await second;
+    if (process.argv.includes('--fallback')) {
+      for (const command of ['login-same', 'login']) {
+        await a.run('login');
+        const paused = a.until((m) => m.method === 'set' && m.args[0] === '__exam_storage__:_enc_EXAM_SESSION_EPOCH');
+        const oldWrite = a.run('save-profile');
+        await paused;
+        const successor = await b.run(command);
+        const invalidBefore = await b.run('session-status');
+        a.release();
+        await oldWrite;
+        const old = await a.run('session-status');
+        out(
+          'order-01_fallback_' + command,
+          successor.accepted && invalidBefore.status === 'current' && old.status === 'changed'
+        );
+      }
+    } else {
+      const pausedProfile = b.until((m) => m.method === 'set' && m.args[0] === '__exam_storage__:_enc_userInfo');
+      const second = b.run('login');
+      await pausedProfile;
+      const first = await a.run('login');
+      const pausedToken = b.until((m) => m.method === 'set' && m.args[0] === '__exam_storage__:_enc_EXAM_TOKEN');
+      b.release();
+      await Promise.race([pausedToken, second]);
+      const inspected = await a.run('inspect');
+      out(
+        'R1-two-real-login-transactions-credentials',
+        first.accepted && inspected.accepted && inspected.credentialsConsistent
+      );
+      out('R1-two-real-login-transactions-profile', inspected.profileConsistent);
+      const data = JSON.parse(map.get('__exam_storage__:u_account-1_account_profile_v1') || 'null')?.value;
+      out('R1-foreign-profile-never-enters-origin-partition', !(inspected.persisted && data?.id === 'account-2'));
+      if (b.pending) b.release();
+      await second;
+    }
   } finally {
     await Promise.all(tabs.map((t) => t.w.terminate()));
   }
