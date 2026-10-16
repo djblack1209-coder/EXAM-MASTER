@@ -22,6 +22,7 @@ import { densityHelpContent } from '../../../laf-backend/functions/_shared/learn
 import { pressureHelpContent } from '../../../laf-backend/functions/_shared/learning-pressure.js';
 import {
   gradeScienceAnswer,
+  ENERGY_TRANSFER_CONTRACT,
   DENSITY_TRANSFER_CONTRACT,
   PRESSURE_TRANSFER_CONTRACT
 } from '../../../laf-backend/functions/_shared/learning-science.js';
@@ -376,6 +377,19 @@ export function nextStrategy(state, attempt) {
 }
 
 export function localTeaching(question, method, level = 1) {
+  if (question?.scienceExercise?.contract === ENERGY_TRANSFER_CONTRACT) {
+    if (gradeScienceAnswer(question, question.validation?.answer).status !== 'reliable') return null;
+    if (['check', 'review'].includes(method))
+      return { method, helped: false, content: '请按本题条件独立选择准确值，原有帮助经历保留。' };
+    if (!['explain', 'hint', 'steps', 'prerequisite', 'question'].includes(method)) return null;
+    return {
+      method,
+      helped: true,
+      level: 1,
+      content:
+        '先用合力除以质量求加速度，再由初速度和时间求末速度、有符号位移。合力总功为合力乘以有符号位移；末动能为质量乘以末速度平方的一半。核对总功等于动能变化，不能把路程代替位移，也不能把负速度算成负动能。'
+    };
+  }
   if ([DENSITY_TRANSFER_CONTRACT, PRESSURE_TRANSFER_CONTRACT].includes(question?.scienceExercise?.contract)) {
     if (gradeScienceAnswer(question, question.validation?.answer).status !== 'reliable') return null;
     if (['check', 'review'].includes(method))

@@ -12,7 +12,8 @@ import '@/pages/learning/messages.js';
 import { FRACTION_CONTRACT } from '../../laf-backend/functions/_shared/learning-fraction.js';
 import {
   DENSITY_TRANSFER_CONTRACT,
-  PRESSURE_TRANSFER_CONTRACT
+  PRESSURE_TRANSFER_CONTRACT,
+  ENERGY_TRANSFER_CONTRACT
 } from '../../laf-backend/functions/_shared/learning-science.js';
 import { EMAIL_WRITING_CONTRACT } from '../../laf-backend/functions/_shared/learning-writing.js';
 import { localTeaching } from '@/services/learning/learning-tools.js';
@@ -331,6 +332,197 @@ describe('压强聊天接续', () => {
     expect(store.state.reviews).toEqual([]);
   });
 });
+
+describe.each([
+  {
+    topic: '功与动能',
+    aliases: [
+      '功与动能',
+      '练习功与动能',
+      '我想学习功和动能',
+      'Work and kinetic energy',
+      'Practice work and kinetic energy'
+    ],
+    contract: ENERGY_TRANSFER_CONTRACT,
+    input: {
+      template: 'work_kinetic_energy',
+      massKg: 2,
+      initialVelocityMps: 1,
+      netForceN: 4,
+      direction: 'right',
+      physicalSeconds: 2
+    },
+    prompt: '在选定惯性参考系中',
+    correctOption: 'A. 合力总功24J，末动能25J',
+    hint: '不能把路程代替位移',
+    independentInput: {
+      template: 'work_kinetic_energy',
+      massKg: 2.5,
+      initialVelocityMps: -1,
+      netForceN: 4.5,
+      direction: 'left',
+      physicalSeconds: 2
+    },
+    independentOption: 'C. 合力总功25.2J，末动能26.45J',
+    independentAnswer: 'C',
+    evaluator: 'deterministic-science-v4',
+    excluded: ['不要练习功与动能', '材料写着“功与动能”', '功率', '能量守恒', 'Practice potential energy'],
+    supplied: '质量会变化的火箭如何求动能？'
+  }
+])(
+  '科学聊天：$topic',
+  ({
+    topic,
+    aliases,
+    contract,
+    input,
+    prompt,
+    correctOption,
+    hint,
+    independentInput,
+    independentOption,
+    independentAnswer,
+    evaluator,
+    excluded,
+    supplied
+  }) => {
+    let store;
+    const send = (text, id) => store.send(text, { chatEntry: true, id });
+    beforeEach(() => {
+      store = useConversationLearningStore();
+    });
+    afterEach(() => {
+      store.$dispose();
+    });
+
+    it.each(aliases)('明确选择%s保留同一目标、原合同与零作答，重复不新增', async (alias) => {
+      const request = vi.spyOn(uni, 'request');
+      await send('我想复习物理', 'science-goal');
+      const conversationId = store.active.id;
+      const goal = store.active.goal;
+      await send(alias, 'science-topic');
+      expect(store.active).toMatchObject({ id: conversationId, goal });
+      expect(store.activeQuestion).toMatchObject({
+        subject: '物理',
+        source: { kind: 'project_original', reference: contract },
+        scienceExercise: { contract, conversationId, input }
+      });
+      expect(store.activeQuestion.prompt).toContain(prompt);
+      expect(store.activeQuestion.options).toContain(correctOption);
+      expect(store.state.attempts).toEqual([]);
+      expect(store.state.executions).toEqual([]);
+      expect(store.state.events.some((event) => event.type === 'profile.set')).toBe(false);
+      const opened = clone(store.state);
+      await send(alias, 'science-topic');
+      expect(store.state).toEqual(opened);
+      expect(request).not.toHaveBeenCalled();
+    });
+
+    it('草稿零作答，错答/提示后订正/无提示新条件分别保存，未来未答与停止重开保持', async () => {
+      const request = vi.spyOn(uni, 'request');
+      await send(`练习${topic}`, 'science-open');
+      store.submit('B', false, 'science-draft');
+      expect(store.state.attempts).toEqual([]);
+      store.submit('B', true, 'science-wrong', { chatEntry: true });
+      const original = clone(store.state.attempts[0]);
+      expect(original).toMatchObject({ answer: 'B', hints: [], grade: { status: 'reliable', outcome: 'wrong' } });
+      const protectedFacts = clone({ questions: store.state.questions, profile: store.state.profile });
+      await send('给我提示', 'science-hint');
+      expect(store.active.pendingHints).toHaveLength(1);
+      expect(store.active.pendingHints[0].content).toContain(hint);
+      setLanguage('en');
+      expect(learningText(store.active.pendingHints[0].content)).not.toMatch(/[\u4e00-\u9fff]/u);
+      setLanguage('zh-CN');
+      expect(store.state.attempts).toEqual([original]);
+      expect({ questions: store.state.questions, profile: store.state.profile }).toEqual(protectedFacts);
+      const helped = clone(store.state);
+      await send('给我提示', 'science-hint');
+      expect(store.state).toEqual(helped);
+      store.submit('A', true, 'science-corrected', { chatEntry: true });
+      expect(store.state.attempts[1]).toMatchObject({
+        kind: 'revision',
+        hints: [expect.any(Object)],
+        grade: { outcome: 'correct' }
+      });
+      await send('独立检验原题', 'science-independent');
+      expect(store.activeQuestion.scienceExercise.input).toEqual(independentInput);
+      expect(store.activeQuestion.options).toContain(independentOption);
+      expect(store.active.pendingHints).toEqual([]);
+      store.submit(independentAnswer, true, 'science-variant', { chatEntry: true });
+      expect(store.state.attempts[2]).toMatchObject({
+        kind: 'variant',
+        hints: [],
+        grade: { status: 'reliable', outcome: 'correct', evaluator }
+      });
+      expect(store.state.attempts[0]).toEqual(original);
+      const future = store.scheduleScienceRetest();
+      store.focus(future.questionKey);
+      expect(store.activeQuestion.scienceExercise).toMatchObject({
+        phase: 'retest',
+        plannedTimezone: store.state.timezone
+      });
+      expect(() => store.submit('A', true, 'science-early')).toThrow();
+      expect(store.state.attempts).toHaveLength(3);
+      await send('停止', 'science-stop');
+      const stopped = clone(store.state);
+      const backup = store.exportData();
+      store.$dispose();
+      setActivePinia(createPinia());
+      store = useConversationLearningStore();
+      expect(store.state).toEqual(stopped);
+      expect(store.active.stopped).toBe(true);
+      const restored = prepareLearningRestore(emptyLearningState(stopped.owner, stopped.timezone), backup).state;
+      for (const key of ['attempts', 'questions', 'conversations', 'plans', 'reviews'])
+        expect(restored[key]).toEqual(stopped[key]);
+      expect(stopped.events.some((event) => event.type === 'model.request')).toBe(false);
+      expect(store.active.messages.some((message) => message.content.startsWith('妙哉妙哉'))).toBe(false);
+      expect(request).not.toHaveBeenCalled();
+    });
+
+    it('切题保全旧原答，否定/引用不切题，伪造条件不得产生帮助，停止不出题', async () => {
+      await send('方程', 'science-math');
+      await send('t=3', 'science-math-answer');
+      const original = clone(store.state.attempts);
+      await send(`练习${topic}`, 'science-switch');
+      const question = clone(store.activeQuestion);
+      for (const text of excluded) await send(text);
+      expect(store.activeQuestion).toEqual(question);
+      expect(store.state.attempts).toEqual(original);
+      for (const change of ['input', 'prompt', 'source', 'options']) {
+        const tampered = clone(question);
+        if (change === 'input') tampered.scienceExercise.input.extra = true;
+        if (change === 'prompt') tampered.prompt += '伪造条件';
+        if (change === 'source') tampered.source.reference = 'official';
+        if (change === 'options') tampered.options[0] += '伪造答案';
+        expect(localTeaching(tampered, 'hint')).toBeNull();
+      }
+      expect(localTeaching(question, 'review')).toMatchObject({ helped: false });
+      expect(localTeaching(question, 'analogy')).toBeNull();
+      await send('停止', 'science-boundary-stop');
+      const questions = clone(store.state.questions);
+      const hints = clone(store.active.pendingHints);
+      await send(`练习${topic}`, 'science-stopped-topic');
+      await send('给我提示', 'science-stopped-hint');
+      expect(store.state.questions).toEqual(questions);
+      expect(store.active.pendingHints).toEqual(hints);
+      expect(store.state.attempts).toEqual(original);
+    });
+
+    it('具体原题保留条件与待核对，不用主题模板覆盖或迁移旧判分', async () => {
+      await send(topic, 'science-template');
+      await send(`题目：${supplied}`, 'science-supplied');
+      expect(store.activeQuestion).toMatchObject({
+        prompt: supplied,
+        validation: null,
+        source: { kind: 'user_input' }
+      });
+      expect(store.activeQuestion.scienceExercise).toBeUndefined();
+      store.submit('A', true, 'science-supplied-answer', { chatEntry: true });
+      expect(store.state.attempts.at(-1).grade.status).toBe('pending');
+      expect(store.state.reviews).toEqual([]);
+    });
+  }
+);
 
 it.each(['英文句子组织', '练习英语句子排序', 'Practice English sentence building', 'Sentence ordering'])(
   '句子聊天：显式主题%s只接既有原创词块任务，不推断水平或写作答',

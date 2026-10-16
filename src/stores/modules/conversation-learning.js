@@ -5,6 +5,7 @@ import {
   localChatQuestion,
   localDensityQuestion,
   localPressureQuestion,
+  localEnergyQuestion,
   chatQuestionMessage,
   poetryEncouragement,
   validatedPoetryReference
@@ -33,7 +34,7 @@ import { createJourneyQuestions } from '@/services/learning/journey-training.js'
 import { reminderJobs } from '../../../laf-backend/functions/_shared/learning-reminders.js';
 import { createLearningCalendar } from '@/services/learning/learning-calendar.js';
 import { conversationStrategy } from '../../../laf-backend/functions/_shared/learning-strategy.js';
-import { ENERGY_VISUAL_CONTRACT, ENERGY_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-visual.js';
+import { ENERGY_VISUAL_CONTRACT } from '../../../laf-backend/functions/_shared/learning-visual.js';
 import { PRESSURE_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-pressure.js';
 import {
   createScienceQuestion,
@@ -877,16 +878,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       (/^函数运算带练[。.!]?$/u.test(goal.trim()) ? createOatutorQuestion(id, conversation.id) : null) ||
       localPressureQuestion(id, conversation.id, goal) ||
       localDensityQuestion(id, conversation.id, goal) ||
-      (/^功与动能[。.!]?$/u.test(goal.trim())
-        ? createScienceQuestion(id, conversation.id, {
-            template: ENERGY_TEMPLATE,
-            massKg: 2,
-            initialVelocityMps: 1,
-            netForceN: 4,
-            direction: 'right',
-            physicalSeconds: 2
-          })
-        : null) ||
+      localEnergyQuestion(id, conversation.id, goal) ||
       (/^(?:英文|英语)句子组织[。.!]?$/u.test(goal.trim()) ? createSentenceQuestion(id, conversation.id) : null) ||
       (genre ? createWritingQuestion(id, conversation.id, genre) : null) ||
       (/^(?:英文|英语)通知(?:写作)?[。.!]?$/u.test(goal.trim()) ? createNoticeQuestion(id, conversation.id) : null) ||
