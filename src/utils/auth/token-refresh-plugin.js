@@ -1,3 +1,4 @@
+import { captureSession, assertSession } from '@/services/auth-storage.js';
 /**
  * Token 刷新插件
  * 管理 Token 的存取、过期检测、自动刷新和并发去重
@@ -42,15 +43,16 @@ class TokenRefreshPlugin {
   /**
    * 保存 Token（通过 storageService 加密存储）
    */
-  saveTokens(accessToken, refreshToken, expiresIn) {
+  saveTokens(accessToken, refreshToken, expiresIn, session = captureSession()) {
+    assertSession(session);
     try {
-      storageService.save(TOKEN_KEY, accessToken, true);
+      storageService.save(TOKEN_KEY, accessToken, true, session);
       if (refreshToken) {
-        storageService.save(REFRESH_TOKEN_KEY, refreshToken, true);
+        storageService.save(REFRESH_TOKEN_KEY, refreshToken, true, session);
       }
       if (expiresIn) {
         const expireTime = Date.now() + expiresIn * 1000;
-        storageService.save(TOKEN_EXPIRE_KEY, expireTime, true);
+        storageService.save(TOKEN_EXPIRE_KEY, expireTime, true, session);
       }
     } catch (_e) {
       // 静默
@@ -83,13 +85,9 @@ class TokenRefreshPlugin {
    * 清除所有 Token
    */
   clearTokens() {
-    try {
-      storageService.remove(TOKEN_KEY, true);
-      storageService.remove(REFRESH_TOKEN_KEY, true);
-      storageService.remove(TOKEN_EXPIRE_KEY, true);
-    } catch (_e) {
-      // 静默
-    }
+    storageService._clearRevokedCredentials();
+    this.stopPreCheckTimer();
+    this.refreshRetryCount = 0;
   }
 
   /**
@@ -122,6 +120,8 @@ class TokenRefreshPlugin {
    * 刷新 Token（支持并发去重）
    */
   async refreshToken() {
+    const session = captureSession();
+    assertSession(session);
     // 并发去重
     if (this._refreshPromise) {
       return this._refreshPromise;
@@ -154,11 +154,12 @@ class TokenRefreshPlugin {
     this._refreshPromise = (async () => {
       try {
         const result = await this._refreshTokenFn(currentRefreshToken);
+        assertSession(session);
         const newAccessToken = result.accessToken || result.access_token;
         const newRefreshToken = result.refreshToken || result.refresh_token;
         const expiresIn = result.expiresIn || result.expires_in || 3600;
 
-        this.saveTokens(newAccessToken, newRefreshToken, expiresIn);
+        this.saveTokens(newAccessToken, newRefreshToken, expiresIn, session);
         this.refreshRetryCount = 0;
         return newAccessToken;
       } catch (err) {
@@ -176,11 +177,15 @@ class TokenRefreshPlugin {
    * 包装请求，自动处理 401
    */
   async wrapRequest(requestFn) {
+    const session = captureSession();
+    assertSession(session);
     try {
       return await requestFn();
     } catch (err) {
       if (err && (err.statusCode === 401 || err.status === 401)) {
+        assertSession(session);
         const newToken = await this.refreshToken();
+        assertSession(session);
         if (newToken) {
           return await requestFn();
         }
@@ -194,7 +199,14 @@ class TokenRefreshPlugin {
    */
   startPreCheckTimer() {
     this.stopPreCheckTimer();
+    const session = captureSession();
     this._preCheckTimer = setInterval(() => {
+      try {
+        assertSession(session);
+      } catch {
+        this.stopPreCheckTimer();
+        return;
+      }
       if (this.isTokenExpiringSoon()) {
         this.refreshToken().catch((_err) => {
           /* silent refresh failure */

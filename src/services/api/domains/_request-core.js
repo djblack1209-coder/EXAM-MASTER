@@ -12,7 +12,7 @@
 
 import { logger } from '@/utils/logger.js';
 import config from '../../../config/index.js';
-import { getUserId, getToken, getLoginSessionEpoch } from '../../auth-storage.js';
+import { captureSession, checkSession, sessionForRequest, readSessionSnapshot } from '../../auth-storage.js';
 import { perfMonitor } from '@/utils/core/performance.js';
 
 // ==================== 双服务器自动切换 ====================
@@ -391,9 +391,10 @@ function _cacheKey(path, data, scope = 'public') {
 function _getAuthCacheScope(options = {}) {
   if (options.skipAuth) return 'public';
   try {
-    const userId = getUserId();
-    const token = getToken();
-    const session = getLoginSessionEpoch();
+    const snapshot = readSessionSnapshot();
+    const userId = snapshot.session?.owner;
+    const token = snapshot.token;
+    const session = snapshot.session?.epoch;
     if (
       !_authIdentity ||
       _authIdentity.userId !== userId ||
@@ -484,16 +485,41 @@ function _checkRateLimit(path) {
  */
 export async function request(path, data = {}, options = {}) {
   const requestError = (error) => normalizeError(error, `请求 ${path}`, { redact: options.redactErrors });
+  const readOnly =
+    (CACHEABLE_ACTIONS.has(data?.action) && !(path === '/achievement-manager' && data?.action === 'check')) ||
+    [
+      'get',
+      'status',
+      'getDailyStats',
+      'getTrend',
+      'getOverview',
+      'getRankInfo',
+      'getDueCards',
+      'getCard',
+      'getStats',
+      'search',
+      'list',
+      'load'
+    ].includes(data?.action);
+  const session = options.session || (!options.skipAuth && readOnly ? captureSession() : null);
   const authScope = _getAuthCacheScope(options);
   let cancelled = false;
   let activeTask = null;
   let rejectActive = null;
   const assertActive = () => {
     if (cancelled) throw { message: '请求已取消', retryable: false, errorType: 'cancelled' };
-    if (!options.skipAuth && authScope !== _getAuthCacheScope(options)) {
+    options.assertCurrent?.();
+    if (!options.skipAuth && checkSession(session) === 'unavailable')
+      throw { message: '登录状态暂不可读，请重试', code: 503, retryable: false, errorType: 'session_unavailable' };
+    if (!options.skipAuth && (checkSession(session) !== 'current' || authScope !== _getAuthCacheScope(options))) {
       throw { message: '账户已变化，请重新操作', retryable: false, errorType: 'account_changed' };
     }
   };
+  try {
+    assertActive();
+  } catch (error) {
+    throw requestError(error);
+  }
   // 网络连通性预检 — 离线时快速失败
   if (!options.skipNetworkCheck) {
     const isOnline = await _checkNetwork();
@@ -554,22 +580,6 @@ export async function request(path, data = {}, options = {}) {
     headers['X-Request-Sign'] = _requestSign(path, timestamp);
 
     let requestData = data;
-    if (!options.skipAuth) {
-      try {
-        const token = getToken();
-        const userId = getUserId();
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        } else if (userId) {
-          headers['X-User-Id'] = userId;
-          if (data && typeof data === 'object' && !Array.isArray(data)) {
-            requestData = { ...data, userId };
-          }
-        }
-      } catch (e) {
-        logger.warn('[LafService] 获取认证信息失败:', e);
-      }
-    }
 
     let lastError = null;
     for (let attempt = 0; attempt <= maxRetryLoop; attempt++) {
@@ -582,6 +592,18 @@ export async function request(path, data = {}, options = {}) {
 
         const result = await new Promise((resolve, reject) => {
           rejectActive = reject;
+          // No await between the validated snapshot and transport; credentials come from this snapshot.
+          assertActive();
+          if (!options.skipAuth) {
+            const snapshot = sessionForRequest(session);
+            for (const key of Object.keys(headers)) if (/^authorization$/i.test(key)) delete headers[key];
+            if (snapshot.token) headers.Authorization = `Bearer ${snapshot.token}`;
+            else if (snapshot.session.owner !== 'guest') {
+              headers['X-User-Id'] = snapshot.session.owner;
+              if (data && typeof data === 'object' && !Array.isArray(data))
+                requestData = { ...data, userId: snapshot.session.owner };
+            }
+          }
           activeTask = uni.request({
             url: getActiveBaseUrl() + path,
             method: 'POST',

@@ -1,3 +1,4 @@
+import { captureSession, assertSession, sessionForRequest } from '@/services/auth-storage.js';
 /**
  * 认证状态管理
  * 管理 token、登录状态、登录/登出流程
@@ -44,11 +45,12 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * 设置 Token
    */
-  const setToken = (newToken) => {
+  const setToken = (newToken, session = captureSession()) => {
+    assertSession(session);
     authLifecycle++;
     token.value = newToken;
     syncLoginStatus();
-    storageService.save(APP_CONFIG.cacheKeys.token, newToken, true);
+    storageService.save(APP_CONFIG.cacheKeys.token, newToken, true, session);
   };
 
   /**
@@ -91,14 +93,15 @@ export const useAuthStore = defineStore('auth', () => {
             userId: userId,
             ...res.data
           };
-          storageService.saveLoginSession({ userId, token: res.data.token, userInfo: userData });
+          const session = await storageService.saveLoginSession({ userId, token: res.data.token, userInfo: userData });
+          assertSession(session);
 
           // 通过事件通知 profile store 设置用户信息
-          uni.$emit('auth:userdata', userData);
+          uni.$emit('auth:userdata', userData, session);
           isLogin.value = true;
 
           if (res.data.token) {
-            setToken(res.data.token);
+            setToken(res.data.token, session);
           }
 
           logger.log('✅ Laf 登录成功');
@@ -193,20 +196,21 @@ export const useAuthStore = defineStore('auth', () => {
    * 从缓存恢复用户信息
    */
   const restoreUserInfo = () => {
-    const cachedToken = storageService.get(APP_CONFIG.cacheKeys.token, null);
-    const cachedUserInfo = storageService.get(APP_CONFIG.cacheKeys.userInfo, null);
-    const cachedUserId = storageService.get('EXAM_USER_ID', null);
-
-    if (cachedToken) {
-      token.value = cachedToken;
-    }
+    const session = captureSession();
+    if (!session) return false;
+    const snapshot = sessionForRequest(session);
+    const cachedUserInfo = storageService.get(APP_CONFIG.cacheKeys.userInfo, null, { session });
+    const cachedUserId = session.owner === 'guest' ? null : session.owner;
+    assertSession(session);
+    token.value = snapshot.token || '';
 
     // 通知 profile store 恢复用户信息
     if (cachedUserInfo || cachedUserId) {
-      uni.$emit('auth:restore', { cachedUserInfo, cachedUserId });
+      uni.$emit('auth:restore', { cachedUserInfo, cachedUserId, session });
     }
 
     syncLoginStatus();
+    return true;
   };
 
   /**
@@ -214,15 +218,14 @@ export const useAuthStore = defineStore('auth', () => {
    */
   // [AUDIT R432] 移除多余 async（函数体内无 await）
   const silentLogin = () => {
+    storageService.getSessionEpoch();
+    if (!storageService.captureSession()) return { success: false, error: new Error('登录状态暂不可用，请重试') };
     restoreUserInfo();
 
     if (isLogin.value) {
       try {
-        storageService.saveLoginSession({
-          userId: storageService.get('EXAM_USER_ID', null),
-          token: token.value,
-          userInfo: _userInfoRef?.value
-        });
+        storageService.getSessionEpoch();
+        if (!storageService.captureSession()) return { success: false, error: new Error('登录状态暂不可用，请重试') };
       } catch (error) {
         return { success: false, error };
       }

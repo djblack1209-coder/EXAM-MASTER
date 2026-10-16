@@ -1,3 +1,4 @@
+import { captureSession } from '../../auth-storage.js';
 /**
  * 题库与练习 API
  * 职责：题库浏览/随机抽题、FSRS 间隔重复优化、Anki 导入导出、
@@ -24,15 +25,20 @@ import { request, normalizeError } from './_request-core.js';
  * @returns {Promise} 返回随机题目数组
  */
 export async function getRandomQuestions(params = {}) {
+  const session = captureSession();
   try {
-    const response = await request('/question-bank', {
-      action: 'random',
-      data: {
-        count: params.count || 20,
-        category: params.category,
-        difficulty: params.difficulty
-      }
-    });
+    const response = await request(
+      '/question-bank',
+      {
+        action: 'random',
+        data: {
+          count: params.count || 20,
+          category: params.category,
+          difficulty: params.difficulty
+        }
+      },
+      { session }
+    );
     return response;
   } catch (error) {
     logger.warn('[LafService] 随机获取题目失败:', error);
@@ -44,10 +50,15 @@ export async function getRandomQuestions(params = {}) {
  * 获取题库分类统计
  */
 export async function getQuestionBankStats() {
+  const session = captureSession();
   try {
-    return await request('/question-bank', {
-      action: 'get_stats'
-    });
+    return await request(
+      '/question-bank',
+      {
+        action: 'get_stats'
+      },
+      { session }
+    );
   } catch (error) {
     logger.warn('[LafService] 获取题库统计失败:', error);
     return normalizeError(error, '获取题库统计');
@@ -58,11 +69,16 @@ export async function getQuestionBankStats() {
  * 浏览题库（分页+筛选）
  */
 export async function browseQuestions(params = {}) {
+  const session = captureSession();
   try {
-    return await request('/question-bank', {
-      action: 'get',
-      data: params
-    });
+    return await request(
+      '/question-bank',
+      {
+        action: 'get',
+        data: params
+      },
+      { session }
+    );
   } catch (error) {
     logger.warn('[LafService] 浏览题库失败:', error);
     return normalizeError(error, '浏览题库');
@@ -73,11 +89,16 @@ export async function browseQuestions(params = {}) {
  * 从题库随机抽题开始练习
  */
 export async function getQuestionBankRandom(params = {}) {
+  const session = captureSession();
   try {
-    return await request('/question-bank', {
-      action: 'random',
-      data: params
-    });
+    return await request(
+      '/question-bank',
+      {
+        action: 'random',
+        data: params
+      },
+      { session }
+    );
   } catch (error) {
     logger.warn('[LafService] 随机抽题失败:', error);
     return normalizeError(error, '随机抽题');
@@ -90,10 +111,15 @@ export async function getQuestionBankRandom(params = {}) {
  * 触发 FSRS 参数优化（需要至少 50 条复习记录）
  */
 export async function optimizeFSRS() {
+  const session = captureSession();
   try {
-    return await request('/fsrs-optimizer', {
-      action: 'optimize'
-    });
+    return await request(
+      '/fsrs-optimizer',
+      {
+        action: 'optimize'
+      },
+      { session }
+    );
   } catch (error) {
     logger.warn('[LafService] FSRS优化失败:', error);
     return normalizeError(error, 'FSRS优化');
@@ -104,10 +130,15 @@ export async function optimizeFSRS() {
  * 获取 FSRS 优化状态
  */
 export async function getFSRSStatus() {
+  const session = captureSession();
   try {
-    return await request('/fsrs-optimizer', {
-      action: 'getStatus'
-    });
+    return await request(
+      '/fsrs-optimizer',
+      {
+        action: 'getStatus'
+      },
+      { session }
+    );
   } catch (error) {
     logger.warn('[LafService] 获取FSRS状态失败:', error);
     return normalizeError(error, '获取FSRS状态');
@@ -118,10 +149,15 @@ export async function getFSRSStatus() {
  * 获取用户记忆留存率曲线数据
  */
 export async function getFSRSRetentionCurve() {
+  const session = captureSession();
   try {
-    return await request('/fsrs-optimizer', {
-      action: 'getRetentionCurve'
-    });
+    return await request(
+      '/fsrs-optimizer',
+      {
+        action: 'getRetentionCurve'
+      },
+      { session }
+    );
   } catch (error) {
     logger.warn('[LafService] 获取留存率曲线失败:', error);
     return normalizeError(error, '获取留存率曲线');
@@ -132,10 +168,15 @@ export async function getFSRSRetentionCurve() {
  * 获取用户个性化 FSRS 参数（含优化状态信息）
  */
 export async function getFSRSParams() {
+  const session = captureSession();
   try {
-    return await request('/fsrs-optimizer', {
-      action: 'get_params'
-    });
+    return await request(
+      '/fsrs-optimizer',
+      {
+        action: 'get_params'
+      },
+      { session }
+    );
   } catch (error) {
     logger.warn('[Practice] 获取FSRS参数失败:', error);
     return normalizeError(error, '获取FSRS参数');
@@ -146,10 +187,15 @@ export async function getFSRSParams() {
  * 获取用户复习统计数据（用于学习分析和遗忘曲线）
  */
 export async function getFSRSReviewStats() {
+  const session = captureSession();
   try {
-    return await request('/fsrs-optimizer', {
-      action: 'get_review_stats'
-    });
+    return await request(
+      '/fsrs-optimizer',
+      {
+        action: 'get_review_stats'
+      },
+      { session }
+    );
   } catch (error) {
     logger.warn('[Practice] 获取复习统计失败:', error);
     return normalizeError(error, '获取复习统计');
@@ -163,8 +209,9 @@ export async function getFSRSReviewStats() {
  * @param {string} [deckName='我的考研题库'] - 牌组名称
  */
 export async function exportAnki(deckName = '我的考研题库') {
+  const session = captureSession();
   try {
-    return await request('/anki-export', { deckName });
+    return await request('/anki-export', { deckName }, { session });
   } catch (error) {
     logger.warn('[Practice] Anki导出失败:', error);
     return normalizeError(error, 'Anki导出');
@@ -180,14 +227,12 @@ export async function exportAnki(deckName = '我的考研题库') {
  * @param {number} [options.maxRetries=1] - 最大重试次数
  */
 export async function ankiImport(fileData, fileName, options = {}) {
+  const session = options.session || captureSession();
   try {
     return await request(
       '/anki-import',
       { fileData, fileName },
-      {
-        timeout: options.timeout,
-        maxRetries: options.maxRetries ?? 1
-      }
+      { session, timeout: options.timeout, maxRetries: options.maxRetries ?? 1 }
     );
   } catch (error) {
     logger.warn('[Practice] Anki导入失败:', error);
@@ -201,8 +246,9 @@ export async function ankiImport(fileData, fileName, options = {}) {
  * @param {Object} data - 索引参数
  */
 export async function ragIngest(action, data) {
+  const session = captureSession();
   try {
-    return await request('/rag-ingest', { action, data });
+    return await request('/rag-ingest', { action, data }, { session });
   } catch (error) {
     logger.warn('[Practice] RAG索引失败:', error);
     return normalizeError(error, 'RAG索引');
@@ -215,9 +261,10 @@ export async function ragIngest(action, data) {
  * 通用错题管理请求
  * @param {Object} params - { action, userId, data, ... }
  */
-async function mistakeManager(params) {
+async function mistakeManager(params, options = { session: captureSession() }) {
+  const session = options.session;
   try {
-    return await request('/mistake-manager', params, { skipCache: true });
+    return await request('/mistake-manager', params, { session, skipCache: true });
   } catch (error) {
     logger.warn('[Practice] 错题管理失败:', error);
     return normalizeError(error, '错题管理');
@@ -229,8 +276,9 @@ async function mistakeManager(params) {
  * @param {string} userId - 用户 ID
  * @param {Object} mistakeData - 错题数据
  */
-export async function addMistake(userId, mistakeData) {
-  return mistakeManager({ action: 'add', data: mistakeData, userId });
+export async function addMistake(userId, mistakeData, options = { session: captureSession() }) {
+  const session = options.session;
+  return mistakeManager({ action: 'add', data: mistakeData, userId }, { session });
 }
 
 /**
@@ -238,43 +286,49 @@ export async function addMistake(userId, mistakeData) {
  * @param {string} userId - 用户 ID
  * @param {Object} params - { page, limit, is_mastered, id }
  */
-export async function getMistakes(userId, params = {}) {
-  return mistakeManager({ action: 'get', userId, data: params });
+export async function getMistakes(userId, params = {}, options = { session: captureSession() }) {
+  const session = options.session;
+  return mistakeManager({ action: 'get', userId, data: params }, { session });
 }
 
 /**
  * 删除单条错题
  */
-export async function removeMistake(userId, id) {
-  return mistakeManager({ action: 'remove', data: { id }, userId });
+export async function removeMistake(userId, id, options = { session: captureSession() }) {
+  const session = options.session;
+  return mistakeManager({ action: 'remove', data: { id }, userId }, { session });
 }
 
 /**
  * 批量删除错题
  */
-export async function batchRemoveMistakes(userId, ids) {
-  return mistakeManager({ action: 'batchRemove', data: { ids }, userId });
+export async function batchRemoveMistakes(userId, ids, options = { session: captureSession() }) {
+  const session = options.session;
+  return mistakeManager({ action: 'batchRemove', data: { ids }, userId }, { session });
 }
 
 /**
  * 更新错题掌握状态
  */
-export async function updateMistakeStatus(userId, id, isMastered) {
-  return mistakeManager({ action: 'updateStatus', data: { id, is_mastered: isMastered }, userId });
+export async function updateMistakeStatus(userId, id, isMastered, options = { session: captureSession() }) {
+  const session = options.session;
+  return mistakeManager({ action: 'updateStatus', data: { id, is_mastered: isMastered }, userId }, { session });
 }
 
 /**
  * 更新错题字段
  */
-export async function updateMistakeFields(userId, id, fields) {
-  return mistakeManager({ action: 'updateFields', userId, data: { id, fields } });
+export async function updateMistakeFields(userId, id, fields, options = { session: captureSession() }) {
+  const session = options.session;
+  return mistakeManager({ action: 'updateFields', userId, data: { id, fields } }, { session });
 }
 
 /**
  * 批量同步错题到云端
  */
-export async function batchSyncMistakes(userId, mistakes) {
-  return mistakeManager({ action: 'batchSync', userId, data: { mistakes } });
+export async function batchSyncMistakes(userId, mistakes, options = { session: captureSession() }) {
+  const session = options.session;
+  return mistakeManager({ action: 'batchSync', userId, data: { mistakes } }, { session });
 }
 
 // ==================== 答题提交 ====================
@@ -286,13 +340,18 @@ export async function batchSyncMistakes(userId, mistakes) {
  * @param {Object} params.data - 答题数据 { question_id, user_answer, session_id, duration, practice_mode }
  * @returns {Promise} 返回提交结果
  */
-export async function submitAnswer(params) {
+export async function submitAnswer(params, options = { session: captureSession() }) {
+  const session = options.session;
   try {
-    const response = await request('/answer-submit', {
-      action: 'submit',
-      idempotencyKey: params.idempotencyKey,
-      data: params.data
-    });
+    const response = await request(
+      '/answer-submit',
+      {
+        action: 'submit',
+        idempotencyKey: params.idempotencyKey,
+        data: params.data
+      },
+      { session }
+    );
     return response;
   } catch (error) {
     logger.warn('[LafService] 答题提交失败:', error);

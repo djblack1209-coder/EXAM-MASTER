@@ -298,7 +298,18 @@ function isSensitiveKey(key) {
 }
 
 // ✅ 从独立模块导入认证函数（打破循环依赖）
-import { getUserId, getToken, getLoginSessionEpoch, LOGIN_SESSION_EPOCH_KEY } from './auth-storage.js';
+import {
+  getUserId,
+  getToken,
+  getLoginSessionEpoch,
+  LOGIN_SESSION_EPOCH_KEY,
+  SESSION_ENABLED_KEY,
+  captureSession,
+  checkSession,
+  assertSession,
+  readSessionSnapshot,
+  sessionCredentialProof
+} from './auth-storage.js';
 import { toast } from '@/utils/toast.js';
 
 // ✅ 用户隔离：全局键（不加 userId 前缀）
@@ -307,6 +318,7 @@ const GLOBAL_KEYS = new Set([
   // 认证/身份 — 标识当前登录用户，必须全局
   'EXAM_TOKEN',
   'EXAM_SESSION_EPOCH',
+  'EXAM_SESSION_ENABLED',
   'EXAM_USER_ID',
   'EXAM_USER_INFO',
   'userInfo',
@@ -381,11 +393,11 @@ function migratePlainSensitiveKey(key) {
  * @param {string} key - 原始键名
  * @returns {string} 实际存储键名
  */
-function resolveKey(key) {
+function resolveKey(key, session) {
   // 全局键 / 内部加密前缀 / 动态全局模式 → 原样返回
   if (isUnscopedKey(key)) return key;
 
-  const uid = getUserId();
+  const uid = session ? (session.owner === 'guest' ? null : session.owner) : getUserId();
   if (!uid) return key; // 未登录降级
   return `u_${uid}_${key}`;
 }
@@ -456,47 +468,124 @@ class StorageService {
     this._guestMistakeReadWarned = false;
   }
 
-  getSessionEpoch({ migrateLegacy = true } = {}) {
-    const epoch = getLoginSessionEpoch();
-    if (epoch || !migrateLegacy || !getUserId()?.trim?.() || !getToken()) return epoch;
-    // Upgrade once at the first session read; ordinary request checks stay read only.
-    return this._newSessionEpoch();
+  captureSession() {
+    return captureSession();
+  }
+  checkSession(session) {
+    return checkSession(session);
   }
 
-  _newSessionEpoch() {
+  getSessionEpoch({ migrateLegacy = true } = {}) {
+    const snapshot = readSessionSnapshot();
+    if (snapshot.status === 'unavailable') return null;
+    if (snapshot.status === 'changed') {
+      // The device has already upgraded. A missing epoch is final, even after remount.
+      this._finishRevocation();
+      return null;
+    }
+    if (!migrateLegacy || !snapshot.token || snapshot.session.owner === 'guest') return snapshot.session.epoch;
+    if (snapshot.enabled) return snapshot.session.epoch;
+    // Only the never-enabled legacy format may be upgraded, without changing its epoch.
+    return this._newSessionEpoch(snapshot.session.epoch || undefined, { ...snapshot.session, token: snapshot.token });
+  }
+
+  _finishRevocation() {
+    const locks = typeof navigator !== 'undefined' ? navigator.locks : null;
+    if (!locks?.request) {
+      this._clearRevokedCredentials();
+      return;
+    }
+    // Another window may be between epoch deletion and the final login commit.
+    // Revoke old consumers immediately, but serialize credential cleanup with that writer.
+    if (!this._revocationCleanup)
+      this._revocationCleanup = locks
+        .request('exam-master:login-session-v1', { mode: 'exclusive' }, () => {
+          if (readSessionSnapshot().status === 'changed') this._clearRevokedCredentials();
+        })
+        .catch(() => undefined)
+        .finally(() => {
+          this._revocationCleanup = null;
+        });
+  }
+
+  _clearRevokedCredentials() {
+    identityWriteDepth++;
+    try {
+      removeLoginEpoch();
+      for (const key of [
+        'EXAM_USER_ID',
+        'EXAM_TOKEN',
+        'userInfo',
+        'EXAM_USER_INFO',
+        'access_token',
+        'refresh_token',
+        'token_expire_time'
+      ]) {
+        uni.removeStorageSync(key);
+        uni.removeStorageSync(`_enc_${key}`);
+      }
+      clearPendingWrites();
+      pendingIdentityChange = { type: 'logout' };
+    } finally {
+      identityWriteDepth--;
+      if (!identityWriteDepth) {
+        pendingIdentityChange = undefined;
+        notifyIdentityChange({ type: 'logout' });
+      }
+    }
+  }
+
+  _newSessionEpoch(existing, expected) {
     const epoch =
+      existing ||
       globalThis.crypto?.randomUUID?.() ||
       `session_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}_${Math.random().toString(36).slice(2)}`;
-    if (!this.save(LOGIN_SESSION_EPOCH_KEY, epoch, true) || getLoginSessionEpoch() !== epoch)
-      throw new Error('登录状态未保存，请重新登录');
+    const owner = expected?.owner || getUserId(),
+      token = expected?.token || getToken();
+    if (expected && (getUserId() !== owner || getToken() !== token || getLoginSessionEpoch() !== expected.epoch))
+      throw new Error('登录会话已变化，凭据未重新绑定');
+    if (!owner || !token) throw new Error('登录结果不完整，请重新登录');
+    const record = { version: 1, epoch, owner, proof: sessionCredentialProof(owner, token) };
+    if (!this.save(LOGIN_SESSION_EPOCH_KEY, record, true)) throw new Error('登录状态未保存，请重新登录');
+    uni.setStorageSync(SESSION_ENABLED_KEY, true);
+    if (checkSession(Object.freeze({ owner, epoch })) !== 'current') throw new Error('登录状态未保存，请重新登录');
     return epoch;
   }
 
   saveLoginSession({ userId, token, userInfo }) {
     if (typeof userId !== 'string' || !userId.trim() || typeof token !== 'string' || !token.trim())
       throw new Error('登录结果不完整，请重新登录');
-    identityWriteDepth++;
-    try {
-      if (
-        !this.save('EXAM_USER_ID', userId, true) ||
-        !this.save('userInfo', userInfo, true) ||
-        !this.save('EXAM_TOKEN', token, true)
-      )
-        throw new Error('登录状态未保存，请重新登录');
-      this._newSessionEpoch();
-      return true;
-    } catch (failure) {
-      removeLoginEpoch();
-      pendingIdentityChange = { type: 'logout' };
-      throw failure;
-    } finally {
-      identityWriteDepth--;
-      if (!identityWriteDepth) {
-        const change = pendingIdentityChange;
-        pendingIdentityChange = undefined;
-        notifyIdentityChange(change);
+    userInfo = userInfo === undefined ? null : JSON.parse(JSON.stringify(userInfo));
+    const write = () => {
+      identityWriteDepth++;
+      try {
+        uni.setStorageSync(SESSION_ENABLED_KEY, true);
+        removeLoginEpoch();
+        if (
+          !this.save('EXAM_USER_ID', userId, true) ||
+          !this.save('userInfo', userInfo, true) ||
+          !this.save('EXAM_TOKEN', token, true)
+        )
+          throw new Error('登录状态未保存，请重新登录');
+        // Never bless a foreign owner's credentials after an interleaved write.
+        if (getUserId() !== userId || getToken() !== token) throw new Error('登录状态未保存，请重新登录');
+        this._newSessionEpoch(undefined, { owner: userId, token, epoch: null });
+        return captureSession();
+      } catch (failure) {
+        removeLoginEpoch();
+        pendingIdentityChange = { type: 'logout' };
+        throw new Error('登录状态未保存，请重新登录', { cause: failure });
+      } finally {
+        identityWriteDepth--;
+        if (!identityWriteDepth) {
+          const change = pendingIdentityChange;
+          pendingIdentityChange = undefined;
+          notifyIdentityChange(change);
+        }
       }
-    }
+    };
+    const locks = typeof navigator !== 'undefined' ? navigator.locks : null;
+    return locks?.request ? locks.request('exam-master:login-session-v1', { mode: 'exclusive' }, write) : write();
   }
 
   /** Subscribe without exposing identity values; dispose with the consumer's scope. */
@@ -552,9 +641,9 @@ class StorageService {
   }
 
   prepareQuizReview({ ids, expectedOwner, paperId = '' } = {}) {
-    const owner = getUserId() || '',
-      token = getToken() || '';
-    const current = () => (getUserId() || '') === owner && (getToken() || '') === token;
+    const session = captureSession(),
+      owner = session?.owner === 'guest' ? '' : session?.owner;
+    const current = () => checkSession(session) === 'current';
     if (expectedOwner !== owner) return { success: false, code: 'CONTEXT_CHANGED' };
     try {
       const bank = this.get('v30_bank', [], { migrateLegacy: false, throwOnError: true });
@@ -562,7 +651,8 @@ class StorageService {
       const handoff = createQuizReviewHandoff(selected, owner, paperId);
       if (!handoff) return { success: false, code: 'ORIGINAL_UNAVAILABLE' };
       if (!current()) return { success: false, code: 'CONTEXT_CHANGED' };
-      if (this.save(QUIZ_REVIEW_HANDOFF_KEY, handoff, true) !== true) return { success: false, code: 'SAVE_FAILED' };
+      if (this.save(QUIZ_REVIEW_HANDOFF_KEY, handoff, true, session) !== true)
+        return { success: false, code: 'SAVE_FAILED' };
       if (!current()) return { success: false, code: 'CONTEXT_CHANGED' };
       const saved = this.get(QUIZ_REVIEW_HANDOFF_KEY, null, { migrateLegacy: false, throwOnError: true });
       if (!current()) return { success: false, code: 'CONTEXT_CHANGED' };
@@ -581,9 +671,11 @@ class StorageService {
   }
 
   _mistakeContext() {
-    const owner = getUserId() || '',
-      token = getToken() || '';
-    return () => (getUserId() || '') === owner && (getToken() || '') === token;
+    const session = captureSession(),
+      token = getToken();
+    const current = () => checkSession(session) === 'current' && getToken() === token;
+    current.session = session;
+    return current;
   }
 
   _mistakeContextChanged() {
@@ -645,7 +737,7 @@ class StorageService {
     return fields;
   }
 
-  async _updateMistakeFieldsInCloud(userId, mistakeId, mistakeData) {
+  async _updateMistakeFieldsInCloud(userId, mistakeId, mistakeData, current) {
     if (!userId || !mistakeId || String(mistakeId).startsWith('local_')) {
       return { confirmed: false };
     }
@@ -656,7 +748,7 @@ class StorageService {
     }
 
     try {
-      const res = await apiUpdateMistakeFields(userId, mistakeId, fields);
+      const res = await apiUpdateMistakeFields(userId, mistakeId, fields, { session: current.session });
       const resAny = /** @type {any} */ (res);
       return {
         confirmed: resAny?.success !== false && Boolean(resAny?.ok === true || resAny?.code === 0),
@@ -675,14 +767,17 @@ class StorageService {
    * @param {boolean} silent - 是否静默失败（不显示错误提示）
    * @returns {boolean} 是否保存成功
    */
-  save(key, value, silent = false) {
+  save(key, value, silent = false, session) {
     try {
+      if (session !== undefined) assertSession(session);
+      else if (!isUnscopedKey(key)) session = assertSession(captureSession());
+      const previous = key === 'EXAM_TOKEN' && value && !identityWriteDepth ? readSessionSnapshot() : null;
       if (
         (key === 'EXAM_USER_ID' && value !== getUserId()) ||
         (['EXAM_TOKEN', 'access_token', 'refresh_token'].includes(key) && !value)
       )
         removeLoginEpoch();
-      const rk = resolveKey(key);
+      const rk = resolveKey(key, session);
       // ✅ B021: 敏感数据加密后存储
       if (isSensitiveKey(key)) {
         const encrypted = obfuscate(value);
@@ -701,11 +796,15 @@ class StorageService {
             } catch {
               /* ignore */
             }
+            if (previous?.status === 'current' && previous.token && previous.session.epoch && previous.token !== value)
+              this._newSessionEpoch(previous.session.epoch, { ...previous.session, token: value });
             return true;
           });
         }
       }
       uni.setStorageSync(rk, value);
+      if (previous?.status === 'current' && previous.token && previous.session.epoch && previous.token !== value)
+        this._newSessionEpoch(previous.session.epoch, { ...previous.session, token: value });
       return true;
     } catch (error) {
       logger.error(`[StorageService] 保存失败: ${key}`, error);
@@ -726,25 +825,27 @@ class StorageService {
    * @param {any} value - 要存储的值
    * @param {boolean} silent - 是否静默失败
    */
-  saveDebounced(key, value, silent = true) {
+  saveDebounced(key, value, silent = true, session = captureSession()) {
+    if (checkSession(session) !== 'current') return false;
+    value = JSON.parse(JSON.stringify(value));
     const existing = _pendingWrites.get(key);
     if (existing) {
       clearTimeout(existing.timer);
     }
     const timer = setTimeout(() => {
-      this.save(key, value, silent);
+      this.save(key, value, silent, session);
       _pendingWrites.delete(key);
     }, DEBOUNCE_DELAY);
-    _pendingWrites.set(key, { value, timer });
+    _pendingWrites.set(key, { value: JSON.parse(JSON.stringify(value)), timer, session });
   }
 
   /**
    * 立即刷新所有待写入的防抖数据（页面卸载时调用）
    */
   flushPendingWrites() {
-    _pendingWrites.forEach(({ value, timer }, key) => {
+    _pendingWrites.forEach(({ value, timer, session }, key) => {
       clearTimeout(timer);
-      this.save(key, value, true);
+      this.save(key, value, true, session);
     });
     _pendingWrites.clear();
   }
@@ -755,12 +856,17 @@ class StorageService {
    * @param {any} defaultValue - 如果不存在时返回的默认值
    * @returns {any} 存储的值或默认值
    */
-  get(key, defaultValue = null, { migrateLegacy = true, throwOnError = false } = {}) {
+  get(key, defaultValue = null, { migrateLegacy = true, throwOnError = false, session } = {}) {
     try {
-      const rk = resolveKey(key);
+      if (session === undefined && !isUnscopedKey(key)) session = captureSession();
+      if (session !== undefined) assertSession(session);
+      const rk = resolveKey(key, session);
       const read = (name) => {
         const runtime = getRuntimeUni();
-        return throwOnError && runtime === uniCompat ? runtime.getStorageSyncStrict(name) : uni.getStorageSync(name);
+        const value =
+          throwOnError && runtime === uniCompat ? runtime.getStorageSyncStrict(name) : uni.getStorageSync(name);
+        if (session) assertSession(session);
+        return value;
       };
       // ✅ B021: 优先读取加密存储的敏感数据
       if (isSensitiveKey(key)) {
@@ -773,7 +879,7 @@ class StorageService {
         const plainValue = read(rk);
         if (plainValue !== '' && plainValue !== null && plainValue !== undefined) {
           // 自动迁移：将明文数据加密后重新存储
-          if (migrateLegacy) this.save(key, plainValue, true);
+          if (migrateLegacy) this.save(key, plainValue, true, session);
           return plainValue;
         }
         // 二次回退：读取无前缀的旧数据（用户隔离迁移期间）
@@ -783,7 +889,7 @@ class StorageService {
             const dec = deobfuscate(legacyEnc);
             if (dec !== null) {
               // 自动迁移到带前缀的 key
-              if (this.save(key, dec, true)) {
+              if (this.save(key, dec, true, session)) {
                 try {
                   uni.removeStorageSync(`_enc_${key}`);
                 } catch {
@@ -800,13 +906,13 @@ class StorageService {
       // uni.getStorageSync 在 key 不存在时返回空字符串，需要判断
       if (value === '' || value === null || value === undefined) {
         // 新学习事实显式绑定 owner，不从游客命名空间回退或自动迁移。
-        if (isOwnedLearningKey(key) || PRIVATE_QUIZ_KEYS.has(key) || !migrateLegacy) return defaultValue;
+        if (isDurableLearningKey(key) || PRIVATE_QUIZ_KEYS.has(key) || !migrateLegacy) return defaultValue;
         // 回退：读取无前缀的旧数据（用户隔离迁移期间）
         if (rk !== key && migrateLegacy) {
           const legacyValue = read(key);
           if (legacyValue !== '' && legacyValue !== null && legacyValue !== undefined) {
             // 自动迁移到带前缀的 key
-            if (this.save(key, legacyValue, true)) {
+            if (this.save(key, legacyValue, true, session)) {
               try {
                 uni.removeStorageSync(key);
               } catch {
@@ -821,7 +927,7 @@ class StorageService {
       return value;
     } catch (error) {
       logger.error(`[StorageService] 读取失败: ${key}`, error);
-      if (throwOnError) throw error;
+      if (throwOnError || (session && ['CONTEXT_CHANGED', 'SESSION_UNAVAILABLE'].includes(error.code))) throw error;
       return defaultValue;
     }
   }
@@ -832,10 +938,12 @@ class StorageService {
    * @param {boolean} silent - 是否静默失败
    * @returns {boolean} 是否删除成功
    */
-  remove(key, silent = false) {
+  remove(key, silent = false, session) {
     try {
+      if (session !== undefined) assertSession(session);
+      else if (!isUnscopedKey(key)) session = assertSession(captureSession());
       if (isIdentityStorageKey(key)) removeLoginEpoch();
-      const rk = resolveKey(key);
+      const rk = resolveKey(key, session);
       uni.removeStorageSync(rk);
       // ✅ B021: 同时清理加密存储
       if (isSensitiveKey(key)) {
@@ -846,7 +954,7 @@ class StorageService {
         }
       }
       // 清理旧的无前缀数据（迁移期间）
-      if (rk !== key) {
+      if (rk !== key && !session) {
         try {
           uni.removeStorageSync(key);
         } catch {
@@ -884,12 +992,15 @@ class StorageService {
       const preserveKeys = Array.isArray(options.preserveKeys) ? options.preserveKeys : [];
 
       if (!preserveGlobal && preserveKeys.length === 0) {
+        const enabled = uni.getStorageSync(SESSION_ENABLED_KEY);
+        removeLoginEpoch();
         uni.clearStorageSync();
+        if (enabled) uni.setStorageSync(SESSION_ENABLED_KEY, true);
         clearPendingWrites();
         return true;
       }
 
-      const keep = new Set();
+      const keep = new Set([SESSION_ENABLED_KEY]);
 
       if (preserveGlobal) {
         SENSITIVE_KEYS.forEach((key) => {
@@ -1103,12 +1214,10 @@ class StorageService {
    * @param {boolean} silent - 是否静默失败
    * @returns {boolean} 是否全部保存成功
    */
-  saveBatch(data, silent = false) {
+  saveBatch(data, silent = false, session = captureSession()) {
     try {
-      Object.keys(data).forEach((key) => {
-        this.save(key, data[key], true); // 批量操作时静默单个失败
-      });
-      return true;
+      assertSession(session);
+      return Object.keys(data).every((key) => this.save(key, data[key], true, session));
     } catch (error) {
       logger.error('[StorageService] 批量保存失败', error);
       if (!silent) {
@@ -1215,7 +1324,7 @@ class StorageService {
       if (!localMistake || localMistake.sync_status !== 'conflict') return { success: false, error: '未找到冲突记录' };
       let response;
       try {
-        response = await apiGetMistakes(userId, { id: mistakeId });
+        response = await apiGetMistakes(userId, { id: mistakeId }, { session: current.session });
       } catch (error) {
         if (!current() || this._mistakeRequestCancelled(error)) return this._mistakeContextChanged();
         return { success: false, code: 'CONFLICT_UNCONFIRMED', error: '云端版本未确认，原冲突保留' };
@@ -1282,7 +1391,7 @@ class StorageService {
           delete resolvedData.note;
         }
         delete resolvedData._conflict_cloud_data;
-        const persisted = await this._updateMistakeFieldsInCloud(userId, mistakeId, resolvedData);
+        const persisted = await this._updateMistakeFieldsInCloud(userId, mistakeId, resolvedData, current);
         if (!current() || persisted.cancelled) return this._mistakeContextChanged();
         if (!persisted.confirmed)
           return { success: false, code: 'CONFLICT_UNCONFIRMED', error: '云端未确认保存，原冲突保留' };
@@ -1298,7 +1407,8 @@ class StorageService {
       delete resolvedData._needs_remote_merge;
       delete resolvedData._conflict_cloud_data;
       localMistakes[index] = resolvedData;
-      if (!this.save('mistake_book', localMistakes, true)) return this._mistakeSaveFailed({ cloudPersisted });
+      if (!this.save('mistake_book', localMistakes, true, current.session))
+        return this._mistakeSaveFailed({ cloudPersisted });
       return { success: true, strategy, data: resolvedData, cloudPersisted };
     } catch (error) {
       if (!current()) return this._mistakeContextChanged();
@@ -1340,7 +1450,7 @@ class StorageService {
     }
     return this._withMistakeBookLock(async (current) => {
       const userId = getUserId();
-      if (!userId) return this._saveMistakeLocal(original, 'local_only');
+      if (!userId) return this._saveMistakeLocal(original, 'local_only', current);
       try {
         this._mistakeBookRows();
       } catch {
@@ -1348,17 +1458,17 @@ class StorageService {
       }
       let response;
       try {
-        response = await apiAddMistake(userId, offlineMistakeToBackend(original));
+        response = await apiAddMistake(userId, offlineMistakeToBackend(original), { session: current.session });
       } catch (error) {
         if (!current() || this._mistakeRequestCancelled(error)) return this._mistakeContextChanged();
         if (['FORBIDDEN', 'RESOURCE_LIMIT', 'INVALID_INPUT'].includes(error.code))
           return { success: false, code: error.code, error: error.message };
-        return this._saveMistakeLocal(original, 'pending');
+        return this._saveMistakeLocal(original, 'pending', current);
       }
       if (!current() || this._mistakeRequestCancelled(response)) return this._mistakeContextChanged();
       const cloudId = response?.id ?? response?._id ?? response?.data?.id ?? response?.data?._id;
       const confirmed = response?.success !== false && (response?.ok === true || response?.code === 0) && cloudId;
-      if (!confirmed) return this._saveMistakeLocal(original, 'pending');
+      if (!confirmed) return this._saveMistakeLocal(original, 'pending', current);
       const localMistakes = this._mistakeBookRows();
       const existing = localMistakes.find((row) => String(row.id ?? row._id) === String(cloudId));
       if (existing) {
@@ -1379,7 +1489,7 @@ class StorageService {
         sync_status: 'synced',
         created_at: original.created_at ?? original.createdAt ?? original.addTime ?? Date.now()
       });
-      if (!this.save('mistake_book', localMistakes, true))
+      if (!this.save('mistake_book', localMistakes, true, current.session))
         return this._mistakeSaveFailed({ remoteSaved: true, id: cloudId });
       return { success: true, id: cloudId, source: 'cloud' };
     });
@@ -1398,7 +1508,7 @@ class StorageService {
    * 本地保存错题（内部方法）
    * @private
    */
-  _saveMistakeLocal(mistakeData, syncStatus = 'pending') {
+  _saveMistakeLocal(mistakeData, syncStatus = 'pending', current = this._mistakeContext()) {
     try {
       const localMistakes = this._mistakeBookRows();
       const newMistake = {
@@ -1408,7 +1518,7 @@ class StorageService {
         created_at: mistakeData.created_at ?? mistakeData.createdAt ?? mistakeData.addTime ?? Date.now()
       };
       localMistakes.unshift(newMistake);
-      if (!this.save('mistake_book', localMistakes, true)) return this._mistakeSaveFailed();
+      if (!this.save('mistake_book', localMistakes, true, current.session)) return this._mistakeSaveFailed();
 
       return {
         success: true,
@@ -1447,12 +1557,16 @@ class StorageService {
 
       try {
         logger.log(`[StorageService] 开始从云端获取错题列表 (page: ${page}, limit: ${limit})`);
-        const res = await apiGetMistakes(userId, {
-          // ✅ P2-1: 传递分页参数给后端，避免全量拉取
-          page,
-          limit,
-          ...(filters.is_mastered !== undefined ? { is_mastered: filters.is_mastered } : {})
-        });
+        const res = await apiGetMistakes(
+          userId,
+          {
+            // ✅ P2-1: 传递分页参数给后端，避免全量拉取
+            page,
+            limit,
+            ...(filters.is_mastered !== undefined ? { is_mastered: filters.is_mastered } : {})
+          },
+          { session: current.session }
+        );
         if (!current() || this._mistakeRequestCancelled(res)) return this._mistakeContextChanged();
         if (res?.success === false || (res?.code !== 0 && res?.ok !== true && res?.success !== true))
           throw new Error('历史列表读取未确认');
@@ -1484,7 +1598,7 @@ class StorageService {
           const identifiable = list.filter(
             (row) => row && (row.id ?? row._id) !== undefined && (row.id ?? row._id) !== null
           );
-          cacheSaved = this.save('mistake_book', [...identifiable, ...retained], true);
+          cacheSaved = this.save('mistake_book', [...identifiable, ...retained], true, current.session);
           if (page === 1) {
             const pending = retained.filter((row) => row && ['pending', 'local_only'].includes(row.sync_status));
             list = [...list, ...pending];
@@ -1567,7 +1681,7 @@ class StorageService {
       const userId = getUserId();
       if (!userId) return this._removeMistakeLocal(id);
       try {
-        const res = await apiRemoveMistake(userId, id);
+        const res = await apiRemoveMistake(userId, id, { session: current.session });
         if (!current() || this._mistakeRequestCancelled(res)) return this._mistakeContextChanged();
         const receipt = res?.ok === true ? res : res?.code === 0 && res?.data?.ok === true ? res.data : null;
         const local = this._removeMistakeLocal(id);
@@ -1588,7 +1702,7 @@ class StorageService {
       if (!Array.isArray(rows)) return { success: false, error: '本机条目格式异常，原记录保留' };
       const next = rows.filter((row) => (row?.id ?? row?._id) !== id);
       if (next.length === rows.length) return { success: false, code: 'NOT_FOUND', error: '错题不存在' };
-      if (!this.save('mistake_book', next, true))
+      if (!this.save('mistake_book', next, true, current.session))
         return { success: false, code: 'STORAGE_FAILED', error: '本机移除未保存，原记录保留' };
       return { success: true, source: 'local', deleted: rows.length - next.length };
     } catch (error) {
@@ -1609,7 +1723,7 @@ class StorageService {
       let receipt;
       if (userId) {
         try {
-          const res = await apiBatchRemoveMistakes(userId, requested);
+          const res = await apiBatchRemoveMistakes(userId, requested, { session: current.session });
           if (!current() || this._mistakeRequestCancelled(res)) return this._mistakeContextChanged();
           receipt = res?.ok === true ? res : res?.code === 0 && res?.data?.ok === true ? res.data : null;
         } catch (error) {
@@ -1621,7 +1735,7 @@ class StorageService {
       const rows = this.get('mistake_book', [], { migrateLegacy: false });
       if (!Array.isArray(rows)) return { success: false, error: '本机条目格式异常，原记录保留' };
       const next = this._filterMistakeBookByIds(rows, requested);
-      if (!this.save('mistake_book', next, true))
+      if (!this.save('mistake_book', next, true, current.session))
         return {
           success: false,
           code: 'STORAGE_FAILED',
@@ -1688,7 +1802,7 @@ class StorageService {
 
         let batchRes;
         try {
-          batchRes = await apiBatchSyncMistakes(userId, batchData);
+          batchRes = await apiBatchSyncMistakes(userId, batchData, { session: current.session });
         } catch (error) {
           if (!current() || this._mistakeRequestCancelled(error)) return this._mistakeContextChanged();
           return { success: false, code: 'SYNC_UNCONFIRMED', error: '同步结果未确认，原待办保留，请稍后核对' };
@@ -1724,7 +1838,7 @@ class StorageService {
 
         // 更新本地存储
         if (!current()) return this._mistakeContextChanged();
-        if (!this.save('mistake_book', localMistakes, true))
+        if (!this.save('mistake_book', localMistakes, true, current.session))
           return {
             success: false,
             code: 'STORAGE_FAILED',
@@ -1743,7 +1857,7 @@ class StorageService {
         };
 
         // 记录最后同步时间
-        if (synced > 0) this.save('last_sync_time', Date.now(), true);
+        if (synced > 0) this.save('last_sync_time', Date.now(), true, current.session);
 
         logger.log(`[StorageService] 📊 同步完成: 成功 ${synced} 条, 失败 ${failed} 条, 冲突 ${conflicts} 条`);
 

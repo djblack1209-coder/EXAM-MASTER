@@ -28,6 +28,7 @@
 </template>
 
 <script setup>
+import { assertSession } from '@/services/auth-storage.js';
 import { ref, computed, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { storageService } from '@/services/storageService.js';
@@ -58,7 +59,7 @@ let requestStarted = false;
 let redirectTimer;
 
 // 保存登录信息
-const saveLoginInfo = (data) => {
+const saveLoginInfo = async (data) => {
   if (!data.token || !(data.userId || data._id)) throw new Error('登录结果不完整，请重新登录');
   const userInfo = {
     uid: data.userId || data._id,
@@ -68,7 +69,8 @@ const saveLoginInfo = (data) => {
     avatarUrl: data.userInfo?.avatar_url || data.avatar_url || ''
   };
 
-  storageService.saveLoginSession({ userId: userInfo.uid, token: data.token, userInfo });
+  const session = await storageService.saveLoginSession({ userId: userInfo.uid, token: data.token, userInfo });
+  assertSession(session);
 
   // ✅ 用户隔离：登录后迁移无前缀的旧数据到 u_${userId}_ 前缀
   storageService.migrateUserKeys();
@@ -121,7 +123,7 @@ const handleWeChatCallback = async (options = {}) => {
     }
 
     if (res.code === 0 && res.data) {
-      saveLoginInfo(res.data);
+      await saveLoginInfo(res.data);
 
       isLoading.value = false;
       loginSuccess.value = true;

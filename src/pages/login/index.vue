@@ -151,6 +151,7 @@
   </view>
 </template>
 <script setup>
+import { assertSession } from '@/services/auth-storage.js';
 import { loginPresentation } from './messages.js';
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { onShow, onHide } from '@dcloudio/uni-app';
@@ -404,7 +405,7 @@ async function run(action, accept = false) {
         month.value = '';
         step.value = 'age';
       }
-    } else if (accept && response.data) saveLoginInfo(response.data);
+    } else if (accept && response.data) await saveLoginInfo(response.data);
     return response;
   } catch {
     if (valid()) error.value = t('login.retry');
@@ -544,7 +545,7 @@ async function wechat() {
     return null;
   }, true);
 }
-function saveLoginInfo(data) {
+async function saveLoginInfo(data) {
   if (!data.token || !data.userId) {
     error.value = t('login.retry');
     return;
@@ -556,11 +557,12 @@ function saveLoginInfo(data) {
     nickName: data.userInfo?.nickname || t('login.learner'),
     avatarUrl: data.userInfo?.avatar_url || ''
   };
-  storageService.saveLoginSession({ userId: data.userId, token: data.token, userInfo });
+  const session = await storageService.saveLoginSession({ userId: data.userId, token: data.token, userInfo });
+  assertSession(session);
   storageService.migrateUserKeys();
   const userStore = useUserStore();
-  userStore.setUserInfo?.(userInfo);
-  userStore.setToken?.(data.token);
+  userStore.setUserInfo?.(userInfo, session);
+  userStore.setToken?.(data.token, session);
   uni.$emit('loginStatusChanged', true);
   uni.$emit('userInfoUpdated', userInfo);
   emailForm.value = { email: '', password: '', code: '' };
