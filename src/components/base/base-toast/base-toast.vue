@@ -35,6 +35,8 @@ onBeforeUnmount(() => clearTimeout(timer));
 <style scoped>
 .base-toast {
   display: inline-flex;
+  box-sizing: border-box;
+  max-width: 100%;
   align-items: center;
   gap: var(--s-3);
   padding: var(--s-3) var(--s-5);
@@ -43,6 +45,10 @@ onBeforeUnmount(() => clearTimeout(timer));
   color: var(--toast-fg);
   box-shadow: var(--lift-2);
   font: var(--weight-ui-emphasis) var(--size-small)/var(--leading-small) var(--font-ui);
+  overflow-wrap: anywhere;
+}
+.base-toast > .base-icon {
+  flex: none;
 }
 .base-toast :deep(.base-button) {
   color: var(--toast-fg);

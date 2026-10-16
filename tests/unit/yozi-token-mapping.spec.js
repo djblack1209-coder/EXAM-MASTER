@@ -34,7 +34,35 @@ function resolveValue(properties, key) {
 const light = properties(':root');
 const dark = properties(":root[data-theme='dark']");
 
+function contrastRatio(foreground, background) {
+  const luminance = (hex) => {
+    const values = hex.match(/[\da-f]{2}/gi).map((part) => {
+      const value = parseInt(part, 16) / 255;
+      return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    });
+    return values[0] * 0.2126 + values[1] * 0.7152 + values[2] * 0.0722;
+  };
+  const a = luminance(foreground),
+    b = luminance(background);
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
 describe('Yozi single token source and transition mapping', () => {
+  it.each(['light', 'dark'])('keeps readable placeholders, feedback keys and danger actions at AA in %s', (theme) => {
+    const actual = theme === 'light' ? light : dark;
+    for (const [foreground, background, minimum] of [
+      ['--ink-placeholder', '--paper', 4.5],
+      ['--ink-3', '--paper-sunk', 4.5],
+      ['--paper', '--mint', 4.5],
+      ['--paper', '--coral', 4.5],
+      ['--on-danger', '--danger-action-face', 4.5],
+      ['--control-line', '--paper', 3]
+    ])
+      expect(
+        contrastRatio(resolveValue(actual, foreground), resolveValue(actual, background)),
+        `${foreground}/${background}`
+      ).toBeGreaterThanOrEqual(minimum);
+  });
   it.each(['light', 'dark'])('matches every reference-sheet primitive in %s', (theme) => {
     const actual = theme === 'light' ? light : dark;
     for (const [name, value] of Object.entries(board[theme])) {

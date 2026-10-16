@@ -12,7 +12,7 @@
 .wd-textarea__body {
   min-height: var(--control-height);
   border-radius: var(--r-md);
-  border: var(--border-control) solid var(--line-strong);
+  border: var(--border-control) solid var(--control-line);
   background: var(--paper);
 }
 .wd-input__body:focus-within,

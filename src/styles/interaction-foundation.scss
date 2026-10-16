@@ -1,4 +1,14 @@
 /* 全局按压统一下压；页面布局与非按压场景构图保留。 */
+/* Browser reading and editing affordances share the product palette. */
+::selection {
+  color: var(--ink);
+  background: var(--violet-soft-2);
+}
+input,
+textarea,
+select {
+  caret-color: var(--violet-ink);
+}
 button:not([disabled]):active,
 [role='button']:not([aria-disabled='true']):active,
 .btn:not([disabled]):active,

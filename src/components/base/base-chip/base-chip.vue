@@ -55,14 +55,17 @@ function keydown(event) {
   align-items: center;
   justify-content: center;
   gap: var(--s-2);
-  height: var(--touch-min);
-  padding: 0 var(--s-4);
+  box-sizing: border-box;
+  min-height: var(--touch-min);
+  max-width: 100%;
+  padding: var(--s-2) var(--s-4);
   margin: 0;
   border-radius: var(--r-pill);
   background: var(--paper-sunk);
   border: var(--border-thin) solid var(--line);
   color: var(--ink-2);
-  font: var(--weight-medium) var(--size-small)/1 var(--font-ui);
+  font: var(--weight-medium) var(--size-small)/var(--leading-small) var(--font-ui);
+  overflow-wrap: anywhere;
   transition:
     background-color var(--t-state) var(--ease),
     border-color var(--t-state) var(--ease);

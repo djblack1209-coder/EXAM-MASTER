@@ -133,7 +133,7 @@ function keydown(event) {
   min-height: var(--s-14);
   margin: 0;
   padding: var(--s-3) var(--s-4);
-  border: var(--border-control) solid var(--line-strong);
+  border: var(--border-control) solid var(--control-line);
   border-radius: var(--r-md);
   background: var(--paper);
   color: var(--ink);
@@ -163,9 +163,13 @@ function keydown(event) {
 }
 .base-option__label {
   flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .base-option__status {
   margin-left: auto;
+  flex: none;
+  max-width: 35%;
   font: var(--weight-ui-emphasis) var(--size-caption)/var(--leading-caption) var(--font-ui);
 }
 .base-option[data-state='selected'] {
@@ -183,9 +187,9 @@ function keydown(event) {
   border-color: var(--mint-fill);
   border-width: var(--border-selected);
   .base-option__key {
-    background: var(--mint-fill);
+    background: var(--mint);
     box-shadow: none;
-    color: var(--on-clay);
+    color: var(--paper);
   }
   .base-option__status {
     color: var(--mint);
@@ -196,9 +200,9 @@ function keydown(event) {
   border-color: var(--coral-fill);
   border-width: var(--border-selected);
   .base-option__key {
-    background: var(--coral-fill);
+    background: var(--coral);
     box-shadow: none;
-    color: var(--on-clay);
+    color: var(--paper);
   }
   .base-option__status {
     color: var(--coral);
