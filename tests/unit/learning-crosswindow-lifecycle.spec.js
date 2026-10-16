@@ -370,6 +370,300 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
     expect(store.exportData()).toBe(original);
   });
 });
+describe('加密同账户会话与凭据请求边界', () => {
+  const originalToken = 'synthetic-original-session-token';
+  const renewedToken = 'synthetic-renewed-session-token';
+  function session() {
+    store.$dispose();
+    storageService.save('EXAM_USER_ID', 'synthetic-crosswindow-owner', true);
+    storageService.save('EXAM_TOKEN', originalToken, true);
+    setActivePinia(createPinia());
+    store = useConversationLearningStore();
+    store.start('12 + 8');
+    store.submit('19', true, 'same-account-original');
+    const search = store.searchRecords('19');
+    store.openRecord(search.items[0].id, search.context);
+    store.modelId = 'explicit-model';
+    store.models = [
+      { id: 'explicit-model', provider: '合成', model: 'explicit-model', capabilities: { structured: true } }
+    ];
+    store.modelPresets = [{ id: 'explicit-preset' }];
+    store.usage = { fixture: 'kept-usage' };
+    store.selectedMode = 'cloud';
+    store.sharingAllowed = true;
+    store.streamEnabled = false;
+    store.localConnection = {
+      endpoint: 'http://127.0.0.1:8765/chat',
+      allowedOrigins: ['http://127.0.0.1:8765'],
+      token: 'TEST_ONLY_SESSION_LOCAL_TOKEN_32_CHARS',
+      model: 'local-fixture',
+      consent: true
+    };
+    store.materialConnection = { ...store.localConnection, endpoint: 'http://127.0.0.1:8765/parse' };
+    expect(uni.getStorageSync('EXAM_TOKEN')).toBe('');
+    expect(uni.getStorageSync('_enc_EXAM_TOKEN')).toBeTruthy();
+  }
+  const config = () =>
+    JSON.parse(
+      JSON.stringify(
+        Object.fromEntries(
+          [
+            'modelId',
+            'models',
+            'modelPresets',
+            'usage',
+            'selectedMode',
+            'sharingAllowed',
+            'streamEnabled',
+            'localConnection',
+            'materialConnection'
+          ].map((key) => [key, store[key]])
+        )
+      )
+    );
+  function requests() {
+    const pending = [];
+    vi.spyOn(uni, 'request').mockImplementation((options) => {
+      const abort = vi.fn();
+      pending.push({ ...options, abort });
+      return { abort };
+    });
+    return pending;
+  }
+  const models = (id) => ({
+    success: true,
+    data: { models: [{ id, provider: '合成', model: id, capabilities: {} }], presets: [] }
+  });
+  const usage = { success: true, data: null };
+  function change(kind) {
+    if (kind === 'refresh') storageService.save('EXAM_TOKEN', renewedToken, true);
+    else if (kind === 'same-token') storageService.save('EXAM_TOKEN', originalToken, true);
+    else storageService.save('userInfo', { nickname: '同账户资料' }, true);
+  }
+  it.each(['same-window', 'encrypted-storage', 'compat-encrypted-storage'])(
+    '%s续期只取消绑定旧令牌的列表/用量读取，保留配置原答并以新令牌显式重试',
+    async (source) => {
+      // Produce peer ciphertext with the real service before attaching this Store.
+      store.$dispose();
+      storageService.save('EXAM_TOKEN', renewedToken, true);
+      const encrypted = uni.getStorageSync('_enc_EXAM_TOKEN');
+      session();
+      const pending = requests(),
+        list = store.loadModels(),
+        readUsage = store.loadUsage();
+      const rejectedList = expect(list).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      const rejectedUsage = expect(readUsage).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      const before = config(),
+        facts = store.exportData(),
+        original = store.locatedRecord;
+      expect(pending[0].header.Authorization).toBe(`Bearer ${originalToken}`);
+      if (source === 'same-window') change('refresh');
+      else {
+        uni.setStorageSync('_enc_EXAM_TOKEN', encrypted);
+        window.dispatchEvent(
+          new StorageEvent('storage', {
+            key: source === 'encrypted-storage' ? '_enc_EXAM_TOKEN' : '__exam_storage__:_enc_EXAM_TOKEN'
+          })
+        );
+      }
+      await Promise.all([rejectedList, rejectedUsage]);
+      expect(pending).toHaveLength(2); // No automatic replay.
+      expect(pending.every((request) => request.abort.mock.calls.length === 1)).toBe(true);
+      expect(config()).toEqual(before);
+      expect(store.locatedRecord).toBe(original);
+      expect(store.exportData()).toBe(facts);
+      const retry = store.loadModels();
+      expect(pending[2].header.Authorization).toBe(`Bearer ${renewedToken}`);
+      pending[0].success({ data: models('late-old-token') });
+      pending[1].success({ data: usage });
+      await Promise.resolve();
+      expect(store.models).toEqual(before.models);
+      expect(store.usage).toEqual(before.usage);
+      expect(store.modelListState.phase).toBe('loading');
+      pending[2].success({ data: models('fresh-token-model') });
+      await retry;
+      expect(store.models[0].id).toBe('fresh-token-model');
+      expect(store.modelId).toBe('explicit-model');
+      expect(store.selectedMode).toBe('cloud');
+      expect(store.sharingAllowed).toBe(true);
+    }
+  );
+  it.each(['same-token', 'profile'])('%s不取消使用相同凭据的进行中读取', async (kind) => {
+    session();
+    const pending = requests(),
+      list = store.loadModels(),
+      readUsage = store.loadUsage();
+    const before = config(),
+      facts = store.exportData(),
+      original = store.locatedRecord;
+    change(kind);
+    expect(config()).toEqual(before);
+    expect(store.locatedRecord).toBe(original);
+    expect(pending.every((request) => request.abort.mock.calls.length === 0)).toBe(true);
+    expect(store.modelListState.phase).toBe('loading');
+    pending[0].success({ data: models('continued-model') });
+    pending[1].success({ data: usage });
+    await Promise.all([list, readUsage]);
+    expect(store.models[0].id).toBe('continued-model');
+    expect(store.modelUsageState.phase).toBe('empty');
+    expect(store.exportData()).toBe(facts);
+  });
+  it.each(['refresh', 'same-token', 'profile'])('%s不取消独立资料连接的进行中请求', async (kind) => {
+    session();
+    let resolve;
+    const transport = vi.fn(() => new Promise((r) => (resolve = r)));
+    vi.stubGlobal('fetch', transport);
+    const promise = store.checkMaterialConnection(),
+      before = config(),
+      original = store.locatedRecord;
+    change(kind);
+    expect(transport.mock.calls[0][1].signal.aborted).toBe(false);
+    expect(config()).toEqual(before);
+    expect(store.locatedRecord).toBe(original);
+    resolve({ ok: true, text: async () => JSON.stringify({ success: true, data: { version: 'isolated-parser' } }) });
+    await promise;
+    expect(store.materialConnection.status).toBe('connector_verified');
+  });
+  it.each(['refresh', 'same-token', 'profile'])('%s不取消本地模型进行中的作答', async (kind) => {
+    session();
+    store.selectedMode = 'local';
+    let resolve;
+    const transport = vi.fn(() => new Promise((r) => (resolve = r)));
+    vi.stubGlobal('fetch', transport);
+    const promise = store.send('请再解释一下'),
+      before = config();
+    expect(transport).toHaveBeenCalledOnce();
+    change(kind);
+    expect(transport.mock.calls[0][1].signal.aborted).toBe(false);
+    expect(config()).toEqual(before);
+    resolve({ ok: true, text: async () => JSON.stringify({ success: true, data: { message: '本地模型继续完成' } }) });
+    await promise;
+    expect(store.active.messages.at(-1).content).toBe('本地模型继续完成');
+    expect(store.busy).toBe(false);
+  });
+  it.each(['refresh', 'same-token', 'profile'])('%s只在云端生成绑定旧令牌时撤销，并拒绝其迟到正文', async (kind) => {
+    session();
+    const pending = requests(),
+      promise = store.send('请再解释一下'),
+      before = config();
+    expect(pending[0].url).toMatch(/\/proxy-ai$/);
+    store.streamPreview = '已显示的临时预览';
+    const facts = store.exportData();
+    change(kind);
+    expect(config()).toEqual(before);
+    expect(pending[0].abort).toHaveBeenCalledTimes(kind === 'refresh' ? 1 : 0);
+    pending[0].success({ data: { success: true, data: { message: '云端生成已完成', tools: [] } } });
+    await promise;
+    expect(store.active.messages.some((message) => message.content === '云端生成已完成')).toBe(kind !== 'refresh');
+    if (kind === 'refresh') {
+      expect(store.exportData()).toBe(facts);
+      expect(store.streamPreview).toBe('已显示的临时预览');
+    }
+    expect(store.busy).toBe(false);
+    expect(store.modelId).toBe('explicit-model');
+    expect(store.selectedMode).toBe('cloud');
+    expect(store.sharingAllowed).toBe(true);
+  });
+  it('续期取消旧令牌同步且不自动重放、不覆盖本机事实或连接', async () => {
+    session();
+    const pending = requests(),
+      promise = store.syncRecords(true);
+    const rejected = expect(promise).rejects.toThrow();
+    const before = config(),
+      facts = store.exportData();
+    expect(pending[0].url).toMatch(/\/learning-sync$/);
+    change('refresh');
+    expect(pending[0].abort).toHaveBeenCalledOnce();
+    expect(config()).toEqual(before);
+    pending[0].success({ data: { success: true, data: { state: learningRepository.read() } } });
+    await rejected;
+    expect(pending).toHaveLength(1);
+    expect(store.exportData()).toBe(facts);
+    expect(config()).toEqual(before);
+    expect(store.syncBusy).toBe(false);
+  });
+  it.each(['refresh', 'same-token', 'profile'])('%s不取消不依赖账户凭据的本机历史校验', async (kind) => {
+    session();
+    let resolve, signal;
+    vi.spyOn(learningRepository, 'previewGuestMigration').mockImplementation((options) => {
+      signal = options.signal;
+      return new Promise((r) => (resolve = r));
+    });
+    const promise = store.previewGuestMigration(),
+      before = config(),
+      facts = store.exportData();
+    change(kind);
+    expect(signal.aborted).toBe(false);
+    expect(store.historyBusy).toBe(true);
+    expect(config()).toEqual(before);
+    const preview = { owner: 'synthetic-crosswindow-owner', fixture: 'local-history-preview' };
+    resolve(preview);
+    await expect(promise).resolves.toBe(preview);
+    expect(store.historyBusy).toBe(false);
+    expect(store.exportData()).toBe(facts);
+  });
+  it('登出后即使存储清理尚未完成，再登录相同ID/令牌仍作为新会话重置', () => {
+    session();
+    uni.$on.mock.calls.findLast(([name]) => name === 'user:logout')[1]();
+    store.selectedMode = 'local';
+    store.modelId = 'logged-out-choice';
+    store.sharingAllowed = true;
+    storageService.save('EXAM_USER_ID', 'synthetic-crosswindow-owner', true);
+    expect(store.modelId).toBe('');
+    expect(store.selectedMode).toBe('offline');
+    expect(store.sharingAllowed).toBe(false);
+  });
+  it('没有可靠账户ID时，重复资料写入也按切换处理，宁可撤销不复用访客授权', () => {
+    session();
+    storageService.remove('EXAM_USER_ID', true);
+    store.selectedMode = 'local';
+    store.modelId = 'unverified-owner-choice';
+    store.sharingAllowed = true;
+    storageService.save('userInfo', { nickname: '无法据此确认账户' }, true);
+    expect(store.modelId).toBe('');
+    expect(store.selectedMode).toBe('offline');
+    expect(store.sharingAllowed).toBe(false);
+  });
+  it.each(['account', 'logout', '401-logout', 'token-removal', 'missing-id', 'unreliable-id'])(
+    '%s仍完整重置，切回同账户后拒绝旧回执并保留已存事实',
+    async (kind) => {
+      session();
+      const pending = requests(),
+        promise = store.loadModels();
+      const rejected = expect(promise).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      const facts = store.exportData();
+      if (kind === 'account') storageService.save('EXAM_USER_ID', 'synthetic-second-owner', true);
+      else if (kind === 'token-removal') storageService.remove('EXAM_TOKEN', true);
+      else if (kind === 'missing-id') storageService.remove('EXAM_USER_ID', true);
+      else if (kind === 'unreliable-id') storageService.save('EXAM_USER_ID', '   ', true);
+      else {
+        // Logout itself is authoritative even before a later storage cleanup or 401 handler.
+        uni.$on.mock.calls.findLast(([name]) => name === 'user:logout')[1](
+          kind === '401-logout' ? { code: 401 } : undefined
+        );
+      }
+      await rejected;
+      expect(pending[0].abort).toHaveBeenCalledOnce();
+      expect(store.locatedRecord).toBeNull();
+      expect(store.conversationLocation).toBeNull();
+      expect(store.models).toEqual([]);
+      expect(store.modelPresets).toEqual([]);
+      expect(store.usage).toBeNull();
+      expect(store.modelId).toBe('');
+      expect(store.selectedMode).toBe('offline');
+      expect(store.localConnection).toBeNull();
+      expect(store.materialConnection).toBeNull();
+      expect(store.sharingAllowed).toBe(false);
+      storageService.save('EXAM_USER_ID', 'synthetic-crosswindow-owner', true);
+      storageService.save('EXAM_TOKEN', originalToken, true);
+      pending[0].success({ data: models('late-pre-logout') });
+      await Promise.resolve();
+      expect(store.models).toEqual([]);
+      expect(store.selectedMode).toBe('offline');
+      expect(store.exportData()).toBe(facts);
+    }
+  );
+});
 describe('Store共享撤销标记与浏览器事件', () => {
   it.each(['delete', 'restore'])('另一Repository%s后旧健康回执不采纳', async (kind) => {
     let resolve;

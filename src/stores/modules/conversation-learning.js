@@ -219,6 +219,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       streamPlatform !== 'unsupported'
   );
   let controller = null;
+  let controllerUsesAccountToken = false;
   let pendingCloudCall = null;
   let computeRequest = null;
   const pendingUploads = ref(pendingUploadJournal.list());
@@ -895,10 +896,39 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       error.value = '本机记录已变化且暂不可读，请重新核对；旧资料动作已取消。';
     }
   }
-  const stopIdentityChanges = storageService.onIdentityChange(() => reloadRecords({ identityChanged: true }), {
-    $on: (event, listener) => uni.$on?.(event, listener),
-    $off: (event, listener) => uni.$off?.(event, listener)
-  });
+  let observedIdentity = { owner: getUserId(), token: getToken() };
+  const stopIdentityChanges = storageService.onIdentityChange(
+    (change) => {
+      const previous = observedIdentity;
+      observedIdentity = { owner: getUserId(), token: getToken() };
+      const reliableOwner = (owner) => typeof owner === 'string' && owner.trim().length > 0;
+      if (
+        change?.type === 'logout' ||
+        !reliableOwner(previous.owner) ||
+        !reliableOwner(observedIdentity.owner) ||
+        previous.owner !== observedIdentity.owner ||
+        observedIdentity.owner !== state.value.owner ||
+        Boolean(previous.token) !== Boolean(observedIdentity.token)
+      ) {
+        reloadRecords({ identityChanged: true });
+        if (change?.type === 'logout') observedIdentity = { owner: null, token: null };
+        return;
+      }
+      if (previous.token !== observedIdentity.token) {
+        // Cloud transports bind the token at send time and cannot reauthenticate in flight.
+        // Local/material connectors and local history validation use independent credentials.
+        cancelModelReads(undefined, 'CONTEXT_CHANGED');
+        if (controllerUsesAccountToken) controller?.abort('CREDENTIALS_CHANGED');
+        poetryController?.abort();
+        if (syncRequest) cancelSync();
+      }
+      if (change?.type === 'records') reloadRecords();
+    },
+    {
+      $on: (event, listener) => uni.$on?.(event, listener),
+      $off: (event, listener) => uni.$off?.(event, listener)
+    }
+  );
   const storageChanged = (event) => {
     const prefix = state.value.owner === 'guest' ? '' : `u_${state.value.owner}_`;
     const keys = [
@@ -1639,6 +1669,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const epoch = `revision_${state.value.revision}`;
     computeRequest = request;
     controller = request.controller;
+    controllerUsesAccountToken = true;
     busy.value = true;
     error.value = '';
     try {
@@ -1696,6 +1727,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       if (computeRequest === request) computeRequest = null;
       if (controller === request.controller) {
         controller = null;
+        controllerUsesAccountToken = false;
         busy.value = false;
       }
     }
@@ -2180,6 +2212,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     streamPreview.value = '';
     const mode = selectedMode.value,
       requestedModelId = modelId.value;
+    controllerUsesAccountToken = mode === 'cloud';
     const lifecycle = learningRepository.lifecycleRevision();
     const conversationId = selectedConversationId.value;
     const requestedQuestionKey = activeQuestion.value ? questionKey(activeQuestion.value) : null;
@@ -2388,8 +2421,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       if (controller === requestController) {
         busy.value = false;
         controller = null;
+        controllerUsesAccountToken = false;
         pendingCloudCall = null;
-        streamPreview.value = '';
+        if (requestController.signal.reason !== 'CREDENTIALS_CHANGED') streamPreview.value = '';
       }
     }
   }
@@ -2585,6 +2619,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       lifecycle = learningRepository.lifecycleRevision();
     const requestController = new AbortController();
     controller = requestController;
+    controllerUsesAccountToken = true;
     busy.value = true;
     streamPreview.value = '';
     const assertRecovery = () => {
@@ -2643,6 +2678,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       if (controller === requestController) {
         busy.value = false;
         controller = null;
+        controllerUsesAccountToken = false;
         streamPreview.value = '';
       }
     }
