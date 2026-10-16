@@ -80,12 +80,9 @@ describe('regions and platform capability filtering', () => {
   it('region, mini-program, provider and configuration filters hide unavailable options', () => {
     const capabilities = { apple: {}, google: {}, wechat: true };
     expect(availableLoginMethods('US', { capabilities })).toEqual(['apple', 'google', 'email', 'phone']);
-    expect(availableLoginMethods('CN', { capabilities, platform: 'app', providers: ['apple', 'weixin'], os: 'ios' })).toEqual([
-      'phone',
-      'wechat',
-      'email',
-      'apple'
-    ]);
+    expect(
+      availableLoginMethods('CN', { capabilities, platform: 'app', providers: ['apple', 'weixin'], os: 'ios' })
+    ).toEqual(['phone', 'wechat', 'email', 'apple']);
     expect(availableLoginMethods('CN', { capabilities, os: 'android' })).toEqual(['phone', 'wechat', 'email']);
     expect(availableLoginMethods('US', { capabilities, platform: 'mp-weixin' })).toEqual(['wechat', 'phone', 'email']);
     expect(availableLoginMethods('US', { capabilities, platform: 'app', providers: ['apple'] })).toEqual([
@@ -148,6 +145,10 @@ describe('age privacy and local session latch', () => {
     setLanguage(language);
     expect(loginErrorText({ errorCode: 'SMS_DISABLED' })).toBe(t('login.smsClosed'));
     expect(loginErrorText({ message: 'private credentials' })).toBe(t('login.retry'));
+    for (const value of ['__proto__', 'constructor', 'toString']) {
+      expect(loginErrorText({ errorCode: value })).toBe(t('login.retry'));
+      expect(loginErrorText({ message: value })).toBe(t('login.retry'));
+    }
     for (const key of ['title', 'phone', 'birth', 'blocked', 'consent'])
       expect(t(`login.${key}`)).not.toBe(`login.${key}`);
   });

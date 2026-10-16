@@ -13,7 +13,11 @@
 import storageService from '@/services/storageService.js';
 import { getUserId, getToken } from '@/services/auth-storage.js';
 import { logger } from '@/utils/logger.js';
-import { isValidQuizSessionId, isValidQuizAttemptId } from '@/services/quiz-session-contract.js';
+import {
+  isValidQuizSessionId,
+  isValidQuizAttemptId,
+  isSeededPracticeRecord
+} from '@/services/quiz-session-contract.js';
 
 const QUIZ_PROGRESS_KEY = 'EXAM_QUIZ_PROGRESS';
 const QUIZ_PROGRESS_TIMESTAMP_KEY = 'EXAM_QUIZ_PROGRESS_TIME';
@@ -100,6 +104,7 @@ export function loadQuizProgress(context = null) {
       logger.warn('[QuizAutoSave] 进度数据结构无效，保留记录');
       return null;
     }
+    if (Array.isArray(data.questions) && data.questions.some(isSeededPracticeRecord)) return null;
 
     if (!isProgressContextMatch(data, context)) {
       logger.log('[QuizAutoSave] 存档上下文不匹配，跳过恢复');

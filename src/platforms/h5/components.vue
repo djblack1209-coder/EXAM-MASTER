@@ -193,6 +193,7 @@
   <BaseEmpty v-else />
 </template>
 <script setup>
+import './messages.js';
 import { computed, ref, watch } from 'vue';
 import { t, setLanguage, currentLanguage } from '@/i18n/index.js';
 import { useThemeStore } from '@/stores/modules/theme.js';

@@ -108,7 +108,7 @@
         >
           <view class="q-header">
             <view class="q-tag">
-              {{ currentQuestion.source === 'guest_demo' ? t('quiz.copy5') : '' }}{{ uiText(questionTypeLabel) }}
+              {{ uiText(questionTypeLabel) }}
             </view>
             <view class="q-actions">
               <!-- 笔记按钮 -->
@@ -626,7 +626,7 @@
 <script>
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import '@/pages/practice-sub/messages.js';
-import { t, translateRegisteredText } from '@/i18n/index.js';
+import { publicError, t, translateRegisteredText } from '@/i18n/index.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
@@ -2320,7 +2320,7 @@ export default {
             }
           });
         } else {
-          toast.info(res.message || t('quiz.copy93'));
+          toast.info(publicError(res) || t('quiz.copy93'));
         }
       } catch (e) {
         logger.warn('[do-quiz] AI诊断失败:', e);
@@ -2479,7 +2479,7 @@ export default {
       );
       if (!quizRecordOwnerMatches(this) || this.quizPageClosed) return;
       this.isCurrentFavorited = result.isFavorited;
-      if (!result.success) toast.info(result.message || t('quiz.copy96'));
+      if (!result.success) toast.info(publicError(result) || t('quiz.copy96'));
 
       playClickSound();
 
@@ -2585,7 +2585,7 @@ export default {
         onWarning: (data) => {
           if (!currentBinding()) return;
           if (data.level === 'warning') {
-            toast.info(data.message);
+            toast.info(publicError(data));
           }
         },
         onTimeout: (_data) => {

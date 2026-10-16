@@ -10,7 +10,7 @@ import FutureLanding from './future-landing.vue';
 import PlayfulLanding from './playful-landing.vue';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
-import { safeNavigateTo } from '@/utils/safe-navigate.js';
+import { safeNavigateTo, requestProfilePanel } from '@/utils/safe-navigate.js';
 defineEmits(['legacy']);
 const theme = useThemeStore();
 const learning = useConversationLearningStore();
@@ -28,6 +28,7 @@ function open(target) {
     safeNavigateTo('/pages/learning/index?panel=' + target);
     return;
   }
+  if (target === 'account') requestProfilePanel('profile');
   safeNavigateTo(target === 'account' ? '/pages/profile/index' : '/pages/' + target + '/index');
 }
 </script>

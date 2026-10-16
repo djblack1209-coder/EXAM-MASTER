@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, getActivePinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
+import { setLanguage, t } from '@/i18n/index.js';
 const host = vi.hoisted(() => ({ desktop: false, listener: null, native: null }));
 vi.mock('@/services/desktop/runtime.js', () => ({ isDesktopRuntime: () => host.desktop }));
 vi.mock('@tauri-apps/api/core', () => ({ invoke: (...args) => host.native(...args) }));
@@ -23,6 +24,7 @@ import { learningWriteLease } from '@/services/learning/learning-write-lease.js'
 let controller, shown;
 beforeEach(() => {
   uni.clearStorageSync();
+  setLanguage('zh-CN');
   setActivePinia(createPinia());
   host.desktop = false;
   shown = [];
@@ -79,25 +81,30 @@ describe('提醒日期、原任务、权限与回执', () => {
     expect(reminderInstant('2026-03-08', '02:30', 'America/Los_Angeles')).toBeNull();
     expect(reminderInstant('2026-02-30', '08:00', 'Asia/Shanghai')).toBeNull();
   });
-  it('允许通知前不投递，未知/失败回执不自动重复，显示后回到原任务且不写作答', async () => {
-    const s = setup(),
-      opened = vi.fn();
-    controller = createLearningNotifications(s, opened);
-    await controller.initialize();
-    await controller.refresh();
-    expect(shown).toHaveLength(0);
-    await controller.allow();
-    expect(shown).toHaveLength(1);
-    expect(s.active.reminderReceipts.at(-1).status).toBe('unknown');
-    await controller.refresh();
-    expect(shown).toHaveLength(1);
-    shown[0].onshow();
-    expect(s.active.reminderReceipts.at(-1).status).toBe('accepted');
-    shown[0].onclick();
-    expect(opened).toHaveBeenCalledTimes(1);
-    expect(s.state.attempts).toHaveLength(0);
-    expect(s.active.stopped).toBe(false);
-  });
+  it.each(['zh-CN', 'en'])(
+    '允许通知前不投递，未知/失败回执不自动重复，显示后回到原任务且不写作答 %s',
+    async (language) => {
+      setLanguage(language);
+      const s = setup(),
+        opened = vi.fn();
+      controller = createLearningNotifications(s, opened);
+      await controller.initialize();
+      await controller.refresh();
+      expect(shown).toHaveLength(0);
+      await controller.allow();
+      expect(shown).toHaveLength(1);
+      expect(shown[0].options.body).toBe(t('ui.notificationStudy'));
+      expect(s.active.reminderReceipts.at(-1).status).toBe('unknown');
+      await controller.refresh();
+      expect(shown).toHaveLength(1);
+      shown[0].onshow();
+      expect(s.active.reminderReceipts.at(-1).status).toBe('accepted');
+      shown[0].onclick();
+      expect(opened).toHaveBeenCalledTimes(1);
+      expect(s.state.attempts).toHaveLength(0);
+      expect(s.active.stopped).toBe(false);
+    }
+  );
   it('暂停、改期和任务停止使旧提醒失效，备份只保留历史终端回执', async () => {
     const s = setup();
     controller = createLearningNotifications(s);
@@ -136,6 +143,7 @@ describe('提醒日期、原任务、权限与回执', () => {
     await controller.initialize();
     await controller.allow();
     const scheduled = calls.filter((c) => c.command === 'replace_learning_notifications').at(-1);
+    expect(scheduled.args.language).toBe('zh-CN');
     expect(scheduled.args.jobs.length).toBeGreaterThan(0);
     expect(scheduled.args.jobs[0]).not.toHaveProperty('accepted');
     const before = calls.length;
@@ -200,7 +208,7 @@ describe('提醒日期、原任务、权限与回执', () => {
     expect(s.active.reminderReceipts.filter((r) => r.status === 'opened')).toHaveLength(1);
     expect(opened).toHaveBeenCalledTimes(1);
   });
-  it('启动页完成前保留系统点击，首页就绪后只返回原任务一次', async () => {
+  it('启动页完成前保留系统点击，学习入口就绪后只返回原任务一次', async () => {
     host.desktop = true;
     const s = setup(),
       job = s.reminderQueue()[0];
@@ -216,7 +224,7 @@ describe('提醒日期、原任务、权限与回执', () => {
       splash = null;
       success?.();
     });
-    vi.spyOn(uni, 'switchTab').mockImplementation(({ url, success }) => {
+    vi.spyOn(uni, 'redirectTo').mockImplementation(({ url, success }) => {
       route = url.slice(1);
       splash?.unmount();
       splash = null;
@@ -247,7 +255,8 @@ describe('提醒日期、原任务、权限与回执', () => {
       host.listener({ payload: job });
       await vi.advanceTimersByTimeAsync(2000);
       expect(route).toBe('pages/learning/index');
-      expect(uni.navigateTo).toHaveBeenCalledTimes(1);
+      expect(uni.redirectTo).toHaveBeenCalledTimes(1);
+      expect(uni.navigateTo).not.toHaveBeenCalled();
       expect(s.active.reminderReceipts.filter((r) => r.status === 'opened')).toHaveLength(1);
       expect(s.state.attempts).toHaveLength(0);
     } finally {

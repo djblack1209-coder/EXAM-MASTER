@@ -133,7 +133,10 @@ char *yozi_notifications_call(const char *requestText) {
                 if (seconds < 1) { [failed addObject:job[@"id"]]; continue; }
                 UNMutableNotificationContent *content = [UNMutableNotificationContent new];
                 content.title = @"Yozi AI";
-                content.body = [job[@"kind"] isEqualToString:@"review"] ? @"有学习任务到期，打开后独立复测。" :
+                BOOL english = [request[@"language"] isEqualToString:@"en"];
+                content.body = english ? ([job[@"kind"] isEqualToString:@"review"] ? @"A review is due. Open Yozi AI to try it independently." :
+                    [job[@"kind"] isEqualToString:@"recap"] ? @"Review today’s learning and choose your next step." : @"It is time for your scheduled study.") :
+                    [job[@"kind"] isEqualToString:@"review"] ? @"有学习任务到期，打开后独立复测。" :
                     [job[@"kind"] isEqualToString:@"recap"] ? @"回顾今天的学习，确认下一步安排。" : @"到了你安排的学习时间。";
                 content.sound = [UNNotificationSound defaultSound];
                 NSMutableDictionary *info = [job mutableCopy];

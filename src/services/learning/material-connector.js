@@ -82,7 +82,7 @@ export async function testMaterialConnector(connection, { platform, signal } = {
 
 export async function requestUploadRecovery(connection, action, upload, { platform, signal } = {}) {
   assertConnectorPlatform(platform);
-  assert(connection, 'PRECONDITION', '请重新授权原资料解析器');
+  assert(connection, 'PRECONDITION', '请重新授权原资料识别服务');
   validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
   assert(connection.token?.length >= 32, 'AUTH_REQUIRED', '资料连接器需要有效令牌');
   assert(
@@ -152,7 +152,7 @@ export async function requestUploadRecovery(connection, action, upload, { platfo
 
 export async function requestUploadMaintenance(connection, preview, { platform, signal } = {}) {
   assertConnectorPlatform(platform);
-  assert(connection, 'PRECONDITION', '请先重新授权原资料解析器');
+  assert(connection, 'PRECONDITION', '请先重新授权原资料识别服务');
   validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
   assert(connection.token?.length >= 32, 'AUTH_REQUIRED', '资料连接器需要有效令牌');
   const capabilities = connection.capabilities;
@@ -319,7 +319,7 @@ export async function parseConnectedMaterial(connection, input, options = {}) {
       connection.capabilities?.appleVision?.available === true &&
         connection.capabilities.appleVision.contract === 'wenli-apple-vision-v1',
       'ENGINE_UNAVAILABLE',
-      '请先验证当前解析器 Mac 的 Apple Vision 能力，未发送资料'
+      '请先验证当前识别服务所在的 Mac 的 Apple Vision 能力，未发送资料'
     );
   }
   const endpoint = new URL('/parse', connection.endpoint);
@@ -428,7 +428,7 @@ export async function parseConnectedMaterial(connection, input, options = {}) {
 
 export async function deleteConnectedMaterial(connection, original, { platform, signal } = {}) {
   assertConnectorPlatform(platform);
-  assert(connection, 'PRECONDITION', '请连接保存原件的资料解析器后重试');
+  assert(connection, 'PRECONDITION', '请连接保存原件的资料识别服务后重试');
   validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
   assert(connection.token?.length >= 32, 'AUTH_REQUIRED', '资料连接器需要至少 32 字符令牌');
   assert(
@@ -502,7 +502,7 @@ export async function chooseWeixinMaterialFile(assertCurrent = () => undefined) 
 
 // 仅在逐次发送许可后读取；以SDK length限制真实读取字节，不把文件路径写入学习事实。
 export async function readWeixinMaterialFile(file, { consent, assertCurrent = () => undefined } = {}) {
-  assert(consent === true, 'CONSENT_REQUIRED', '请先明确允许将本次文件交给已授权解析器；未读取文件');
+  assert(consent === true, 'CONSENT_REQUIRED', '请先明确允许将本次文件交给已授权识别服务；未读取文件');
   assertConnectorPlatform('weixin');
   assertCurrent();
   assert(

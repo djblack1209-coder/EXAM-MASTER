@@ -54,7 +54,7 @@ export function createAgeSession(runtime, now = Date.now) {
   };
 }
 export function loginErrorText(response) {
-  const key = {
+  const key = Object.assign(Object.create(null), {
     SMS_DISABLED: 'smsClosed',
     PROVIDER_DISABLED: 'providerClosed',
     PROVIDER_UNAVAILABLE: 'providerClosed',
@@ -70,7 +70,7 @@ export function loginErrorText(response) {
     REGION_REQUIRED: 'regionRequired',
     INVALID_REGION: 'regionRequired',
     UNSUPPORTED_LOGIN: 'unsupported'
-  }[response?.errorCode || response?.message];
+  })[response?.errorCode || response?.message];
   return t(`login.${key || (response?.code === 429 ? 'rate' : 'retry')}`);
 }
 let ageSession;

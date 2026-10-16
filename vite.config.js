@@ -130,16 +130,16 @@ function copyCustomTabBar() {
   };
 }
 
-// The installed MP parser does not apply uni's platform-page filter when
-// generating app.json. Filter the compiler's virtual JSON before it imports pages.
-function guardYoziPreviewRoute(isH5) {
+// Add the preview only to an explicitly requested H5 development/isolated build.
+export function guardYoziPreviewRoute(enabled = false) {
   return {
     name: 'yozi-preview-route-guard',
     enforce: 'pre',
     transform(code, id) {
-      if (isH5 || !id.endsWith('pages-json-js')) return null;
+      if (!id.endsWith('pages-json-js')) return null;
       const pages = JSON.parse(code);
       pages.pages = pages.pages.filter((page) => page.path !== 'platforms/h5/components');
+      if (enabled) pages.pages.push({ path: 'platforms/h5/components', style: { navigationStyle: 'custom' } });
       return { code: JSON.stringify(pages), map: null };
     }
   };
@@ -297,7 +297,9 @@ export default defineConfig(({ command, mode }) => {
   const isStaging = mode === 'staging';
   const isDevelopment = mode === 'development';
   const isAppPlus = platform === 'app' || platform === 'app-plus';
-  const enableGuestDemo = !isProduction || env.VITE_ENABLE_MOCK === 'true' || env.VITE_AUDIT_MODE === 'true';
+  const enableGuestDemo = (isDevelopment || isolatedBuild) && env.VITE_ENABLE_MOCK === 'true';
+  const enablePreview =
+    (!platform || platform === 'h5') && (isDevelopment || isolatedBuild) && env.VITE_YOZI_COMPONENT_PREVIEW === '1';
 
   const isNvueCompiler = process.env.UNI_COMPILER === 'nvue';
   const appInputDir = process.env.UNI_INPUT_DIR
@@ -322,7 +324,7 @@ export default defineConfig(({ command, mode }) => {
     base: isAppPlus ? './' : '/',
 
     plugins: [
-      guardYoziPreviewRoute(isH5),
+      guardYoziPreviewRoute(enablePreview),
       adaptH5SlotFlags(isH5),
       guardRuntimeBuildDependencies(),
       uni(),
@@ -421,9 +423,7 @@ export default defineConfig(({ command, mode }) => {
     define: {
       __YOZI_TOKENS__: JSON.stringify(readYoziTokens()),
       'process.env.NODE_ENV': JSON.stringify(mode),
-      __YOZI_PREVIEW__: JSON.stringify(
-        isH5 && (command === 'serve' || (isolatedBuild && env.VITE_YOZI_COMPONENT_PREVIEW === '1'))
-      ),
+      __YOZI_PREVIEW__: JSON.stringify(enablePreview),
       'process.env.SENTRY_DSN': JSON.stringify(env.VITE_SENTRY_DSN || ''),
       __APP_VERSION__: JSON.stringify(env.npm_package_version || '1.0.0'),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),

@@ -53,17 +53,6 @@
         "backgroundColor": "@pageBackground",
         "backgroundTextStyle": "@backgroundText"
       }
-    },
-    {
-      "path": "platforms/h5/components",
-      "style": {
-        "navigationBarTitleText": "%pages.components%",
-        "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "@navBackground",
-        "navigationBarTextStyle": "@navText",
-        "backgroundColor": "@pageBackground",
-        "backgroundTextStyle": "@backgroundText"
-      }
     }
   ],
   "subPackages": [

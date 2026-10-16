@@ -34,7 +34,7 @@ import { storageService } from '@/services/storageService.js';
 import { getUserId, getToken } from '@/services/auth-storage.js';
 import { logger } from '@/utils/logger.js';
 import './messages.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
@@ -145,7 +145,7 @@ const handleWeChatCallback = async (options = {}) => {
     logger.warn('[WeChat-Callback] 授权未完成');
     isLoading.value = false;
     loginError.value = true;
-    errorMessage.value = error.message || '登录失败，请重试';
+    errorMessage.value = publicError(error, t('login.retry'));
   }
 };
 

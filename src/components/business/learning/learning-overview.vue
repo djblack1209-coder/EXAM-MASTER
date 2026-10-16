@@ -275,7 +275,7 @@ import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseStat from '@/components/base/base-stat/base-stat.vue';
 import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
 import { learningText } from '@/i18n/learning.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 
@@ -319,7 +319,7 @@ const dialogs = createLearningDialog({
   onChange: (state) => {
     dialogState.value = state;
   },
-  onError: (error) => setMessage(error.message, true)
+  onError: (error) => setMessage(publicError(error), true)
 });
 watch(
   () => learning.state,
@@ -476,7 +476,7 @@ function refresh() {
   try {
     learning.refresh();
   } catch (e) {
-    setMessage(e.message, true);
+    setMessage(publicError(e), true);
   }
 }
 function openQuestion(key, conversationId, kind = null) {
@@ -484,14 +484,14 @@ function openQuestion(key, conversationId, kind = null) {
     learning.focus(key, conversationId || undefined, kind);
     safeNavigateTo('/pages/learning/index');
   } catch (e) {
-    setMessage(e.message, true);
+    setMessage(publicError(e), true);
   }
 }
 function complete(taskId) {
   try {
     learning.commit('task.complete', { planId: learning.currentPlan.id, taskId });
   } catch (e) {
-    setMessage(e.message, true);
+    setMessage(publicError(e), true);
   }
 }
 function dispute(attemptId) {
@@ -515,7 +515,7 @@ function dispute(attemptId) {
           const canRetry = learning.recordContext() === context && currentAttempt();
           if (canRetry) assessmentDraft = { context, attemptId, content: result.content };
           setMessage(
-            canRetry ? `${e.message.replace(/。$/, '')}。说明尚未保存，重新打开可继续编辑。` : e.message,
+            canRetry ? `${publicError(e).replace(/。$/, '')}。说明尚未保存，重新打开可继续编辑。` : publicError(e),
             true
           );
         }

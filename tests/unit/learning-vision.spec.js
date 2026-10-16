@@ -65,8 +65,9 @@ describe('页图边界、来源和待校对输出', () => {
   it('角色、疑义和区域保留为辅助候选，不允许伪造核验和越界位置', () => {
     const reading = validateVisualReading(PAGE_READING, PAGE_SOURCE);
     expect(reading).toMatchObject({ status: 'ai_assisted', source: PAGE_SOURCE });
-    expect(visualReadingText(reading)).toContain('纸面用户作答候选');
+    expect(visualReadingText(reading)).toContain('待校对纸面作答');
     expect(visualReadingText(reading)).toContain('需局部确认');
+    expect(visualReadingText(reading, 'en')).toContain('Written answer pending review');
     expect(normalizeSavedVisualReading(reading, PAGE_SOURCE)).toEqual(reading);
     expect(() => validateVisualReading({ ...PAGE_READING, verified: true }, PAGE_SOURCE)).toThrow();
     expect(() =>

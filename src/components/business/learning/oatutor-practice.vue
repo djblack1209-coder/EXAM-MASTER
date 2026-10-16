@@ -99,7 +99,7 @@
 <script setup>
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import { learningText } from '@/i18n/learning.js';
-import { t } from '@/i18n/index.js';
+import { publicError, t } from '@/i18n/index.js';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
@@ -148,7 +148,7 @@ function run(fn) {
   try {
     return fn();
   } catch (e) {
-    error.value = e.message;
+    error.value = publicError(e);
   }
 }
 function edit(id, event) {

@@ -473,6 +473,6 @@ describe('mascot playback ownership and lifecycle', () => {
   it('celebration duration comes from the 600ms token and preview uses the supported H5-only platform directory', () => {
     expect(readFileSync('src/styles/yozi-tokens.scss', 'utf8')).toContain('--mx-celebrate-time: 600ms');
     const pages = readFileSync('src/pages.json', 'utf8');
-    expect(JSON.parse(pages).pages.some((page) => page.path === 'platforms/h5/components')).toBe(true);
+    expect(JSON.parse(pages).pages.some((page) => page.path === 'platforms/h5/components')).toBe(false);
   });
 });

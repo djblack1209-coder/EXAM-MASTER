@@ -293,7 +293,7 @@ import LearningShell from '@/components/business/learning/learning-shell.vue';
 import BaseStat from '@/components/base/base-stat/base-stat.vue';
 const uiText = (value) => translateRegisteredText('favorite', value);
 import '@/pages/favorite/messages.js';
-import { t, translateRegisteredText } from '@/i18n/index.js';
+import { publicError, t, translateRegisteredText } from '@/i18n/index.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import BaseTag from '@/components/base/base-tag/base-tag.vue';
 import BaseListRow from '@/components/base/base-list-row/base-list-row.vue';
@@ -665,7 +665,7 @@ function removeFavorite(item) {
           toast.success(t('favorite.copy51'));
           loadData();
         } else {
-          toast.info(result.message || t('favorite.copy52'));
+          toast.info(publicError(result) || t('favorite.copy52'));
         }
       }
     }

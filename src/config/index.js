@@ -396,13 +396,13 @@ const config = {
      * 是否启用调试模式
      * 配置方式：VITE_DEBUG_MODE=true
      */
-    enabled: getEnvBoolean('VITE_DEBUG_MODE', false) || getEnvBoolean('DEV', false),
+    enabled: import.meta.env.DEV && (getEnvBoolean('VITE_DEBUG_MODE', false) || getEnvBoolean('DEV', false)),
 
     /**
      * 是否启用 Mock 数据
      * 配置方式：VITE_ENABLE_MOCK=true
      */
-    enableMock: getEnvBoolean('VITE_ENABLE_MOCK', false),
+    enableMock: import.meta.env.DEV && getEnvBoolean('VITE_ENABLE_MOCK', false),
 
     /**
      * 是否启用性能监控

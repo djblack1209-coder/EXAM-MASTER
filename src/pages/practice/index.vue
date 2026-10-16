@@ -99,13 +99,6 @@
           t('dashboard.copy75')
         }}</BaseButton></view
       >
-      <!-- #ifdef H5 -->
-      <view v-if="guestDemoEnabled && !hasBank" class="section">
-        <BaseButton :loading="startingDemo" :disabled="startingDemo" variant="quiet" @tap="startDemo">{{
-          t('dashboard.copy63')
-        }}</BaseButton>
-      </view>
-      <!-- #endif -->
     </scroll-view>
   </LearningShell>
 </template>
@@ -134,7 +127,6 @@ import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
-import { isGuestDemoEnabled, startGuestDemoPractice } from '@/utils/practice/demo-bank.js';
 import { getRecoverableQuizProgress } from '@/composables/useQuizAutoSave.js';
 
 export default {
@@ -174,8 +166,6 @@ export default {
       statusBarHeight: 44,
       tabBarStyle: {},
       loadingBankId: null,
-      guestDemoEnabled: isGuestDemoEnabled(),
-      startingDemo: false,
 
       selectedSubjectKey: '',
       selectedTrackId: '',
@@ -370,16 +360,6 @@ export default {
     uiText(value) {
       return translateRegisteredText('dashboard', value);
     },
-    async startDemo() {
-      if (this.startingDemo || this.hasBank || !this.guestDemoEnabled) return;
-      this.startingDemo = true;
-      try {
-        await startGuestDemoPractice();
-      } finally {
-        this.startingDemo = false;
-      }
-    },
-
     async _invokeDynamicMethod(methodName, args = [], options = {}) {
       const { silent = false } = options;
       let cached = this.dynamicMethodsCache?.[methodName];

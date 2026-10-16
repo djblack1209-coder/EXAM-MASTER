@@ -104,7 +104,7 @@ function _handleError(type, error) {
   }
 
   // 开发环境 toast 提示
-  if (_config.enableToast) {
+  if (import.meta.env.DEV && _config.enableToast) {
     try {
       // #ifdef MP-WEIXIN
       if (typeof __wxConfig !== 'undefined' && __wxConfig.envVersion === 'develop') {

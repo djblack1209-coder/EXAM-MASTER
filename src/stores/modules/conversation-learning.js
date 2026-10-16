@@ -1,3 +1,4 @@
+import { publicError, currentLanguage } from '@/i18n/index.js';
 import { defineStore } from 'pinia';
 import {
   localChatOpening,
@@ -1010,7 +1011,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     assert(canReadChatWritingReference.value && selected, 'CAPABILITY_UNAVAILABLE', '当前题目没有本地邮件参考');
     const reference = publicWritingReference(selected.id, selected.version);
     const content = [
-      '公开示例，仅供参考。',
+      '公开参考内容，不计入学习记录。',
       reference.title,
       reference.excerpt,
       `${reference.copyright} · ${reference.author}`,
@@ -1164,7 +1165,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   function startScience(expectedContext, input) {
     idleRecords();
     refresh();
-    assert(expectedContext === writingContext(), 'CONTEXT_CHANGED', '学习已切换，请重新打开演示');
+    assert(expectedContext === writingContext(), 'CONTEXT_CHANGED', '学习已切换，请重新打开动画');
     assert(!active.value?.stopped, 'STOPPED', '当前任务已停止');
     const observed = scienceInput(input);
     let next = nextScienceInput(observed);
@@ -1310,7 +1311,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   function recordScienceHelp(expectedContext, input) {
     idleRecords();
     refresh();
-    assert(expectedContext === writingContext(), 'CONTEXT_CHANGED', '学习已切换，请重新打开演示');
+    assert(expectedContext === writingContext(), 'CONTEXT_CHANGED', '学习已切换，请重新打开动画');
     assert(active.value && !active.value.stopped, 'STOPPED', '当前任务已停止');
     const q = activeQuestion.value;
     assert(q?.scienceExercise || q?.subject === '物理', 'PRECONDITION', '请回到当前物理题');
@@ -1501,7 +1502,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     refresh();
     assert(!active.value?.stopped, 'STOPPED', '当前任务已停止');
     const attempt = writingAttempt();
-    assert(selectedMode.value !== 'offline', 'CAPABILITY_UNAVAILABLE', '请先连接模型');
+    assert(selectedMode.value !== 'offline', 'CAPABILITY_UNAVAILABLE', '请先选择 AI 助手');
     assert(sharingAllowed.value, 'CONSENT_REQUIRED', '请先确认数据流向');
     return send(
       '请按当前量表评阅已保存的写作原答，调用 assess 保存全部维度和准确原答引用。分值只是辅助，无法判断的维度留空。回复只讲一个最需要改进的地方和一个下一步，遵循我的教法。',
@@ -1592,7 +1593,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         `${grammar ? 'grammar' : 'sympy'}_${reference.requestId}`
       );
     } catch (failure) {
-      if (computeReferenceContext() === request.context) error.value = failure.message;
+      if (computeReferenceContext() === request.context) error.value = publicError(failure);
       throw failure;
     } finally {
       if (computeRequest === request) computeRequest = null;
@@ -1607,7 +1608,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     refresh();
     assert(activeQuestion.value?.vocabularyReview?.phase === 'usage', 'PRECONDITION', '请打开自由写句任务');
     const attempt = feedbackAttempt();
-    assert(selectedMode.value !== 'offline', 'CAPABILITY_UNAVAILABLE', '请先连接模型');
+    assert(selectedMode.value !== 'offline', 'CAPABILITY_UNAVAILABLE', '请先选择 AI 助手');
     assert(sharingAllowed.value, 'CONSENT_REQUIRED', '请先确认数据流向');
     return send(
       '请按当前词义和量表评阅我已提交的原句，仅调用 assess 保存全部维度和准确原答引用。核对词义、词形搭配和本句情境，无法判断的维度留空；不要按包含词语就判断用法正确。反馈一个改进点和一个下一步，遵循我的教法。',
@@ -2069,7 +2070,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         deliverTeaching(explanation, `${id}:local-teaching`);
         return;
       }
-      notice('尚未连接模型，请先连接。', `${id}:offline`);
+      notice('请选择 AI 助手后继续。', `${id}:offline`);
       return;
     }
     assert(sharingAllowed.value, 'CONSENT_REQUIRED', '请先确认当前上下文的数据流向');
@@ -2275,14 +2276,14 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       streamPreview.value = '';
       if (mode === 'local' && result.success && localConnection.value) localConnection.value.status = 'model_verified';
       if (!result.success) {
-        error.value = result.message;
-        notice(result.message, `${id}:error`);
+        error.value = publicError(result);
+        notice(publicError(result), `${id}:error`);
         return;
       }
       applyModelResult(result.data, request, requestController.signal);
     } catch (e) {
       if (state.value.owner === owner && selectedConversationId.value === conversationId)
-        error.value = e.code === 'CANCELLED' ? '请求已取消，费用状态请查看模型用量' : e.message || '模型任务未完成';
+        error.value = e.code === 'CANCELLED' ? '请求已取消，费用状态请查看模型用量' : publicError(e);
     } finally {
       if (controller === requestController) {
         busy.value = false;
@@ -2367,7 +2368,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       throw e;
     }
     // 不信任工具执行前生成的成功宣称；教学文本仅表达建议，实际状态在固定进度视图显示。
-    const safeMessage = safeLearningMessage(reading ? visualReadingText(reading) : data.message);
+    const safeMessage = safeLearningMessage(reading ? visualReadingText(reading, currentLanguage.value) : data.message);
     if (requestedQuestionKey) {
       // 普通模型回复不能证明没有泄露帮助；保守标记，不让模型自报“独立掌握”。
       deliverTeaching(
@@ -2516,7 +2517,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       });
       assertRecovery();
       if (!result.success) {
-        error.value = result.message;
+        error.value = publicError(result);
         return result;
       }
       assert(
@@ -2532,7 +2533,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       return result;
     } catch (e) {
       if (state.value.owner === owner && selectedConversationId.value === pending.conversationId)
-        error.value = e.message || '模型任务未完成';
+        error.value = publicError(e);
       throw e;
     } finally {
       if (controller === requestController) {
@@ -2646,11 +2647,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
               : 'empty',
         message: !result.success
           ? typeof result.message === 'string' && result.message.trim()
-            ? result.message
+            ? publicError(result)
             : '读取未完成，请重试。'
           : kind === 'models'
             ? models.value.length
-              ? `已读取 ${models.value.length} 个云模型，连接测试需单独发起。`
+              ? `已读取 ${models.value.length} 个云模型，检查可用性需单独确认。`
               : '当前没有可选云模型。可以继续本地学习，或配置自带云端 API。'
             : usage.value
               ? '模型用量已读取。'
@@ -3417,7 +3418,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
             phase: request.controller.signal.aborted ? 'cancelled' : 'error',
             kind,
             context: request.context,
-            message: request.controller.signal.aborted ? syncCancelledMessage(kind) : failure.message
+            message: request.controller.signal.aborted ? syncCancelledMessage(kind) : publicError(failure)
           };
         else syncState.value = { phase: 'idle', message: '', context: null, kind: null };
       }
@@ -3431,7 +3432,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         try {
           refresh();
         } catch (failure) {
-          error.value = failure.message;
+          error.value = publicError(failure);
           if (applied && request.feedback) syncState.value.message = `${message}本机记录暂不能重读，请重新打开核对。`;
         }
       }
