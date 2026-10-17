@@ -71,15 +71,17 @@ describe('账户连续性与访客归属', () => {
     storageService.save('mistake_book', [{ id: 'legacy-private' }]);
     storageService.save('fsrs_card_legacy-private', { due: '2026-10-01' });
     storageService.saveDebounced('imported_files', [{ id: 'pending-private-import' }]);
+    // Logout now revokes before cleanup. Establish the saved fact explicitly.
+    storageService.flushPendingWrites();
     const logoutHandler = uni.$on.mock.calls.find(([name]) => name === 'user:logout')[1];
     useAuthStore().logout();
     logoutHandler();
     expect(store.state.owner).toBe('guest');
     expect(store.state.attempts).toHaveLength(0);
-    uni.setStorageSync('EXAM_USER_ID', 'u2');
+    storageService.saveLoginSession({ userId: 'u2', token: 'fixture-u2', userInfo: { id: 'u2' } });
     store.refresh();
     expect(store.state.attempts).toHaveLength(0);
-    uni.setStorageSync('EXAM_USER_ID', 'u1');
+    storageService.saveLoginSession({ userId: 'u1', token: 'fixture-u1', userInfo: { id: 'u1' } });
     store.refresh();
     expect(store.exportData()).toBe(original);
     expect(storageService.get('mistake_book')).toEqual([{ id: 'legacy-private' }]);

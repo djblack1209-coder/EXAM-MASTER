@@ -189,6 +189,7 @@ export function createLearningRepository(
         }
         assert(storage.save(`${LEARNING_KEY}_recovery`, before, true), 'STORAGE_FAILED', '无法创建恢复副本');
         assert(storage.save(LEARNING_KEY, outcome.state, true), 'STORAGE_FAILED', '学习记录保存失败，未宣称执行成功');
+        if (usesSessionStorage && !lifecycleMarker()) invalidateLifecycle(false);
       }
       return outcome;
     },
@@ -226,6 +227,7 @@ export function createLearningRepository(
         preparedHistory = null;
         assert(storage.save(`${LEARNING_KEY}_recovery`, before, true), 'STORAGE_FAILED', '无法创建恢复副本');
         assert(storage.save(LEARNING_KEY, after, true), 'STORAGE_FAILED', '整批保存失败，原记录保留，请重试');
+        if (usesSessionStorage && !lifecycleMarker()) invalidateLifecycle(false);
       }
       return { state: after, results: results.map((r) => r.result), reused: results.every((r) => r.reused) };
     },
