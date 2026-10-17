@@ -1,5 +1,11 @@
 # 重要变更
 
+## 2026-10-17 GitHub Actions 升级（阶段9A）
+
+在 main 按 Dependabot #3 的实际差异更新两份 workflow：checkout v7.0.1、setup-node v7.1.0、setup-python v7、upload-artifact v7.0.2、trivy-action v0.36.0、setup-kubectl v5；没有合并 Dependabot 分支。逐个读取跨越的大版本发布说明及目标 Action 元数据，现有输入和使用方式兼容，无需补充输入；Action 的 Node 24 运行时与项目 Node 22.22.3 分开，runner 最低 2.327.1。凭据持久化、缓存、Python 版本解析与产物行为的依据见 [阶段9A](13-DEVELOPMENT-PLAN.md#阶段9agithub-actions-升级2026-10-17本地-main)。
+
+部署条件、只读权限及百度定时/手动触发配置保持；只读 GitHub 查询显示仓库变量和 secrets 均为 0，百度 workflow 为 active，每日 18:00 UTC 的 preflight 将因缺少 token 跳过两个同步作业。本轮未触发 workflow、未下载安装包或工具、未推送、未部署或操作 PR。复用现有依赖，只做 YAML/Action 输入与门控比对及 tooling、仓库、格式静态检查，不跑无关全量测试和构建；推送后的真实 GitHub CI 由指挥方验收。证据集中 tmp/p9a-evidence，仅保留发布说明、元数据、报告和日志，未生成构建副本。
+
 ## 2026-10-17 依赖更新批次（阶段8A）
 
 在 main 按组完成 Dependabot #4/#6/#7/#12/#13/#14/#16 的目标版本更新与当前基线锁文件重建，没有合并旧 PR 分支或操作 GitHub PR。所有 npm resolved 网络地址为 registry.npmjs.org，DCloud 同渠道版本、安全 override、限流/授权/预算等合同保持；#3 仍 OPEN、留 Actions 迁移，#15 仍 OPEN、维持不升级且关闭待客户决定。版本与行为核对详见 [13](13-DEVELOPMENT-PLAN.md#阶段8a依赖更新2026-10-17本地-main)。

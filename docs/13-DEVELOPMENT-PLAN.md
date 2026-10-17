@@ -138,6 +138,23 @@ lint、format:check、lint:tooling、audit:repository、audit:subpkg-sync、后�
 
 本批证据集中 tmp/p8a-evidence。首次 npm caret 解析误取 Playwright/core 1.64.1 与 Sass 1.105.2（PostCSS 8.5.30 仅命中已有缓存），已在提交前纠正到 PR 指定版本；多余下载也记入 downloads.json，不删除共享 npm/浏览器缓存。下载总计 31 项、130366323 字节；包元数据/只读 PR 内容不计入安装包体积。全量 `TZ=UTC npm test -- --maxWorkers=1` 耗时 592.44 秒，288 文件通过/1 搜索文件失败/1 原 Mongo 文件跳过，5476 项通过/7 项跳过，零断言失败，整体退出 1。唯一失败是搜索 beforeAll 超原 60 秒，实际准备 134.29 秒；相关测试与基准脚本未改，history 仅有 Prettier 分号后空格变化。前序 7C 也有同类超时，尚未独立证明归因于负载；保留本次全量失败，单独复跑不替代全量。随后记录一分钟负载 8.36，搜索单文件按原阈值复跑 1/1 通过（35.77 秒）；没有扩大阈值或重写全量结果。lint、lint:tooling、lint:python、format:check、仓库/分包审计、后端类型/隔离打包/29 个运行时入口及严格 Laf 源码审计通过。H5/微信/App 隔离构建与产物审计通过（53.14/23.26/30.54 秒）；微信主包全文件 334 个、1954082 字节，媒体 19 个、181028 字节，满足 2 MB/200 KB 门槛。构建无 Sass 弃用警告，微信保留 a 标签选择器不受支持提示。113 库生成表逐库解压 JSON 相等后还原原字节。Python 虚拟环境和 wheel 临时包已删除，四份主构建共 335430104 文件字节已核验摘要并回收；Spotlight 只读索引曾暂缓收尾，未停止系统进程。只留报告、哈希和日志，p1 并行目录、当前依赖、日常 App、用户资料与恢复基线保持。文件字节不等于磁盘净增或 RAM 释放。云端 CI/干净安装、真实设备、托管 Laf/SMTP 和公开发布门禁仍未验收；本批未推送、部署、短信、真实邮件或收费。
 
+### 阶段9A：GitHub Actions 升级（2026-10-17，本地 main）
+
+Dependabot #3 的两份 workflow 已按原 PR 的版本引用落地，未合并其分支；#3 当前仍 OPEN，待推送后真实 GitHub CI 验证。#15 仍 OPEN，保持不单独切换 DCloud 渠道，是否关闭由客户决定。本轮只读访问 GitHub 发布说明、Action 文件与仓库状态，没有下载工具/安装包、操作 PR、触发 workflow、推送或部署。
+
+- checkout v4.2.2→v7.0.1：已读 [v5](https://github.com/actions/checkout/releases/tag/v5.0.0)、[v6](https://github.com/actions/checkout/releases/tag/v6.0.0)、[v7](https://github.com/actions/checkout/releases/tag/v7.0.0)。v5 切 Node 24；v6 把凭据移到 `$RUNNER_TEMP` 独立文件，认证 Git 命令仍可用，默认 persist-credentials=true、fetch-depth=1 保持；容器内认证 Git 需 runner 2.329.0，本仓库没有该用法。v7 默认阻止 pull_request_target/workflow_run 检出外部 PR，本仓库仅 push/pull_request 和百度 schedule/workflow_dispatch，不开启不安全选项。
+- setup-node v4.4.0→v7.1.0：已读 [v5](https://github.com/actions/setup-node/releases/tag/v5.0.0)、[v6](https://github.com/actions/setup-node/releases/tag/v6.0.0)、[v7](https://github.com/actions/setup-node/releases/tag/v7.0.0) 及目标说明。v5 切 Node 24 并引入 packageManager 自动缓存，v6 仅自动识别 npm 并移除 always-auth，v7 切 ESM、移除占位 NODE_AUTH_TOKEN；本仓库无 registry-url/always-auth，两个显式 `cache: npm` 优先于自动识别，不重复缓存，不需新增 package-manager-cache 输入。项目 Node 22.22.3 不变。
+- setup-python v5/v5.6.0→v7：已读 [v6](https://github.com/actions/setup-python/releases/tag/v6.0.0)、[v7](https://github.com/actions/setup-python/releases/tag/v7.0.0)。Node 24/ESM，v7 移除未使用的 pip-install；显式字符串 `3.12` 仍优先于版本文件，按 semver 匹配本地工具缓存、缺失时由 CI 下载相符补丁版，check-latest=false、allow-prereleases=false 保持；pip 仍由现有独立步骤安装。
+- upload-artifact v4.6.2→v7.0.2：已读 [v5](https://github.com/actions/upload-artifact/releases/tag/v5.0.0)、[v6](https://github.com/actions/upload-artifact/releases/tag/v6.0.0)、[v7](https://github.com/actions/upload-artifact/releases/tag/v7.0.0) 及补丁说明。v6 默认 Node 24，v7 ESM 与 archive=false 单文件直传；本仓库保持默认 archive=true、overwrite=false、include-hidden-files=false，三个名称无冲突，H5 目录与百度多路径仍按原规则归档，保留期 1/14 天及缺文件处理保持，不使用新增直传。
+- trivy-action v0.35.0→v0.36.0：已读 [发布说明](https://github.com/aquasecurity/trivy-action/releases/tag/v0.36.0)；上游实际文件为 action.yaml。composite Action 的六个现用输入保持，默认 Trivy v0.69.3→v0.70.0，内部缓存引用同步更新，entrypoint 改用便携 shebang；扫描阈值、忽略文件、exit-code=1 与原非阻断告警合同不变，数据库及真实扫描结果待 CI。
+- setup-kubectl v3→v5：已读 [v4](https://github.com/Azure/setup-kubectl/releases/tag/v4.0.0)、[v5](https://github.com/Azure/setup-kubectl/releases/tag/v5.0.0) 及 v5.1/v5.2。Node 16→20→24，ESM，新增部分版本补丁解析与镜像/校验和输入；原完整 `version: v1.28.0` 和 kubectl-path 输出仍支持，默认下载源 dl.k8s.io，无自定义镜像，无需新增输入。此项仅静态核对，不运行部署作业。
+
+目标 JS Action 均用 Node 24，runner 最低 2.327.1；两份 workflow 全部使用 GitHub 托管 ubuntu-latest，实际 runner 兼容性待 CI。所有显式输入已逐项与目标 action.yml/action.yaml 核对，本仓库没有消费这些 Action 的 outputs；原步骤输出 repo/check 不受影响。部署条件逐字保持：staging 需 develop 且 DEPLOY_ENABLED=true，production 需 main、DEPLOY_ENABLED=true 且 PRODUCTION_PLATFORM=sealos-cold-recovery；仓库变量列表为空，当前两部署作业均跳过。
+
+百度 workflow 当前 active，每日 `0 18 * * *`（北京时间次日 02:00），手动触发配置保持且本轮未执行。仓库 secrets 为 0，缺 BAIDU_ACCESS_TOKEN 使 token_ready/group_ready=false、两个同步作业均跳过；BAIDU_LINK_REGISTRY_JSON 亦未配置。不注入凭据或用 dry-run 冒充实跑。
+
+证据集中 tmp/p9a-evidence，复用当前依赖；本机 PATH 未发现 actionlint，不安装。YAML 解析、PR 差异/输入/门控比对与 `npm run lint:tooling`、`npm run audit:repository`、`npm run format:check`、`git diff --check` 为本轮静态验收；仓库脚本/测试未引用 workflow 路径或这些 Action 版本，不跑本地全量测试/构建，云端实际执行由指挥方推送后确认。
+
 **2026-10-17阶段5L【只排空遗留离线任务】**：删除无生产消费者的入队、去重、待写重放、容量淘汰与发送闭包；保留旧格式读取、锁内认领与锁后复核、按id回执、已载入任务取消、有效期、账户隔离、pause/resume、网络恢复及提示条入口。连续审计问题集中在入队路径，故收窄职责而不继续修补重放；未访问用户存储来推断无遗留。现行合同见[04](04-API-DOCUMENTATION.md#阶段5l只排空遗留离线任务现行)、[05](05-DATABASE-SCHEMAS.md#阶段5l遗留队列持久合同现行)，最终验证及资源收尾见[12](12-CHANGELOG.md#2026-10-17-遗留离线队列收窄阶段5l)。最终231项相关回归、全量5279通过/6原Mongo跳过/零失败，lint、三端隔离构建、公开产物与包体检查通过；无性能超时。保留5L/5K候选与指定5G回退，已回收冗余5I/5J构建。不扩展后续功能、推送或生产授权。
 
 ## 阶段5L审计条目处理
