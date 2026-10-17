@@ -7,6 +7,7 @@
  * ✅ 加密/解密逻辑已提取到 utils/crypto/cipher.js 共享模块
  */
 
+import { supportsIdentityWrites } from './identity-context.js';
 import { deobfuscate } from '../utils/crypto/cipher.js';
 
 const LOCAL_COMPAT_PREFIX = '__exam_storage__:';
@@ -106,10 +107,16 @@ export const isSessionUnavailable = (error) =>
   error?.code === 'SESSION_UNAVAILABLE' || error?.errorCode === 'SESSION_UNAVAILABLE';
 
 function getStoredAuthValue(key) {
+  if (!supportsIdentityWrites()) return null;
   let record, encrypted, plain;
   try {
     record = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
     if (record && typeof record === 'object' && typeof record.token === 'string') {
+      if (
+        (readIdentityGeneration() > 0 || record.generation !== undefined) &&
+        record.generation !== readIdentityGeneration()
+      )
+        return null;
       if ('revocation' in record && record.revocation !== (safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null))
         return null;
       return key === 'EXAM_USER_ID' ? record.owner : record.token;
@@ -145,6 +152,13 @@ export const LOGIN_SESSION_EPOCH_KEY = 'EXAM_SESSION_EPOCH';
 export const SESSION_ENABLED_KEY = 'EXAM_SESSION_ENABLED';
 export const LOGIN_ATTEMPT_KEY = 'EXAM_LOGIN_ATTEMPT';
 export const SESSION_REVOCATION_KEY = 'EXAM_SESSION_REVOCATION';
+export const IDENTITY_GENERATION_KEY = 'EXAM_IDENTITY_GENERATION';
+export function readIdentityGeneration() {
+  const value = safeGetStorageSync(IDENTITY_GENERATION_KEY, true);
+  if (value === '' || value === null || value === undefined) return 0;
+  if (!Number.isSafeInteger(value) || value < 0 || value >= Number.MAX_SAFE_INTEGER) throw sessionUnavailable();
+  return value;
+}
 
 // Synchronous SHA-256: supported by uni/wx as well as browsers, with no async credential gap.
 // This digest detects torn identity writes; it is never an authorization credential or logged.
@@ -212,7 +226,15 @@ function strictAuthValue(key) {
 }
 const validEpoch = (value) => typeof value === 'string' && /^[a-zA-Z0-9_-]{8,120}$/.test(value);
 export const getLoginSessionEpoch = () => {
+  if (!supportsIdentityWrites()) return null;
   const value = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
+  if (
+    value &&
+    typeof value === 'object' &&
+    (readIdentityGeneration() > 0 || value.generation !== undefined) &&
+    value.generation !== readIdentityGeneration()
+  )
+    return null;
   if (
     value &&
     typeof value === 'object' &&
@@ -224,8 +246,17 @@ export const getLoginSessionEpoch = () => {
 };
 
 export function readSessionSnapshot() {
+  if (!supportsIdentityWrites())
+    return {
+      status: 'current',
+      session: Object.freeze({ owner: 'guest', epoch: 'unsupported_browser_guest' }),
+      token: null,
+      enabled: true,
+      reason: 'BROWSER_UPGRADE_REQUIRED'
+    };
   try {
     for (let attempt = 0; attempt < 3; attempt++) {
+      const generation = readIdentityGeneration();
       const revocation = safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null;
       const before = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
       // New commits carry the complete identity in one encrypted value. Aliases are compatibility only.
@@ -234,6 +265,9 @@ export function readSessionSnapshot() {
       const token = normalizeStringValue(complete ? before.token : strictAuthValue('EXAM_TOKEN')) || null;
       const enabled = !!safeGetStorageSync(SESSION_ENABLED_KEY, true);
       const after = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
+      if (generation !== readIdentityGeneration()) continue;
+      if (complete && (generation > 0 || before.generation !== undefined) && before.generation !== generation)
+        return { status: 'changed', session: Object.freeze({ owner, epoch: null }), token: null, enabled };
       if (revocation !== (safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null)) continue;
       if (before && typeof before === 'object' && 'revocation' in before && before.revocation !== revocation)
         return { status: 'changed', session: Object.freeze({ owner, epoch: null }), token, enabled };
@@ -261,6 +295,7 @@ export function readSessionSnapshot() {
         session: Object.freeze({ owner, epoch, proof: sessionCredentialProof(owner, token) }),
         token,
         enabled,
+        generation,
         record: complete ? before : null
       };
     }

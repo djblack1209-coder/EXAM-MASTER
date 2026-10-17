@@ -74,6 +74,7 @@ const saveLoginInfo = async (data, attempt) => {
   // ✅ 用户隔离：登录后迁移无前缀的旧数据到 u_${userId}_ 前缀
   storageService.migrateUserKeys(session);
 
+  uni.$emit('auth:userdata', userInfo, session);
   uni.$emit('loginStatusChanged', true);
   uni.$emit('userInfoUpdated', userInfo);
 };

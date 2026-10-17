@@ -27,6 +27,7 @@ export default defineConfig({
     env:
       process.env.YOZI_ISOLATED_BUILD === '1' || process.env.WENLI_ISOLATED_BUILD === '1'
         ? {
+            UNI_PLATFORM: 'app',
             VITE_API_BASE_URL: 'https://test.example.com',
             VITE_WX_APP_ID: 'wx_test_app_id',
             VITE_APP_NAME: 'Yozi-AI-Test',
@@ -36,7 +37,7 @@ export default defineConfig({
             VITE_WS_DEV_URL: 'ws://localhost:3000/ws/ranking',
             VITE_WS_PROD_URL: 'wss://test.example.com/ws/ranking'
           }
-        : {},
+        : { UNI_PLATFORM: 'app' },
     maxWorkers: process.env.YOZI_ISOLATED_BUILD === '1' || process.env.WENLI_ISOLATED_BUILD === '1' ? 1 : undefined,
     // 测试环境
     environment: 'happy-dom',

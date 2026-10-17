@@ -1,4 +1,10 @@
-import { captureSession, assertSession, checkSession, isSessionUnavailable } from '@/services/auth-storage.js';
+import {
+  captureSession,
+  assertSession,
+  checkSession,
+  isSessionUnavailable,
+  readIdentityGeneration
+} from '@/services/auth-storage.js';
 /**
  * Token 刷新插件
  * 管理 Token 的存取、过期检测、自动刷新和并发去重
@@ -87,10 +93,18 @@ class TokenRefreshPlugin {
   /**
    * 清除所有 Token
    */
-  clearTokens() {
-    storageService._clearRevokedCredentials();
-    this.stopPreCheckTimer();
-    this.refreshRetryCount = 0;
+  clearTokens(session = captureSession()) {
+    const generation = readIdentityGeneration();
+    const finish = (saved) => {
+      if (saved !== true) return false;
+      if (readIdentityGeneration() === generation + 1) {
+        this.stopPreCheckTimer();
+        this.refreshRetryCount = 0;
+      }
+      return true;
+    };
+    const saved = storageService._clearRevokedCredentials(session, false, generation);
+    return saved?.then ? saved.then(finish) : finish(saved);
   }
 
   /**
@@ -141,7 +155,8 @@ class TokenRefreshPlugin {
 
     // 检查重试次数
     if (this.refreshRetryCount >= this._maxRefreshRetries) {
-      this.clearTokens();
+      if (!(await this.clearTokens(session)) || captureSession()?.owner !== 'guest')
+        throw Object.assign(new Error('登录会话已变化'), { code: 'CONTEXT_CHANGED' });
       if (typeof this._onLogout === 'function') {
         this._onLogout();
       } else if (this._onLogout !== null || this._onRefreshFailed !== null) {
@@ -204,9 +219,15 @@ class TokenRefreshPlugin {
    */
   startPreCheckTimer() {
     this.stopPreCheckTimer();
-    const session = captureSession();
-    this._preCheckTimer = setInterval(() => {
+    let session = captureSession();
+    const timer = setInterval(() => {
+      if (this._preCheckTimer !== timer) return;
       try {
+        if (!session) {
+          const candidate = captureSession();
+          if (!candidate) return;
+          session = candidate;
+        }
         assertSession(session);
         if (this.isTokenExpiringSoon()) {
           this.refreshToken().catch((_err) => {
@@ -218,6 +239,7 @@ class TokenRefreshPlugin {
         this.stopPreCheckTimer();
       }
     }, 60 * 1000);
+    this._preCheckTimer = timer;
   }
 
   /**

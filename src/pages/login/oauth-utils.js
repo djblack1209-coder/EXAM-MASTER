@@ -78,6 +78,10 @@ export function beginWebOAuth(
   configuredRedirect = '',
   { wechatMode = 'h5', attempt = storageService.beginLoginAttempt() } = {}
 ) {
+  if (attempt?.then)
+    return attempt.then((registered) =>
+      beginWebOAuth(provider, appId, configuredRedirect, { wechatMode, attempt: registered })
+    );
   const info = providerInfo(provider);
   requireWebOAuth(provider);
   if (provider === 'wechat' && !['h5', 'website'].includes(wechatMode)) {
@@ -107,7 +111,7 @@ export function beginWebOAuth(
   const state = `${nonce}_${attempt.id}`;
   const context = {
     state,
-    attempt: { id: attempt.id, revocation: attempt.revocation },
+    attempt: { id: attempt.id, revocation: attempt.revocation, generation: attempt.generation },
     redirectUri,
     origin: page.origin,
     createdAt: Date.now(),

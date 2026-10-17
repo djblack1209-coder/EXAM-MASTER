@@ -421,6 +421,7 @@ export default defineConfig(({ command, mode }) => {
     // 环境变量定义
     define: {
       __YOZI_TOKENS__: JSON.stringify(readYoziTokens()),
+      'import.meta.env.UNI_PLATFORM': JSON.stringify(platform),
       'process.env.NODE_ENV': JSON.stringify(mode),
       __YOZI_PREVIEW__: JSON.stringify(enablePreview),
       'process.env.SENTRY_DSN': JSON.stringify(env.VITE_SENTRY_DSN || ''),

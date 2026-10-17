@@ -23,6 +23,7 @@
  * await storageService.updateMistakeStatus(mistakeId, true)
  */
 
+import { supportsIdentityWrites, browserUpgradeRequired } from './identity-context.js';
 import { logger } from '@/utils/logger.js';
 import { readPersistent, requirePersistent } from './persistence-read.js';
 import { readLocalHistory } from './learning/history-storage.js';
@@ -131,6 +132,7 @@ function createUniCompat() {
       if (
         typeof localStorage !== 'undefined' &&
         (isIdentityStorageKey(key) ||
+          key === IDENTITY_GENERATION_KEY ||
           key === LOGIN_ATTEMPT_KEY ||
           key === SESSION_REVOCATION_KEY ||
           key === SESSION_ENABLED_KEY ||
@@ -277,11 +279,13 @@ function identityWasRemoved(event) {
     return false;
   }
 }
-function removeLoginEpoch() {
+function removeLoginEpoch(expectedGeneration = readIdentityGeneration()) {
   // Invalidate both queued commits and responses that have not reached storage yet.
   const revocation = newIdentityId();
   uni.setStorageSync(SESSION_REVOCATION_KEY, revocation);
+  if (readIdentityGeneration() !== expectedGeneration) return false;
   uni.setStorageSync(LOGIN_ATTEMPT_KEY, revocation);
+  if (readIdentityGeneration() !== expectedGeneration) return false;
   uni.removeStorageSync(LOGIN_SESSION_EPOCH_KEY);
   uni.removeStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`);
 }
@@ -326,6 +330,8 @@ import {
   SESSION_ENABLED_KEY,
   LOGIN_ATTEMPT_KEY,
   SESSION_REVOCATION_KEY,
+  IDENTITY_GENERATION_KEY,
+  readIdentityGeneration,
   captureSession,
   checkSession,
   assertSession,
@@ -337,6 +343,13 @@ import {
 } from './auth-storage.js';
 import { toast } from '@/utils/toast.js';
 
+const IDENTITY_CONTROL_KEYS = new Set([
+  IDENTITY_GENERATION_KEY,
+  SESSION_ENABLED_KEY,
+  SESSION_REVOCATION_KEY,
+  LOGIN_ATTEMPT_KEY
+]);
+
 // ✅ 用户隔离：全局键（不加 userId 前缀）
 // 所有不在此集合中的键都会自动加 `u_${userId}_` 前缀，实现多用户数据隔离
 const GLOBAL_KEYS = new Set([
@@ -346,6 +359,7 @@ const GLOBAL_KEYS = new Set([
   'EXAM_SESSION_ENABLED',
   'EXAM_LOGIN_ATTEMPT',
   'EXAM_SESSION_REVOCATION',
+  'EXAM_IDENTITY_GENERATION',
   'EXAM_USER_ID',
   'EXAM_USER_INFO',
   'userInfo',
@@ -385,26 +399,29 @@ function isUnscopedKey(key) {
 }
 
 function withIdentityLock(write) {
-  const locks = typeof navigator !== 'undefined' ? navigator.locks : null;
+  if (!supportsIdentityWrites()) throw browserUpgradeRequired();
+  const locks = globalThis.navigator?.locks;
   return locks?.request ? locks.request('exam-master:login-session-v1', { mode: 'exclusive' }, write) : write();
 }
-function commitIdentityRecord(
-  record,
-  expectedAttempt = uni.getStorageSync(LOGIN_ATTEMPT_KEY),
-  encrypted = obfuscate(record)
-) {
+function advanceIdentityGeneration(expected) {
+  if (readIdentityGeneration() !== expected) return null;
+  const next = expected + 1;
+  uni.setStorageSync(IDENTITY_GENERATION_KEY, next);
+  return next;
+}
+function commitIdentityRecord(record, expectedGeneration) {
+  if (readIdentityGeneration() !== expectedGeneration) return false;
+  record.generation = expectedGeneration + 1;
+  const encrypted = obfuscate(record);
   uni.setStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`, encrypted);
-  if (
-    uni.getStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`) !== encrypted ||
-    uni.getStorageSync(LOGIN_ATTEMPT_KEY) !== expectedAttempt ||
-    (uni.getStorageSync(SESSION_REVOCATION_KEY) || null) !== record.revocation
-  ) {
-    // No portable atomic CAS exists without Web Locks. Invalidate, never restore a losing snapshot.
-    if (!globalThis.navigator?.locks?.request) removeLoginEpoch();
-    notifyIdentityChange();
-    return false;
-  }
-  return true;
+  if (readIdentityGeneration() !== expectedGeneration) return false;
+  uni.setStorageSync(SESSION_REVOCATION_KEY, record.revocation);
+  uni.setStorageSync(SESSION_ENABLED_KEY, true);
+  uni.setStorageSync(IDENTITY_GENERATION_KEY, record.generation);
+  return (
+    readIdentityGeneration() === record.generation &&
+    uni.getStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`) === encrypted
+  );
 }
 function identitySnapshotMatches(origin) {
   const now = readSessionSnapshot();
@@ -418,9 +435,10 @@ function identitySnapshotMatches(origin) {
 }
 
 function migratePlainSensitiveKey(key) {
+  const generation = readIdentityGeneration();
   const origin = readSessionSnapshot();
   const write = () => {
-    if (!identitySnapshotMatches(origin)) return false;
+    if (readIdentityGeneration() !== generation || !identitySnapshotMatches(origin)) return false;
     try {
       const plain = readStorageStrict(getRuntimeUni(), key);
       if (plain === '' || plain === null || plain === undefined) return false;
@@ -430,6 +448,9 @@ function migratePlainSensitiveKey(key) {
         if (!existing) uni.setStorageSync(`_enc_${key}`, obfuscate(plain));
         if (JSON.stringify(deobfuscate(uni.getStorageSync(`_enc_${key}`))) !== JSON.stringify(plain)) return false;
         if (!identitySnapshotMatches(origin)) return false;
+        if (origin.record) {
+          if (!commitIdentityRecord({ ...origin.record }, generation)) return false;
+        } else if (advanceIdentityGeneration(generation) === null) return false;
         uni.removeStorageSync(key);
         return true;
       });
@@ -550,52 +571,53 @@ class StorageService {
   }
 
   _finishRevocation() {
-    const locks = typeof navigator !== 'undefined' ? navigator.locks : null;
-    if (!locks?.request) {
-      this._clearRevokedCredentials();
-      return;
+    if (!supportsIdentityWrites()) return;
+    try {
+      const result = this._clearRevokedCredentials(undefined, true);
+      return result?.catch ? result.catch(() => false) : result;
+    } catch {
+      return false;
     }
-    // Another window may be between epoch deletion and the final login commit.
-    // Revoke old consumers immediately, but serialize credential cleanup with that writer.
-    if (!this._revocationCleanup)
-      this._revocationCleanup = locks
-        .request('exam-master:login-session-v1', { mode: 'exclusive' }, () => {
-          if (readSessionSnapshot().status === 'changed') this._clearRevokedCredentials();
-        })
-        .catch(() => undefined)
-        .finally(() => {
-          this._revocationCleanup = null;
-        });
   }
 
-  _clearRevokedCredentials() {
-    identityWriteDepth++;
-    try {
-      removeLoginEpoch();
-      for (const key of [
-        'EXAM_USER_ID',
-        'EXAM_TOKEN',
-        'userInfo',
-        'EXAM_USER_INFO',
-        'access_token',
-        'refresh_token',
-        'token_expire_time'
-      ]) {
-        uni.removeStorageSync(key);
-        uni.removeStorageSync(`_enc_${key}`);
+  _clearRevokedCredentials(session, onlyRevoked = false, generation = readIdentityGeneration()) {
+    const write = () => {
+      if (readIdentityGeneration() !== generation) return false;
+      if (session && checkSession(session) === 'changed') return false;
+      if (onlyRevoked && readSessionSnapshot().status !== 'changed') return false;
+      const next = advanceIdentityGeneration(generation);
+      if (next === null) return false;
+      identityWriteDepth++;
+      try {
+        removeLoginEpoch(next);
+        for (const key of [
+          'EXAM_USER_ID',
+          'EXAM_TOKEN',
+          'userInfo',
+          'EXAM_USER_INFO',
+          'access_token',
+          'refresh_token',
+          'token_expire_time'
+        ]) {
+          if (readIdentityGeneration() !== next) return false;
+          uni.removeStorageSync(key);
+          uni.removeStorageSync(`_enc_${key}`);
+        }
+        clearPendingWrites();
+        return true;
+      } finally {
+        identityWriteDepth--;
+        if (!identityWriteDepth) {
+          pendingIdentityChange = undefined;
+          notifyIdentityChange({ type: 'logout' });
+        }
       }
-      clearPendingWrites();
-      pendingIdentityChange = { type: 'logout' };
-    } finally {
-      identityWriteDepth--;
-      if (!identityWriteDepth) {
-        pendingIdentityChange = undefined;
-        notifyIdentityChange({ type: 'logout' });
-      }
-    }
+    };
+    return withIdentityLock(write);
   }
 
   _newSessionEpoch(existing, expected) {
+    const generation = readIdentityGeneration();
     const origin = readSessionSnapshot();
     const write = () => {
       if (
@@ -610,7 +632,6 @@ class StorageService {
         token = origin.token;
       if (!token || owner === 'guest') return null;
       const epoch = existing || newIdentityId();
-      const attempt = uni.getStorageSync(LOGIN_ATTEMPT_KEY);
       const record = {
         version: 1,
         epoch,
@@ -624,9 +645,8 @@ class StorageService {
       if (!identitySnapshotMatches(origin)) return null;
       if (!record.revocation) {
         record.revocation = newIdentityId();
-        uni.setStorageSync(SESSION_REVOCATION_KEY, record.revocation);
       }
-      if (!commitIdentityRecord(record, attempt)) return null;
+      if (!commitIdentityRecord(record, generation)) return null;
       uni.setStorageSync(SESSION_ENABLED_KEY, true);
       notifyIdentityChange({ type: 'migration' });
       return epoch;
@@ -636,36 +656,38 @@ class StorageService {
   }
 
   beginLoginAttempt() {
-    // Capture before reading identity or registering: never adopt a fence written by logout.
-    const revocation = uni.getStorageSync(SESSION_REVOCATION_KEY) || null;
+    if (!supportsIdentityWrites()) throw browserUpgradeRequired();
+    const generation = readIdentityGeneration();
     const snapshot = readSessionSnapshot();
     if (snapshot.status === 'unavailable') throw sessionUnavailable();
-    const unchanged = () => {
-      const now = readSessionSnapshot();
-      return (
-        (uni.getStorageSync(SESSION_REVOCATION_KEY) || null) === revocation &&
-        now.status === snapshot.status &&
-        now.status !== 'unavailable' &&
-        now.session.owner === snapshot.session.owner &&
-        now.session.epoch === snapshot.session.epoch &&
-        now.token === snapshot.token
-      );
-    };
-    if (!unchanged()) throw new Error('登录尝试已失效，请重试');
-    const attempt = Object.freeze({
-      id: newIdentityId(),
-      revocation,
-      guestSources: snapshot.session.owner === 'guest' ? new Map(guestWrites) : new Map()
+    const revocation = uni.getStorageSync(SESSION_REVOCATION_KEY) || null;
+    const guestSources = snapshot.session.owner === 'guest' ? new Map(guestWrites) : new Map();
+    return withIdentityLock(() => {
+      if (readIdentityGeneration() !== generation) throw new Error('登录尝试已失效，请重试');
+      let next;
+      try {
+        if (snapshot.record) {
+          const record = { ...snapshot.record };
+          if (!commitIdentityRecord(record, generation)) throw new Error('登录尝试已失效，请重试');
+          next = record.generation;
+        } else next = advanceIdentityGeneration(generation);
+      } catch (failure) {
+        notifyIdentityChange();
+        throw new Error('登录状态未保存，请重新登录', { cause: failure });
+      }
+      if (next === null) throw new Error('登录尝试已失效，请重试');
+      const attempt = Object.freeze({ id: newIdentityId(), generation: next, revocation, guestSources });
+      uni.setStorageSync(LOGIN_ATTEMPT_KEY, attempt.id);
+      return attempt;
     });
-    uni.setStorageSync(LOGIN_ATTEMPT_KEY, attempt.id);
-    if (!unchanged() || !this.isLoginAttemptCurrent(attempt)) throw new Error('登录尝试已失效，请重试');
-    return attempt;
   }
 
   isLoginAttemptCurrent(attempt) {
     try {
       return (
+        supportsIdentityWrites() &&
         !!attempt &&
+        readIdentityGeneration() === attempt.generation &&
         uni.getStorageSync(LOGIN_ATTEMPT_KEY) === attempt.id &&
         (uni.getStorageSync(SESSION_REVOCATION_KEY) || null) === attempt.revocation
       );
@@ -678,23 +700,24 @@ class StorageService {
     if (typeof userId !== 'string' || !userId.trim() || typeof token !== 'string' || !token.trim())
       throw new Error('登录结果不完整，请重新登录');
     userInfo = userInfo === undefined ? null : JSON.parse(JSON.stringify(userInfo));
-    const write = () => {
+    if (attempt?.then)
+      return attempt.then((registered) => this.saveLoginSession({ userId, token, userInfo }, registered));
+    return withIdentityLock(() => {
       if (!this.isLoginAttemptCurrent(attempt)) throw new Error('登录尝试已失效，请重试');
-      const current = () =>
-        uni.getStorageSync(LOGIN_ATTEMPT_KEY) === attempt.id &&
-        (uni.getStorageSync(SESSION_REVOCATION_KEY) || null) === commitRevocation;
-      const previous = uni.getStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`);
-      const enabled = uni.getStorageSync(SESSION_ENABLED_KEY);
+      const previous = readSessionSnapshot();
+      const previousInfo = previous.record?.userInfo ?? this.get('userInfo', null, { migrateLegacy: false });
       const aliases = new Map(
         ['EXAM_USER_ID', 'userInfo', 'EXAM_TOKEN'].flatMap((key) =>
           [key, `_enc_${key}`].map((name) => [name, uni.getStorageSync(name)])
         )
       );
-      let written;
-      const aliasWrites = new Map();
-      let commitRevocation = attempt.revocation;
+      let ownedGeneration = attempt.generation;
+      let committed = false;
+      const current = () => readIdentityGeneration() === ownedGeneration;
       identityWriteDepth++;
       try {
+        if (!current()) throw new Error('登录尝试已失效，请重试');
+        const revocation = newIdentityId();
         const record = {
           version: 1,
           epoch: newIdentityId(),
@@ -702,86 +725,65 @@ class StorageService {
           token,
           userInfo,
           proof: sessionCredentialProof(userId, token),
-          revocation: attempt.revocation
+          revocation
         };
-        if (!current()) throw new Error('登录尝试已失效，请重试');
-        // Publish a first device fence only in the owning commit, never during attempt registration.
-        if (!commitRevocation) {
-          const firstFence = newIdentityId();
-          uni.setStorageSync(SESSION_REVOCATION_KEY, firstFence);
-          commitRevocation = firstFence;
-          if (!current()) throw new Error('登录尝试已失效，请重试');
-          record.revocation = firstFence;
-        }
-        uni.setStorageSync(SESSION_ENABLED_KEY, true);
-        written = obfuscate(record);
-        if (!commitIdentityRecord(record, attempt.id, written)) throw new Error('登录尝试已失效，请重试');
-        const session = Object.freeze({ owner: userId, epoch: record.epoch, proof: record.proof });
-        if (uni.getStorageSync(LOGIN_ATTEMPT_KEY) !== attempt.id || checkSession(session) !== 'current')
-          throw new Error('登录尝试已失效，请重试');
+        if (!commitIdentityRecord(record, ownedGeneration)) throw new Error('登录尝试已失效，请重试');
+        ownedGeneration = record.generation;
+        committed = true;
         for (const key of ['access_token', 'refresh_token', 'token_expire_time']) {
           if (!current()) throw new Error('登录尝试已失效，请重试');
           uni.removeStorageSync(key);
           uni.removeStorageSync(`_enc_${key}`);
         }
-        // Mirror aliases only after the complete identity is visible. They are never read as the commit.
         for (const [key, value] of [
           ['EXAM_USER_ID', userId],
           ['userInfo', userInfo],
           ['EXAM_TOKEN', token]
         ]) {
-          if (!current() || !this._saveValue(key, value, true, undefined, aliasWrites))
-            throw new Error('登录尝试已失效，请重试');
+          if (!current() || !this._saveValue(key, value, true)) throw new Error('登录状态未保存');
         }
-        if (!current()) throw new Error('登录尝试已失效，请重试');
         loginGuestSources.clear();
         loginGuestSources.set(record.epoch, attempt.guestSources);
         guestWrites.clear();
-        pendingIdentityChange = undefined;
-        return session;
+        return Object.freeze({ owner: userId, epoch: record.epoch, proof: record.proof });
       } catch (failure) {
-        try {
-          if (written && uni.getStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`) === written) {
-            if (!current()) {
-              uni.removeStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`);
-              for (const [name, value] of aliasWrites)
-                if (uni.getStorageSync(name) === value) uni.removeStorageSync(name);
-            } else {
-              // Restore aliases only while the complete record still proves write ownership.
-              // This also handles a cancelled first login with no previous complete record.
-              for (const [name, value] of aliases) {
-                if (value === '' || value === undefined || value === null) uni.removeStorageSync(name);
-                else uni.setStorageSync(name, value);
-              }
-              // Restore only our own failed commit while holding the same writer lock.
-              if (previous) {
-                if (globalThis.navigator?.locks?.request) {
-                  uni.setStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`, previous);
-                } else removeLoginEpoch();
-              } else uni.removeStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`);
-              if (enabled) uni.setStorageSync(SESSION_ENABLED_KEY, enabled);
-              else uni.removeStorageSync(SESSION_ENABLED_KEY);
+        // Rollback is another generation-checked mutation, never restoration over a winner.
+        if (committed && current()) {
+          const rollback = advanceIdentityGeneration(ownedGeneration);
+          if (rollback !== null) {
+            if (previous.token && previous.session.owner !== 'guest') {
+              const revocation = previous.record?.revocation || newIdentityId();
+              uni.setStorageSync(SESSION_REVOCATION_KEY, revocation);
+              const record = previous.record || {
+                version: 1,
+                owner: previous.session.owner,
+                epoch: previous.session.epoch || newIdentityId(),
+                token: previous.token,
+                userInfo: previousInfo,
+                proof: previous.session.proof,
+                ...(previous.session.epoch ? {} : { migratedFrom: null })
+              };
+              uni.setStorageSync(
+                `_enc_${LOGIN_SESSION_EPOCH_KEY}`,
+                obfuscate({ ...record, revocation, generation: rollback })
+              );
+            } else removeLoginEpoch(rollback);
+            for (const [name, value] of aliases) {
+              if (readIdentityGeneration() !== rollback) break;
+              if (value === '' || value === undefined || value === null) uni.removeStorageSync(name);
+              else uni.setStorageSync(name, value);
             }
-          } else if (current() && uni.getStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`) === previous) {
-            // The complete record was untouched. Only restore our enabled flag.
-            if (enabled) uni.setStorageSync(SESSION_ENABLED_KEY, enabled);
-            else uni.removeStorageSync(SESSION_ENABLED_KEY);
           }
-        } catch {
-          /* A read failure cannot authorize cleanup of another writer. */
         }
         throw new Error('登录状态未保存，请重新登录', { cause: failure });
       } finally {
-        // A losing transaction must never revoke or delete the winner's complete commit.
         identityWriteDepth--;
         if (!identityWriteDepth) {
-          const change = pendingIdentityChange;
           pendingIdentityChange = undefined;
-          notifyIdentityChange(change);
+          notifyIdentityChange();
         }
       }
-    };
-    return withIdentityLock(write);
+    });
   }
 
   /** Subscribe without exposing identity values; dispose with the consumer's scope. */
@@ -794,7 +796,8 @@ class StorageService {
     const authListeners = authEvents.map((event) => [
       event,
       () => {
-        if (event === 'user:logout') removeLoginEpoch();
+        // Logout notifications only trigger a reread; the owning transaction already revoked.
+
         changed(event === 'user:logout' ? { type: 'logout' } : undefined);
       }
     ]);
@@ -986,8 +989,10 @@ class StorageService {
    * @returns {boolean} 是否保存成功
    */
   save(key, value, silent = false, session, { mergeProfile = false } = {}) {
+    if (IDENTITY_CONTROL_KEYS.has(identityStorageKey(key))) return false;
     if (isIdentityStorageKey(key) && !isSensitiveKey(key)) return false;
     if (!isSensitiveKey(key)) return this._saveValue(key, value, silent, session);
+    const generation = readIdentityGeneration();
     const origin = readSessionSnapshot();
     session = session === undefined ? origin.session : session;
     mergeProfile = mergeProfile && ['userInfo', 'EXAM_USER_INFO'].includes(key);
@@ -1006,7 +1011,8 @@ class StorageService {
           ...patch
         };
       if (checkSession(session) !== 'current' || (!mergeProfile && !identitySnapshotMatches(origin))) return false;
-      const attempt = uni.getStorageSync(LOGIN_ATTEMPT_KEY);
+      const expectedGeneration = generation;
+      if (readIdentityGeneration() !== expectedGeneration) return false;
       const record = latest.record ? { ...latest.record } : null;
       if (record) {
         if (key === 'userInfo' || key === 'EXAM_USER_INFO') {
@@ -1021,12 +1027,16 @@ class StorageService {
       if (
         (key === 'EXAM_USER_ID' && value !== origin.session.owner) ||
         (['EXAM_TOKEN', 'access_token', 'refresh_token'].includes(key) && !value)
-      )
-        removeLoginEpoch();
-      // Full record is authoritative; aliases are written only within this transaction.
-      if (record && (['userInfo', 'EXAM_USER_INFO'].includes(key) || (key === 'EXAM_TOKEN' && value))) {
-        if (!commitIdentityRecord(record, attempt)) return false;
+      ) {
+        const next = advanceIdentityGeneration(expectedGeneration);
+        if (next === null) return false;
+        removeLoginEpoch(next);
+        return this._saveValue(key, value, silent);
       }
+      // The same transaction updates the full record before mirroring aliases.
+      if (record) {
+        if (!commitIdentityRecord(record, expectedGeneration)) return false;
+      } else if (advanceIdentityGeneration(expectedGeneration) === null) return false;
       return this._saveValue(key, value, silent);
     };
     try {
@@ -1230,6 +1240,7 @@ class StorageService {
       if (session !== undefined) assertSession(session);
       const snapshot = isSensitiveKey(key) && key !== LOGIN_SESSION_EPOCH_KEY ? readSessionSnapshot() : null;
       if (snapshot?.status === 'unavailable') throw sessionUnavailable();
+      if (snapshot?.status === 'changed' || (isSensitiveKey(key) && !supportsIdentityWrites())) return defaultValue;
       if (snapshot?.record) {
         if (key === 'userInfo' || key === 'EXAM_USER_INFO') return snapshot.record.userInfo ?? defaultValue;
         if (key === 'EXAM_USER_ID') return snapshot.record.owner;
@@ -1312,10 +1323,17 @@ class StorageService {
    * @returns {boolean} 是否删除成功
    */
   remove(key, silent = false, session) {
+    if (IDENTITY_CONTROL_KEYS.has(identityStorageKey(key))) return false;
+    if (isIdentityStorageKey(key)) {
+      try {
+        return this._clearRevokedCredentials(session);
+      } catch {
+        return false;
+      }
+    }
     try {
       if (session !== undefined) assertSession(session);
       else if (!isUnscopedKey(key)) session = assertSession(captureSession());
-      if (isIdentityStorageKey(key)) removeLoginEpoch();
       const rk = resolveKey(key, session);
       uni.removeStorageSync(rk);
       // ✅ B021: 同时清理加密存储
@@ -1364,18 +1382,32 @@ class StorageService {
       const preserveGlobal = options.preserveGlobal !== false;
       const preserveKeys = Array.isArray(options.preserveKeys) ? options.preserveKeys : [];
 
-      if (!preserveGlobal && preserveKeys.length === 0) {
-        const enabled = uni.getStorageSync(SESSION_ENABLED_KEY);
-        removeLoginEpoch();
-        const revocation = uni.getStorageSync(SESSION_REVOCATION_KEY);
-        uni.clearStorageSync();
-        uni.setStorageSync(SESSION_REVOCATION_KEY, revocation);
-        if (enabled) uni.setStorageSync(SESSION_ENABLED_KEY, true);
-        clearPendingWrites();
-        return true;
+      if (!preserveGlobal) {
+        const generation = readIdentityGeneration();
+        const result = withIdentityLock(() => {
+          const next = advanceIdentityGeneration(generation);
+          if (next === null) return false;
+          removeLoginEpoch(next);
+          const keep = new Set(IDENTITY_CONTROL_KEYS);
+          for (const key of preserveKeys) {
+            if (typeof key === 'string' && key) {
+              keep.add(key);
+              keep.add(`_enc_${key}`);
+            }
+          }
+          const keys = uni.getStorageInfoSync().keys || [];
+          for (const key of keys) {
+            if (readIdentityGeneration() !== next) return false;
+            if (!keep.has(key)) uni.removeStorageSync(key);
+          }
+          clearPendingWrites();
+          notifyIdentityChange({ type: 'records' });
+          return true;
+        });
+        return result?.catch ? result.catch(() => false) : result;
       }
 
-      const keep = new Set([SESSION_ENABLED_KEY, SESSION_REVOCATION_KEY]);
+      const keep = new Set([IDENTITY_GENERATION_KEY, SESSION_ENABLED_KEY, SESSION_REVOCATION_KEY, LOGIN_ATTEMPT_KEY]);
 
       if (preserveGlobal) {
         SENSITIVE_KEYS.forEach((key) => {
@@ -1411,7 +1443,7 @@ class StorageService {
       }
       return false;
     } finally {
-      notifyIdentityChange({ type: 'records' });
+      if (options.preserveGlobal !== false) notifyIdentityChange({ type: 'records' });
     }
   }
 

@@ -459,13 +459,25 @@ describe('加密同账户会话与凭据请求边界', () => {
     else storageService.save('userInfo', { nickname: '同账户资料' }, true);
   }
   function peerLogin(epoch = 'synthetic-peer-login-epoch', owner = 'synthetic-crosswindow-owner') {
-    // The other window has completed all writes, but none of its events have arrived.
-    for (const [key, value] of [
-      ['EXAM_USER_ID', owner],
-      ['EXAM_TOKEN', originalToken],
-      ['EXAM_SESSION_EPOCH', { version: 1, epoch, owner, proof: sessionCredentialProof(owner, originalToken) }]
-    ])
-      uni.setStorageSync(`_enc_${key}`, obfuscate(value));
+    // A peer committed the complete generation protocol; its storage events are still queued.
+    const generation = (uni.getStorageSync('EXAM_IDENTITY_GENERATION') || 0) + 1;
+    const revocation = `peer-revocation-${generation}`;
+    uni.setStorageSync(
+      '_enc_EXAM_SESSION_EPOCH',
+      obfuscate({
+        version: 1,
+        generation,
+        epoch,
+        owner,
+        token: originalToken,
+        userInfo: {},
+        proof: sessionCredentialProof(owner, originalToken),
+        revocation
+      })
+    );
+    uni.setStorageSync('EXAM_SESSION_REVOCATION', revocation);
+    uni.setStorageSync('EXAM_SESSION_ENABLED', true);
+    uni.setStorageSync('EXAM_IDENTITY_GENERATION', generation);
   }
   function expectReset() {
     expect(store.locatedRecord).toBeNull();
@@ -1018,13 +1030,18 @@ describe('加密同账户会话与凭据请求边界', () => {
     expect(store.historyBusy).toBe(false);
     expect(store.exportData()).toBe(facts);
   });
-  it('登出后即使存储清理尚未完成，再登录相同ID/令牌仍作为新会话重置', () => {
+  it('退出提交后再登录相同ID/令牌仍作为新会话重置', async () => {
     session();
+    await storageService._clearRevokedCredentials();
     uni.$on.mock.calls.findLast(([name]) => name === 'user:logout')[1]();
     store.selectedMode = 'local';
     store.modelId = 'logged-out-choice';
     store.sharingAllowed = true;
-    storageService.save('EXAM_USER_ID', 'synthetic-crosswindow-owner', true);
+    await storageService.saveLoginSession({
+      userId: 'synthetic-crosswindow-owner',
+      token: originalToken,
+      userInfo: {}
+    });
     expect(store.modelId).toBe('');
     expect(store.selectedMode).toBe('offline');
     expect(store.sharingAllowed).toBe(false);
@@ -1053,7 +1070,8 @@ describe('加密同账户会话与凭据请求边界', () => {
       else if (kind === 'missing-id') storageService.remove('EXAM_USER_ID', true);
       else if (kind === 'unreliable-id') storageService.save('EXAM_USER_ID', '   ', true);
       else {
-        // Logout itself is authoritative even before a later storage cleanup or 401 handler.
+        // The committed logout is authoritative; notifications only request a reread.
+        await storageService._clearRevokedCredentials();
         uni.$on.mock.calls.findLast(([name]) => name === 'user:logout')[1](
           kind === '401-logout' ? { code: 401 } : undefined
         );
@@ -1495,15 +1513,15 @@ it('R2: remount stays empty while revoked credential cleanup waits for a Web Loc
   store.$dispose();
   uni.clearStorageSync();
   await storageService.saveLoginSession({ userId: 'revoked-mount-owner', token: 'fixture-token', userInfo: {} });
-  storageService.remove('EXAM_SESSION_EPOCH', true);
+  uni.removeStorageSync('_enc_EXAM_SESSION_EPOCH');
   const previous = navigator.locks;
-  let complete;
+  const cleanup = [];
   Object.defineProperty(navigator, 'locks', {
     configurable: true,
     value: {
       request: (_name, _options, write) =>
         new Promise((resolve) => {
-          complete = () => resolve(write());
+          cleanup.push(() => resolve(write()));
         })
     }
   });
@@ -1515,8 +1533,9 @@ it('R2: remount stays empty while revoked credential cleanup waits for a Web Loc
     }).not.toThrow();
     expect(mounted.state.events).toHaveLength(0);
     expect(getLoginSessionEpoch()).toBeNull();
-    complete();
-    await storageService._revocationCleanup;
+    expect(cleanup.length).toBeGreaterThan(0);
+    for (const complete of cleanup) complete();
+    await Promise.resolve();
     expect(storageService.get('EXAM_TOKEN')).toBeNull();
     expect(getLoginSessionEpoch()).toBeNull();
   } finally {

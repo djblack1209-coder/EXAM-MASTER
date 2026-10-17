@@ -8,7 +8,7 @@ const out = (name, ok) => process.stdout.write(JSON.stringify({ name, ok }) + '\
 function shared() {
   return { map: new Map(), events: [], hooks: [], tabs: [] };
 }
-async function tab(shared, name, locks) {
+async function tab(shared, name, locks, platform = 'app') {
   const listeners = new Map(),
     timers = new Map();
   let timerId = 0;
@@ -135,7 +135,13 @@ async function tab(shared, name, locks) {
   }
   async function load(file) {
     if (modules.has(file)) return modules.get(file);
-    const m = new vm.SourceTextModule(await fs.readFile(file, 'utf8'), { context, identifier: file });
+    const m = new vm.SourceTextModule(await fs.readFile(file, 'utf8'), {
+      context,
+      identifier: file,
+      initializeImportMeta: (meta) => {
+        meta.env = { UNI_PLATFORM: platform };
+      }
+    });
     modules.set(file, m);
     await m.link(async (spec, parent) => {
       if (mocks.has(spec)) return synth(spec, mocks.get(spec));

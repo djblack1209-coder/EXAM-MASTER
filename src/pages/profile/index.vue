@@ -120,6 +120,7 @@ import { useThemeStore } from '@/stores/modules/theme.js';
 import { captureSession, checkSession, readSessionSnapshot } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo, consumeProfilePanel } from '@/utils/safe-navigate';
+import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 import CustomModal from '@/components/common/CustomModal.vue';
 import { DEFAULT_AVATAR } from '@/config/brand.js';
@@ -338,12 +339,21 @@ export default {
           return;
         }
         try {
-          this.userStore.logout();
-          uni.$emit('loginStatusChanged', false);
-          uni.showToast({ title: t('dashboard.copy117'), icon: 'success' });
-          setTimeout(() => {
-            safeNavigateTo('/pages/index/index');
-          }, 1000);
+          const finish = (result) => {
+            if (result?.success === false) {
+              toast.info('登录状态已变化，请重试');
+              return;
+            }
+            const session = captureSession();
+            if (!session || session.owner !== 'guest') return;
+            uni.$emit('loginStatusChanged', false);
+            uni.showToast({ title: t('dashboard.copy117'), icon: 'success' });
+            setTimeout(() => {
+              if (checkSession(session) === 'current') safeNavigateTo('/pages/index/index');
+            }, 1000);
+          };
+          const result = this.userStore.logout();
+          return result?.then ? result.then(finish) : finish(result);
         } catch (e) {
           logger.error('[Profile] logout failed:', e);
         }

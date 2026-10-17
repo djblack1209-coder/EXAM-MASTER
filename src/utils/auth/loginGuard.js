@@ -34,7 +34,9 @@ function buildCurrentPageFullPath(page) {
  * @returns {boolean} 是否已登录
  */
 export function isUserLoggedIn() {
-  if (readSessionSnapshot().status === 'unavailable') return null;
+  const snapshot = readSessionSnapshot();
+  if (snapshot.status === 'unavailable') return null;
+  if (snapshot.status === 'changed' || snapshot.reason === 'BROWSER_UPGRADE_REQUIRED') return false;
   const userStore = useUserStore();
 
   // 优先检查 Pinia store 状态（单一数据源）

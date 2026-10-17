@@ -117,7 +117,7 @@ it('logout revokes before cleanup and never flushes a deferred old-session write
   const write = vi.spyOn(uni, 'setStorageSync');
   write.mockClear();
   auth.logout();
-  expect(write.mock.calls[0]?.[0]).toBe('EXAM_SESSION_REVOCATION');
+  expect(write.mock.calls[0]?.[0]).toBe('EXAM_IDENTITY_GENERATION');
   expect(read('u_account-1_imported_files')).toBe('');
   storageService.flushPendingWrites();
   expect(read('u_account-1_imported_files')).toBe('');

@@ -2431,6 +2431,9 @@ describe('学习空间的实际入口与目录', () => {
       const guest = JSON.parse(learning.exportData());
       expect(guest.owner).toBe('guest');
       expect(guest.attempts).toHaveLength(0);
+      vi.runOnlyPendingTimers();
+      expect(uni.switchTab).toHaveBeenLastCalledWith(expect.objectContaining({ url: '/pages/index/index' }));
+      uni.switchTab.mockClear();
       storageService.saveLoginSession({
         userId: 'isolated-profile-user',
         token: 'synthetic-profile-session-token',
@@ -2441,7 +2444,7 @@ describe('学习空间的实际入口与目录', () => {
       storageService.remove('EXAM_USER_ID');
       learning.refresh();
       vi.runOnlyPendingTimers();
-      expect(uni.switchTab).toHaveBeenLastCalledWith(expect.objectContaining({ url: '/pages/index/index' }));
+      expect(uni.switchTab).not.toHaveBeenCalled();
     } finally {
       vi.useRealTimers();
       logout.mockRestore();

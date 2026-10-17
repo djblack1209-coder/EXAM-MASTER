@@ -228,7 +228,7 @@ it.each(['locateConversation', 'selectTraining'])(
     expect(store.state.conversations).toEqual([]);
   }
 );
-it('regress-04: queued disjoint profile patches merge at commit', async () => {
+it('regress-04: queued disjoint profile patches reject stale generation and retry explicitly', async () => {
   const store = useProfileStore();
   await store.setUserInfo({ id: 'account-1', nickname: 'original' });
   const writes = [];
@@ -240,7 +240,9 @@ it('regress-04: queued disjoint profile patches merge at commit', async () => {
   writes.shift()();
   await first;
   writes.shift()();
-  expect(await second).toBe(true);
+  expect(await second).toBe(false);
+  vi.stubGlobal('navigator', {});
+  expect(await store.updateUserInfo({ avatar: 'avatar' })).toBe(true);
   expect(storageService.get('userInfo')).toMatchObject({ id: 'account-1', nickname: 'new', avatar: 'avatar' });
 });
 it.each([1, 2])('order-5-01: post-login incremental patch preserves latest account-%s fields', async (n) => {
@@ -402,7 +404,7 @@ it('regress-01: real learning and offline originals both persist through renewal
     expect.objectContaining({ attemptId: 'attempt_real_round5', userAnswer: 'A' })
   ]);
 });
-it('regress-04: queued profile patch follows same-owner renewal with latest fields', async () => {
+it('regress-04: queued profile patch rejects a changed generation then retries after renewal', async () => {
   const store = useProfileStore();
   await store.setUserInfo({ id: 'account-1', nickname: 'kept' });
   const writes = [];
@@ -413,7 +415,8 @@ it('regress-04: queued profile patch follows same-owner renewal with latest fiel
   vi.stubGlobal('navigator', {});
   await renew();
   writes.shift()();
-  expect(await pending).toBe(true);
+  expect(await pending).toBe(false);
+  expect(await store.updateUserInfo({ avatar: 'new' })).toBe(true);
   expect(storageService.get('userInfo')).toMatchObject({ id: 'account-1', nickname: 'kept', avatar: 'new' });
 });
 it('MIGRATE-14-03: unavailable preflight retains frozen add body and drops revoked retry', async () => {

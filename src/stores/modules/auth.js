@@ -4,7 +4,8 @@ import {
   checkSession,
   sessionForRequest,
   readSessionSnapshot,
-  sessionUnavailable
+  sessionUnavailable,
+  readIdentityGeneration
 } from '@/services/auth-storage.js';
 /**
  * 认证状态管理
@@ -90,7 +91,7 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const login = async (silent = true) => {
     try {
-      const attempt = storageService.beginLoginAttempt();
+      const attempt = await storageService.beginLoginAttempt();
       // #ifdef APP-PLUS
       logger.warn('[AuthStore] App 端不支持微信静默登录，请使用登录页面');
       return { success: false, error: new Error('请通过登录页面登录') };
@@ -134,9 +135,9 @@ export const useAuthStore = defineStore('auth', () => {
           uni.$emit('auth:userdata', userData, session);
           isLogin.value = true;
 
-          if (res.data.token) {
-            if (!(await setToken(res.data.token, session))) throw new Error('登录状态未保存，请重试');
-          }
+          token.value = res.data.token;
+          boundSession = session;
+          syncLoginStatus();
 
           logger.log('✅ Laf 登录成功');
 
@@ -184,52 +185,58 @@ export const useAuthStore = defineStore('auth', () => {
    * 登出
    */
   const logout = () => {
-    const cleanupLifecycle = ++authLifecycle;
+    const origin = boundSession;
+    const generation = readIdentityGeneration();
     const pinia = getActivePinia();
-    if (!boundSession || checkSession(boundSession) === 'changed') {
-      const message = !boundSession ? '登录状态暂不可读，请重试退出' : '登录会话已变化，请重新确认退出';
+    if (!origin || checkSession(origin) === 'changed') {
+      const message = !origin ? '登录状态暂不可读，请重试退出' : '登录会话已变化，请重新确认退出';
       toast.info(message);
-      return { success: false, code: !boundSession ? 'SESSION_UNAVAILABLE' : 'CONTEXT_CHANGED', message };
+      return { success: false, code: !origin ? 'SESSION_UNAVAILABLE' : 'CONTEXT_CHANGED', message };
     }
-    // Revoke first; account-cache reads and cleanup cannot authorize or block logout.
-    storageService._clearRevokedCredentials();
-    if (boundSession?.owner && boundSession.owner !== 'guest') {
-      try {
-        storageService.clearUserData(boundSession.owner, { preserveLearning: true });
-      } catch {
-        /* already revoked */
+    const finish = (revoked) => {
+      if (revoked !== true) return { success: false, code: 'CONTEXT_CHANGED' };
+      // A later login may have committed before this Promise continuation runs.
+      if (readIdentityGeneration() !== generation + 1) return { success: true };
+      const now = captureSession();
+      const cleanupLifecycle = ++authLifecycle;
+      if (origin.owner !== 'guest') {
+        try {
+          storageService.clearUserData(origin.owner, { preserveLearning: true });
+        } catch {
+          /* already revoked */
+        }
       }
+      token.value = '';
+      isLogin.value = false;
+      tokenRefreshPlugin.stopPreCheckTimer();
+      uni.$emit('user:logout');
+      (async () => {
+        try {
+          const [{ useStatsStore }, { useFavoriteStore }] = await Promise.all([
+            import('./stats.js'),
+            import('./favorite.js')
+          ]);
+          if (
+            cleanupLifecycle !== authLifecycle ||
+            checkSession(now) !== 'current' ||
+            token.value ||
+            _userInfoRef?.value
+          )
+            return;
+          useStatsStore(pinia).clearCache();
+          useFavoriteStore(pinia).$reset();
+        } catch {
+          /* optional cache cleanup */
+        }
+      })();
+      return { success: true };
+    };
+    try {
+      const revoked = storageService._clearRevokedCredentials(origin, false, generation);
+      return revoked?.then ? revoked.then(finish).catch((error) => ({ success: false, error })) : finish(revoked);
+    } catch (error) {
+      return { success: false, error };
     }
-    token.value = '';
-    isLogin.value = false;
-
-    tokenRefreshPlugin.stopPreCheckTimer();
-
-    // 通知所有子 store 重置
-    uni.$emit('user:logout');
-
-    // 清理新增 Store 缓存，防止用户切换时数据泄露
-    (async () => {
-      try {
-        const [{ useStatsStore }, { useFavoriteStore }] = await Promise.all([
-          import('./stats.js'),
-          import('./favorite.js')
-        ]);
-        if (
-          cleanupLifecycle !== authLifecycle ||
-          token.value ||
-          _userInfoRef?.value ||
-          storageService.get('EXAM_USER_ID', null) ||
-          storageService.get(APP_CONFIG.cacheKeys.token, null)
-        )
-          return;
-        useStatsStore(pinia).clearCache();
-        useFavoriteStore(pinia).$reset();
-        // invite store 已移除
-      } catch (_e) {
-        // 清理失败不影响登出流程
-      }
-    })();
   };
 
   /**
