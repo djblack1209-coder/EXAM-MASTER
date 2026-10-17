@@ -69,6 +69,7 @@ describe('trusted client IP', () => {
   );
   it('rejects missing/invalid transport addresses without trusting ctx.ip or headers', () => {
     expect(getClientIp({ ip: '192.0.2.1', headers: { 'x-real-ip': '192.0.2.2' } })).toBeNull();
+    expect(getClientIp({ request: { socket: { remoteAddress: '192.0.2.1' } } })).toBeNull();
     expect(resolve('', '192.0.2.1')).toBeNull();
     expect(resolve('127.0.0.1', 'invalid')).toBeNull();
   });
@@ -79,28 +80,70 @@ describe('trusted client IP', () => {
   });
 });
 
-it('guards every function source against IP headers and alternate transport readers', () => {
+it('guards function and standalone sources against IP headers and alternate transport readers', () => {
   const forbidden = new Set([
     'x-forwarded-for',
     'x-real-ip',
     'cf-connecting-ip',
     'true-client-ip',
     'x-client-ip',
+    'x-cluster-client-ip',
     'forwarded'
   ]);
+  const properties = new Set(['ip', 'remoteaddress', ...forbidden]);
+  // One exact read in the named function, not a file-wide exemption.
+  const allowed = new Map([
+    ['laf-backend/functions/_shared/client-ip.ts:getClientIp:ctx?.socket?.remoteAddress', 0],
+    ['laf-backend/standalone/client-ip.ts:resolveClientIp:req.socket.remoteAddress', 0],
+    ['laf-backend/standalone/client-ip.ts:resolveClientIp:req.ip', 0]
+  ]);
   const violations: string[] = [];
+  function constantText(node: any): string | null {
+    if (ts.isStringLiteralLike(node)) return node.text;
+    if (ts.isParenthesizedExpression(node)) return constantText(node.expression);
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+      const left = constantText(node.left);
+      const right = constantText(node.right);
+      return left === null || right === null ? null : left + right;
+    }
+    if (ts.isTemplateExpression(node)) {
+      let value = node.head.text;
+      for (const span of node.templateSpans) {
+        const part = constantText(span.expression);
+        if (part === null) return null;
+        value += part + span.literal.text;
+      }
+      return value;
+    }
+    return null;
+  }
   function scan(dir: string) {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       const file = join(dir, entry.name);
-      if (entry.isDirectory()) scan(file);
-      else if (/\.[jt]s$/.test(file) && file !== 'laf-backend/functions/_shared/client-ip.ts') {
+      if (entry.isDirectory() && !['node_modules', 'dist'].includes(entry.name)) scan(file);
+      else if (entry.isFile() && /\.(?:[cm]?[jt]s)$/.test(file)) {
         const ast = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true);
         function visit(node: any) {
+          const access = ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node);
+          const property = ts.isPropertyAccessExpression(node)
+            ? node.name.text
+            : ts.isElementAccessExpression(node)
+              ? constantText(node.argumentExpression)
+              : null;
+          const text = constantText(node);
           if (
-            (ts.isStringLiteralLike(node) && forbidden.has(node.text.toLowerCase())) ||
-            (ts.isPropertyAccessExpression(node) && ['remoteAddress', 'ip', ...forbidden].includes(node.name.text))
-          )
-            violations.push(`${file}:${ast.getLineAndCharacterOfPosition(node.getStart()).line + 1}`);
+            (access && property !== null && properties.has(property.toLowerCase())) ||
+            (text !== null && forbidden.has(text.toLowerCase()))
+          ) {
+            let owner = node.parent;
+            while (owner && !ts.isFunctionLike(owner)) owner = owner.parent;
+            const key = `${file}:${owner?.name?.getText(ast) || ''}:${node.getText(ast)}`;
+            if (allowed.has(key)) allowed.set(key, allowed.get(key)! + 1);
+            else
+              violations.push(
+                `${file}:${ast.getLineAndCharacterOfPosition(node.getStart()).line + 1}:${node.getText(ast)}`
+              );
+          }
           ts.forEachChild(node, visit);
         }
         visit(ast);
@@ -108,7 +151,9 @@ it('guards every function source against IP headers and alternate transport read
     }
   }
   scan('laf-backend/functions');
+  scan('laf-backend/standalone');
   expect(violations).toEqual([]);
+  expect([...allowed.values()]).toEqual([1, 1, 1]);
 });
 
 it('pins the Compose gateway and overwrites every edge XFF header', () => {

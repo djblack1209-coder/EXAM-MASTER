@@ -16,8 +16,9 @@ async function stop(child: ChildProcess) {
   await exited;
 }
 beforeAll(() => {
-  mkdirSync('tmp/p7a-evidence', { recursive: true });
-  directory = mkdtempSync(resolve('tmp/p7a-evidence/http-'));
+  const evidenceRoot = process.env.YOZI_CLIENT_IP_EVIDENCE_DIR || 'tmp/client-ip-http';
+  mkdirSync(evidenceRoot, { recursive: true });
+  directory = mkdtempSync(resolve(evidenceRoot, 'http-'));
   execFileSync(
     process.execPath,
     [
