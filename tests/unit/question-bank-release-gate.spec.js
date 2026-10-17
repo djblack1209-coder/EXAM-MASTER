@@ -161,12 +161,15 @@ describe('question bank release gate', () => {
     expect((await reportForCard(digestCard(), 'math1-2099', [branded])).releaseReadiness.canPublish).toBe(false);
   });
   it('keeps both supplemented references blocked even after rewriting their candidate evidence', async () => {
-    const payload = JSON.parse(fs.readFileSync(path.resolve('data/flashcards/politics-2023.json'), 'utf8'));
     for (const number of [10, 11]) {
-      const card = structuredClone(payload.cards[number - 1]);
-      card.answerEvidenceStatus = 'matched';
-      card.answerEvidence.status = 'matched';
-      card.answerEvidence.referenceProof = undefined;
+      // Exercise the authority guard without depending on ignored generated cards.
+      const card = {
+        ...digestCard(),
+        id: `politics-2023-${String(number).padStart(3, '0')}`,
+        number,
+        answerEvidenceStatus: 'matched',
+        answerEvidence: { status: 'matched' }
+      };
       expect((await reportForCard(card, 'politics-2023')).summary.answerEvidenceBlockerCount).toBe(1);
     }
   });
@@ -191,7 +194,7 @@ describe('question bank release gate', () => {
       for (const key of ['passage', 'context', 'material']) damaged[key] = damaged[key].replace('[1]', '');
       damaged.passageSegments = damaged.passageSegments.map((segment) => segment.replace('[1]', ''));
       const result = spawnSync(
-        path.resolve('.venv-baidu/bin/python'),
+        'python3',
         [
           '-c',
           'import sys,json,hashlib; c=json.load(sys.stdin); p=c["sourceEvidence"]["questionProof"]; fields=["id","number","question","passage","context","material","options","passageSegments","answer"]; body={k:c.get(k) for k in fields}|{k:v for k,v in p.items() if k!="contentHash"}; value=" ".join(json.dumps(body,ensure_ascii=False,sort_keys=True).split()); print("sha256:"+hashlib.sha256(value.encode()).hexdigest())'
@@ -203,7 +206,7 @@ describe('question bank release gate', () => {
       expect((await reportForCard(damaged, bankId)).summary.answerEvidenceBlockerCount).toBe(1);
     }
   });
-  it('binds restored translation underlines and fixed ordering positions; missing proof and number drift stay blocked', async () => {
+  it('binds translation/order proof when its PDF exists; absent source, missing proof and number drift stay blocked', async () => {
     for (const [bankId, number] of [
       ['english1-2007', 46],
       ['english1-2010', 41],
@@ -212,7 +215,8 @@ describe('question bank release gate', () => {
       const card = JSON.parse(
         fs.readFileSync(path.resolve('src/config/flashcard-banks', `${bankId}.json`), 'utf8')
       ).cards.find((value) => value.number === number);
-      expect((await reportForCard(card, bankId)).summary.answerEvidenceBlockerCount).toBe(0);
+      const hasSource = fs.existsSync(path.resolve(card.sourceEvidence.questionProof.sourceFilePath));
+      expect((await reportForCard(card, bankId)).summary.answerEvidenceBlockerCount).toBe(hasSource ? 0 : 1);
       for (const change of [
         { targetSegment: 'changed' },
         { fixedSequence: ['41', 'E', '42'] },
@@ -223,11 +227,12 @@ describe('question bank release gate', () => {
         expect((await reportForCard({ ...card, ...change }, bankId)).summary.answerEvidenceBlockerCount).toBe(1);
     }
   });
-  it('binds restored cloze content, answer, segments and actual PDF identity; stripping proof stays blocked', async () => {
+  it('binds cloze content to an available PDF; absent source, altered content and stripped proof stay blocked', async () => {
     for (const bankId of ['english1-2006', 'english1-2007', 'english1-2010']) {
       const card = JSON.parse(fs.readFileSync(path.resolve('src/config/flashcard-banks', `${bankId}.json`), 'utf8'))
         .cards[0];
-      expect((await reportForCard(card, bankId)).summary.answerEvidenceBlockerCount).toBe(0);
+      const hasSource = fs.existsSync(path.resolve(card.sourceEvidence.questionProof.sourceFilePath));
+      expect((await reportForCard(card, bankId)).summary.answerEvidenceBlockerCount).toBe(hasSource ? 0 : 1);
       const changes = [
         { passage: `${card.passage} changed` },
         { context: `${card.context} changed` },
