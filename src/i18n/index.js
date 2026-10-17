@@ -206,7 +206,7 @@ export function initI18n() {
   try {
     saved = uni.getStorageSync(LANGUAGE_KEY);
   } catch {
-    /* 默认中文。 */
+    return false; // Keep the current language; App retries after storage recovers.
   }
   // 中文为主：不跟随系统语言，只有用户明确选择 English 才切换。
   applyLanguage(resolveLanguage(saved));

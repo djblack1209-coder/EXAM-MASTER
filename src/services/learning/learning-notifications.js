@@ -57,11 +57,15 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
   const stopIdentity = storageService.onIdentityChange(() => {
     const status = checkSession(notificationSession);
     if (status !== 'changed') return;
+    clearTimer();
+    if (openTimer !== null) clearTimeout(openTimer);
+    openTimer = null;
     notices.forEach((notice) => notice.close());
     notices.clear();
     waiting.clear();
     delivered.clear();
     notificationSession = captureSession();
+    if (active) tick();
     if (channel === 'macos' && token)
       native('replace_learning_notifications', { token, sequence: ++sequence, consent: false, jobs: [] }).catch(
         () => undefined
@@ -279,7 +283,12 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
         if (disposed) stopListening();
       }
       show();
-    })();
+    })().catch((error) => {
+      stopListening();
+      stopListening = () => undefined;
+      initialization = null;
+      throw error;
+    });
     return initialization;
   }
   function dispose() {

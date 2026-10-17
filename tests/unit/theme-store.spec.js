@@ -13,6 +13,7 @@ import { createPinia, setActivePinia } from 'pinia';
 vi.mock('../../src/services/storageService.js', () => ({
   default: {
     get: vi.fn(),
+    read: vi.fn((_key, fallback) => ({ status: 'ready', value: fallback })),
     save: vi.fn(),
     remove: vi.fn()
   }

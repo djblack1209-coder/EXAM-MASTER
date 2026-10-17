@@ -84,3 +84,12 @@ it('keeps offline feedback readable, omits sync, and removes all subscriptions a
   expect(mocks.unsubscribe).toHaveBeenCalledTimes(5);
   expect(vi.getTimerCount()).toBe(0);
 });
+it('regress-8-01: unavailable sync reports unsynced without a success toast', async () => {
+  const { toast } = await import('@/utils/toast.js');
+  mocks.process.mockResolvedValue({ success: false, reason: 'SESSION_UNAVAILABLE', processed: 0 });
+  await wrapper.find('.offline-indicator__compact').trigger('keydown', { key: 'Enter' });
+  await wrapper.find('.action-btn--sync').trigger('keydown', { key: 'Enter' });
+  await flushPromises();
+  expect(toast.success).not.toHaveBeenCalled();
+  expect(toast.info).toHaveBeenCalledWith('未同步，稍后重试');
+});

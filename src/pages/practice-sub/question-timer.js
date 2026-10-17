@@ -65,7 +65,10 @@ class QuestionTimer {
    * 初始化
    */
   init() {
-    if (this.isInitialized && checkSession(this._session) === 'changed') Object.assign(this, new QuestionTimer());
+    if (this.isInitialized && checkSession(this._session) === 'changed') {
+      if (this.currentTimer) clearInterval(this.currentTimer);
+      Object.assign(this, new QuestionTimer());
+    }
     if (!this.isInitialized) this._session = captureSession();
     assertSession(this._session);
     const owner = getUserId() || '';
@@ -142,7 +145,7 @@ class QuestionTimer {
 
     // 启动计时器
     if (this.settings.enabled && this.notificationsEnabled) {
-      this.currentTimer = setInterval(() => this._tick(), 1000);
+      this._startInterval();
     }
 
     logger.log('[QuestionTimer] 计时开始:', {
@@ -205,8 +208,22 @@ class QuestionTimer {
     if (!this._matches(token) || !this.active || !this.isPaused) return false;
     this.isPaused = false;
     this.startTime = monotonicNow();
-    if (this.settings.enabled && this.notificationsEnabled) this.currentTimer = setInterval(() => this._tick(), 1000);
+    if (this.settings.enabled && this.notificationsEnabled) this._startInterval();
     return true;
+  }
+
+  _startInterval() {
+    const session = this._session,
+      token = this.token;
+    const interval = setInterval(() => {
+      if (this._session !== session || this.token !== token || checkSession(session) === 'changed') {
+        clearInterval(interval);
+        if (this.currentTimer === interval) this.currentTimer = null;
+        return;
+      }
+      if (checkSession(session) === 'current') this._tick();
+    }, 1000);
+    this.currentTimer = interval;
   }
 
   getRemaining(token) {

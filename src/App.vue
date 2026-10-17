@@ -1,4 +1,5 @@
 <script>
+import { isSessionUnavailable, captureSession, checkSession } from '@/services/auth-storage.js';
 import { toast } from '@/utils/toast.js';
 import { useUserStore } from '@/stores';
 import { applyTheme, getCurrentTheme, watchTheme } from '@/design/theme-runtime.js';
@@ -17,36 +18,71 @@ import { storageService } from '@/services/storageService.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { learningNotificationsFor } from '@/services/learning/learning-notifications.js';
 let notificationRuntime = null;
+let startupTimer = null;
+let authRedirectTimer = null,
+  routeRedirectTimer = null;
+const startupTasks = new Map();
+function scheduleStartupRetry() {
+  if (startupTasks.size && startupTimer === null) startupTimer = setTimeout(retryStartup, 1000);
+}
+function retryStartup() {
+  clearTimeout(startupTimer);
+  startupTimer = null;
+  for (const [name, task] of startupTasks) {
+    if (task.running) continue;
+    const finish = (result) => {
+      if (startupTasks.get(name) !== task) return;
+      task.running = false;
+      if (result !== false) startupTasks.delete(name);
+      scheduleStartupRetry();
+    };
+    const fail = (error) => {
+      if (!isSessionUnavailable(error)) logger.warn('[App] 初始化失败');
+      finish(isSessionUnavailable(error) ? false : undefined);
+    };
+    try {
+      const result = task.run();
+      if (result?.then) {
+        task.running = true;
+        result.then(finish, fail);
+      } else finish(result);
+    } catch (error) {
+      fail(error);
+    }
+  }
+  // Synchronous tasks may have all completed after an earlier one scheduled a retry.
+  if (!startupTasks.size) {
+    clearTimeout(startupTimer);
+    startupTimer = null;
+  } else scheduleStartupRetry();
+}
+function startup(name, run) {
+  startupTasks.set(name, { run, running: false });
+}
 
 export default {
   onLaunch() {
     // 生产环境静默启动
 
-    // ✅ 检查点 5.1: 初始化分析服务
-    analytics.init({
-      enableDebug: process.env.NODE_ENV !== 'production'
-    });
-
-    // ✅ 检查点 5.2: 全局错误处理已在 main.js 中通过 globalErrorHandler.init() 统一注册
-    // 包括 uni.onError、uni.onUnhandledRejection、错误持久化、去重等
-
-    // ✅ 2.4: 初始化全局 API 错误拦截（认证失败自动跳转登录）
+    startup('analytics', () => analytics.init({ enableDebug: process.env.NODE_ENV !== 'production' }));
     this.initApiErrorInterceptor();
-
-    // ✅ R14: 全局路由守卫 — 拦截未登录用户访问需登录页面
     this.initRouteGuard();
-
-    // 初始化双模主题系统
-    this.initThemeSystem();
-    initI18n();
-
-    // 恢复 FSRS 间隔重复参数
-    restoreFsrsParams();
-
-    // 执行静默登录
-    this.performSilentLogin();
-    notificationRuntime = learningNotificationsFor(useConversationLearningStore(this.$pinia));
-    notificationRuntime.initialize().catch(() => undefined);
+    startup('theme', () => this.initThemeSystem());
+    startup('i18n', () => initI18n());
+    startup('fsrs', () => restoreFsrsParams());
+    startup('login', () => {
+      // Login restoration owns its retryable read status and does not call a provider.
+      const result = this.performSilentLogin();
+      return result;
+    });
+    startup('notifications', () => {
+      notificationRuntime ||= learningNotificationsFor(useConversationLearningStore(this.$pinia));
+      return notificationRuntime.initialize().then(
+        () => true,
+        () => false
+      );
+    });
+    retryStartup();
   },
   onError(error) {
     // 委托给统一错误处理器（避免重复注册 uni.onError）
@@ -57,8 +93,13 @@ export default {
     globalErrorHandler.report('Unhandled Promise Rejection', event.reason);
   },
   onShow() {
+    retryStartup();
     // 重开时同时恢复共享状态、页面颜色和原生导航栏。
-    this.switchTheme(getCurrentTheme());
+    try {
+      this.switchTheme(getCurrentTheme());
+    } catch (error) {
+      if (!isSessionUnavailable(error)) logger.warn('[App] 主题恢复失败');
+    }
     notificationRuntime?.show();
   },
   onHide() {
@@ -67,6 +108,12 @@ export default {
     // 当前无需额外操作：主题/用户状态已在各自 store 中实时持久化
   },
   beforeUnmount() {
+    clearTimeout(startupTimer);
+    startupTimer = null;
+    startupTasks.clear();
+    clearTimeout(authRedirectTimer);
+    clearTimeout(routeRedirectTimer);
+    authRedirectTimer = routeRedirectTimer = null;
     notificationRuntime?.dispose();
     notificationRuntime = null;
   },
@@ -112,8 +159,11 @@ export default {
         // 未登录：阻止跳转，弹窗引导登录
         logger.log('[RouteGuard] 拦截未登录访问: [省略]');
         toast.info('请先登录后使用此功能');
-        setTimeout(() => {
-          safeNavigateTo('/pages/login/index');
+        const session = captureSession();
+        clearTimeout(routeRedirectTimer);
+        routeRedirectTimer = setTimeout(() => {
+          routeRedirectTimer = null;
+          if (checkSession(session) === 'current') safeNavigateTo('/pages/login/index');
         }, 300);
         // 返回 false 阻止原始跳转
         return false;
@@ -146,6 +196,7 @@ export default {
       // 同步 store 状态（store 的 setDarkMode 会自动调用 applyTheme）
       try {
         const themeStore = useThemeStore(this.$pinia);
+        if (!themeStore.restorePreferences()) return false;
         themeStore.setDarkMode(currentTheme === 'dark', { persist: false });
       } catch (_e) {
         // store 未初始化时降级直接渲染
@@ -224,7 +275,7 @@ export default {
       // [Phase5] 启动保护：前 3 秒内不触发 authFailure 导航，避免 webviewId 竞态
       const appReadyTime = Date.now() + 3000;
 
-      uni.$on('authFailure', () => {
+      uni.$on('authFailure', async () => {
         logger.log('[App] 认证失败拦截: statusCode=[省略], path=[省略]');
 
         // 防止重复跳转
@@ -241,15 +292,29 @@ export default {
         // 清除本地登录态
         try {
           const userStore = useUserStore();
-          userStore.logout && userStore.logout();
+          const result = await userStore.logout?.();
+          if (result?.success === false) {
+            isRedirecting = false;
+            return;
+          }
         } catch (_e) {
           // 静默处理
         }
 
+        const session = captureSession();
+        if (!session || session.owner !== 'guest') {
+          isRedirecting = false;
+          return;
+        }
         toast.info('登录已过期，请重新登录');
 
         // 延迟跳转，让 toast 显示
-        setTimeout(() => {
+        authRedirectTimer = setTimeout(() => {
+          authRedirectTimer = null;
+          if (checkSession(session) !== 'current') {
+            isRedirecting = false;
+            return;
+          }
           const pages = getCurrentPages();
           const currentRoute = pages.length > 0 ? pages[pages.length - 1].route : '';
           // 避免在登录页重复跳转
@@ -280,9 +345,11 @@ export default {
           uni.$emit('loginStatusChanged', true);
           logger.log('[App] 缓存恢复登录成功');
         }
+        return !isSessionUnavailable(result.error);
         // 无缓存是新用户的正常状态，不输出警告
       } catch (error) {
         logger.error('[App] 登录恢复异常:', error);
+        return !isSessionUnavailable(error);
       }
     }
   },

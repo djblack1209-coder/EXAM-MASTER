@@ -101,21 +101,29 @@ function persistState(state) {
   );
 }
 
+function restoredEngineState(session, saved = {}, recordReadState = 'ready') {
+  if (!saved || typeof saved !== 'object' || Array.isArray(saved)) saved = {};
+  const currentSession = saved.currentSession && typeof saved.currentSession === 'object' ? saved.currentSession : null;
+  return {
+    _session: session,
+    recordReadState,
+    currentSession,
+    isStudying: Boolean(currentSession),
+    sessionHistory: Array.isArray(saved.sessionHistory) ? saved.sessionHistory.slice(0, 50) : [],
+    lastAnalysis: saved.lastAnalysis || null,
+    lastClusters: Array.isArray(saved.lastClusters) ? saved.lastClusters : [],
+    lastPlan: saved.lastPlan || null
+  };
+}
 const studyEngineStore = defineStore('study-engine', {
   state: () => {
     const session = captureSession();
-    const saved = readPersistedState(session);
-    const currentSession =
-      saved.currentSession && typeof saved.currentSession === 'object' ? saved.currentSession : null;
-    return {
-      _session: session,
-      currentSession,
-      isStudying: Boolean(currentSession),
-      sessionHistory: Array.isArray(saved.sessionHistory) ? saved.sessionHistory.slice(0, 50) : [],
-      lastAnalysis: saved.lastAnalysis || null,
-      lastClusters: Array.isArray(saved.lastClusters) ? saved.lastClusters : [],
-      lastPlan: saved.lastPlan || null
-    };
+    const result = storageService.read(STORAGE_KEY, {}, { session, migrateLegacy: false });
+    return restoredEngineState(
+      session,
+      result.status === 'ready' ? result.value : {},
+      result.status === 'ready' ? 'ready' : 'pending'
+    );
   },
 
   getters: {
@@ -499,10 +507,24 @@ export function useStudyEngineStore(...args) {
   const store = studyEngineStore(...args);
   if (!studyEngineBindings.has(store)) {
     studyEngineBindings.add(store);
+    let resetDepth = 0;
+    const apply = (next) => {
+      resetDepth++;
+      try {
+        store.$patch((state) => Object.assign(state, next));
+      } finally {
+        resetDepth--;
+      }
+    };
     const ensure = () => {
+      if (resetDepth) throw Object.assign(new Error('学习状态正在重新加载'), { code: 'CONTEXT_CHANGED' });
       const status = checkSession(store._session);
       if (status === 'unavailable') assertSession(store._session);
-      if (status === 'changed') store.$reset();
+      if (status === 'changed') apply(restoredEngineState(captureSession(), {}, 'pending'));
+      if (store.recordReadState === 'pending') {
+        const session = captureSession();
+        apply(restoredEngineState(session, readPersistedState(session)));
+      }
       assertSession(store._session);
     };
     const stopIdentity = storageService.onIdentityChange(() => {
@@ -512,9 +534,7 @@ export function useStudyEngineStore(...args) {
         /* Retry after an unavailable read. */
       }
     });
-    const stopActions = store.$onAction(({ name }) => {
-      if (name !== '_persist') ensure();
-    });
+    const stopActions = store.$onAction(() => ensure());
     const dispose = store.$dispose.bind(store);
     store.$dispose = () => {
       stopIdentity();

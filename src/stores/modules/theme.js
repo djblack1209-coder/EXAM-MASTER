@@ -17,18 +17,27 @@ export const useThemeStore = defineStore('theme', () => {
 
   // 深色模式：true | false
   const isDark = ref(false);
-  const visualStyle = ref(
-    storageService.get('learning_visual_style', isDesktopRuntime() ? 'future' : 'playful') === 'future'
-      ? 'future'
-      : 'playful'
-  );
+  const defaultStyle = isDesktopRuntime() ? 'future' : 'playful';
+  const visualStyle = ref(defaultStyle);
+  let preferencesPending = true;
+  function restorePreferences() {
+    if (!preferencesPending) return true;
+    const result = storageService.read('learning_visual_style', defaultStyle);
+    if (result.status !== 'ready') return false;
+    visualStyle.value = result.value === 'future' ? 'future' : 'playful';
+    preferencesPending = false;
+    return true;
+  }
+  restorePreferences();
   // #ifndef H5
   if (import.meta.env.MODE !== 'test') visualStyle.value = 'future';
   // #endif
   const setVisualStyle = (style) => {
     if (!['playful', 'future'].includes(style)) return;
+    if (!restorePreferences()) return false;
+    if (!storageService.save('learning_visual_style', style, true, captureSession())) return false;
     visualStyle.value = style;
-    storageService.save('learning_visual_style', style, true, captureSession());
+    return true;
   };
 
   /**
@@ -118,6 +127,7 @@ export const useThemeStore = defineStore('theme', () => {
     setDarkMode,
     toggleTheme,
     setVisualStyle,
+    restorePreferences,
     $reset
   };
 });
