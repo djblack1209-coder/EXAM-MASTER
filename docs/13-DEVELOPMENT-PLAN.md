@@ -37,6 +37,8 @@
 
 ### 阶段6C离线修复（2026-10-17）
 
+阶段6I已在主工作树main合并依赖分支，合并提交`daf3516d`，未推送。合并后全量5417通过/2项超时失败/7项未执行或跳过，整体未通过；搜索和移动视口单跑仍钩子超时，科学能量46项及学习路径11项单跑通过，高负载不是已独立证明的根因。静态、后端及三端隔离构建/产物门禁通过，详见[12](12-CHANGELOG.md#2026-10-17-依赖安全分支合并与完整门禁阶段6i)。保留低负载或CI下的完整测试核验；根与standalone干净安装交由包含合并树的CI `Install dependencies`及`Verify standalone backend`步骤，不联网补本机缓存，不以合并前CI替代。
+
 两个锁文件只升级proxy-addr 2.0.7→2.0.8，其直接依赖均为`forwarded@0.2.0`、`ipaddr.js@1.9.1`；其他包版本不变。`npm update proxy-addr --package-lock-only --offline --ignore-scripts --no-audit --no-fund`因离线元数据请求无法命中缓存而失败（根另报`@babel/types`元数据请求未命中），改用npm缓存中的原始元数据手工更新version/resolved/integrity，tarball的SHA-512、SHA-1均匹配元数据。standalone原64个npmmirror地址中1个随升级归一、另63个仅替换resolved主机名，integrity保持；最终根1056个、后端103个网络下载地址均为`registry.npmjs.org`，无凭据或私有源。
 
 缓存中的GHSA-jqcg-44mw-7w3h条目说明：IPv4映射IPv6信任子网可被用于IP伪造，受影响`>=1.1.0 <2.0.8`。standalone使用`trust proxy = 1`的跳数函数，没有使用公告涉及的CIDR信任子网编译；Express的`req.ip`传入`ctx.socket.remoteAddress`。腾讯云配置仅将后端端口发布到回环地址，Nginx追加`X-Forwarded-For`并设置`X-Real-IP`；Nginx访问日志和入口限流使用连接级`$remote_addr`/`$binary_remote_addr`，不依赖proxy-addr。这只是仓库配置核对，未验证生产拓扑。
