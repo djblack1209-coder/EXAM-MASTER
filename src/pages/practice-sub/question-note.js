@@ -35,6 +35,7 @@ class QuestionNoteManager {
     this.notes = [];
     this.tags = [...DEFAULT_TAGS];
     this.isInitialized = false;
+    this._pendingAdds = new Map();
   }
 
   /**
@@ -58,33 +59,37 @@ class QuestionNoteManager {
    * @returns {Object} 添加结果
    */
   addNote(noteData, session = captureSession()) {
-    this.init();
-    if (checkSession(session) !== 'current') return { success: false, error: '登录会话已变化，请重新打开本题' };
-
-    const note = {
-      id: this._generateId(),
-      questionId: noteData.questionId,
-      questionContent: noteData.questionContent || '',
-      content: noteData.content,
-      tags: noteData.tags || [],
-      // 笔记类型：text | image | voice | link
-      type: noteData.type || 'text',
-      // 关联数据
-      relatedQuestions: noteData.relatedQuestions || [],
-      // 元数据
-      category: noteData.category || '未分类',
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      // 复习相关
-      reviewCount: 0,
-      lastReviewAt: null,
-      isImportant: noteData.isImportant || false
-    };
-
-    this.notes.unshift(note);
-    this._saveNotes();
-
-    return { success: true, note };
+    return this._write(() => {
+      const draftKey = JSON.stringify(noteData);
+      const note = this._pendingAdds.get(draftKey) || {
+        id: this._generateId(),
+        questionId: noteData.questionId,
+        questionContent: noteData.questionContent || '',
+        content: noteData.content,
+        tags: noteData.tags || [],
+        // 笔记类型：text | image | voice | link
+        type: noteData.type || 'text',
+        // 关联数据
+        relatedQuestions: noteData.relatedQuestions || [],
+        // 元数据
+        category: noteData.category || '未分类',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        // 复习相关
+        reviewCount: 0,
+        lastReviewAt: null,
+        isImportant: noteData.isImportant || false
+      };
+      // Retain the original id until confirmation, including a lost write receipt.
+      const pendingAdds = this._pendingAdds;
+      pendingAdds.set(draftKey, note);
+      const notes = [note, ...this.notes.filter((row) => row.id !== note.id)].slice(0, 1000);
+      return this._after(this._persist('notes', notes, session), (result) => {
+        if (!result.success) return result;
+        if (pendingAdds.get(draftKey) === note) pendingAdds.delete(draftKey);
+        return { success: true, note };
+      });
+    }, session);
   }
 
   /**
@@ -93,22 +98,20 @@ class QuestionNoteManager {
    * @param {Object} updates - 更新内容
    * @returns {Object} 更新结果
    */
-  updateNote(noteId, updates) {
-    this.init();
-
-    const index = this.notes.findIndex((n) => n.id === noteId);
-    if (index === -1) {
-      return { success: false, error: '笔记不存在' };
-    }
-
-    this.notes[index] = {
-      ...this.notes[index],
-      ...updates,
-      updatedAt: Date.now()
-    };
-
-    this._saveNotes();
-    return { success: true, note: this.notes[index] };
+  updateNote(noteId, updates, session = captureSession()) {
+    return this._write((session) => {
+      const original = this.notes.find((note) => note.id === noteId);
+      if (!original) return { success: false, error: '笔记不存在' };
+      const note = { ...original, ...updates, updatedAt: Date.now() };
+      return this._after(
+        this._persist(
+          'notes',
+          this.notes.map((row) => (row.id === noteId ? note : row)),
+          session
+        ),
+        (result) => (result.success ? { success: true, note } : result)
+      );
+    }, session);
   }
 
   /**
@@ -117,17 +120,14 @@ class QuestionNoteManager {
    * @returns {Object} 删除结果
    */
   deleteNote(noteId) {
-    this.init();
-
-    const index = this.notes.findIndex((n) => n.id === noteId);
-    if (index === -1) {
-      return { success: false, error: '笔记不存在' };
-    }
-
-    this.notes.splice(index, 1);
-    this._saveNotes();
-
-    return { success: true };
+    return this._write((session) => {
+      if (!this.notes.some((note) => note.id === noteId)) return { success: false, error: '笔记不存在' };
+      return this._persist(
+        'notes',
+        this.notes.filter((note) => note.id !== noteId),
+        session
+      );
+    });
   }
 
   /**
@@ -236,14 +236,15 @@ class QuestionNoteManager {
    * @param {boolean} isImportant - 是否重要
    */
   toggleImportant(noteId, isImportant) {
-    this.init();
-
-    const note = this.notes.find((n) => n.id === noteId);
-    if (note) {
-      note.isImportant = isImportant !== undefined ? isImportant : !note.isImportant;
-      note.updatedAt = Date.now();
-      this._saveNotes();
-    }
+    return this._write((session) => {
+      const note = this.notes.find((row) => row.id === noteId);
+      if (!note) return { success: false, error: '笔记不存在' };
+      return this.updateNote(
+        noteId,
+        { isImportant: isImportant !== undefined ? isImportant : !note.isImportant },
+        session
+      );
+    });
   }
 
   /**
@@ -251,14 +252,11 @@ class QuestionNoteManager {
    * @param {string} noteId - 笔记ID
    */
   recordReview(noteId) {
-    this.init();
-
-    const note = this.notes.find((n) => n.id === noteId);
-    if (note) {
-      note.reviewCount++;
-      note.lastReviewAt = Date.now();
-      this._saveNotes();
-    }
+    return this._write((session) => {
+      const note = this.notes.find((row) => row.id === noteId);
+      if (!note) return { success: false, error: '笔记不存在' };
+      return this.updateNote(noteId, { reviewCount: note.reviewCount + 1, lastReviewAt: Date.now() }, session);
+    });
   }
 
   // ==================== 标签管理 ====================
@@ -282,25 +280,24 @@ class QuestionNoteManager {
    * @returns {Object} 创建结果
    */
   createTag(tagData) {
-    this.init();
+    return this._write((session) => {
+      // 检查是否已存在
+      if (this.tags.some((t) => t.name === tagData.name)) {
+        return { success: false, error: '标签已存在' };
+      }
 
-    // 检查是否已存在
-    if (this.tags.some((t) => t.name === tagData.name)) {
-      return { success: false, error: '标签已存在' };
-    }
+      const tag = {
+        id: 'tag_' + Date.now().toString(36),
+        name: tagData.name,
+        color: tagData.color || '#9E9E9E',
+        icon: tagData.icon || 'tag',
+        isCustom: true
+      };
 
-    const tag = {
-      id: 'tag_' + Date.now().toString(36),
-      name: tagData.name,
-      color: tagData.color || '#9E9E9E',
-      icon: tagData.icon || 'tag',
-      isCustom: true
-    };
-
-    this.tags.push(tag);
-    this._saveTags();
-
-    return { success: true, tag };
+      return this._after(this._persist('tags', [...this.tags, tag], session), (result) =>
+        result.success ? { success: true, tag } : result
+      );
+    });
   }
 
   /**
@@ -309,29 +306,28 @@ class QuestionNoteManager {
    * @returns {Object} 删除结果
    */
   deleteTag(tagId) {
-    this.init();
+    return this._write((session) => {
+      const tag = this.tags.find((t) => t.id === tagId);
+      if (!tag) {
+        return { success: false, error: '标签不存在' };
+      }
 
-    const tag = this.tags.find((t) => t.id === tagId);
-    if (!tag) {
-      return { success: false, error: '标签不存在' };
-    }
+      if (!tag.isCustom) {
+        return { success: false, error: '系统标签不能删除' };
+      }
 
-    if (!tag.isCustom) {
-      return { success: false, error: '系统标签不能删除' };
-    }
-
-    // 从所有笔记中移除该标签
-    this.notes.forEach((note) => {
-      note.tags = note.tags.filter((t) => t !== tagId);
+      const before = this.notes;
+      const notes = before.map((note) => ({ ...note, tags: note.tags.filter((id) => id !== tagId) }));
+      const tags = this.tags.filter((tag) => tag.id !== tagId);
+      return this._after(this._persist('notes', notes, session), (savedNotes) => {
+        if (!savedNotes.success) return savedNotes;
+        return this._after(this._persist('tags', tags, session), (savedTags) => {
+          if (savedTags.success) return savedTags;
+          // Best-effort rollback stays bound to the origin; failed rollback rereads facts.
+          return this._after(this._persist('notes', before, session), () => savedTags);
+        });
+      });
     });
-
-    // 删除标签
-    this.tags = this.tags.filter((t) => t.id !== tagId);
-
-    this._saveNotes();
-    this._saveTags();
-
-    return { success: true };
   }
 
   // ==================== 统计分析 ====================
@@ -439,33 +435,83 @@ class QuestionNoteManager {
 
   // ==================== 私有方法 ====================
 
+  _after(result, finish) {
+    return result?.then ? result.then(finish) : finish(result);
+  }
+
+  _failure(session, error) {
+    const status = checkSession(session);
+    const code =
+      status === 'changed'
+        ? 'CONTEXT_CHANGED'
+        : status === 'unavailable' || error?.code === 'SESSION_UNAVAILABLE'
+          ? 'SESSION_UNAVAILABLE'
+          : 'STORAGE_FAILED';
+    if (code === 'CONTEXT_CHANGED' && checkSession(this._session) === 'changed') this._pendingAdds.clear();
+    return { success: false, code, retryable: code !== 'CONTEXT_CHANGED' };
+  }
+
+  _write(operation, session = captureSession()) {
+    try {
+      assertSession(session);
+      this.init();
+      // New actions read persisted facts, never an unconfirmed optimistic projection.
+      this._loadNotes();
+      this._loadTags();
+      assertSession(session);
+      return operation(session);
+    } catch (error) {
+      return this._failure(session, error);
+    }
+  }
+
+  _persist(field, value, session) {
+    if (field === 'notes') value = value.slice(0, 1000);
+    const failed = (error) => {
+      const result = this._failure(session, error);
+      if (checkSession(session) === 'current') {
+        try {
+          // A lost receipt may still have written; memory follows confirmed storage.
+          if (field === 'notes') this._loadNotes();
+          else this._loadTags();
+        } catch {
+          /* Keep the last confirmed projection when storage cannot be read. */
+        }
+      }
+      return result;
+    };
+    try {
+      assertSession(session);
+      const finish = (saved) => {
+        if (saved !== true || checkSession(session) !== 'current') return failed();
+        this[field] = value;
+        return { success: true };
+      };
+      const result = field === 'notes' ? this._saveNotes(value, session) : this._saveTags(value, session);
+      return result?.then ? result.then(finish, failed) : finish(result);
+    } catch (error) {
+      return failed(error);
+    }
+  }
+
   _generateId() {
     return 'note_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
   }
 
   _loadNotes() {
     if (typeof uni !== 'undefined') {
-      this.notes = storageService.get(STORAGE_KEYS.NOTES, []);
+      this.notes = storageService.get(STORAGE_KEYS.NOTES, [], { session: this._session, migrateLegacy: false });
     }
   }
 
-  _saveNotes() {
-    try {
-      if (typeof uni !== 'undefined') {
-        // 只保留最近1000条
-        if (this.notes.length > 1000) {
-          this.notes = this.notes.slice(0, 1000);
-        }
-        storageService.save(STORAGE_KEYS.NOTES, this.notes, true, this._session);
-      }
-    } catch (_e) {
-      logger.warn('[QuestionNote] 保存笔记失败:', _e);
-    }
+  _saveNotes(notes = this.notes, session = this._session) {
+    return storageService.save(STORAGE_KEYS.NOTES, notes.slice(0, 1000), true, session);
   }
 
   _loadTags() {
     if (typeof uni !== 'undefined') {
-      const saved = storageService.get(STORAGE_KEYS.NOTE_TAGS);
+      const saved = storageService.get(STORAGE_KEYS.NOTE_TAGS, null, { session: this._session, migrateLegacy: false });
+      this.tags = [...DEFAULT_TAGS];
       if (saved && saved.length > 0) {
         // 合并默认标签和自定义标签
         const customTags = saved.filter((t) => t.isCustom);
@@ -474,14 +520,8 @@ class QuestionNoteManager {
     }
   }
 
-  _saveTags() {
-    try {
-      if (typeof uni !== 'undefined') {
-        storageService.save(STORAGE_KEYS.NOTE_TAGS, this.tags, true, this._session);
-      }
-    } catch (_e) {
-      logger.warn('[QuestionNote] 保存标签失败:', _e);
-    }
+  _saveTags(tags = this.tags, session = this._session) {
+    return storageService.save(STORAGE_KEYS.NOTE_TAGS, tags, true, session);
   }
 }
 

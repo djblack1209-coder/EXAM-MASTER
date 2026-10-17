@@ -57,7 +57,7 @@
           variant="primary"
           @tap="save"
           >{{ t('learning.kq7') }}</BaseButton
-        ><BaseButton variant="quiet" @tap="editing = false">{{ t('learning.k8s') }}</BaseButton></view
+        ><BaseButton variant="quiet" @tap="cancelEdit()">{{ t('learning.k8s') }}</BaseButton></view
       >
     </view>
     <view v-for="reminder in learning.active.reminders || []" :key="reminder.id" class="reminder-row">
@@ -113,6 +113,7 @@ import { useConversationLearningStore } from '@/stores/modules/conversation-lear
 import { REMINDER_KINDS } from '../../../../laf-backend/functions/_shared/learning-reminders.js';
 import { learningNotificationsFor } from '@/services/learning/learning-notifications.js';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
+import { captureSession, checkSession } from '@/services/auth-storage.js';
 const learning = useConversationLearningStore();
 const root = ref(null),
   editing = ref(false),
@@ -144,7 +145,32 @@ const receiptLabel = (status) =>
     opened: '已从提醒返回'
   })[status];
 let unbind = () => undefined,
-  refreshTimer = null;
+  refreshTimer = null,
+  editBinding = null;
+const editTarget = () => JSON.stringify([learning.recordContext(), learning.selectedConversationId]);
+function cancelEdit(changed = false) {
+  editing.value = false;
+  form.value = {};
+  editBinding = null;
+  if (changed) {
+    message.value = t('ui.contextChanged');
+    failed.value = true;
+  }
+}
+function currentEdit() {
+  if (!editBinding) return false;
+  const status = checkSession(editBinding.session);
+  if (status === 'unavailable') {
+    message.value = t('ui.storageBusy');
+    failed.value = true;
+    return false;
+  }
+  if (status === 'changed' || editBinding.target !== editTarget()) {
+    cancelEdit(true);
+    return false;
+  }
+  return true;
+}
 const kindName = (id) => REMINDER_KINDS.find((k) => k.id === id)?.label || '提醒';
 function nearbyTime() {
   try {
@@ -160,7 +186,17 @@ function nearbyTime() {
   }
 }
 function edit() {
-  if (!editing.value)
+  if (editing.value) {
+    cancelEdit();
+  } else {
+    const session = captureSession();
+    if (!session || checkSession(session) !== 'current') {
+      message.value = t('ui.storageBusy');
+      failed.value = true;
+      return;
+    }
+    editBinding = { session, target: editTarget() };
+    if (!currentEdit()) return;
     form.value = {
       kind: 'study',
       time: '20:00',
@@ -168,7 +204,8 @@ function edit() {
       timezone: learning.journey.timezone,
       enabled: true
     };
-  editing.value = !editing.value;
+    editing.value = true;
+  }
   message.value = '';
 }
 function toggleDay(day) {
@@ -196,9 +233,12 @@ async function operation(callback) {
   }
 }
 function save() {
+  if (!currentEdit()) return;
+  // Keep the original record/conversation while accepting unrelated revision advances.
+  const context = JSON.stringify([...JSON.parse(editBinding.target), learning.state.revision]);
   operation(async () => {
-    learning.configureReminder(learning.journeyContext(), form.value);
-    editing.value = false;
+    learning.configureReminder(context, form.value);
+    cancelEdit();
     return controller.refresh();
   });
 }
@@ -222,6 +262,12 @@ function allow() {
 function check() {
   operation(() => controller.refresh());
 }
+watch(
+  () => [learning.recordContext(), learning.selectedConversationId],
+  () => {
+    if (editing.value) currentEdit();
+  }
+);
 watch(
   () => `${learning.recordContext()}:${learning.state.revision}`,
   () => {

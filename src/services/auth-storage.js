@@ -110,20 +110,19 @@ function getStoredAuthValue(key) {
   if (!supportsIdentityWrites()) return null;
   let record, encrypted, plain;
   try {
+    const generation = readIdentityGeneration();
     record = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
     if (record && typeof record === 'object' && typeof record.token === 'string') {
-      if (record.generation > readIdentityGeneration()) throw sessionUnavailable();
-      if (
-        (readIdentityGeneration() > 0 || record.generation !== undefined) &&
-        record.generation !== readIdentityGeneration()
-      )
-        return null;
-      if ('revocation' in record && record.revocation !== (safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null))
-        return null;
+      const revocation = safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null;
+      if (generation !== readIdentityGeneration()) throw sessionUnavailable();
+      if (record.generation > generation) throw sessionUnavailable();
+      if ((generation > 0 || record.generation !== undefined) && record.generation !== generation) return null;
+      if ('revocation' in record && record.revocation !== revocation) return null;
       return key === 'EXAM_USER_ID' ? record.owner : record.token;
     }
     encrypted = normalizeStringValue(safeGetStorageSync(`_enc_${key}`, true));
     plain = normalizeStringValue(safeGetStorageSync(key, true));
+    if (generation !== readIdentityGeneration()) throw sessionUnavailable();
   } catch {
     throw sessionUnavailable();
   }
@@ -228,22 +227,18 @@ function strictAuthValue(key) {
 const validEpoch = (value) => typeof value === 'string' && /^[a-zA-Z0-9_-]{8,120}$/.test(value);
 export const getLoginSessionEpoch = () => {
   if (!supportsIdentityWrites()) return null;
+  const generation = readIdentityGeneration();
   const value = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
-  if (value?.generation > readIdentityGeneration()) throw sessionUnavailable();
+  const revocation = safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null;
+  if (generation !== readIdentityGeneration()) throw sessionUnavailable();
   if (
     value &&
     typeof value === 'object' &&
-    (readIdentityGeneration() > 0 || value.generation !== undefined) &&
-    value.generation !== readIdentityGeneration()
+    (generation > 0 || value.generation !== undefined) &&
+    value.generation !== generation
   )
-    return null;
-  if (
-    value &&
-    typeof value === 'object' &&
-    'revocation' in value &&
-    value.revocation !== (safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null)
-  )
-    return null;
+    throw sessionUnavailable();
+  if (value && typeof value === 'object' && 'revocation' in value && value.revocation !== revocation) return null;
   return validEpoch(value?.epoch) ? value.epoch : validEpoch(value) ? value : null;
 };
 
@@ -345,8 +340,10 @@ export function checkSession(session) {
     // A confirmed different/missing epoch revokes old work even while the next login is incomplete.
     // A failed read or mismatched credentials within the same epoch remains retryable.
     try {
+      const generation = readIdentityGeneration();
       const epoch =
         session?.owner === 'guest' ? safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null : getLoginSessionEpoch();
+      if (generation !== readIdentityGeneration()) return 'unavailable';
       // A formerly absent epoch may have been filled by a format migration. Until
       // the full record is readable, keep that old binding blocked but retryable.
       if (session && epoch !== session.epoch && (session.epoch !== null || epoch === null)) return 'changed';
