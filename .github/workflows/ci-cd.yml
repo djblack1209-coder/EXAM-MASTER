@@ -39,10 +39,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -86,7 +86,7 @@ jobs:
           npm run audit:backend:runtime
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -119,7 +119,7 @@ jobs:
       # 上传构建产物供后续 job 使用，避免重复构建
       - name: Upload build artifacts
         if: github.event_name == 'push'
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: h5-build
           path: dist/build/h5
@@ -132,10 +132,10 @@ jobs:
     # 与 lint-and-test 并行执行，结果不阻断构建（但会产生可见告警）
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -155,7 +155,7 @@ jobs:
 
       # Trivy: 扫描 CRITICAL/HIGH 漏洞，记录结果但不阻断构建
       - name: Run Trivy vulnerability scanner (filesystem)
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         id: trivy
         continue-on-error: true
         with:
@@ -185,10 +185,10 @@ jobs:
       url: https://staging.245334.xyz
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.1
 
       - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
+        uses: azure/setup-kubectl@v5
         with:
           version: 'v1.28.0'
 
@@ -227,10 +227,10 @@ jobs:
       url: https://nf98ia8qnt.sealosbja.site
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.1
 
       - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
+        uses: azure/setup-kubectl@v5
         with:
           version: 'v1.28.0'
 
