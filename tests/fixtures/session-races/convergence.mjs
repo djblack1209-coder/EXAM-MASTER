@@ -57,7 +57,7 @@ for (const kind of ['profile', 'refresh', 'plaintext', 'legacy']) {
     a.storage.get('EXAM_SESSION_EPOCH');
     await a.storage.getSessionEpoch();
   }
-  if (peer) await peer.catch(() => undefined);
+  if (peer) await peer.catch(() => b.login(2));
   // Drain migrations scheduled by synchronous reads.
   await locks.request('exam-master:login-session-v1', {}, () => {});
   out(
@@ -98,7 +98,9 @@ for (const kind of ['profile', 'refresh', 'plaintext', 'legacy']) {
     () => true,
     () => false
   );
-  out('order-2_cancelled-login-successor', !first && second && a.auth.captureSession()?.owner === 'account-3');
+  const conflict = first && !second;
+  if (!second) await b.login(3);
+  out('order-2_cancelled-login-successor', conflict && a.auth.captureSession()?.owner === 'account-3');
   a.close();
   b.close();
 }

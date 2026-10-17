@@ -390,11 +390,12 @@ async function proceed(method) {
 async function run(action, accept = false) {
   if (!consent() || busy.value) return;
   let valid = current();
+  busy.value = true;
   try {
-    const attempt = accept ? storageService.beginLoginAttempt() : null;
+    const attempt = accept ? await storageService.beginLoginAttempt() : null;
     const pageCurrent = current();
     valid = () => pageCurrent() && (!attempt || storageService.isLoginAttemptCurrent(attempt));
-    busy.value = true;
+    if (!pageCurrent()) return;
     error.value = '';
     const response = await action(attempt);
     if (!valid() || !response) return;
@@ -409,8 +410,9 @@ async function run(action, accept = false) {
       }
     } else if (accept && response.data) await saveLoginInfo(response.data, attempt);
     return response;
-  } catch {
-    if (valid()) error.value = t('login.retry');
+  } catch (failure) {
+    if (failure?.code === 'BROWSER_UPGRADE_REQUIRED') error.value = failure.message;
+    else if (valid()) error.value = t('login.retry');
   } finally {
     busy.value = false;
   }
@@ -538,7 +540,7 @@ async function wechat() {
       return authStore.loginByWechat({ code: result.code, ...registration() });
     }
     const mode = isWeChatBrowser ? 'h5' : 'website';
-    location.href = beginWebOAuth(
+    location.href = await beginWebOAuth(
       'wechat',
       mode === 'h5' ? config.wx.gzhAppId : config.wx.webAppId,
       mode === 'website' ? config.wx.webRedirectUri : '',
@@ -563,8 +565,9 @@ async function saveLoginInfo(data, attempt) {
   assertSession(session);
   storageService.migrateUserKeys(session);
   const userStore = useUserStore();
-  userStore.setUserInfo?.(userInfo, session);
-  userStore.setToken?.(data.token, session);
+  userStore.restoreUserInfo?.();
+  assertSession(session);
+  uni.$emit('auth:userdata', userInfo, session);
   uni.$emit('loginStatusChanged', true);
   uni.$emit('userInfoUpdated', userInfo);
   emailForm.value = { email: '', password: '', code: '' };

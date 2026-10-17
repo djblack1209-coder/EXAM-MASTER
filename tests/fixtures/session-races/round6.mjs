@@ -1,48 +1,42 @@
 import { tab, shared, out } from './probe-lib.mjs';
-const p = '__exam_storage__:';
 for (const successor of ['logout', 'login']) {
   const s = shared();
-  let tail = Promise.resolve();
+  let tail = Promise.resolve(),
+    hold = false,
+    release;
   const locks = {
     request: (_name, _options, write) => {
-      const next = tail.then(write);
-      tail = next.catch(() => undefined);
-      return next;
+      const run = () => {
+        const next = tail.then(write);
+        tail = next.catch(() => undefined);
+        return next;
+      };
+      if (hold) {
+        hold = false;
+        return new Promise((resolve, reject) => {
+          release = () => run().then(resolve, reject);
+        });
+      }
+      return run();
     }
   };
-  const a = await tab(s, 'round6-a', locks),
-    b = await tab(s, 'round6-b', locks);
+  const a = await tab(s, 'round6-a', locks, 'h5'),
+    b = await tab(s, 'round6-b', locks, 'h5');
   await a.login(1);
-  const old = a.auth.captureSession();
-  let next,
-    reached = false;
-  // The final alias snapshot is after the first attempt check, before the first commit mutation.
-  s.hooks.push({
-    name: a.name,
-    phase: 'afterGet',
-    key: p + '_enc_EXAM_TOKEN',
-    run: () => {
-      reached = true;
-      if (successor === 'logout') b.logout();
-      else next = b.login(3);
-    }
-  });
-  let rejected = false;
-  try {
-    await a.login(2);
-  } catch {
-    rejected = true;
-  }
-  if (next) {
-    try {
-      await next;
-    } catch {}
-  }
-  const c = await tab(s, 'round6-c', locks);
+  const old = a.auth.captureSession(),
+    attempt = await a.storage.beginLoginAttempt();
+  hold = true;
+  const pending = a.storage
+    .saveLoginSession({ userId: 'account-2', token: 'value-2', userInfo: { id: 'account-2' } }, attempt)
+    .catch(() => false);
+  if (successor === 'logout') await b.logout();
+  else await b.login(3);
+  release();
+  const rejected = (await pending) === false;
+  const c = await tab(s, 'round6-c', locks, 'h5');
   out(
     successor === 'logout' ? 'order-01-logout-before-first-mutation' : 'order-02-newer-queued-before-first-mutation',
-    reached &&
-      rejected &&
+    rejected &&
       (successor === 'logout'
         ? a.auth.checkSession(old) === 'changed' &&
           c.auth.captureSession()?.owner === 'guest' &&

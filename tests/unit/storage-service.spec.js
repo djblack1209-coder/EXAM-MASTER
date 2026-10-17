@@ -909,8 +909,13 @@ describe('storageService', () => {
 
       storageService.clear(false, { preserveGlobal: false });
 
-      expect(uni.clearStorageSync).toHaveBeenCalled();
-      expect(global.__mockStorage).toEqual({ EXAM_SESSION_REVOCATION: expect.any(String) });
+      expect(uni.clearStorageSync).not.toHaveBeenCalled();
+      expect(uni.getStorageSync('EXAM_IDENTITY_GENERATION')).toBeGreaterThan(0);
+      expect(global.__mockStorage).toEqual({
+        EXAM_IDENTITY_GENERATION: expect.any(Number),
+        EXAM_SESSION_REVOCATION: expect.any(String),
+        EXAM_LOGIN_ATTEMPT: expect.any(String)
+      });
     });
   });
 
@@ -989,7 +994,7 @@ describe('storageService', () => {
 });
 
 describe('阶段5一致会话与存储入口', () => {
-  it('serializes complete logins with the shared Web Lock and adopts the later writer', async () => {
+  it('serializes complete logins and rejects a conflicting registration until explicit retry', async () => {
     const { storageService } = await import('@/services/storageService.js');
     const { captureSession, checkSession, sessionForRequest } = await import('@/services/auth-storage.js');
     uni.clearStorageSync();
@@ -1006,7 +1011,8 @@ describe('阶段5一致会话与存储入口', () => {
         storageService.saveLoginSession({ userId: 'lock-A', token: 'fixture-token-A', userInfo: {} }),
         storageService.saveLoginSession({ userId: 'lock-B', token: 'fixture-token-B', userInfo: {} })
       ]);
-      expect(receipts.map((item) => item.status)).toEqual(['rejected', 'fulfilled']);
+      expect(receipts.map((item) => item.status)).toEqual(['fulfilled', 'rejected']);
+      await storageService.saveLoginSession({ userId: 'lock-B', token: 'fixture-token-B', userInfo: {} });
       const session = captureSession();
       expect(Object.isFrozen(session)).toBe(true);
       expect(Object.keys(session)).toEqual(['owner', 'epoch', 'proof']);
@@ -1108,12 +1114,12 @@ describe('跨窗口撤销清理与登录事务', () => {
       }
     });
     try {
-      expect(storageService.getSessionEpoch()).toBeNull();
+      const oldCleanup = storageService._clearRevokedCredentials();
       // Finish another window's transaction before the queued cleanup gets the Web Lock.
       delete navigator.locks;
       await storageService.saveLoginSession({ userId: 'cleanup-B', token: 'fixture-token-B', userInfo: {} });
       cleanup();
-      await storageService._revocationCleanup;
+      await oldCleanup;
       expect(getUserId()).toBe('cleanup-B');
       expect(getToken()).toBe('fixture-token-B');
       expect(getLoginSessionEpoch()).toBeTruthy();

@@ -318,17 +318,27 @@ it('regress-3: login guards expose unavailable and never redirect or execute act
   expect(modal).not.toHaveBeenCalled();
 });
 it('order-2: cancelled guest login retires its aliases and cannot survive remount', async () => {
-  storageService._clearRevokedCredentials();
-  const write = uni.setStorageSync.getMockImplementation();
-  let cancel = true;
-  vi.spyOn(uni, 'setStorageSync').mockImplementation((key, value) => {
-    write(key, value);
-    if (cancel && key === '_enc_userInfo') {
-      cancel = false;
-      storageService.beginLoginAttempt();
+  await storageService._clearRevokedCredentials();
+  const queued = [];
+  vi.stubGlobal('navigator', {
+    locks: {
+      request: (_name, _opts, write) =>
+        new Promise((resolve, reject) => {
+          queued.push(() => {
+            try {
+              resolve(write());
+            } catch (error) {
+              reject(error);
+            }
+          });
+        })
     }
   });
-  await expect(Promise.resolve().then(() => login(2))).rejects.toThrow();
+  const pending = Promise.resolve(login(2)).catch((error) => error);
+  vi.stubGlobal('navigator', {});
+  storageService.beginLoginAttempt();
+  queued.shift()();
+  expect(await pending).toBeInstanceOf(Error);
   expect(captureSession()?.owner).toBe('guest');
   expect(storageService.get('userInfo')).toBeNull();
 });

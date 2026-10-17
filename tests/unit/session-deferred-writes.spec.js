@@ -104,27 +104,26 @@ it('WRITES-4: local mistake removal receives the mutex session', async () => {
   expect(storageService.get('mistake_book', [])).toEqual([]);
 });
 it('inflight-1: queued login cannot survive logout', async () => {
-  let write;
+  const writes = [];
   vi.stubGlobal('navigator', {
     locks: {
-      request: vi.fn(
-        (_name, _options, fn) =>
-          new Promise((resolve, reject) => {
-            write = () => {
-              try {
-                resolve(fn());
-              } catch (e) {
-                reject(e);
-              }
-            };
-          })
-      )
+      request: (_name, _options, fn) =>
+        new Promise((resolve, reject) => {
+          writes.push(() => {
+            try {
+              resolve(fn());
+            } catch (error) {
+              reject(error);
+            }
+          });
+        })
     }
   });
-  const pending = login(2);
-  storageService._clearRevokedCredentials();
-  write();
-  await expect(pending).rejects.toThrow();
+  const pending = Promise.resolve(login(2)).catch((error) => error);
+  vi.stubGlobal('navigator', {});
+  await storageService._clearRevokedCredentials();
+  writes.shift()();
+  expect(await pending).toBeInstanceOf(Error);
   expect(captureSession()?.owner).toBe('guest');
 });
 it('inflight-3: unavailable queue initialization preserves pending payload', () => {

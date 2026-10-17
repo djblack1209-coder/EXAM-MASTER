@@ -1,3 +1,4 @@
+import { obfuscate, deobfuscate } from '@/utils/crypto/cipher.js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, getActivePinia, setActivePinia } from 'pinia';
 import { flushPromises, mount } from '@vue/test-utils';
@@ -269,7 +270,6 @@ describe('record location uses canonical facts', () => {
       const peerIdentity = localStorage.getItem('__exam_storage__:_enc_EXAM_USER_ID');
       const peerToken = localStorage.getItem('__exam_storage__:_enc_EXAM_TOKEN');
       const peerEpoch = localStorage.getItem('__exam_storage__:_enc_EXAM_SESSION_EPOCH');
-      const peerRevocation = localStorage.getItem('__exam_storage__:EXAM_SESSION_REVOCATION');
       storageService.saveLoginSession({
         userId: 'search-current',
         token: 'synthetic-encrypted-search-token',
@@ -286,15 +286,23 @@ describe('record location uses canonical facts', () => {
       const oldFacts = localStorage.getItem('__exam_storage__:u_search-current_conversation_learning_v1');
       expect(localStorage.getItem('EXAM_USER_ID')).toBeNull();
       expect(localStorage.getItem('__exam_storage__:EXAM_USER_ID')).toBeNull();
-      // Other windows write the same service-produced ciphertext; this window receives only StorageEvent.
+      // A peer commits a fresh complete generation; this window receives only StorageEvent.
+      const generation = JSON.parse(localStorage.getItem('__exam_storage__:EXAM_IDENTITY_GENERATION')).value + 1;
+      const record = {
+        ...deobfuscate(JSON.parse(peerEpoch).value),
+        generation,
+        epoch: `search-peer-fresh-${generation}`,
+        revocation: `search-peer-fence-${generation}`
+      };
       const encrypted = JSON.parse(peerIdentity).value;
       localStorage.setItem(
         eventKey.startsWith('__exam_storage__:') ? '__exam_storage__:_enc_EXAM_USER_ID' : '_enc_EXAM_USER_ID',
         eventKey.startsWith('__exam_storage__:') ? peerIdentity : encrypted
       );
       localStorage.setItem('__exam_storage__:_enc_EXAM_TOKEN', peerToken);
-      localStorage.setItem('__exam_storage__:_enc_EXAM_SESSION_EPOCH', peerEpoch);
-      localStorage.setItem('__exam_storage__:EXAM_SESSION_REVOCATION', peerRevocation);
+      localStorage.setItem('__exam_storage__:_enc_EXAM_SESSION_EPOCH', JSON.stringify({ value: obfuscate(record) }));
+      localStorage.setItem('__exam_storage__:EXAM_SESSION_REVOCATION', JSON.stringify({ value: record.revocation }));
+      localStorage.setItem('__exam_storage__:EXAM_IDENTITY_GENERATION', JSON.stringify({ value: generation }));
       window.dispatchEvent(new StorageEvent('storage', { key: eventKey }));
       expect(storageService.get('EXAM_USER_ID')).toBe('search-peer');
       expect(store.state.owner).toBe('search-peer');
