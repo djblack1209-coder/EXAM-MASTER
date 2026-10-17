@@ -273,7 +273,10 @@ export async function readConnectorResponse(response, limit = 100000) {
   }
 }
 
-export async function testLocalConnector(connection, { platform, signal, assertCurrent } = {}) {
+export async function testLocalConnector(
+  connection,
+  { platform, signal, assertCurrent, session = captureSession() } = {}
+) {
   assertConnectorPlatform(platform);
   const url = validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
   assert(
@@ -287,6 +290,7 @@ export async function testLocalConnector(connection, { platform, signal, assertC
     platform,
     signal,
     assertCurrent,
+    session,
     method: 'GET',
     timeout: 5000
   });
@@ -321,6 +325,7 @@ export function validateLocalConnector(raw, allowedOrigins, consent) {
   return url;
 }
 export async function callLocalConnector(connection, input, options = {}) {
+  const session = options.session === undefined ? captureSession() : options.session;
   assertConnectorPlatform(options.platform);
   const url = validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
   assert(url.pathname === '/chat', 'ENDPOINT_INVALID', '连接器入口应为 /chat');
@@ -350,6 +355,7 @@ export async function callLocalConnector(connection, input, options = {}) {
     platform: options.platform,
     signal: options.signal,
     assertCurrent: options.assertCurrent,
+    session,
     body: JSON.stringify(payload)
   });
   const messages = {

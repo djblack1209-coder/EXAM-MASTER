@@ -178,6 +178,123 @@ import {
 export function learningId(prefix = 'learn') {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
 }
+// read: local reads/navigation; write: local facts/authorization; send: external requests (may also write).
+// cancel first aborts locally; its optional remote cancellation has its own session check.
+export const CONVERSATION_ACTION_EFFECTS = Object.freeze({
+  ensureSessionCurrent: 'write',
+  reloadRecords: 'read',
+  searchRecords: 'read',
+  openRecord: 'read',
+  dismissLocatedRecord: 'read',
+  locateConversation: 'read',
+  scopedSummary: 'read',
+  journeyContext: 'read',
+  configureJourney: 'write',
+  startTraining: 'write',
+  submitTraining: 'write',
+  selectTraining: 'read',
+  openTrainingFeedback: 'write',
+  startWeakness: 'write',
+  confirmRecap: 'write',
+  planNextTraining: 'write',
+  configureReminder: 'write',
+  reminderQueue: 'read',
+  reminderReceipt: 'write',
+  openReminder: 'read',
+  notificationContext: 'read',
+  prepareNotificationConsent: 'write',
+  attachNotifications: 'read',
+  writingContext: 'read',
+  startWriting: 'write',
+  submitSentence: 'write',
+  recordSentenceHelp: 'write',
+  startSentenceTask: 'write',
+  sentenceCanSubmit: 'read',
+  scheduleSentenceRetest: 'write',
+  recordWritingHelp: 'write',
+  readWritingReference: 'write',
+  openVocabulary: 'write',
+  submitVocabulary: 'write',
+  oatutorContext: 'read',
+  startOatutor: 'write',
+  oatutorAction: 'write',
+  vocabularyTaskFor: 'read',
+  startVocabularyTask: 'write',
+  vocabularyCanSubmit: 'read',
+  recordDiagramHelp: 'write',
+  recordScienceHelp: 'write',
+  startScience: 'write',
+  scienceCanSubmit: 'read',
+  writingCanSubmit: 'read',
+  observeCalendar: 'read',
+  scheduleScienceRetest: 'write',
+  scheduleWritingRetest: 'write',
+  requestWritingFeedback: 'send',
+  requestVocabularyFeedback: 'send',
+  computeReferenceContext: 'read',
+  requestComputeReference: 'send',
+  requestGrammarHelp: 'send',
+  diagnosePrerequisite: 'write',
+  cancelModelReads: 'read',
+  interpretQuestionImage: 'send',
+  testModel: 'send',
+  checkLocalConnection: 'send',
+  checkMaterialConnection: 'send',
+  recoverModelResult: 'send',
+  recordContext: 'read',
+  prepareMaterialAction: 'write',
+  materialContext: 'read',
+  refresh: 'read',
+  start: 'write',
+  setRhythm: 'write',
+  send: 'send',
+  submit: 'send',
+  cancel: 'send',
+  commit: 'write',
+  loadModels: 'send',
+  loadUsage: 'send',
+  saveModel: 'send',
+  removeModel: 'send',
+  importText: 'write',
+  previewMaterialDeletion: 'write',
+  deleteMaterial: 'send',
+  retryOriginalDeletion: 'send',
+  structureQuestion: 'write',
+  structureObjective: 'write',
+  correctQuestion: 'write',
+  setRubric: 'write',
+  correctAssessment: 'write',
+  generateVariant: 'write',
+  focus: 'write',
+  exportData: 'read',
+  previewRestore: 'write',
+  cancelHistory: 'read',
+  restoreData: 'write',
+  rollbackRecords: 'write',
+  deleteData: 'write',
+  migrateLegacy: 'write',
+  migrateGuest: 'write',
+  importFile: 'send',
+  inspectUpload: 'send',
+  recoverUpload: 'send',
+  closeUpload: 'send',
+  previewPendingRemoval: 'write',
+  forgetPendingUpload: 'write',
+  restorePendingLocator: 'write',
+  previewUploadMaintenance: 'send',
+  compactUploadReceipts: 'send',
+  cancelMaterial: 'read',
+  syncRecords: 'send',
+  isSyncConflictCurrent: 'read',
+  cancelSync: 'read',
+  deleteCloudRecords: 'send',
+  adoptCloudRecords: 'send',
+  restoreConflictLocal: 'write',
+  clearSyncConflict: 'write',
+  exportSyncConflict: 'read',
+  previewGuestMigration: 'write'
+});
+
 export const useConversationLearningStore = defineStore('conversation-learning', () => {
   const sessionUpgrade = storageService.getSessionEpoch();
   sessionUpgrade?.catch?.(() => undefined);
@@ -194,7 +311,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     owner: boundSession?.owner === 'guest' ? null : boundSession?.owner || null,
     token: initialSnapshot.token
   };
-  const state = ref(boundSession ? learningRepository.read() : emptyLearningState('guest'));
+  let recordsInitialized = false;
+  const state = ref(emptyLearningState(boundSession?.owner || 'guest'));
   let notificationObserver = null,
     notificationRefreshTimer = null;
   function attachNotifications(observer) {
@@ -244,7 +362,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   let controller = null;
   let pendingCloudCall = null;
   let computeRequest = null;
-  const pendingUploads = ref(boundSession ? pendingUploadJournal.list() : []);
+  const pendingUploads = ref([]);
   const materialBusy = ref(false);
   const materialProgress = ref(null);
   const materialImportState = ref(null);
@@ -340,6 +458,18 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       '登录会话已变化，旧结果未写入'
     );
     assert(!signal?.aborted, 'CANCELLED', '请求已取消，旧结果未写入');
+    if (!recordsInitialized && recordReadState.value === 'pending') {
+      try {
+        refresh();
+      } catch (failure) {
+        if (!readOnly) throw failure;
+      }
+    }
+    assert(
+      readOnly || recordsInitialized,
+      recordReadState.value === 'pending' ? 'SESSION_UNAVAILABLE' : 'CONTEXT_CHANGED',
+      '学习记录暂不可读，请重试'
+    );
     return loginContext();
   }
   function cancelModelActions() {
@@ -393,7 +523,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   );
   const syncBusy = ref(false);
   const syncState = ref({ phase: 'idle', message: '', context: null, kind: null });
-  const syncConflict = ref(boundSession ? learningRepository.previewSyncConflict() : null);
+  const syncConflict = ref(null);
   let syncController = null;
   let syncRequest = null;
   const syncProgress = ref(null);
@@ -425,8 +555,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const active = computed(() => state.value.conversations.find((c) => c.id === selectedConversationId.value));
   const conversationLocation = shallowRef(null);
   const recordSearch = createLearningRecordSearch();
-  const recordReadState = ref('ready');
-  const recordSnapshotContext = ref(recordContext());
+  const recordReadState = ref('pending');
+  const recordSnapshotContext = ref(null);
   watch(
     state,
     () => {
@@ -469,7 +599,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     };
   }
   function openRecord(id, context) {
-    idleRecords();
+    idleRecords({ readOnly: true });
     refresh();
     assert(context && context === recordContext(), 'CONTEXT_CHANGED', '学习记录已变化，请重新搜索');
     const target = recordSearch.target(state.value, id, recordSnapshotContext.value);
@@ -915,6 +1045,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const teachingProgress = computed(() => observeTeaching(state.value));
   const currentPlan = computed(() => state.value.plans.find((p) => p.id === summary.value.tasks.planId));
   function resetAccountResources() {
+    sessionRevision++;
     storageService.getSessionEpoch({ migrateLegacy: false });
     sessionRevocation.abort();
     sessionRevocation = new AbortController();
@@ -925,7 +1056,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       owner: boundSession?.owner === 'guest' ? null : boundSession?.owner || null,
       token: snapshot.token
     };
-    sessionRevision++;
     cancelModelActions();
     localConnectionController?.abort();
     cancelPoetryReference();
@@ -977,26 +1107,29 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       error.value = '登录状态暂不可读，请重试';
       return state.value;
     }
-    if (!resettingSession) ensureSessionCurrent(undefined, undefined, { readOnly: true });
+    if (!resettingSession && recordsInitialized) ensureSessionCurrent(undefined, undefined, { readOnly: true });
     const previous = {
       state: state.value,
       session: boundSession,
       phase: recordReadState.value,
       context: recordSnapshotContext.value
     };
-    // Invalidate reactive projections before a read can throw or notify a subscriber.
-    recordReadState.value = 'loading';
-    recordSnapshotContext.value = null;
+    // Block synchronous subscribers throughout projection replacement, including failed initialization.
+    resettingSession++;
     try {
+      recordReadState.value = 'loading';
+      recordSnapshotContext.value = null;
       const next = learningRepository.read();
-      if (next.owner !== state.value.owner) {
-        resetAccountResources();
+      const uploads = pendingUploadJournal.list();
+      const conflict = learningRepository.previewSyncConflict();
+      if (next.owner !== state.value.owner) resetAccountResources();
+      if (!recordsInitialized || next.owner !== state.value.owner)
         selectedConversationId.value = next.conversations.at(-1)?.id || null;
-      }
       state.value = next;
       calendar.read();
-      pendingUploads.value = pendingUploadJournal.list();
-      syncConflict.value = learningRepository.previewSyncConflict();
+      pendingUploads.value = uploads;
+      syncConflict.value = conflict;
+      recordsInitialized = true;
       recordSnapshotContext.value = recordContext();
       recordReadState.value = 'ready';
       return state.value;
@@ -1005,7 +1138,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         if (checkSession(previous.session) !== 'changed' && previous.state.owner === (boundSession?.owner || 'guest')) {
           state.value = previous.state;
           recordSnapshotContext.value = previous.context;
-          recordReadState.value = previous.phase;
+          recordReadState.value = recordsInitialized ? previous.phase : 'pending';
         }
         error.value = '登录状态暂不可读，请重试';
         return state.value;
@@ -1019,6 +1152,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       recordSnapshotContext.value = null;
       recordReadState.value = 'error';
       throw cause;
+    } finally {
+      resettingSession--;
     }
   }
   function reloadRecords({ identityChanged = false } = {}) {
@@ -1032,12 +1167,14 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       conversation: conversationLocation.value,
       session: boundSession
     };
-    recordSearch.clear();
-    recordLocation.value = null;
-    conversationLocation.value = null;
-    if (identityChanged) resettingSession++;
+    if (identityChanged) sessionRevision++;
+    resettingSession++;
     try {
+      recordSearch.clear();
+      recordLocation.value = null;
+      conversationLocation.value = null;
       if (identityChanged) {
+        recordsInitialized = false;
         lastRecordContext = null;
         recordReadState.value = 'loading';
         recordSnapshotContext.value = null;
@@ -1069,7 +1206,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       materialConnection.value = null;
       error.value = '本机记录已变化且暂不可读，请重新核对；旧资料动作已取消。';
     } finally {
-      if (identityChanged) resettingSession--;
+      resettingSession--;
     }
   }
   const stopIdentityChanges = storageService.onIdentityChange(
@@ -2394,10 +2531,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       return;
     }
     assert(sharingAllowed.value, 'CONSENT_REQUIRED', '请先确认当前上下文的数据流向');
-    busy.value = true;
     const requestController = new AbortController();
-    controller = requestController;
-    streamPreview.value = '';
     const mode = selectedMode.value,
       requestedModelId = modelId.value;
     const lifecycle = learningRepository.lifecycleRevision();
@@ -2552,7 +2686,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         }
       }
     };
+    controller = requestController;
     try {
+      busy.value = true;
+      streamPreview.value = '';
       if (mode === 'cloud') {
         assert(
           !streamEnabled.value || streamSupported.value,
@@ -3723,16 +3860,16 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   }
   async function runHistory(prepare) {
     assert(!historyBusy.value, 'BUSY', '历史校验仍在执行，可先取消');
-    historyBusy.value = true;
-    historyProgress.value = null;
     const controller = new AbortController();
     historyController = controller;
-    const context = recordContext(),
-      revision = state.value.revision;
-    const session = ensureSessionCurrent();
-    const assertCurrent = () => ensureSessionCurrent(session, controller.signal);
-    historyRequestContext = { context, revision };
     try {
+      historyBusy.value = true;
+      historyProgress.value = null;
+      const context = recordContext(),
+        revision = state.value.revision;
+      const session = ensureSessionCurrent();
+      const assertCurrent = () => ensureSessionCurrent(session, controller.signal);
+      historyRequestContext = { context, revision };
       const result = await prepare({
         signal: controller.signal,
         assertCurrent,
@@ -3793,8 +3930,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     state.value = learningRepository.migrateLegacy();
     return state.value;
   }
-  function idleRecords() {
-    ensureSessionCurrent();
+  function idleRecords(options) {
+    ensureSessionCurrent(undefined, undefined, options);
     assert(!busy.value && !materialBusy.value && !syncBusy.value && !historyBusy.value, 'BUSY', '请等待或取消当前任务');
   }
   function previewGuestMigration() {
@@ -4165,39 +4302,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     previewGuestMigration,
     migrateGuest
   };
-  // Guard the complete public action surface, including read/cache and cancellation actions.
-  const readOnlyActions = new Set([
-    'reloadRecords',
-    'refresh',
-    'searchRecords',
-    'dismissLocatedRecord',
-    'locateConversation',
-    'selectTraining',
-    'scopedSummary',
-    'recordContext',
-    'materialContext',
-    'journeyContext',
-    'writingContext',
-    'oatutorContext',
-    'computeReferenceContext',
-    'sentenceCanSubmit',
-    'vocabularyTaskFor',
-    'vocabularyCanSubmit',
-    'scienceCanSubmit',
-    'writingCanSubmit',
-    'reminderQueue',
-    'notificationContext',
-    'observeCalendar',
-    'attachNotifications',
-    'exportData',
-    'isSyncConflictCurrent',
-    'exportSyncConflict',
-    'cancel',
-    'cancelMaterial',
-    'cancelSync',
-    'cancelHistory',
-    'cancelModelReads'
-  ]);
+  // Every callable public action must declare its effect; no implicit write/read fallback.
+
   for (const [name, action] of Object.entries(exposed)) {
     if (
       typeof action !== 'function' ||
@@ -4206,7 +4312,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     )
       continue;
     const run = (...args) => {
-      const check = (session) => ensureSessionCurrent(session, undefined, { readOnly: readOnlyActions.has(name) });
+      const effect = CONVERSATION_ACTION_EFFECTS[name];
+      assert(effect, 'ACTION_UNCLASSIFIED', '学习动作尚未分类');
+      const check = (session) =>
+        ensureSessionCurrent(session, undefined, { readOnly: effect === 'read' || name === 'cancel' });
       const session = check();
       const revocation = sessionRevocation.signal;
       operationSessions.push(session);

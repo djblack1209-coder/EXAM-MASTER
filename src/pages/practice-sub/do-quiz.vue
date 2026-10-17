@@ -1920,18 +1920,21 @@ export default {
       this.referenceObservationId ||= createQuizAttemptId();
       this.flashcardFlipped = true;
       this.flashcardFsrsPreview = null;
+      const observationOperation = (this._observationOperation = {});
+      const ownsOperation = () => this._observationOperation === observationOperation;
       this.recordingObservation = true;
       this.observationError = '';
-      const measured = stopQuestionTimer(this.questionTimerToken);
-      if (measured.success === false) return;
-      const timeSpent = measured.elapsedMs ?? measured.elapsed * 1000;
       try {
+        const measured = stopQuestionTimer(this.questionTimerToken);
+        if (measured.success === false) return;
+        const timeSpent = measured.elapsedMs ?? measured.elapsed * 1000;
         await recordQuizLearningObservation({
           currentQuestion: question,
           sessionId,
           observationId: this.referenceObservationId,
           kind: 'reference_view',
-          canContinue: current
+          canContinue: current,
+          session: this.boundLoginSession
         });
         if (!current()) return;
         this.referenceSaved = true;
@@ -1952,9 +1955,12 @@ export default {
         this.saveCurrentProgress(true);
         playFlipSound();
       } catch (_error) {
-        if (current()) this.observationError = t('quiz.viewUnsaved');
+        if (ownsOperation()) this.observationError = t('quiz.viewUnsaved');
       } finally {
-        if (current()) this.recordingObservation = false;
+        if (ownsOperation()) {
+          this.recordingObservation = false;
+          this._observationOperation = null;
+        }
       }
     },
     async rateFlashcardAndNext(rating) {
@@ -1982,6 +1988,8 @@ export default {
         (getUserId() || '') === owner &&
         checkSession(this.boundLoginSession) === 'current';
       this.selfRatingObservationId ||= createQuizAttemptId();
+      const observationOperation = (this._observationOperation = {});
+      const ownsOperation = () => this._observationOperation === observationOperation;
       this.recordingObservation = true;
       this.observationError = '';
       try {
@@ -1992,7 +2000,8 @@ export default {
           kind: 'self_rating',
           rating,
           referenceId: this.referenceObservationId,
-          canContinue: current
+          canContinue: current,
+          session: this.boundLoginSession
         });
         if (!current()) return;
         const latest = this.answeredQuestions.find((item) => item.index === index && item.questionId === question.id);
@@ -2016,9 +2025,12 @@ export default {
         this.recordingObservation = false;
         await this.toNext();
       } catch (_error) {
-        if (current()) this.observationError = t('quiz.rateUnsaved');
+        if (ownsOperation()) this.observationError = t('quiz.rateUnsaved');
       } finally {
-        if (current()) this.recordingObservation = false;
+        if (ownsOperation()) {
+          this.recordingObservation = false;
+          this._observationOperation = null;
+        }
       }
     },
     async toNext() {
