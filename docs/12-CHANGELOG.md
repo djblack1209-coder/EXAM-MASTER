@@ -1,5 +1,40 @@
 # 重要变更
 
+## 2026-10-16 第五轮正常流程回退收口（阶段5E）
+
+在`9cb63354`原源码先运行最终回归集合：60项中24项失败、36项通过（6项新增正常对照及30项既有离线队列用例），覆盖全部审计ID；基线回执为`tmp/stage5e/baseline-complete.json`。另保留首次失败、修复及旧断言兼容回执。首次全量发现6项旧合同断言后，在记录PID上正常终止并回收；分别将“续期=换代”改为真实同账户重新登录、更新只读导航清单及原session服务参数，不降低账户隔离、明确作答、幂等或超时阈值。修复额外覆盖题库页令牌绑定与个人页旧退出确认。
+
+实现按六类收口：公共请求/错题锁/统计/作答及页面只按owner/epoch和本次页面操作上下文绑定；请求及领域脱敏错误保留SESSION_UNAVAILABLE，离线恢复不完整时不覆盖持久队列，恢复合并保留正文/重试次数/优先级；锁前错题故障保留冻结任务，500ms重试且换代撤销，已执行远端任务不自动重发；预检故障不停止后续检查。错题等待保留原队列位置，恢复后先后顺序不变；补充FIFO回归先失败、修复后通过，回执为`fifo-red/fifo-green`。资料补丁在锁内取最新持久资料，只应用本次字段，不用旧投影整条回写；新登录后同样保留完整资料。游客业务严格读允许合法空串，核对复制后再查原session；当前无法证明来源比较删除独占，保留来源，只退休本次证明。已有会话定位与题组切换可在身份暂不可用时阅读，确认换代仍重置；错题批量/单条/同步确认与个人退出固定弹窗原绑定。
+
+同类位置与保留比较的含义逐类记录于[04](04-API-DOCUMENTATION.md#用户数据持有者--绑定方式阶段5)，持久化及错误合同更新于[05](05-DATABASE-SCHEMAS.md#本机登录会话代号2026-10-16)。`auth-storage`快照自校验、身份替换/凭据/格式迁移的完整快照CAS继续保留；业务续段不再比较令牌或proof。预览token、计时token、材料/参数指纹均为各自操作或内容标识。
+
+| 审计ID                         | 修复状态与回归名称（tests/unit）                                                                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WRITES-01 / inflight-14-02     | 已修复；`session-round5`：response survives renewal、retry after renewal sends latest credential、question bank page binding                                  |
+| WRITES-02                      | 已修复；`session-round5`：actual bulk confirmation binds original session、profile logout confirmation uses origin（正常/续期/重登对照）                      |
+| WRITES-03 / inflight-14-01     | 已修复；`session-round5`：typed unavailable response preserves offline retry and body、redacted and domain normalization preserve unavailable type            |
+| inflight-14-03 / MIGRATE-14-02 | 已修复；`session-round5`：queued mistake removal survives renewal                                                                                             |
+| inflight-14-04 / regress-01    | 已修复；`session-round5`：explicit answer saves and syncs after renewal、real learning and offline originals both persist through renewal                     |
+| regress-02                     | 已修复；`session-round5`：stats keeps four projections and accepts in-flight response after renewal                                                           |
+| regress-03                     | 已修复；`session-round5`：locateConversation / selectTraining reads trusted local projection while unavailable；全action换代遍历保留                          |
+| regress-04                     | 已修复；`session-round5`：queued disjoint profile patches merge at commit、queued profile patch follows same-owner renewal with latest fields                 |
+| regress-05                     | 已修复；`session-round5`：precheck retries after unavailable and stops after generation change、unavailable credential read after preflight retries next tick |
+| order-5-01                     | 已修复；`session-round5`：post-login incremental patch preserves latest account-1/account-2 fields                                                            |
+| MIGRATE-14-01                  | 已修复；`session-round5`：old migration never removes post-logout guest data                                                                                  |
+| MIGRATE-14-03                  | 已修复；`session-round5`：unavailable queued mistake retains typed task and resumes、unavailable preflight retains frozen add body and drops revoked retry    |
+| MIGRATE-14-04                  | 已修复；`offline-queue`：failed H5 restore never overwrites unread pending body                                                                               |
+| MIGRATE-14-05                  | 已修复；`session-round5`：legal empty guest value does not block later keys                                                                                   |
+
+最终`YOZI_ISOLATED_BUILD=1 npm test -- --reporter=default --reporter=json --outputFile.json=tmp/stage5e/full-frozen.json`：271文件中270通过/1既有专用Mongo环境文件跳过，5126项中5120通过/6项原跳过，零失败和未处理拒绝；新增30项回归。5000原答性能用例在本批首轮25.342秒通过，中间一次准备61.746秒超过原60秒钩子阈值；保留该回执并正常终止其登记进程。最终同一未修改用例26.753秒通过，没有提高阈值或增加跳过；仅凭回执无法确定耗时波动根因。最终源码lint、变动测试lint及代码提交钩子通过。
+
+最终`YOZI_ISOLATED_BUILD=1`及各自`UNI_OUTPUT_DIR=tmp/stage5e/dist/build/<平台>`下的`npm run build:h5`、`npm run build:mp-weixin`、`npm run build:app`通过。`npm run audit:public-build -- tmp/stage5e/dist/build/h5 tmp/stage5e/dist/build/mp-weixin tmp/stage5e/dist/build/app`扫描735文件、零发现；微信产物与App导出校验器通过。微信主包332文件/1937902字节、媒体19文件/181028字节，均低于2MB/200KB；微信仅既有选择器提示。生成的113份压缩题库逐项解压JSON等价后恢复原生成源码，不带入无关题库改动。新增本地文档链接/锚点与`git diff --check`通过。
+
+本批源码新增169行、删除141行；清除令牌值参与操作绑定、请求匿名兜底、离线读故障吞为空队列、旧资料投影整条合并、游客来源无独占删除、个人页重复凭据删除等旧分支。
+
+复用现有依赖、当前工作目录及`tmp/audit5/resources.log`，未启动产品App、预览服务或浏览器标签；已有用户/其他任务页面与客户端保留。全量通过后核对5E候选与5D回退三端入口可读，确认5C临时构建无跟踪文件、符号链接或活跃占用，回收`tmp/stage5c/dist/build/{h5,mp-weixin,app}`及本批已完成的4个辅助脚本，共3553文件/334028936逻辑字节；原5C验证回执保留。实时磁盘可用空间独立记录，不等同删除字节或RAM释放。5E候选、5D回退、正式历史材料、日常App、源码及用户资料保留；本轮登记进程均退出并回收。
+
+未推送、部署、发短信、收费、调用真实模型或替换日常App。真实账号/自然多窗口、微信/App对应设备及公开发布分别未验；缺Web Locks时完整身份事务仍是既有保守失败关闭，不承诺跨窗口原子CAS。游客来源有意保留，不把复制完成称为独占删除。功能规划保持，后续功能未提前启动。
+
 ## 2026-10-16 终审第四轮防回退收敛（阶段5D）
 
 - 基线`22e686e1`先复现12类问题；同一缺陷的双向发现合并修复。最新基线`baseline-last.json`有26项失败/1项通过，独立`baseline-migration.json`复现旧格式绑定在标记故障时误判换代；`baseline-workers.json`复现无Web Locks的真实Worker旧资料物理写入使原身份复活。空串冲突在基线已保留，未复现覆盖（原严格读取拒绝该空值），0/false确实被覆盖；本轮以明确键存在性统一处理三种值。
