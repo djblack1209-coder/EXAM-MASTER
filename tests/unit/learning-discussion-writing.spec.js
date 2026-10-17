@@ -35,8 +35,9 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.useRealTimers();
 });
-function start() {
+function start(timezone) {
   const s = useConversationLearningStore();
+  if (timezone) s.commit('timezone.set', { timezone });
   s.start('英文学术讨论');
   return s;
 }
@@ -237,7 +238,7 @@ describe('原创学术讨论与当前官方格式出处', () => {
   it('明日新讨论按原时区安排一次，提前提交拒绝，到期仍pending且不推进FSRS', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-11-01T08:30:00Z'));
-    const s = start();
+    const s = start('America/Los_Angeles');
     s.submit('My independent contribution.', true);
     const original = questionKey(s.activeQuestion),
       retest = s.scheduleWritingRetest();

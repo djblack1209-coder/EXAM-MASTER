@@ -141,7 +141,7 @@ describe('mobile entry initialization checks with synthetic pages', () => {
     const page = await context.newPage();
     try {
       await configure(page);
-      return await verifyMobileRoute(page, { baseUrl, route, readyTimeoutMs: 250, observationMs: 120, ...options });
+      return await verifyMobileRoute(page, { baseUrl, route, readyTimeoutMs: 5000, observationMs: 120, ...options });
     } finally {
       await page.close();
     }
@@ -154,6 +154,28 @@ describe('mobile entry initialization checks with synthetic pages', () => {
 
   it('accepts a ready entry at the requested route', async () => {
     await expect(check(readyMarkup)).resolves.toMatchObject({ url: `${baseUrl}/#${route}` });
+  });
+
+  it('allows slow navigation without spending the entry readiness budget', async () => {
+    await expect(
+      check(readyMarkup, { readyTimeoutMs: 250 }, (page) =>
+        page.route('**/', async (request) => {
+          await new Promise((resolve) => setTimeout(resolve, 600));
+          await request.continue();
+        })
+      )
+    ).resolves.toMatchObject({ url: `${baseUrl}/#${route}` });
+  });
+
+  it('still rejects an entry that renders after its readiness deadline', async () => {
+    await expect(
+      check(`<script>setTimeout(() => { document.body.innerHTML = '${readyMarkup}'; }, 700)</script>`, {
+        readyTimeoutMs: 250,
+        observationMs: 0
+      })
+    ).rejects.toMatchObject({
+      failures: expect.arrayContaining([{ code: 'page_not_ready', detail: expect.any(String) }])
+    });
   });
 
   it('accepts the initial learning goal form before a conversation has a composer', async () => {
@@ -243,7 +265,7 @@ describe('mobile entry initialization checks with synthetic pages', () => {
   });
 
   it('rejects an otherwise clean blank page', async () => {
-    await expect(check('')).rejects.toMatchObject({
+    await expect(check('', { readyTimeoutMs: 250 })).rejects.toMatchObject({
       failures: expect.arrayContaining([{ code: 'page_not_ready', detail: expect.any(String) }])
     });
   });
@@ -253,14 +275,16 @@ describe('mobile entry initialization checks with synthetic pages', () => {
       `<div style="display:none">${readyMarkup}</div>`,
       `${readyMarkup}<div class="base-state--loading">加载中</div>`
     ]) {
-      await expect(check(html)).rejects.toMatchObject({
+      await expect(check(html, { readyTimeoutMs: 250 })).rejects.toMatchObject({
         failures: expect.arrayContaining([{ code: 'page_not_ready', detail: expect.any(String) }])
       });
     }
   });
 
   it('catches a blank initialization crash before any application error handler or console.error exists', async () => {
-    await expect(check('<script>throw new Error("early init crash")</script>')).rejects.toMatchObject({
+    await expect(
+      check('<script>throw new Error("early init crash")</script>', { readyTimeoutMs: 250 })
+    ).rejects.toMatchObject({
       failures: expect.arrayContaining([
         { code: 'page_error', detail: 'early init crash' },
         { code: 'page_not_ready', detail: expect.any(String) }
@@ -313,7 +337,8 @@ describe('mobile entry initialization checks with synthetic pages', () => {
   it('rejects a splash that never reaches onboarding', async () => {
     await expect(
       check('<div class="splash-container"><span class="brand-name">Yozi</span></div>', {
-        route: '/pages/splash/index'
+        route: '/pages/splash/index',
+        readyTimeoutMs: 250
       })
     ).rejects.toMatchObject({
       failures: expect.arrayContaining([{ code: 'page_not_ready', detail: expect.any(String) }])
@@ -322,7 +347,7 @@ describe('mobile entry initialization checks with synthetic pages', () => {
 
   it('retains a storage failure toast that appears and disappears between snapshots', async () => {
     const html = `${readyMarkup}<script>setTimeout(() => { const toast = document.createElement('div'); toast.textContent = '保存失败，请检查存储空间'; document.body.append(toast); toast.remove(); }, 60)</script>`;
-    await expect(check(html)).rejects.toMatchObject({
+    await expect(check(html, { readyTimeoutMs: 250 })).rejects.toMatchObject({
       failures: expect.arrayContaining([{ code: 'blocking_toast', detail: { text: '保存失败，请检查存储空间' } }])
     });
   });

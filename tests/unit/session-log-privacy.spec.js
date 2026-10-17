@@ -1,6 +1,6 @@
 import { it, expect, vi, afterEach } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { parse } from '@babel/parser';
 afterEach(() => {
   vi.restoreAllMocks();
@@ -23,9 +23,20 @@ it.each(['development', 'production'])(
   }
 );
 it('regress-4: every src logger label is static; dynamic data cannot enter first argument', () => {
-  const files = execFileSync('rg', ['-l', 'logger\\.(log|debug|info|warn|error|group)\\(', 'src'], { encoding: 'utf8' })
-    .trim()
-    .split('\n');
+  function loggerFiles(directory) {
+    return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+      if (entry.name.startsWith('.')) return [];
+      const file = join(directory, entry.name);
+      if (entry.isDirectory()) return loggerFiles(file);
+      if (!entry.isFile()) return [];
+      const content = readFileSync(file);
+      return !content.includes(0) && /logger\.(log|debug|info|warn|error|group)\(/.test(content.toString('utf8'))
+        ? [file]
+        : [];
+    });
+  }
+  const files = loggerFiles('src');
+  expect(files.length).toBeGreaterThan(0);
   const violations = [];
   function visit(node, file) {
     if (!node || typeof node !== 'object') return;
