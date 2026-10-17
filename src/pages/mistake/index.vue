@@ -255,7 +255,7 @@ import MistakeCard from './MistakeCard.vue';
 import MistakeReport from './MistakeReport.vue';
 import { normalizeMistakes as normalizeFields } from '@/utils/field-normalizer.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
-import { captureSession, checkSession, getUserId, getToken } from '@/services/auth-storage.js';
+import { captureSession, checkSession, getUserId } from '@/services/auth-storage.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 // --- 非响应式属性（模块级变量） ---
@@ -400,7 +400,7 @@ function loadUserInfo() {
 function confirmPendingSync() {
   if (isPendingSyncing.value) return;
   const owner = loadedOwnerId.value;
-  const token = getToken() || '';
+  const session = captureSession();
   if (owner !== (getUserId() || '')) return toast.info(t('mistake.copy23'));
   const records = storageService.get('mistake_book', [], { migrateLegacy: false });
   const pending = records.filter((item) => ['pending', 'local_only'].includes(item?.sync_status));
@@ -414,21 +414,21 @@ function confirmPendingSync() {
     content: t('mistake.copy24', { v0: snapshot.length }),
     success: (res) => {
       if (!res.confirm) return;
-      if (owner !== (getUserId() || '') || token !== (getToken() || '')) return toast.info(t('mistake.copy25'));
-      syncPendingMistakes(snapshot, owner, token);
+      if (checkSession(session) !== 'current') return toast.info(t('mistake.copy25'));
+      syncPendingMistakes(snapshot, session);
     }
   });
 }
-async function syncPendingMistakes(expectedRecords, owner, token) {
+async function syncPendingMistakes(expectedRecords, session) {
   if (isPendingSyncing.value) return;
   const generation = ++syncGeneration;
-  const current = () => generation === syncGeneration && owner === (getUserId() || '') && token === (getToken() || '');
+  const current = () => generation === syncGeneration && checkSession(session) === 'current';
   isPendingSyncing.value = true;
   syncFeedback.value = t('mistake.syncing');
   toast.loading(t('mistake.copy26'));
   try {
     logger.log('[mistake-book] 开始自动同步待同步错题...');
-    const result = await storageService.syncPendingMistakes({ expectedRecords });
+    const result = await storageService.syncPendingMistakes({ expectedRecords, session });
     if (!current()) return;
     if (result.success === false) syncFeedback.value = result.error || t('mistake.unconfirmed');
     else if (result.synced > 0) {
@@ -568,12 +568,14 @@ function openLegacyReview(result) {
 // Only the explicitly reviewed loaded identities are removed.
 function clearAllMistakes() {
   if (isClearing.value || !mistakes.value.length) return;
+  const session = captureSession();
   const owner = loadedOwnerId.value,
     snapshot = JSON.stringify(mistakes.value);
   const ids = mistakes.value.map((row) => row.id ?? row._id);
   if (ids.some((id) => !['string', 'number'].includes(typeof id)) || new Set(ids.map(String)).size !== ids.length)
     return toast.info(t('mistake.copy30'));
-  const current = () => owner === (getUserId() || '') && snapshot === JSON.stringify(mistakes.value);
+  const current = () =>
+    checkSession(session) === 'current' && owner === (getUserId() || '') && snapshot === JSON.stringify(mistakes.value);
   if (!current()) return toast.info(t('mistake.copy31'));
   modal.show({
     title: t('mistake.copy22'),
@@ -584,7 +586,7 @@ function clearAllMistakes() {
       if (!current()) return toast.info(t('mistake.copy33'));
       isClearing.value = true;
       try {
-        const result = await storageService.batchRemoveMistakes(ids);
+        const result = await storageService.batchRemoveMistakes(ids, session);
         if (!current()) return;
         if (!result.success) return toast.info(result.error || t('mistake.copy34'));
         const removed = new Set(ids.map(String));
@@ -675,7 +677,7 @@ async function removeMistake(mistake) {
 
         try {
           // 使用云端方法删除
-          const result = await storageService.removeMistake(id);
+          const result = await storageService.removeMistake(id, session);
           if (!current()) return;
 
           if (result.success) {

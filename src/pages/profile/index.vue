@@ -117,7 +117,7 @@ import '@/styles/yozi-pages.scss';
 import { useUserStore } from '@/stores/modules/user';
 import { useStudyStore } from '@/stores/modules/study';
 import { useThemeStore } from '@/stores/modules/theme.js';
-import { readSessionSnapshot } from '@/services/auth-storage.js';
+import { captureSession, checkSession, readSessionSnapshot } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo, consumeProfilePanel } from '@/utils/safe-navigate';
 import { logger } from '@/utils/logger.js';
@@ -323,16 +323,22 @@ export default {
     },
 
     handleLogout() {
-      this.dialog = { kind: 'logout', title: t('dashboard.copy115'), content: t('dashboard.copy116') };
+      this.dialog = {
+        kind: 'logout',
+        session: captureSession(),
+        title: t('dashboard.copy115'),
+        content: t('dashboard.copy116')
+      };
       this.showDialog = true;
     },
     confirmDialog() {
       if (this.dialog.kind === 'logout') {
+        if (checkSession(this.dialog.session) !== 'current') {
+          this.showDialog = false;
+          return;
+        }
         try {
           this.userStore.logout();
-          storageService.remove('userInfo');
-          storageService.remove('EXAM_USER_ID');
-          storageService.remove('EXAM_TOKEN');
           uni.$emit('loginStatusChanged', false);
           uni.showToast({ title: t('dashboard.copy117'), icon: 'success' });
           setTimeout(() => {

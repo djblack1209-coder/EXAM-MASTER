@@ -3,6 +3,7 @@ import { mount, flushPromises } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import MistakeCard from '@/pages/mistake/MistakeCard.vue';
 import MistakeReport from '@/pages/mistake/MistakeReport.vue';
+import { captureSession } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import { LEGACY_REVIEW_HANDOFF_KEY, readLegacyReviewHandoff } from '@/services/quiz-session-contract.js';
 import { learningRepository } from '@/services/learning/learning-repository.js';
@@ -111,7 +112,11 @@ it('history sync keeps failure/partial results visible and blocks repeated sends
     dialogs.at(-1).success({ confirm: true });
     await flushPromises();
     const beforeLateReply = get.mock.calls.length;
-    storageService.save('EXAM_TOKEN', 'changed-test-session');
+    storageService.saveLoginSession({
+      userId: 'feedback-owner',
+      token: 'changed-test-session',
+      userInfo: { id: 'feedback-owner' }
+    });
     resolve({ success: true, synced: 1, failed: 0, conflicts: 0 });
     await flushPromises();
     expect(get.mock.calls.length).toBe(beforeLateReply);
@@ -171,7 +176,7 @@ it('filtered removal binds the displayed identity, and merely opening history se
     await button(card, '移除').trigger('tap');
     await dialogs.at(-1).success({ confirm: true });
     await flushPromises();
-    expect(remove).toHaveBeenCalledExactlyOnceWith('shown-first');
+    expect(remove).toHaveBeenCalledExactlyOnceWith('shown-first', captureSession());
     expect(wrapper.findAllComponents(MistakeCard).map((component) => component.props('item').id)).toEqual(['first']);
     expect(storageService.get('mistake_book')).toEqual([first, shownFirst]);
     storageService.getMistakes.mockResolvedValue({ list: [], hasMore: false, source: 'local' });

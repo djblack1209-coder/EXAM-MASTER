@@ -723,6 +723,8 @@ describe('加密同账户会话与凭据请求边界', () => {
       'refresh',
       'searchRecords',
       'dismissLocatedRecord',
+      'locateConversation',
+      'selectTraining',
       'scopedSummary',
       'recordContext',
       'materialContext',

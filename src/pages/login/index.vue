@@ -167,7 +167,7 @@ import { useAuthStore } from '@/stores/modules/auth';
 import { useUserStore } from '@/stores/modules/user';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { storageService } from '@/services/storageService.js';
-import { getUserId, getToken } from '@/services/auth-storage.js';
+import { getToken } from '@/services/auth-storage.js';
 import { readLoginRegion, chooseLoginRegion } from '@/services/auth-region.js';
 import { availableLoginMethods, isAgeEligible, getAgeSession, loginErrorText } from './regional-utils.js';
 import { normalizeEmailAddress } from './email-auth-utils.js';
@@ -245,13 +245,8 @@ const methods = computed(() =>
   }).sort((a, b) => Number(!isMethodAvailable(a)) - Number(!isMethodAvailable(b)))
 );
 const current = () => {
-  const captured = { version, session: captureSession(), userId: getUserId(), token: getToken() };
-  return () =>
-    active &&
-    checkSession(captured.session) === 'current' &&
-    captured.version === version &&
-    captured.userId === getUserId() &&
-    captured.token === getToken();
+  const captured = { version, session: captureSession() };
+  return () => active && checkSession(captured.session) === 'current' && captured.version === version;
 };
 onShow(() => {
   active = true;
