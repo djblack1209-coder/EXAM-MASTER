@@ -99,10 +99,10 @@ jobs:
         run: npm test
         timeout-minutes: 5
 
-      - name: Verify learning calendar across timezones
-        timeout-minutes: 1
+      - name: Verify learning calendar, retests and backups across timezones
+        timeout-minutes: 4
         run: |
-          for timezone in Asia/Shanghai America/New_York; do
+          for timezone in Asia/Shanghai America/New_York America/Los_Angeles; do
             TZ="$timezone" npm test -- --maxWorkers=1 \
               tests/unit/learning-calendar.spec.js \
               tests/unit/learning-discussion-writing.spec.js \
