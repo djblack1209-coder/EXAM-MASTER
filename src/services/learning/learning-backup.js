@@ -241,7 +241,7 @@ export async function prepareLearningHistoryRestore(
     assert(!signal?.aborted, 'CANCELLED', '历史校验已取消，当前记录未修改');
     assert(Date.now() - began <= maxDurationMs, 'TIMEOUT', '历史校验达到时间上限，当前记录未修改');
   };
-  for (let offset = 0; offset < backup.events.length; ) {
+  for (let offset = 0; offset < backup.events.length;) {
     check();
     let end = offset,
       characters = 200;
