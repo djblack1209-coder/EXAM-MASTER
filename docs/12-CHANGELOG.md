@@ -1,5 +1,13 @@
 # 重要变更
 
+## 2026-10-17 standalone 后端锁文件纳入跟踪（阶段5Q）
+
+从 `origin/main` 的 `a7234ac9` 建立独立分支 `ci/standalone-lockfile`，未纳入主工作树的 `1a8db95d`。`laf-backend/.gitignore` 原将锁文件视为安装时再生成，未限定目录的规则也忽略了 standalone 锁文件；现仅新增该文件的否定规则，保留 Laf 源码包的原忽略行为。
+
+以本机旧锁文件为起点，因旧包名与当前清单不同，执行 `npm install --package-lock-only --ignore-scripts --offline --prefix laf-backend/standalone`，仅同步顶层及根包节点名称，依赖版本、完整性摘要与依赖图保持。104个包节点中103个 resolved 地址全部为 HTTPS 公开源（npm 官方39、npmmirror64），无 URL 凭据、查询参数或凭据扫描发现。已核对全部 workflow 的 `npm ci` 与 `pip install -r` 输入，除本次 standalone 锁文件外，根锁文件、对应包清单、两个 Python requirements 及本地 file-type 适配包清单均已跟踪且未被忽略。
+
+独立检出使用 Node22.22.3/npm10.9.8，运行时检查通过。根目录真实 `npm ci --ignore-scripts --offline` 在1.236秒后报 `ENOTCACHED`：缺少 `@babel/types@7.25.6` 的 registry 元数据缓存响应；按离线约束停止，未联网或链接其他环境依赖。尚未确定其余缓存缺项。standalone 安装及后续 Laf 审计、ESLint、格式/仓库/分包审计、工具检查、后端检查、Python、全量测试和 H5 构建均未运行；记录查找 beforeAll 与移动浏览器 afterAll 超时本轮未执行到，不能判断是否重现。Python3.12 可用，但本机 pip 缓存未发现 wheel，未创建 venv 或联网安装。独立静态核对与 `git diff --check` 通过不替代 CI；日志、耗时和清理回执留在 `tmp/p5q-evidence/`。无推送或部署。
+
 ## 2026-10-17 干净检出 CI 修复（阶段5O）
 
 `f4c0b880` 干净检出复现372条断链，全部指向被忽略的 `tmp/`；无失效已跟踪目标、导入或脚本入口。同版扫描器对 `bb90018d` 发现0条断链；该基线尚无审计脚本，两个版本锁文件也不同，因此复用当前依赖只用于固定扫描器对照，不声称旧版完整环境通过。
