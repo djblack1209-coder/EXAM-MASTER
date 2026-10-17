@@ -37,8 +37,9 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.useRealTimers();
 });
-function start() {
+function start(timezone) {
   const s = useConversationLearningStore();
+  if (timezone) s.commit('timezone.set', { timezone });
   s.start('英文邮件写作');
   return s;
 }
@@ -386,7 +387,7 @@ describe('原创邮件与当前任务出处', () => {
   it('明日新邮件按原时区安排一次、提前拒绝，到期仍pending而不推进FSRS', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-11-01T08:30:00Z'));
-    const s = start();
+    const s = start('America/Los_Angeles');
     s.submit('My original email.', true);
     const original = questionKey(s.activeQuestion),
       next = s.scheduleWritingRetest();

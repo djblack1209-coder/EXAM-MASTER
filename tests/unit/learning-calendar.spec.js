@@ -10,7 +10,6 @@ beforeEach(() => {
   setActivePinia(createPinia());
   vi.useFakeTimers();
   vi.setSystemTime(new Date('2026-10-07T06:59:59.500Z'));
-  vi.spyOn(Intl.DateTimeFormat.prototype, 'resolvedOptions').mockReturnValue({ timeZone: 'America/Los_Angeles' });
   vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
   releases = [];
 });
@@ -22,8 +21,8 @@ afterEach(() => {
 function storeFor(kind = 'writing') {
   const store = useConversationLearningStore();
   releases.push(() => store.$dispose());
-  store.start(kind === 'science' ? '学习物理' : kind === 'vocabulary' ? '英文说明写作' : '中文叙事写作');
   store.commit('timezone.set', { timezone: 'America/Los_Angeles' });
+  store.start(kind === 'science' ? '学习物理' : kind === 'vocabulary' ? '英文说明写作' : '中文叙事写作');
   let target;
   if (kind === 'writing') {
     store.submit('合成原答。', true, 'calendar-original');
