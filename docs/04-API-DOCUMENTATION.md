@@ -1,5 +1,30 @@
 # API 与工具合同
 
+## 第八轮终审：身份事务、队列与启动恢复（阶段5H）
+
+本节是现行身份写入/队列/启动合同，取代后文5E—5G对应旧条款，历史证据保留。`beginLoginAttempt()`在有Web Locks时返回Promise，所有登录入口等待登记再发请求；提交/资料/令牌/退出/迁移统一比较入口generation，冲突明确失败，重新提交才采用新代数。OAuth保存id/revocation/generation，供应商回调只消费原尝试。业务owner/epoch与身份写入generation分别使用，正常续期保留练习等业务绑定；资料补丁不再自动跨代数合并。旧浏览器缺Web Locks显示升级提示，已存登录身份不再授权，游客本地路径仍可用。[持久协议与平台依据](05-DATABASE-SCHEMAS.md#阶段5h身份代数离线状态机与启动恢复现行)。
+
+通用离线队列返回明确success/reason，SESSION_UNAVAILABLE三条路径均为非成功并保留任务/次数。界面只在明确成功时提示完成，其他结果提示“未同步，稍后重试”。state、稳定id、只合并pending及已载入id取消规则见05矩阵；当前src没有生产enqueue调用，新增taskId提供给未来重建器，不代表现存后端已接统一幂等。
+
+| ID                                            | 状态与回归（tests/unit）                                                                                                                                          |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| order-08-01                                   | 已修复；session-round8-identity：`a browser without Web Locks cannot use existing or new login state`，另测unsupported游客本机路径                                |
+| order-08-02                                   | 已修复；同文件`shared-store delayed registration and cleanup`；round8.mjs的late registration、round8-workers.mjs的register锁前迟到                                |
+| order-08-03                                   | 已修复；同上late cleanup、独立worker的logout；后继登录/重新打开身份保持                                                                                           |
+| inflight-17-01 / migrate-08-01                | 已修复；session-round8：`sending id cannot consume a later deduped action`                                                                                        |
+| inflight-17-02 / regress-8-01 / migrate-08-03 | 已修复；session-round8：`unavailable preflight/fulfilled/thrown reports unsynced`；offline-indicator：`unavailable sync reports unsynced without a success toast` |
+| migrate-08-02                                 | 已修复；session-round8：`cancellation after unread restore preserves unknown tasks`、`normal unread cancellation`                                                 |
+| writes-08-01                                  | 已修复；session-round8：`unavailable analytics cannot abort core launch and show retries init`                                                                    |
+| regress-8-02                                  | 已修复；session-round8：`initially unread precheck binds after recovery and refreshes`                                                                            |
+| writes-08-02                                  | 已修复；session-round8：`rebinding clears old reminder intervals before resetting`、`normal reminders`                                                            |
+
+同类位置逐类核对：
+
+- 身份：storageService的登记/完整提交/回滚、save/remove/clear（含保留指定设置的清空、控制键禁改）、明文及epoch迁移、撤销清理；auth-storage全部凭据与快照入口；Auth/Profile facade、login/index、oauth-utils、wechat-callback、个人页确认与App认证失败。退出与成功页面等待实际提交，旧通知不写身份，删除原先无锁写后纠错和重复登录持久化分支。共享锁VM与独立worker分别覆盖旧资料、登记、退出、同账户重登及重新打开；正常续期/新资料更新/显式冲突重试继续可用。
+- 离线：offline-queue的恢复/去重/发送/回执/失败/移除/清空/网络恢复全部按id与state核对；offline-indicator实际反馈。offline-cache-service、offline-cache、storageService错题互斥、learning-repository的上传/冲突队列继续使用原session和独立回执，未改成通用队列。正常pending合并、retry独立id/重试、confirmed重挂不重发及未载入取消均有覆盖；旧缺state任务保守转retry并另建后继id，`normal legacy state migration`先红后绿。
+- 启动：App.onLaunch/onShow、main的Pinia/i18n/错误插件、全部10个Store工厂（auth/profile/user/theme/study/study-engine/stats/favorite/review/conversation-learning），以及analytics/token-refresh/network-monitor、FSRS、通知initialize、领域管理器init。主题与study-engine工厂改为完整可重试对象；学习Store已有pending初始化复用；其他Store工厂不在创建中读取私有持久根，学习汇总/统计/收藏按动作重试；错误插件只注册回调，网络监控不读身份。main没有其他自定义install初始化器。语言与FSRS由App补跑；通知listen失败允许重新initialize。领域管理器在每次init尝试重新加载，未提前置isInitialized。暂不可用不挡核心路由，不把未初始化当已完成。
+- 定时器/提醒：question-timer的start/resume/init/\_tick；token-refresh的预检与重建；analytics上传；ai-generation-mixin的进度/轮播/续段；quiz-sound的短震动/偏好；learning-notifications的tick/open/换代；conversation-learning的250ms通知刷新；App/个人页/登录页的延迟导航。另核对请求/连接器/流/同步超时、写入租约/防抖、日历、network-monitor探测、类型动画/卡片导航：超时只取消原请求，纯显示计时器由作用域释放或原操作控制，不提交身份/学习事实。新增生成进度旧绑定与音效初读失败回归先红后绿；已有通知/页面/动画用例继续覆盖正常路径。
+
 ## 跨学科学习记录查找（2026-10-16）
 
 `learning-record-search-v1`是当前账户规范学习状态的本机只读投影，无新增HTTP端点或持久化索引。查询限120字符，按字面匹配会话目标、关联题目的题干/学科/知识点和全部已提交原答；匹配统一大小写、全半角及连续空白，原文不改写。只从当前账户的有效会话、题目版本、定位事件、题组与原答建立关联，未答题不补造作答。分页每次1—50条，稳定排序；无命中返回空列表。
