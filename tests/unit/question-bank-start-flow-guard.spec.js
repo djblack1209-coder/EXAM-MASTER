@@ -212,7 +212,7 @@ describe('question bank start flow', () => {
     wrapper.unmount();
   });
 
-  it.each(['owner', 'token'])('does not import a late load into the changed %s or navigate', async (change) => {
+  it.each(['owner', 'relogin'])('does not import a late load into the changed %s or navigate', async (change) => {
     uni.setStorageSync('EXAM_USER_ID', 'owner-a');
     storageService.save('EXAM_TOKEN', 'session-a');
     let reply;
@@ -227,7 +227,7 @@ describe('question bank start flow', () => {
     await wrapper.find('.slot-action').trigger('tap');
     if (change === 'owner')
       storageService.saveLoginSession({ userId: 'owner-b', token: 'session-b', userInfo: { id: 'owner-b' } });
-    else storageService.save('EXAM_TOKEN', 'session-b');
+    else storageService.saveLoginSession({ userId: 'owner-a', token: 'session-b', userInfo: { id: 'owner-a' } });
     const before = JSON.stringify(global.__mockStorage);
     reply({ cards: [{ id: 0, question: '完整零号题目', options: ['A.甲', 'B.乙'], answer: 'B' }] });
     await flushPromises();

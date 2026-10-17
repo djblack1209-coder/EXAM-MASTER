@@ -1829,8 +1829,7 @@ export default {
       if (!quizRecordOwnerMatches(this) || this.quizPageClosed) return;
       const frozen = JSON.parse(JSON.stringify(question)),
         index = this.currentIndex;
-      const owner = getUserId() || '',
-        token = getToken() || '';
+      const owner = getUserId() || '';
       const generation = (this._analysisGeneration = (this._analysisGeneration || 0) + 1);
       const current = () =>
         !this.quizPageClosed &&
@@ -1839,7 +1838,6 @@ export default {
         this.currentIndex === index &&
         JSON.stringify(this.currentQuestion) === JSON.stringify(frozen) &&
         (getUserId() || '') === owner &&
-        (getToken() || '') === token &&
         checkSession(this.boundLoginSession) === 'current';
       this._typewriter?.stopTyping();
       try {
@@ -1910,8 +1908,7 @@ export default {
       const question = JSON.parse(JSON.stringify(this.currentQuestion)),
         index = this.currentIndex,
         sessionId = this.sessionId;
-      const owner = getUserId() || '',
-        token = getToken() || '';
+      const owner = getUserId() || '';
       const current = () =>
         !this.quizPageClosed &&
         quizRecordOwnerMatches(this) &&
@@ -1919,7 +1916,6 @@ export default {
         this.currentIndex === index &&
         JSON.stringify(this.currentQuestion) === JSON.stringify(question) &&
         (getUserId() || '') === owner &&
-        (getToken() || '') === token &&
         checkSession(this.boundLoginSession) === 'current';
       this.referenceObservationId ||= createQuizAttemptId();
       this.flashcardFlipped = true;
@@ -1976,8 +1972,7 @@ export default {
       const question = JSON.parse(JSON.stringify(this.currentQuestion)),
         index = this.currentIndex,
         sessionId = this.sessionId;
-      const owner = getUserId() || '',
-        token = getToken() || '';
+      const owner = getUserId() || '';
       const current = () =>
         !this.quizPageClosed &&
         quizRecordOwnerMatches(this) &&
@@ -1985,7 +1980,6 @@ export default {
         this.currentIndex === index &&
         JSON.stringify(this.currentQuestion) === JSON.stringify(question) &&
         (getUserId() || '') === owner &&
-        (getToken() || '') === token &&
         checkSession(this.boundLoginSession) === 'current';
       this.selfRatingObservationId ||= createQuizAttemptId();
       this.recordingObservation = true;
@@ -2626,7 +2620,6 @@ export default {
       const index = this.currentIndex;
       const sessionId = this.sessionId;
       const owner = getUserId() || '';
-      const token = getToken() || '';
       const record = this.answeredQuestions.find((item) => item.index === index && item.questionId === question?.id);
       if (
         !record?.attemptId ||
@@ -2642,7 +2635,6 @@ export default {
         !this.quizPageClosed &&
         this.sessionId === sessionId &&
         (getUserId() || '') === owner &&
-        (getToken() || '') === token &&
         checkSession(this.boundLoginSession) === 'current';
       this.syncingAttemptIds.push(attemptId);
       try {

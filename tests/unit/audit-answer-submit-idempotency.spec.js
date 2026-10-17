@@ -140,7 +140,7 @@ it('keeps guests local and does not claim local persistence after a storage fail
   expect(clientSubmit).not.toHaveBeenCalled();
 });
 
-it.each(['account', 'token', 'closed'])('discards a late network receipt after %s changes', async (change) => {
+it.each(['account', 'relogin', 'closed'])('discards a late network receipt after %s changes', async (change) => {
   let finish;
   let allowed = true;
   clientSubmit.mockImplementationOnce(
@@ -152,7 +152,14 @@ it.each(['account', 'token', 'closed'])('discards a late network receipt after %
   const work = recordAnswerToAnalytics({ ...receiptInput(), canContinue: () => allowed });
   await vi.waitFor(() => expect(finish).toBeTypeOf('function'));
   if (change === 'account') uni.setStorageSync('EXAM_USER_ID', 'new-account');
-  if (change === 'token') uni.setStorageSync('EXAM_TOKEN', 'new-token');
+  if (change === 'relogin') {
+    const { storageService } = await import('@/services/storageService.js');
+    await storageService.saveLoginSession({
+      userId: 'receipt-owner',
+      token: 'new-token',
+      userInfo: { id: 'receipt-owner' }
+    });
+  }
   if (change === 'closed') allowed = false;
   finish(validReceipt());
   expect(await work).toBeNull();

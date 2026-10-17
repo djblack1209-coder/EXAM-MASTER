@@ -103,7 +103,7 @@ import { loadBankData } from './bank-data-loader.js';
 import { importFlashcardsToBank } from '@/utils/flashcard-adapter.js';
 
 import storageService from '@/services/storageService.js';
-import { captureSession, checkSession, getUserId, getToken } from '@/services/auth-storage.js';
+import { captureSession, checkSession, getUserId } from '@/services/auth-storage.js';
 import { toast } from '@/utils/toast.js';
 
 import { logger } from '@/utils/logger.js';
@@ -112,8 +112,8 @@ const keyboardRoot = ref(null);
 let unbindKeyboard = () => undefined;
 
 const pageOwner = getUserId() || '';
-const pageToken = getToken() || '';
-const ownerMatches = () => (getUserId() || '') === pageOwner && (getToken() || '') === pageToken;
+const pageSession = captureSession();
+const ownerMatches = () => checkSession(pageSession) === 'current';
 const _themeHandler = (_mode) => {
   void 0;
 };

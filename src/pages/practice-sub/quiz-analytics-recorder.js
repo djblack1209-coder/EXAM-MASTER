@@ -42,7 +42,7 @@ export async function recordAnswerToAnalytics({
   const session = captureSession();
   const owner = session?.owner === 'guest' ? '' : session?.owner || '';
   const token = getToken() || '';
-  const stillCurrent = () => checkSession(session) === 'current' && (getToken() || '') === token && canContinue();
+  const stillCurrent = () => checkSession(session) === 'current' && canContinue();
   if (!stillCurrent()) return null;
 
   // 在任何异步操作前冻结本次明确提交，重试不读取后来的草稿。
@@ -101,7 +101,7 @@ export async function recordAnswerToAnalytics({
   if (!stillCurrent()) return null;
 
   let submission = { status: owner && token ? 'unconfirmed' : 'local_only' };
-  // 访客不向受保护接口发送请求；账户、令牌或页面变化后不接收迟到回执。
+  // 访客不向受保护接口发送请求；会话或页面变化后不接收迟到回执。
   if (owner && token && isValidQuizSessionId(sessionId) && isValidQuizAttemptId(attemptId)) {
     try {
       const response = await submitAnswer({ idempotencyKey: attemptId, data: submitted }, { session });
