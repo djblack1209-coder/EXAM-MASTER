@@ -9,50 +9,53 @@
  */
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
+import { fileURLToPath } from 'node:url';
 
 // 已知的分包副本对照表：[源文件, 副本文件]
-const DUPLICATE_PAIRS = [
+export const DUPLICATE_PAIRS = [
   ['src/pages/practice-sub/utils/mistake-fsrs-scheduler.js', 'src/pages/study-detail/utils/mistake-fsrs-scheduler.js']
 ];
 
-let hasIssue = false;
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  let hasIssue = false;
 
-for (const [src, dup] of DUPLICATE_PAIRS) {
-  const srcPath = resolve(src);
-  const dupPath = resolve(dup);
+  for (const [src, dup] of DUPLICATE_PAIRS) {
+    const srcPath = resolve(src);
+    const dupPath = resolve(dup);
 
-  if (!existsSync(srcPath)) {
-    console.log(`⚠️  源文件不存在: ${src}`);
-    continue;
+    if (!existsSync(srcPath)) {
+      console.log(`⚠️  源文件不存在: ${src}`);
+      continue;
+    }
+    if (!existsSync(dupPath)) {
+      console.log(`⚠️  副本不存在: ${dup}`);
+      continue;
+    }
+
+    // 读取文件，忽略注释行中的来源标记后比较
+    const srcContent = readFileSync(srcPath, 'utf8')
+      .split('\n')
+      .filter((l) => !l.includes('分包副本') && !l.includes('subpackage copy'))
+      .join('\n')
+      .trim();
+    const dupContent = readFileSync(dupPath, 'utf8')
+      .split('\n')
+      .filter((l) => !l.includes('分包副本') && !l.includes('subpackage copy'))
+      .join('\n')
+      .trim();
+
+    if (srcContent === dupContent) {
+      console.log(`✅ 同步: ${src.replace('src/pages/', '')} ↔ ${dup.replace('src/pages/', '')}`);
+    } else {
+      console.log(`❌ 不同步: ${src.replace('src/pages/', '')} ↔ ${dup.replace('src/pages/', '')}`);
+      hasIssue = true;
+    }
   }
-  if (!existsSync(dupPath)) {
-    console.log(`⚠️  副本不存在: ${dup}`);
-    continue;
-  }
 
-  // 读取文件，忽略注释行中的来源标记后比较
-  const srcContent = readFileSync(srcPath, 'utf8')
-    .split('\n')
-    .filter((l) => !l.includes('分包副本') && !l.includes('subpackage copy'))
-    .join('\n')
-    .trim();
-  const dupContent = readFileSync(dupPath, 'utf8')
-    .split('\n')
-    .filter((l) => !l.includes('分包副本') && !l.includes('subpackage copy'))
-    .join('\n')
-    .trim();
-
-  if (srcContent === dupContent) {
-    console.log(`✅ 同步: ${src.replace('src/pages/', '')} ↔ ${dup.replace('src/pages/', '')}`);
+  if (hasIssue) {
+    console.log('\n⚠️  存在不同步的副本文件，请手动对齐！');
+    process.exit(1);
   } else {
-    console.log(`❌ 不同步: ${src.replace('src/pages/', '')} ↔ ${dup.replace('src/pages/', '')}`);
-    hasIssue = true;
+    console.log('\n✅ 所有分包副本均已同步');
   }
-}
-
-if (hasIssue) {
-  console.log('\n⚠️  存在不同步的副本文件，请手动对齐！');
-  process.exit(1);
-} else {
-  console.log('\n✅ 所有分包副本均已同步');
 }
