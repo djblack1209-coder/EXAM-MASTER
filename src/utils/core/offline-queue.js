@@ -205,14 +205,42 @@ class OfflineQueue {
     try {
       const stored = queueStorage.get(STORAGE_KEY, []);
       if (!Array.isArray(stored)) throw new Error('离线记录暂不可读');
-      const ids = new Set(stored.map((item) => item.id));
-      this.queue = this._restore([
-        ...stored,
-        ...[...this.pendingEnqueues.values()].filter((item) => !ids.has(item.id))
-      ]);
+      this.queue = this._restore(stored);
       this._storageLoaded = true;
     } catch {
       this._storageLoaded = false;
+    }
+  }
+
+  _replayEnqueues(latest, pending) {
+    const order = new Map(pending.map(([, item], index) => [item.enqueueReceipt, index]));
+    for (const [index, [, item]] of pending.entries()) {
+      const current = latest.find((task) => task.id === item.id);
+      // A later receipt in this ordered batch proves the earlier update was also persisted.
+      // Keep receipts through verification failures so a retry cannot apply the update twice.
+      if (current && (order.get(current.enqueueReceipt) ?? -1) >= index) continue;
+      if (item.updateTarget) {
+        if (current?.state === QUEUE_STATE.PENDING && !sendingIds.has(current.id) && !sentReceipts.has(current.id)) {
+          Object.assign(current, {
+            requestData: item.requestData,
+            timestamp: item.timestamp,
+            metadata: { ...current.metadata, ...item.metadata },
+            version: (current.version || 1) + 1,
+            enqueueReceipt: item.enqueueReceipt
+          });
+          continue;
+        }
+        // The old target has left pending; this body is a separate unsent task.
+        const oldId = item.id;
+        item.id = item.enqueueReceipt;
+        if (item.pendingRequestFn) {
+          if (this.requestFnMap.get(oldId) === item.pendingRequestFn) this.requestFnMap.delete(oldId);
+          this.requestFnMap.set(item.id, item.pendingRequestFn);
+        }
+        item.updateTarget = null;
+        item.version = 1;
+      }
+      if (!latest.some((task) => task.id === item.id)) latest.push({ ...item });
     }
   }
 
@@ -221,12 +249,13 @@ class OfflineQueue {
     const write = () => {
       const latest = queueStorage.get(STORAGE_KEY, []);
       if (!Array.isArray(latest)) return false;
-      const ids = new Set(latest.map((item) => item.id));
-      const next = [...latest, ...[...this.pendingEnqueues.values()].filter((item) => !ids.has(item.id))];
+      const pending = [...this.pendingEnqueues.entries()];
+      const next = latest.map((item) => ({ ...item }));
+      this._replayEnqueues(next, pending);
       const result = apply(next);
       if (result === false) return false;
       const serializable = next.map(
-        ({ id, priority, dedupeKey, timestamp, retryCount, state, requestData, session, metadata }) => ({
+        ({
           id,
           priority,
           dedupeKey,
@@ -235,7 +264,21 @@ class OfflineQueue {
           state,
           requestData,
           session,
-          metadata
+          metadata,
+          version,
+          enqueueReceipt
+        }) => ({
+          id,
+          priority,
+          dedupeKey,
+          timestamp,
+          retryCount,
+          state,
+          requestData,
+          session,
+          metadata,
+          version,
+          enqueueReceipt
         })
       );
       if (
@@ -243,7 +286,7 @@ class OfflineQueue {
         JSON.stringify(queueStorage.get(STORAGE_KEY, [])) !== JSON.stringify(serializable)
       )
         return false;
-      this.pendingEnqueues.clear();
+      for (const [key, item] of pending) if (this.pendingEnqueues.get(key) === item) this.pendingEnqueues.delete(key);
       this.queue = this._restore(serializable);
       this._storageLoaded = true;
       return result;
@@ -353,6 +396,7 @@ class OfflineQueue {
     const { requestFn, requestData, priority = 'normal', dedupeKey, metadata = {} } = request;
     const item = {
       id: this._generateId(),
+      version: 1,
       priority,
       dedupeKey,
       timestamp: Date.now(),
@@ -362,6 +406,7 @@ class OfflineQueue {
       requestData: requestData === undefined ? undefined : JSON.parse(JSON.stringify(requestData)),
       metadata: JSON.parse(JSON.stringify(metadata))
     };
+    item.enqueueReceipt = item.id;
     const result = this._transaction((latest) => {
       assertSession(session);
       // Expiry covers this account across login epochs; foreign accounts are never rewritten.
@@ -379,6 +424,8 @@ class OfflineQueue {
         latest.find(
           (current) =>
             current.state === QUEUE_STATE.PENDING &&
+            !sendingIds.has(current.id) &&
+            !sentReceipts.has(current.id) &&
             current.dedupeKey === dedupeKey &&
             current.session?.owner === session.owner &&
             current.session?.epoch === session.epoch
@@ -386,10 +433,14 @@ class OfflineQueue {
       if (existing) {
         // Retain the actual target even if the durable verification read fails.
         item.id = existing.id;
+        item.updateTarget = existing.id;
+        item.version = (existing.version || 1) + 1;
         Object.assign(existing, {
           requestData: item.requestData,
           timestamp: item.timestamp,
-          metadata: { ...existing.metadata, ...item.metadata }
+          metadata: { ...existing.metadata, ...item.metadata },
+          version: item.version,
+          enqueueReceipt: item.enqueueReceipt
         });
         return existing.id;
       }
@@ -412,7 +463,8 @@ class OfflineQueue {
     const finish = (id) => {
       if (id === false) {
         if (checkSession(session) !== 'current') return null;
-        this.pendingEnqueues.set(item.id, item);
+        item.pendingRequestFn = requestFn;
+        this.pendingEnqueues.set(this.pendingEnqueues.has(item.id) ? item.enqueueReceipt : item.id, item);
         this.queue = [...this.queue.filter((current) => current.id !== item.id), item];
         this._storageLoaded = false;
         id = item.id;
@@ -463,10 +515,10 @@ class OfflineQueue {
     const results = { processed: 0, failed: 0, errors: [] };
     this.processing = true;
     try {
-      if (!this._storageLoaded) {
+      if (!this._storageLoaded || this.pendingEnqueues.size) {
         this._loadFromStorage();
         if (!this._storageLoaded) return { success: false, reason: 'storage_unavailable' };
-        await this._saveToStorage();
+        if (!(await this._saveToStorage())) return { success: false, reason: 'storage_unavailable' };
       }
       if (this.queue.length === 0) {
         logger.log('[OfflineQueue] 队列为空');

@@ -288,6 +288,7 @@ function removeLoginEpoch(expectedGeneration = readIdentityGeneration()) {
   if (readIdentityGeneration() !== expectedGeneration) return false;
   uni.removeStorageSync(LOGIN_SESSION_EPOCH_KEY);
   uni.removeStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`);
+  return revocation;
 }
 
 const newIdentityId = () =>
@@ -590,62 +591,76 @@ class StorageService {
     onlyInterrupted = false,
     receipt
   ) {
-    const write = () => {
-      if (readIdentityGeneration() !== generation) return false;
-      let record,
-        recordReadable = false;
-      try {
-        record = readIdentityRecord();
-        recordReadable = true;
-      } catch (error) {
-        if (onlyInterrupted) throw error;
+    return withIdentityLock(() =>
+      this._clearRevokedCredentialsLocked(session, onlyRevoked, generation, onlyInterrupted, receipt)
+    );
+  }
+
+  // Caller owns the exclusive identity lock (or the single-context synchronous turn).
+  _clearRevokedCredentialsLocked(session, onlyRevoked, generation, onlyInterrupted, receipt) {
+    if (readIdentityGeneration() !== generation) return false;
+    const previousRevocation = onlyInterrupted ? uni.getStorageSync(SESSION_REVOCATION_KEY) || null : null;
+    let record,
+      recordReadable = false;
+    try {
+      record = readIdentityRecord();
+      recordReadable = true;
+    } catch (error) {
+      if (onlyInterrupted) throw error;
+    }
+    if (onlyInterrupted) {
+      // Holding the exclusive identity lock proves no writer is still committing this record.
+      if (
+        record?.version !== 1 ||
+        typeof record.token !== 'string' ||
+        record.generation !== generation + 1 ||
+        record.proof !== sessionCredentialProof(record.owner, record.token)
+      )
+        return false;
+    }
+    if (session && checkSession(session) === 'changed') return false;
+    if (onlyRevoked && readSessionSnapshot().status !== 'changed') return false;
+    // Skip the abandoned record's proposed generation so it is never briefly authenticated.
+    const next = advanceIdentityGeneration(
+      generation,
+      !recordReadable || record?.generation === generation + 1 ? 2 : 1
+    );
+    if (next === null) return false;
+    identityWriteDepth++;
+    try {
+      const revocation = removeLoginEpoch(next);
+      if (!revocation) return false;
+      for (const key of [
+        'EXAM_USER_ID',
+        'EXAM_TOKEN',
+        'userInfo',
+        'EXAM_USER_INFO',
+        'access_token',
+        'refresh_token',
+        'token_expire_time'
+      ]) {
+        if (readIdentityGeneration() !== next) return false;
+        uni.removeStorageSync(key);
+        uni.removeStorageSync(`_enc_${key}`);
       }
-      if (onlyInterrupted) {
-        // Holding the exclusive identity lock proves no writer is still committing this record.
-        if (
-          record?.version !== 1 ||
-          typeof record.token !== 'string' ||
-          record.generation !== generation + 1 ||
-          record.proof !== sessionCredentialProof(record.owner, record.token)
-        )
-          return false;
+      clearPendingWrites();
+      if (
+        onlyInterrupted &&
+        (readIdentityGeneration() !== next || uni.getStorageSync(SESSION_REVOCATION_KEY) !== revocation)
+      )
+        return false;
+      if (receipt) {
+        receipt.generation = next;
+        if (onlyInterrupted) Object.assign(receipt, { previousRevocation, revocation });
       }
-      if (session && checkSession(session) === 'changed') return false;
-      if (onlyRevoked && readSessionSnapshot().status !== 'changed') return false;
-      // Skip the abandoned record's proposed generation so it is never briefly authenticated.
-      const next = advanceIdentityGeneration(
-        generation,
-        !recordReadable || record?.generation === generation + 1 ? 2 : 1
-      );
-      if (next === null) return false;
-      identityWriteDepth++;
-      try {
-        removeLoginEpoch(next);
-        for (const key of [
-          'EXAM_USER_ID',
-          'EXAM_TOKEN',
-          'userInfo',
-          'EXAM_USER_INFO',
-          'access_token',
-          'refresh_token',
-          'token_expire_time'
-        ]) {
-          if (readIdentityGeneration() !== next) return false;
-          uni.removeStorageSync(key);
-          uni.removeStorageSync(`_enc_${key}`);
-        }
-        clearPendingWrites();
-        if (receipt) receipt.generation = next;
-        return true;
-      } finally {
-        identityWriteDepth--;
-        if (!identityWriteDepth) {
-          pendingIdentityChange = undefined;
-          notifyIdentityChange({ type: 'logout' });
-        }
+      return true;
+    } finally {
+      identityWriteDepth--;
+      if (!identityWriteDepth) {
+        pendingIdentityChange = undefined;
+        notifyIdentityChange({ type: 'logout' });
       }
-    };
-    return withIdentityLock(write);
+    }
   }
 
   _newSessionEpoch(existing, expected) {
@@ -690,21 +705,26 @@ class StorageService {
   beginLoginAttempt() {
     const intent = ++loginIntent;
     if (!supportsIdentityWrites()) throw browserUpgradeRequired();
-    const generation = readIdentityGeneration();
-    const snapshot = readSessionSnapshot();
-    if (snapshot.status === 'unavailable') {
-      const recovered = this._clearRevokedCredentials(undefined, false, generation, true);
-      const retry = (ok) => {
-        if (ok !== true || intent !== loginIntent) throw sessionUnavailable();
-        return this.beginLoginAttempt();
-      };
-      return recovered?.then ? recovered.then(retry) : retry(recovered);
-    }
+    // Keep the initiating fence across recovery; recovery must not create another login intent.
     const revocation = uni.getStorageSync(SESSION_REVOCATION_KEY) || null;
-    const guestSources = snapshot.session.owner === 'guest' ? new Map(guestWrites) : new Map();
+    let generation = readIdentityGeneration();
+    let snapshot = readSessionSnapshot();
+    let guestSources = snapshot.session?.owner === 'guest' ? new Map(guestWrites) : new Map();
     return withIdentityLock(() => {
+      let expectedRevocation = revocation;
+      if (snapshot.status === 'unavailable') {
+        const receipt = {};
+        if (!this._clearRevokedCredentialsLocked(undefined, false, generation, true, receipt))
+          throw sessionUnavailable();
+        if (receipt.previousRevocation !== revocation || intent !== loginIntent) throw sessionUnavailable();
+        generation = receipt.generation;
+        expectedRevocation = receipt.revocation;
+        snapshot = readSessionSnapshot();
+        if (snapshot.status !== 'current') throw sessionUnavailable();
+        guestSources = snapshot.session.owner === 'guest' ? new Map(guestWrites) : new Map();
+      }
       const isCurrent = () =>
-        intent === loginIntent && (uni.getStorageSync(SESSION_REVOCATION_KEY) || null) === revocation;
+        intent === loginIntent && (uni.getStorageSync(SESSION_REVOCATION_KEY) || null) === expectedRevocation;
       if (!isCurrent() || readIdentityGeneration() !== generation) throw new Error('登录尝试已失效，请重试');
       let next;
       try {
@@ -724,7 +744,7 @@ class StorageService {
         intent,
         intentContext: loginIntentContext,
         generation: next,
-        revocation,
+        revocation: expectedRevocation,
         guestSources
       });
       uni.setStorageSync(LOGIN_ATTEMPT_KEY, attempt.id);
