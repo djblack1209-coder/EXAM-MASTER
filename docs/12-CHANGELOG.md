@@ -1,5 +1,19 @@
 # 重要变更
 
+## 2026-10-17 proxy-addr离线升级与Dependabot分流（阶段6C）
+
+在`ca7ec845`独立分支中将根及生产后端standalone锁定的proxy-addr从2.0.7升至2.0.8；直接依赖`forwarded@0.2.0`、`ipaddr.js@1.9.1`保持，其他包版本不变。npm离线更新无法命中元数据请求，改用缓存原始元数据更新version/resolved/integrity，缓存tarball的SHA-512/SHA-1均吻合。standalone原64个npmmirror地址中1个随升级改为官方源，其余63个另提交仅改resolved主机名，所有integrity保持；根原已全部使用官方源。YAML解析及对象差分核验配置只新增授权忽略规则，两锁对象差分核验除本次版本和主机外保持，网络下载地址无凭据、私有源或查询参数。
+
+缓存公告指出IPv4映射IPv6信任子网IP伪造；standalone现用跳数信任1，不走CIDR编译。根与后端、升级前后四种组合各9个子网案例和5个真实Express HTTP案例通过：2.0.8拒绝旧版接受的错误跨地址族信任，合法映射/回环保持，一层代理对原IP/伪造首项/映射IP/X-Real-IP行为一致。部分云函数优先读取原始转发头，邮件client_ip记录、首页日志及相关IP限流仍受既有头部信任边界影响；Nginx入口限流与访问日志使用连接IP。逐项结论与后续统一可信IP待办见[13](13-DEVELOPMENT-PLAN.md#阶段6c离线修复2026-10-17)，未将依赖修复宣称为全部IP限流或生产拓扑验收。
+
+Dependabot仅忽略Node镜像、根/后端Node类型的semver-major，以及后端Express/Express类型/MongoDB/TypeScript的major；其他频率、分组和冷却保持。#2–#15逐项归入迁移、拒绝或下一次获批联网的依赖刷新，Actions迁移与部署外部验收分开。建议关闭拒绝项及已被忽略覆盖的PR，但本阶段不在GitHub执行任何PR操作，也未推送配置。
+
+两次独立`npm ci --ignore-scripts --offline --no-audit --no-fund`（归一前/后）均因whatwg-url@14.2.0缺缓存退出1；按锁integrity核对共54个tarball缺失，未联网、未重打包已安装目录冒充官方包。构建和测试使用现有依赖的隔离写时复制副本、换入已核验的2.0.8。根和后端干净安装、在线critical审计及托管效果仍待CI/获批联网核验，braces既有风险和公开发布门禁保持。报告、缺项清单与过程证据在`tmp/p6c-evidence/`。
+
+`TZ=UTC npm test -- --maxWorkers=1`（隔离构建、npm离线环境）命令427.36秒，5407通过/7跳过/无断言失败，282文件通过、2文件钩子失败、1原Mongo文件跳过，整体退出1：搜索beforeAll超60秒，移动视口28项通过后afterAll超10秒；7个跳过包括搜索未执行1项与原Mongo6项。搜索准备完成时记录的一分钟负载252.98，失败后uptime另行留档；搜索单文件原阈值复跑46.88秒、1项通过。移动视口单文件50.20秒、27通过/1项原重定向观察用例超10秒，期间uptime一分钟负载81.87；原阈值和源码保持。指挥方已确认这两文件在基线同样复现，本轮不重复建立基线或宣称独立归因；整体门禁仍未通过，不能以单跑或专项替代。
+
+后端typecheck、build、29/29入口运行时审计通过；lint、format:check、lint:tooling、audit:repository、audit:subpkg-sync、YAML/锁对象差分、新文档本地链接与git diff --check通过。H5隔离构建31.79秒，388个客户端模块未含braces、2588项CDN资源复制成功；不替代工具链安全扫描、微信/App或设备验收。构建摘要核验后回收H5及后端生成物323080612字节，失败安装目录与缓存包临时副本50497字节；未保留完整构建证据副本。另回收隔离依赖副本368062019字节；上述为文件字节、包含写时复制副本，不等于实时磁盘净增。验证进程自然退出，未停止共享服务或客户端；独立检出按授权在提交后移除并保留分支，p1并行目录、主工作树、日常App及恢复材料不作修改。
+
 ## 2026-10-17 稳定退出登录态读取修复（阶段6E）
 
 修复`1a8db95d`引入的登录态读取回归：旧明文epoch迁移的物理写入可能迟于另一标签的退出/撤销，已提交身份generation保持稳定但旧记录generation不匹配时，`getLoginSessionEpoch()`应返回null；此前误报SESSION_UNAVAILABLE，使页面无法回到未登录状态。仅将稳定失效恢复为无有效epoch，保留读取前后generation复核，以及尚未提交的未来generation记录暂不可读。直接凭据读取和`checkSession()`的并发栅栏保持。
