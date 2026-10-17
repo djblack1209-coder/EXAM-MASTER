@@ -173,7 +173,6 @@ export const aiGenerationMixin = {
 
     handleUpload(file) {
       this.fileName = file.name;
-      this.isUploadingFile = true;
       const ext = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase();
       this.fullFileContent = '';
       this.readOffset = 0;
@@ -194,6 +193,7 @@ export const aiGenerationMixin = {
         size: Math.round((file.size || 0) / 1024),
         source: '本地文件'
       });
+      this.isUploadingFile = true;
 
       try {
         if (typeof uni.vibrateShort === 'function') {

@@ -722,6 +722,8 @@ describe('加密同账户会话与凭据请求边界', () => {
       'reloadRecords',
       'refresh',
       'searchRecords',
+      'openRecord',
+      'openReminder',
       'dismissLocatedRecord',
       'locateConversation',
       'selectTraining',

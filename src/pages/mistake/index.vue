@@ -624,8 +624,8 @@ async function switchToClusterView() {
 // 只读整理当前账户的旧条目
 async function loadErrorClusters() {
   clusterLoading.value = true;
-  const ownerId = getUserId() || '';
   try {
+    const ownerId = getUserId() || '';
     const result = await studyEngineStore.getErrorClusters();
     if ((getUserId() || '') !== ownerId) return;
     if (result?.data?.clusters) {

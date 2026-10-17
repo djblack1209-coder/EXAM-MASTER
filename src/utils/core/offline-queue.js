@@ -89,19 +89,16 @@ function createQueueStorageCompat() {
       return typeof localStorage === 'undefined' && memoryStore.has(key) ? memoryStore.get(key) : defaultValue;
     },
     set(key, value) {
-      let persisted = false;
       try {
         if (typeof uni.setStorageSync === 'function') {
           uni.setStorageSync(key, value);
-          persisted = true;
+          return true;
         }
+        if (typeof localStorage !== 'undefined') return writeLocal(key, value);
+        memoryStore.set(key, value);
+        return true;
       } catch {
-        persisted = false;
-      }
-
-      memoryStore.set(key, value);
-      if (!persisted) {
-        writeLocal(key, value);
+        return false;
       }
     }
   };
@@ -110,6 +107,9 @@ function createQueueStorageCompat() {
 const queueStorage = createQueueStorageCompat();
 
 const STORAGE_KEY = 'EXAM_OFFLINE_QUEUE';
+// A successful remote response is not a local dequeue receipt. Retain it across queue instances
+// in this runtime until expiry; retry acknowledgement only, never resend the same item.
+const sentReceipts = new Map();
 const MAX_QUEUE_SIZE = 100;
 const MAX_AGE = 24 * 60 * 60 * 1000; // 24小时过期
 
@@ -128,6 +128,7 @@ const PRIORITY_WEIGHTS = {
  */
 class OfflineQueue {
   constructor() {
+    for (const [id, sentAt] of sentReceipts) if (Date.now() - sentAt >= MAX_AGE) sentReceipts.delete(id);
     this.queue = [];
     this._storageLoaded = false;
     this.processing = false;
@@ -204,15 +205,16 @@ class OfflineQueue {
    * 保存队列到本地存储
    * @private
    */
-  _saveToStorage() {
+  _saveToStorage(queue) {
     if (!this._storageLoaded) {
       this._loadFromStorage();
       if (!this._storageLoaded) return false;
     }
+    queue ||= this.queue;
     try {
       queueStorage.get(STORAGE_KEY, []); // Do not write over an unread persistent queue.
       // 只保存可序列化的数据
-      const serializable = this.queue.map((item) => ({
+      const serializable = queue.map((item) => ({
         id: item.id,
         priority: item.priority,
         dedupeKey: item.dedupeKey,
@@ -223,9 +225,11 @@ class OfflineQueue {
         metadata: item.metadata
       }));
 
-      queueStorage.set(STORAGE_KEY, serializable);
+      if (!queueStorage.set(STORAGE_KEY, serializable)) return false;
+      return JSON.stringify(queueStorage.get(STORAGE_KEY, [])) === JSON.stringify(serializable);
     } catch (error) {
       logger.error('[OfflineQueue] 保存队列失败:', error);
+      return false;
     }
   }
 
@@ -324,7 +328,10 @@ class OfflineQueue {
     if (dedupeKey) {
       const existingIndex = this.queue.findIndex(
         (item) =>
-          item.dedupeKey === dedupeKey && item.session?.owner === session.owner && item.session?.epoch === session.epoch
+          !sentReceipts.has(item.id) &&
+          item.dedupeKey === dedupeKey &&
+          item.session?.owner === session.owner &&
+          item.session?.epoch === session.epoch
       );
       if (existingIndex !== -1) {
         // 更新现有请求
@@ -395,9 +402,10 @@ class OfflineQueue {
   dequeue(id) {
     const index = this.queue.findIndex((item) => item.id === id);
     if (index !== -1) {
+      const next = this.queue.filter((item) => item.id !== id);
+      if (!this._saveToStorage(next)) return false;
       const removed = this.queue.splice(index, 1)[0];
       this.requestFnMap.delete(id);
-      this._saveToStorage();
 
       logger.log('[OfflineQueue] 📤 请求已出队: [省略]');
       this._notifyListeners({
@@ -465,6 +473,14 @@ class OfflineQueue {
             this.dequeue(item.id);
             continue;
           }
+          if (sentReceipts.has(item.id)) {
+            if (!this.dequeue(item.id)) {
+              results.reason = 'storage_unavailable';
+              break;
+            }
+            results.processed++;
+            continue;
+          }
           // 获取请求函数
           let requestFn = this.requestFnMap.get(item.id);
 
@@ -498,10 +514,14 @@ class OfflineQueue {
             (response?.code !== undefined && ![0, 200].includes(response.code))
           )
             throw new Error('请求未确认成功');
+          sentReceipts.set(item.id, Date.now());
           assertSession(item.session);
 
-          // 成功，移除队列
-          this.dequeue(item.id);
+          // Only local persistence confirms dequeue; retain body and receipt on failure.
+          if (!this.dequeue(item.id)) {
+            results.reason = 'storage_unavailable';
+            break;
+          }
           results.processed++;
 
           logger.log('[OfflineQueue] ✅ 请求成功: [省略]');
@@ -546,7 +566,7 @@ class OfflineQueue {
     });
 
     return {
-      success: true,
+      success: !results.reason,
       ...results
     };
   }

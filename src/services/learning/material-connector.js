@@ -1,9 +1,13 @@
+import { captureSession, assertSession } from '../auth-storage.js';
 import { assert, MATERIAL_LAYOUT_CONTRACT, validMaterialLayout } from './learning-domain.js';
 import { appMaterialParseSupported, MATERIAL_PARSE_TIMEOUT } from './app-connector.js';
 import { MATERIAL_LIMITS, materialFingerprint } from './material-intake.js';
 import { validateLocalConnector, assertConnectorPlatform, requestConnector } from './local-connector.js';
 
-export async function testMaterialConnector(connection, { platform, signal, assertCurrent } = {}) {
+export async function testMaterialConnector(
+  connection,
+  { platform, signal, assertCurrent, session = captureSession() } = {}
+) {
   assertConnectorPlatform(platform);
   assert(connection, 'PRECONDITION', '请先授权资料连接器');
   validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
@@ -12,6 +16,7 @@ export async function testMaterialConnector(connection, { platform, signal, asse
     platform,
     signal,
     assertCurrent,
+    session,
     body: '{}',
     timeout: 5000
   });
@@ -81,7 +86,12 @@ export async function testMaterialConnector(connection, { platform, signal, asse
   return result.data;
 }
 
-export async function requestUploadRecovery(connection, action, upload, { platform, signal, assertCurrent } = {}) {
+export async function requestUploadRecovery(
+  connection,
+  action,
+  upload,
+  { platform, signal, assertCurrent, session = captureSession() } = {}
+) {
   assertConnectorPlatform(platform);
   assert(connection, 'PRECONDITION', '请重新授权原资料识别服务');
   validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
@@ -105,6 +115,7 @@ export async function requestUploadRecovery(connection, action, upload, { platfo
     platform,
     signal,
     assertCurrent,
+    session,
     timeout: 10000,
     limit: 20000,
     body: JSON.stringify({
@@ -152,7 +163,11 @@ export async function requestUploadRecovery(connection, action, upload, { platfo
   return receipt;
 }
 
-export async function requestUploadMaintenance(connection, preview, { platform, signal, assertCurrent } = {}) {
+export async function requestUploadMaintenance(
+  connection,
+  preview,
+  { platform, signal, assertCurrent, session = captureSession() } = {}
+) {
   assertConnectorPlatform(platform);
   assert(connection, 'PRECONDITION', '请先重新授权原资料识别服务');
   validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
@@ -182,6 +197,7 @@ export async function requestUploadMaintenance(connection, preview, { platform, 
     platform,
     signal,
     assertCurrent,
+    session,
     timeout: 10000,
     limit: 20000,
     body: JSON.stringify({
@@ -265,6 +281,13 @@ export async function requestUploadMaintenance(connection, preview, { platform, 
 }
 
 export async function parseConnectedMaterial(connection, input, options = {}) {
+  const session = options.session === undefined ? captureSession() : options.session;
+  const checkCurrent = () => {
+    assertSession(session);
+    options.assertCurrent?.();
+    assert(!options.signal?.aborted, 'CANCELLED', '资料解析已取消，已保存的片段可以继续使用');
+  };
+  checkCurrent();
   assertConnectorPlatform(options.platform);
   assert(connection, 'PRECONDITION', '请先授权资料连接器');
   validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
@@ -342,10 +365,12 @@ export async function parseConnectedMaterial(connection, input, options = {}) {
       recognitionEngine
     };
     await options.onUploadIntent(upload);
-    await requestUploadRecovery(connection, 'prepare-upload', upload, options);
+    checkCurrent();
+    await requestUploadRecovery(connection, 'prepare-upload', upload, { ...options, session });
+    checkCurrent();
   }
   do {
-    options.assertCurrent?.();
+    checkCurrent();
     assert(!options.signal?.aborted, 'CANCELLED', '资料解析已取消，已保存的片段可以继续使用');
     const body = JSON.stringify({
       name: input.name,
@@ -364,7 +389,8 @@ export async function parseConnectedMaterial(connection, input, options = {}) {
     const { ok, body: result } = await requestConnector(connection, endpoint, {
       platform: options.platform,
       signal: options.signal,
-      assertCurrent: options.assertCurrent,
+      assertCurrent: checkCurrent,
+      session,
       body,
       timeout: layout ? MATERIAL_PARSE_TIMEOUT : 35000,
       limit: 2000000
@@ -412,16 +438,19 @@ export async function parseConnectedMaterial(connection, input, options = {}) {
       material.id = `${material.original.connectorFileId}:${materialFingerprint(endpoint.origin)}${layout ? ':' + material.original.storageId : ''}`;
     }
     results.push(material);
-    options.assertCurrent?.();
+    checkCurrent();
     await options.onBatch?.(material);
+    checkCurrent();
     if (upload) {
       await options.onUploadSaved?.(upload.id);
+      checkCurrent();
       upload = null;
     }
     options.onProgress?.({
       completed: layout ? page : Math.min(page + 4, material.totalPages),
       total: material.totalPages
     });
+    checkCurrent();
     fileId = material.original?.connectorFileId || material.id;
     contentBase64 = null;
     page = material.nextPage;
@@ -431,7 +460,11 @@ export async function parseConnectedMaterial(connection, input, options = {}) {
   return { results, nextPage: page, fileId, pagesPerAction: layout ? 4 : 20 };
 }
 
-export async function deleteConnectedMaterial(connection, original, { platform, signal, assertCurrent } = {}) {
+export async function deleteConnectedMaterial(
+  connection,
+  original,
+  { platform, signal, assertCurrent, session = captureSession() } = {}
+) {
   assertConnectorPlatform(platform);
   assert(connection, 'PRECONDITION', '请连接保存原件的资料识别服务后重试');
   validateLocalConnector(connection.endpoint, connection.allowedOrigins, connection.consent);
@@ -446,6 +479,7 @@ export async function deleteConnectedMaterial(connection, original, { platform, 
     platform,
     signal,
     assertCurrent,
+    session,
     body: JSON.stringify({ fileId: original.fileId }),
     timeout: 10000,
     limit: 20000
