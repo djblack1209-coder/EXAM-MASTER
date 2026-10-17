@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { createLearningRepository, LEARNING_KEY } from '@/services/learning/learning-repository.js';
-import { emptyLearningState, applyLearningOperation, summarizeLearning } from '@/services/learning/learning-domain.js';
+import {
+  emptyLearningState,
+  dayKey,
+  applyLearningOperation,
+  summarizeLearning
+} from '@/services/learning/learning-domain.js';
 import { prepareLearningRestore } from '@/services/learning/learning-backup.js';
 
 const at = Date.now() - 10000;
@@ -46,6 +51,107 @@ function repository(initial = emptyLearningState('u1')) {
 }
 
 describe('学习备份的安全恢复闭环', () => {
+  it.each([
+    ...['plan.set', 'timezone.set'].flatMap((type) =>
+      [
+        ['array', ['UTC']],
+        ['number', 24],
+        ['null', null],
+        ['empty', ''],
+        ['overlong', 'U'.repeat(81)],
+        ['unknown', 'Invalid/Zone']
+      ].map(([label, timezone]) => ({ type, label, fields: { timezone } }))
+    ),
+    { type: 'timezone.set', label: 'missing', fields: {} }
+  ])('全新时区操作拒绝非法输入 $type/$label，错误码为 INVALID_INPUT 且不写入', ({ type, label, fields }) => {
+    const { repo } = repository();
+    repo.commit({ id: `valid-zone-plan-${type}-${label}`, type: 'plan.set', at, data: { tasks: [] } });
+    const before = repo.read();
+    const snapshot = structuredClone(before);
+    const operation = {
+      id: `fresh-invalid-zone-${type}-${label}`,
+      type,
+      at,
+      data: type === 'plan.set' ? { tasks: [], ...fields } : fields
+    };
+    const message = type === 'plan.set' ? '计划时区不合法' : '学习时区不合法';
+    expect(() => applyLearningOperation(before, operation)).toThrow(
+      expect.objectContaining({ code: 'INVALID_INPUT', message })
+    );
+    expect(before).toEqual(snapshot);
+    expect(() => repo.commit({ ...operation, id: `repository-invalid-zone-${type}-${label}` })).toThrow(
+      expect.objectContaining({ code: 'INVALID_INPUT', message })
+    );
+    expect(repo.read()).toEqual(snapshot);
+  });
+  it.each(['UTC', 'US/Pacific', '+23:00'])('账户与计划沿用相同的运行时时区接受范围 %s', (timezone) => {
+    const initial = emptyLearningState('u1');
+    const account = applyLearningOperation(initial, {
+      id: 'account-zone',
+      type: 'timezone.set',
+      at,
+      data: { timezone }
+    });
+    const plan = applyLearningOperation(account.state, {
+      id: 'plan-zone',
+      type: 'plan.set',
+      at,
+      data: { tasks: [], timezone }
+    });
+    expect(account.state.timezone).toBe(timezone);
+    expect(plan.state.plans[0]).toMatchObject({ timezone, day: dayKey(at, timezone) });
+    const inherited = applyLearningOperation(plan.state, {
+      id: `plan-account-zone-${timezone}`,
+      type: 'plan.set',
+      at,
+      data: { tasks: [] }
+    });
+    expect(inherited.state.timezone).toBe(timezone);
+    expect(inherited.state.plans.at(-1)).toMatchObject({ timezone, day: dayKey(at, timezone) });
+  });
+  it.each(['UTC', 'Asia/Shanghai', 'America/New_York', 'America/Los_Angeles'])(
+    '%s 安排后改时区，恢复仍保留原计划的日期、时区和幂等身份',
+    (timezone) => {
+      const { repo } = repository(emptyLearningState('u1', timezone));
+      const at = Date.parse('2026-11-01T06:30:00Z');
+      const plan = {
+        id: 'origin-zone-plan',
+        type: 'plan.set',
+        at,
+        data: { tasks: [{ id: 'origin-task', title: '保留原日历', condition: 'manual' }] }
+      };
+      repo.commit(plan);
+      const original = structuredClone(repo.read().plans[0]);
+      const changedTimezone = timezone === 'Asia/Shanghai' ? 'America/Los_Angeles' : 'Asia/Shanghai';
+      repo.commit({ id: 'changed-zone', type: 'timezone.set', at: at + 1000, data: { timezone: changedTimezone } });
+      expect(repo.commit(plan).reused).toBe(true);
+      const facts = repo.read();
+      const restored = prepareLearningRestore(emptyLearningState('u1', changedTimezone), JSON.stringify(facts), {
+        now: at + 2000
+      });
+      expect(restored.state.plans[0]).toEqual(original);
+      expect(restored.state).toEqual(facts);
+      expect(() => repo.commit({ ...plan, data: { ...plan.data, timezone: 'Invalid/Zone' } })).toThrow();
+      expect(repo.read()).toEqual(facts);
+    }
+  );
+  it('整批计划捕获原时区；换时区后重复整批和旧无时区操作都不改身份', () => {
+    const { repo } = repository(emptyLearningState('u1', 'America/New_York'));
+    const operation = { id: 'batch-zone', type: 'plan.set', at: Date.now(), data: { tasks: [] } };
+    repo.commitBatch([operation], 0);
+    expect(repo.read().events[0].data.timezone).toBe('America/New_York');
+    repo.commit({ id: 'batch-zone-change', type: 'timezone.set', data: { timezone: 'Asia/Shanghai' } });
+    const before = repo.read();
+    expect(repo.commitBatch([operation], before.revision).reused).toBe(true);
+    expect(repo.read()).toEqual(before);
+    expect(() => repo.commit({ ...operation, id: 'bad-zone', data: { tasks: [], timezone: null } })).toThrow();
+    expect(repo.read()).toEqual(before);
+    const legacy = applyLearningOperation(emptyLearningState('u1', 'UTC'), operation).state;
+    const old = repository(legacy).repo;
+    expect(old.commit(operation).reused).toBe(true);
+    expect(old.read()).toEqual(legacy);
+    expect(old.read().events[0].data).not.toHaveProperty('timezone');
+  });
   it('确认绑定本次预览的完整正文，旧预览不能用于另一份有效备份', () => {
     const { repo } = repository();
     const a = JSON.stringify(fixture());

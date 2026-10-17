@@ -59,7 +59,15 @@ export const MOBILE_ROUTE_READY_SELECTORS = {
 
 export async function verifyMobileRoute(
   page,
-  { baseUrl, route, readyTimeoutMs = 5000, observationMs = 1000, screenshotPath, blockedExternalResources = new Map() }
+  {
+    baseUrl,
+    route,
+    navigationTimeoutMs = 10000,
+    readyTimeoutMs = 5000,
+    observationMs = 1000,
+    screenshotPath,
+    blockedExternalResources = new Map()
+  }
 ) {
   const origin = new URL(baseUrl).origin;
   const finalRoute = route === '/pages/splash/index' ? '/pages/login/onboarding' : route;
@@ -172,7 +180,7 @@ export async function verifyMobileRoute(
         { timeout: readyTimeoutMs }
       );
     try {
-      await page.goto(`${origin}/#${route}`, { waitUntil: 'domcontentloaded', timeout: readyTimeoutMs });
+      await page.goto(`${origin}/#${route}`, { waitUntil: 'domcontentloaded', timeout: navigationTimeoutMs });
       await waitForReady(route);
       if (finalRoute !== route) await waitForReady(finalRoute);
     } catch (error) {
