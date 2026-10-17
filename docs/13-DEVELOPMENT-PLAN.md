@@ -28,12 +28,47 @@
 
 | 包名 / 当前版本                               | 公告编号                                                                                  | 受影响路径                                                                                                                                                                      | 可用修复版本 / 下一步                                                                                                                                                   |
 | --------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `proxy-addr@2.0.7`，critical                  | [GHSA-jqcg-44mw-7w3h / CVE-2026-90711](https://github.com/advisories/GHSA-jqcg-44mw-7w3h) | 根锁文件 `node_modules/proxy-addr`；`@dcloudio/vite-plugin-uni → express@4.22.3 → proxy-addr`                                                                                   | 公告列 **2.0.8**；下一批次优先做兼容升级和代理信任/IP限流相关验证，本轮保留既有授权及限流。                                                                             |
+| `proxy-addr@2.0.8`，原critical                | [GHSA-jqcg-44mw-7w3h / CVE-2026-90711](https://github.com/advisories/GHSA-jqcg-44mw-7w3h) | 根锁文件 `node_modules/proxy-addr`（`@dcloudio/vite-plugin-uni → express@4.22.3`）及生产后端 `laf-backend/standalone/package-lock.json`（`express@4.22.3`）                     | 阶段6C离线升至 **2.0.8**，直接依赖不变、缓存tarball完整性通过；代理与IP限流核对见下文。干净安装仍缺缓存，在线CI安全扫描待验，不能据锁文件升级宣称安全门禁通过。         |
 | `braces@3.0.3`，high；也是上一轮Trivy唯一high | [GHSA-vfj7-8cjw-p6xm / CVE-2026-93687](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) | 根锁文件 `node_modules/braces`；DCloud工具链经 `uni-cli-shared → chokidar@3.6.0 → braces`，或 `fast-glob@3.3.3 → micromatch@4.0.8 → braces`；`unimport@4.1.1` 也经fast-glob传播 | 2026-10-17核对公告仍**没有已发布修复版本**，上一轮Trivy也没有FixedVersion；等待可靠上游修复/完整替换方案。npm建议的旧DCloud版本不是braces的补丁版本，不据此降级或豁免。 |
 
 21项high包括braces本身及20个传播包：`chokidar`、`fast-glob`、`micromatch`、`unimport`，以及 `@dcloudio/` 下的 `uni-app`、`uni-app-plus`、`uni-app-uts`、`uni-app-vite`、`uni-cli-shared`、`uni-cloud`、`uni-components`、`uni-console`、`uni-h5`、`uni-h5-vite`、`uni-mp-compiler`、`uni-mp-vite`、`uni-mp-weixin`、`uni-push`、`uni-stat`、`vite-plugin-uni`；受影响节点为根锁文件对应的 `node_modules/<包名>`。这些传播项沿同一braces公告处理，尚无已验证兼容修复组合。既有H5模块图拒绝braces进入客户端不消除构建工具输入风险，也不改变扫描结果。
 
-对CI `security-scan` 的实际影响：现有 `npm audit --audit-level=critical` 因proxy-addr退出1；Trivy配置扫描CRITICAL/HIGH、`exit-code: '1'`，上一轮实际因braces退出1。这两步均有 `continue-on-error: true`，随后产生可见warning，不能把作业继续执行称为依赖安全通过；跟踪文件密钥检查仍为硬门禁。本轮未重新下载Trivy或数据库，沿用上一轮报告并核对同版本锁节点；未改变CI或公开发布门禁。公开仓库推送前仍须由指挥方处理未闭合风险，本阶段没有推送。[本阶段验证与环境归因](12-CHANGELOG.md#2026-10-17-推送前核验收口阶段5n)。
+阶段5N对CI `security-scan` 的历史影响：当时 `npm audit --audit-level=critical` 因proxy-addr退出1；Trivy配置扫描CRITICAL/HIGH、`exit-code: '1'`，上一轮实际因braces退出1。这两步均有 `continue-on-error: true`，随后产生可见warning，不能把作业继续执行称为依赖安全通过；跟踪文件密钥检查仍为硬门禁。本轮未重新下载Trivy或数据库，沿用上一轮报告并核对同版本锁节点；未改变CI或公开发布门禁。公开仓库推送前仍须由指挥方处理未闭合风险，本阶段没有推送。[本阶段验证与环境归因](12-CHANGELOG.md#2026-10-17-推送前核验收口阶段5n)。
+
+### 阶段6C离线修复（2026-10-17）
+
+两个锁文件只升级proxy-addr 2.0.7→2.0.8，其直接依赖均为`forwarded@0.2.0`、`ipaddr.js@1.9.1`；其他包版本不变。`npm update proxy-addr --package-lock-only --offline --ignore-scripts --no-audit --no-fund`因离线元数据请求无法命中缓存而失败（根另报`@babel/types`元数据请求未命中），改用npm缓存中的原始元数据手工更新version/resolved/integrity，tarball的SHA-512、SHA-1均匹配元数据。standalone原64个npmmirror地址中1个随升级归一、另63个仅替换resolved主机名，integrity保持；最终根1056个、后端103个网络下载地址均为`registry.npmjs.org`，无凭据或私有源。
+
+缓存中的GHSA-jqcg-44mw-7w3h条目说明：IPv4映射IPv6信任子网可被用于IP伪造，受影响`>=1.1.0 <2.0.8`。standalone使用`trust proxy = 1`的跳数函数，没有使用公告涉及的CIDR信任子网编译；Express的`req.ip`传入`ctx.socket.remoteAddress`。腾讯云配置仅将后端端口发布到回环地址，Nginx追加`X-Forwarded-For`并设置`X-Real-IP`；Nginx访问日志和入口限流使用连接级`$remote_addr`/`$binary_remote_addr`，不依赖proxy-addr。这只是仓库配置核对，未验证生产拓扑。
+
+既有限制仍在：登录、桌面OAuth轮询、题库、邮件验证码和首页等函数优先读取原始转发头，部分取XFF首项；Nginx追加头不能删除客户端伪造的首项。登录限流键经HMAC，分布式限流及本地回退未改；邮件记录保存`client_ip`，首页限流日志使用其头部派生值，所以这些键和日志并不保证可信客户端IP。学习资源优先X-Real-IP/CF头的路径也依赖入口清洗。升级只修依赖公告，不修该既有信任边界；后续应统一使用经受信入口校验的客户端IP，并验证直连、代理链、伪造头、限流与审计，不能仅靠`req.ip`升级宣称全部IP限流防伪造。
+
+独立目录两次`npm ci --ignore-scripts --offline --no-audit --no-fund`（统一下载源前/后）均因`whatwg-url@14.2.0`缺缓存退出1；按锁integrity核对共54个tarball缺失，清单在`tmp/p6c-evidence/missing-offline-tarballs.json`。本轮停止干净安装验证，不联网、不由已安装文件重打包冒充registry tarball。其余检查使用现有依赖的隔离写时复制副本，并换入经缓存完整性核验的proxy-addr 2.0.8；这不能替代根及后端在线CI `npm ci`。根`npm audit --audit-level=critical`与Trivy数据库刷新均未执行，交由CI Security Scan；braces等待上游修复，发布门禁保持。完整验证和资源收尾见[12](12-CHANGELOG.md#2026-10-17-proxy-addr离线升级与dependabot分流阶段6c)。
+
+### Dependabot 分流（2026-10-17）
+
+按本轮给定PR清单及本地远端跟踪引用登记，未联网刷新PR或CI状态。14个PR均基于旧main、CI失败是指挥方提供的背景，不能据此认定升级本身失败。运行时固定Node 22 LTS；不切Node 25或Node 26类型。以下是计划决定，未对GitHub PR执行评论、关闭、合并或rebase。
+
+| PR  | 依赖                            | 决定与前置条件                                                                                                                                                                                                                        |
+| --- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #2  | `node:25-alpine`                | 拒绝。Node 25不是LTS，保留Node 22 LTS运行合同。                                                                                                                                                                                       |
+| #3  | GitHub Actions大版本            | 放入Actions迁移批次。checkout/setup-node/upload-artifact 4→7、setup-python 5→7、setup-kubectl 3→5、Trivy→0.36；需核对runner运行时、权限、产物与输入变化，在真实GitHub作业验收。部署作业无法在CI里验证，须另获外部授权并具备回滚条件。 |
+| #4  | `ruff`                          | 下一次依赖刷新；客户同意联网下载后核对Python lint/格式及现有脚本。                                                                                                                                                                    |
+| #5  | `@types/node@26`                | 拒绝。类型与Node 22 LTS对齐，不能用26类型掩盖运行时不可用API。                                                                                                                                                                        |
+| #6  | `python-dotenv`                 | 下一次依赖刷新；客户同意联网下载后验证环境读取和依赖约束。                                                                                                                                                                            |
+| #7  | `requests`                      | 下一次依赖刷新；客户同意联网下载后验证资料工具HTTP、错误与超时处理。                                                                                                                                                                  |
+| #8  | `express@5`                     | 放入Express 5迁移批次，与类型同步。依指挥方提供的[官方支持页](https://expressjs.com/en/support)信息，4.x仍为ongoing、无正式EOL，但更新已很少；先核对路由、错误、上传、代理/IP、认证限流及真实HTTP兼容，再迁移。                       |
+| #9  | `mongodb@7`                     | 放入MongoDB 7迁移批次。先提供可运行的隔离Mongo集成环境，现有6项Mongo测试仍跳过；启用并通过它们，再验证驱动/连接/索引及数据兼容。                                                                                                      |
+| #10 | `@types/express@5`              | 放入Express 5迁移批次；必须与Express 5及真实HTTP/typecheck一起验收，不能只升级类型。                                                                                                                                                  |
+| #11 | `typescript@7`                  | 放入TypeScript 7迁移批次。先核对Node16模块解析、Laf/standalone编译与打包、类型工具链及全量回归。                                                                                                                                      |
+| #12 | `uni-framework`                 | 下一次依赖刷新；需客户同意联网下载，保持DCloud同版本同渠道，并完成微信和App构建验证，H5不能替代。                                                                                                                                     |
+| #13 | `testing`                       | 下一次依赖刷新；需客户同意联网下载，再跑完整测试并核对测试运行器兼容。                                                                                                                                                                |
+| #14 | `tooling`                       | 下一次依赖刷新；需客户同意联网下载。Prettier小版本可能整体改变格式，Playwright可能下载浏览器；单列格式差异与下载预算后验证。                                                                                                          |
+| #15 | 单独切换`@dcloudio/uni-app`渠道 | 拒绝。DCloud各包必须同版本、同渠道，不能单包切换。                                                                                                                                                                                    |
+
+配置仅忽略Docker `node`和根/后端`@types/node`的semver-major，以及后端目录`express`、`@types/express`、`mongodb`、`typescript`的semver-major；迁移批次完成并验收后再移除对应后端忽略规则。其余分组、冷却、频率和权限保持，minor/patch继续原规则。
+
+建议的GitHub操作（须客户另行同意，本阶段未执行）：关闭拒绝项#2/#5/#15，并关闭已由迁移忽略规则覆盖的#8/#9/#10/#11，保留相应迁移待办；其他PR在获批联网刷新、更新基线并验证后再处理。没有推送本阶段配置，托管端效果未验证。
 
 **2026-10-17阶段5L【只排空遗留离线任务】**：删除无生产消费者的入队、去重、待写重放、容量淘汰与发送闭包；保留旧格式读取、锁内认领与锁后复核、按id回执、已载入任务取消、有效期、账户隔离、pause/resume、网络恢复及提示条入口。连续审计问题集中在入队路径，故收窄职责而不继续修补重放；未访问用户存储来推断无遗留。现行合同见[04](04-API-DOCUMENTATION.md#阶段5l只排空遗留离线任务现行)、[05](05-DATABASE-SCHEMAS.md#阶段5l遗留队列持久合同现行)，最终验证及资源收尾见[12](12-CHANGELOG.md#2026-10-17-遗留离线队列收窄阶段5l)。最终231项相关回归、全量5279通过/6原Mongo跳过/零失败，lint、三端隔离构建、公开产物与包体检查通过；无性能超时。保留5L/5K候选与指定5G回退，已回收冗余5I/5J构建。不扩展后续功能、推送或生产授权。
 
