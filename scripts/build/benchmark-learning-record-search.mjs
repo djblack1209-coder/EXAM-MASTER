@@ -10,13 +10,15 @@ import { HISTORY_LIMITS } from '../../laf-backend/functions/_shared/learning-his
 import { createLearningRecordSearch } from '../../laf-backend/functions/_shared/learning-record-search.js';
 
 // Synthetic canonical facts, produced by the real operation reducer; no stored user data or model calls.
-export function recordSearchFixture(count = 5000) {
+export function recordSearchFixture(count = 5000, onPhase = () => {}) {
+  onPhase('start');
   let state = emptyLearningState('search-bench', 'America/Los_Angeles');
   let batch = createLearningOperationBatch(state, 500),
     operations = 0;
   const put = (id, type, data) => {
     if (operations === 500) {
       state = batch.finish();
+      onPhase('batch-committed');
       batch = createLearningOperationBatch(state, 500);
       operations = 0;
     }
@@ -36,7 +38,9 @@ export function recordSearchFixture(count = 5000) {
   });
   put('f', 'question.focus', { conversationId: 'c', questionKey: 'q@1' });
   for (let i = 0; i < count; i++) put(`a${i}`, 'attempt.submit', { conversationId: 'c', answer: '19', explicit: true });
-  return batch.finish();
+  const result = batch.finish();
+  onPhase('complete');
+  return result;
 }
 
 export function benchmarkRecordSearch(state) {
