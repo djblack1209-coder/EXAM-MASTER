@@ -247,6 +247,8 @@ learning-records.before-signing.json与learning-records.after-signing.json完整
 
 ## 自动依赖更新
 
+阶段9A已在本地 main 更新 `.github/workflows/ci-cd.yml` 与 `.github/workflows/baidu-group-sync.yml`：checkout v7.0.1、setup-node v7.1.0、setup-python v7、upload-artifact v7.0.2、trivy-action v0.36.0、setup-kubectl v5。Action 使用 Node 24（runner 至少 2.327.1），项目构建仍固定 Node 22.22.3；现有显式 npm 缓存、Python 3.12、归档路径/名称与保留期无需调整。部署门控及百度定时/手动触发保持，当前仓库变量/secrets 为空，不触发部署或实际同步。只做本地静态检查，未推送/运行 workflow；迁移依据与后续 CI 验收见 [阶段9A](13-DEVELOPMENT-PLAN.md#阶段9agithub-actions-升级2026-10-17本地-main)。
+
 .github/dependabot.yml 每周检查根/后端 npm、pip、GitHub Actions、Docker。兼容 minor/patch 分组，major 单独审查；Node镜像与Node类型忽略semver-major，后端Express/Express类型/MongoDB/TypeScript的major等待[迁移批次](13-DEVELOPMENT-PLAN.md#dependabot-分流2026-10-17)验收后解锁；npm/pip 设置 7 日冷却。锁文件、ESLint/格式、单元/后端/多端与安全检查保持，不自动合并或部署。忽略规则已由前序推送后生效；本轮依赖升级只在 main 本地提交，不操作 GitHub PR 或部署。
 
 运行版本以根及后端 engines/packageManager/锁为准；已有安全 override 不为追新删除。不能把 npm outdated 的非零退出误当脚本崩溃，也不能从无新依赖推断旧风险已消失。生产依赖与开发工具风险分别记录。
