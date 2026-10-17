@@ -111,7 +111,7 @@ const STORAGE_KEY = 'EXAM_OFFLINE_QUEUE';
 // A successful remote response is not a local dequeue receipt. Retain it across queue instances
 // in this runtime until expiry; retry acknowledgement only, never resend the same item.
 const sentReceipts = new Map();
-const sendingIds = new Set();
+const sendingIds = new Map();
 export const QUEUE_STATE = Object.freeze({
   PENDING: 'pending',
   SENDING: 'sending',
@@ -364,6 +364,17 @@ class OfflineQueue {
     };
     const result = this._transaction((latest) => {
       assertSession(session);
+      // Expiry is scoped to this binding; an unread/foreign account is never rewritten.
+      for (let i = latest.length - 1; i >= 0; i--) {
+        const current = latest[i];
+        if (
+          current.session?.owner === session.owner &&
+          current.session?.epoch === session.epoch &&
+          Date.now() - current.timestamp >= MAX_AGE &&
+          !sendingIds.has(current.id)
+        )
+          latest.splice(i, 1);
+      }
       const existing =
         dedupeKey &&
         latest.find(
@@ -374,6 +385,8 @@ class OfflineQueue {
             current.session?.epoch === session.epoch
         );
       if (existing) {
+        // Retain the actual target even if the durable verification read fails.
+        item.id = existing.id;
         Object.assign(existing, {
           requestData: item.requestData,
           timestamp: item.timestamp,
@@ -383,7 +396,13 @@ class OfflineQueue {
       }
       if (latest.length >= MAX_QUEUE_SIZE) {
         const index = latest.findIndex(
-          (current) => current.state === QUEUE_STATE.PENDING && ['low', 'normal'].includes(current.priority)
+          (current) =>
+            current.state === QUEUE_STATE.PENDING &&
+            ['low', 'normal'].includes(current.priority) &&
+            current.session?.owner === session.owner &&
+            current.session?.epoch === session.epoch &&
+            this.queue.some((loaded) => loaded.id === current.id) &&
+            !sendingIds.has(current.id)
         );
         if (index === -1) return null;
         latest.splice(index, 1);
@@ -395,7 +414,7 @@ class OfflineQueue {
       if (id === false) {
         if (checkSession(session) !== 'current') return null;
         this.pendingEnqueues.set(item.id, item);
-        this.queue.push(item);
+        this.queue = [...this.queue.filter((current) => current.id !== item.id), item];
         this._storageLoaded = false;
         id = item.id;
       }
@@ -442,29 +461,24 @@ class OfflineQueue {
       return { success: false, reason: 'offline' };
     }
 
-    if (!this._storageLoaded) {
-      this._loadFromStorage();
-      if (!this._storageLoaded) return { success: false, reason: 'storage_unavailable' };
-      await this._saveToStorage();
-    }
-    if (this.queue.length === 0) {
-      logger.log('[OfflineQueue] 队列为空');
-      return { success: true, processed: 0, failed: 0 };
-    }
-
+    const results = { processed: 0, failed: 0, errors: [] };
     this.processing = true;
-    logger.log('[OfflineQueue] 🔄 开始处理队列，共 [省略] 个请求');
-
-    const results = {
-      processed: 0,
-      failed: 0,
-      errors: []
-    };
-
-    // 复制队列进行处理
-    const toProcess = [...this.queue];
-
     try {
+      if (!this._storageLoaded) {
+        this._loadFromStorage();
+        if (!this._storageLoaded) return { success: false, reason: 'storage_unavailable' };
+        await this._saveToStorage();
+      }
+      if (this.queue.length === 0) {
+        logger.log('[OfflineQueue] 队列为空');
+        return { success: true, processed: 0, failed: 0 };
+      }
+
+      logger.log('[OfflineQueue] 🔄 开始处理队列，共 [省略] 个请求');
+
+      // 复制队列进行处理
+      const toProcess = [...this.queue];
+
       for (const item of toProcess) {
         // 检查网络状态
         if (!this.isOnline) {
@@ -475,6 +489,10 @@ class OfflineQueue {
 
         if (!this.queue.some((current) => current.id === item.id)) continue;
         const previousState = item.state;
+        const claim = {};
+        const release = () => {
+          if (sendingIds.get(item.id) === claim) sendingIds.delete(item.id);
+        };
         try {
           const status = checkSession(item.session);
           if (status === 'unavailable') {
@@ -527,16 +545,28 @@ class OfflineQueue {
             results.reason = 'already_processing';
             break;
           }
-          item.state = QUEUE_STATE.SENDING;
-          let saved = this._saveToStorage(item);
+          let saved = this._transaction((latest) => {
+            assertSession(item.session);
+            if (sendingIds.has(item.id) || sentReceipts.has(item.id)) return false;
+            const current = latest.find((task) => task.id === item.id);
+            if (!current || JSON.stringify(current.requestData) !== JSON.stringify(item.requestData)) {
+              this.requestFnMap.delete(item.id);
+              this._loadFromStorage();
+              return false;
+            }
+            // Comparison and registration share the same lock, before verification can yield.
+            sendingIds.set(item.id, claim);
+            current.state = QUEUE_STATE.SENDING;
+            return true;
+          });
           if (saved?.then) saved = await saved;
-          if (!saved) {
+          if (!saved || sendingIds.get(item.id) !== claim) {
             item.state = previousState;
-            results.reason = 'storage_unavailable';
+            results.reason = sendingIds.has(item.id) ? 'already_processing' : 'storage_unavailable';
             break;
           }
           assertSession(item.session);
-          sendingIds.add(item.id);
+          item.state = QUEUE_STATE.SENDING;
           const response = await requestFn({ session: item.session, taskId: item.id });
           if (isSessionUnavailable(response)) {
             item.state = previousState;
@@ -552,7 +582,7 @@ class OfflineQueue {
             throw new Error('请求未确认成功');
           sentReceipts.set(item.id, Date.now());
           item.state = QUEUE_STATE.CONFIRMED;
-          sendingIds.delete(item.id);
+          release();
           assertSession(item.session);
           if (!(await this._saveToStorage(item))) {
             results.reason = 'storage_unavailable';
@@ -575,7 +605,7 @@ class OfflineQueue {
             await this._saveToStorage(item);
             break;
           }
-          sendingIds.delete(item.id);
+          release();
           if (status === 'changed') {
             if (!(await this.dequeue(item.id))) {
               results.reason = 'storage_unavailable';
@@ -596,7 +626,7 @@ class OfflineQueue {
           results.failed++;
           await this._saveToStorage(item);
         } finally {
-          sendingIds.delete(item.id);
+          release();
         }
 
         // 请求间隔，避免过快

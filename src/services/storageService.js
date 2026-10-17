@@ -334,6 +334,8 @@ import {
   SESSION_REVOCATION_KEY,
   IDENTITY_GENERATION_KEY,
   readIdentityGeneration,
+  readIdentityRecord,
+  sessionBindingEpoch,
   captureSession,
   checkSession,
   assertSession,
@@ -400,9 +402,10 @@ function isUnscopedKey(key) {
   return GLOBAL_KEYS.has(key) || UNSCOPED_KEY_PREFIXES.some((prefix) => key.startsWith(prefix));
 }
 
-function advanceIdentityGeneration(expected) {
+function advanceIdentityGeneration(expected, step = 1) {
   if (readIdentityGeneration() !== expected) return null;
-  const next = expected + 1;
+  const next = expected + step;
+  if (!Number.isSafeInteger(next) || next >= Number.MAX_SAFE_INTEGER) return null;
   uni.setStorageSync(IDENTITY_GENERATION_KEY, next);
   return next;
 }
@@ -481,17 +484,8 @@ function resolveKey(key, session) {
 const _pendingWrites = new Map(); // key -> { value, timer }
 const _unreadBases = new Set();
 const storageBinding = (key, session) => {
-  const snapshot = readSessionSnapshot(),
-    record = snapshot.record;
-  const epoch =
-    snapshot.status === 'current' &&
-    record &&
-    session?.owner === record.owner &&
-    Object.prototype.hasOwnProperty.call(record, 'migratedFrom') &&
-    (session.epoch === record.epoch || session.epoch === record.migratedFrom)
-      ? record.migratedFrom
-      : session?.epoch;
-  return JSON.stringify([key, session?.owner, epoch]);
+  readSessionSnapshot(); // Refresh verified migration aliases while readable; retain them on failure.
+  return JSON.stringify([key, session?.owner, sessionBindingEpoch(session)]);
 };
 const _pendingUpdates = new Map(); // [key, owner, epoch] -> ordered read/modify/write operations
 const DEBOUNCE_DELAY = 500; // 防抖延迟 500ms
@@ -589,12 +583,40 @@ class StorageService {
     }
   }
 
-  _clearRevokedCredentials(session, onlyRevoked = false, generation = readIdentityGeneration()) {
+  _clearRevokedCredentials(
+    session,
+    onlyRevoked = false,
+    generation = readIdentityGeneration(),
+    onlyInterrupted = false,
+    receipt
+  ) {
     const write = () => {
       if (readIdentityGeneration() !== generation) return false;
+      let record,
+        recordReadable = false;
+      try {
+        record = readIdentityRecord();
+        recordReadable = true;
+      } catch (error) {
+        if (onlyInterrupted) throw error;
+      }
+      if (onlyInterrupted) {
+        // Holding the exclusive identity lock proves no writer is still committing this record.
+        if (
+          record?.version !== 1 ||
+          typeof record.token !== 'string' ||
+          record.generation !== generation + 1 ||
+          record.proof !== sessionCredentialProof(record.owner, record.token)
+        )
+          return false;
+      }
       if (session && checkSession(session) === 'changed') return false;
       if (onlyRevoked && readSessionSnapshot().status !== 'changed') return false;
-      const next = advanceIdentityGeneration(generation);
+      // Skip the abandoned record's proposed generation so it is never briefly authenticated.
+      const next = advanceIdentityGeneration(
+        generation,
+        !recordReadable || record?.generation === generation + 1 ? 2 : 1
+      );
       if (next === null) return false;
       identityWriteDepth++;
       try {
@@ -613,6 +635,7 @@ class StorageService {
           uni.removeStorageSync(`_enc_${key}`);
         }
         clearPendingWrites();
+        if (receipt) receipt.generation = next;
         return true;
       } finally {
         identityWriteDepth--;
@@ -669,7 +692,14 @@ class StorageService {
     if (!supportsIdentityWrites()) throw browserUpgradeRequired();
     const generation = readIdentityGeneration();
     const snapshot = readSessionSnapshot();
-    if (snapshot.status === 'unavailable') throw sessionUnavailable();
+    if (snapshot.status === 'unavailable') {
+      const recovered = this._clearRevokedCredentials(undefined, false, generation, true);
+      const retry = (ok) => {
+        if (ok !== true || intent !== loginIntent) throw sessionUnavailable();
+        return this.beginLoginAttempt();
+      };
+      return recovered?.then ? recovered.then(retry) : retry(recovered);
+    }
     const revocation = uni.getStorageSync(SESSION_REVOCATION_KEY) || null;
     const guestSources = snapshot.session.owner === 'guest' ? new Map(guestWrites) : new Map();
     return withIdentityLock(() => {

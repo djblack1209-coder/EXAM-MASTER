@@ -37,9 +37,16 @@ vi.mock('@/services/storageService.js', () => ({
     }),
     onIdentityChange: vi.fn(() => () => undefined),
     _clearRevokedCredentials: vi.fn(
-      (_session, _onlyRevoked, generation = uni.getStorageSync('EXAM_IDENTITY_GENERATION') || 0) => {
+      (
+        _session,
+        _onlyRevoked,
+        generation = uni.getStorageSync('EXAM_IDENTITY_GENERATION') || 0,
+        _onlyInterrupted,
+        receipt
+      ) => {
         for (const key of ['access_token', 'refresh_token', 'token_expire_time', 'EXAM_TOKEN']) _mockStore.delete(key);
         uni.setStorageSync('EXAM_IDENTITY_GENERATION', generation + 1);
+        if (receipt) receipt.generation = generation + 1;
         return true;
       }
     ),
@@ -62,9 +69,16 @@ vi.mock('@/services/storageService.js', () => ({
     }),
     onIdentityChange: vi.fn(() => () => undefined),
     _clearRevokedCredentials: vi.fn(
-      (_session, _onlyRevoked, generation = uni.getStorageSync('EXAM_IDENTITY_GENERATION') || 0) => {
+      (
+        _session,
+        _onlyRevoked,
+        generation = uni.getStorageSync('EXAM_IDENTITY_GENERATION') || 0,
+        _onlyInterrupted,
+        receipt
+      ) => {
         for (const key of ['access_token', 'refresh_token', 'token_expire_time', 'EXAM_TOKEN']) _mockStore.delete(key);
         uni.setStorageSync('EXAM_IDENTITY_GENERATION', generation + 1);
+        if (receipt) receipt.generation = generation + 1;
         return true;
       }
     ),

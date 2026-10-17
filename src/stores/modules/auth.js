@@ -37,6 +37,14 @@ export const useAuthStore = defineStore('auth', () => {
   const sessionStatus = ref('current');
   let authLifecycle = 0;
   let boundSession = captureSession();
+  let unboundGeneration = null;
+  if (!boundSession) {
+    try {
+      unboundGeneration = readIdentityGeneration();
+    } catch {
+      /* retryable unread identity */
+    }
+  }
 
   // 需要 userInfo 引用来判断登录状态，由 facade 注入
   let _userInfoRef = null;
@@ -186,9 +194,10 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const logout = () => {
     const origin = boundSession;
-    const generation = readIdentityGeneration();
+    const generation = origin ? readIdentityGeneration() : unboundGeneration;
     const pinia = getActivePinia();
-    if (!origin || checkSession(origin) === 'changed') {
+    const receipt = {};
+    if ((!origin && generation === null) || (origin && checkSession(origin) === 'changed')) {
       const message = !origin ? '登录状态暂不可读，请重试退出' : '登录会话已变化，请重新确认退出';
       toast.info(message);
       return { success: false, code: !origin ? 'SESSION_UNAVAILABLE' : 'CONTEXT_CHANGED', message };
@@ -196,10 +205,10 @@ export const useAuthStore = defineStore('auth', () => {
     const finish = (revoked) => {
       if (revoked !== true) return { success: false, code: 'CONTEXT_CHANGED' };
       // A later login may have committed before this Promise continuation runs.
-      if (readIdentityGeneration() !== generation + 1) return { success: true };
+      if (readIdentityGeneration() !== receipt.generation) return { success: true };
       const now = captureSession();
       const cleanupLifecycle = ++authLifecycle;
-      if (origin.owner !== 'guest') {
+      if (origin && origin.owner !== 'guest') {
         try {
           storageService.clearUserData(origin.owner, { preserveLearning: true });
         } catch {
@@ -232,7 +241,7 @@ export const useAuthStore = defineStore('auth', () => {
       return { success: true };
     };
     try {
-      const revoked = storageService._clearRevokedCredentials(origin, false, generation);
+      const revoked = storageService._clearRevokedCredentials(origin, false, generation, false, receipt);
       return revoked?.then ? revoked.then(finish).catch((error) => ({ success: false, error })) : finish(revoked);
     } catch (error) {
       return { success: false, error };

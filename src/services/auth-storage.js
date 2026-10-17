@@ -247,6 +247,14 @@ export const getLoginSessionEpoch = () => {
   return validEpoch(value?.epoch) ? value.epoch : validEpoch(value) ? value : null;
 };
 
+// Cache only verified format aliases. They are identity bindings, never credentials.
+const migratedEpochs = new Map();
+export const sessionBindingEpoch = (session) => {
+  const id = JSON.stringify([session?.owner, session?.epoch]);
+  return migratedEpochs.has(id) ? migratedEpochs.get(id) : session?.epoch;
+};
+export const readIdentityRecord = () => strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
+
 export function readSessionSnapshot() {
   if (!supportsIdentityWrites())
     return {
@@ -293,6 +301,8 @@ export function readSessionSnapshot() {
       if (enabled && !epoch && (token || owner !== 'guest'))
         return { status: 'changed', session: Object.freeze({ owner, epoch }), token, enabled };
       if (token && owner === 'guest') continue;
+      if (complete && Object.prototype.hasOwnProperty.call(before, 'migratedFrom'))
+        migratedEpochs.set(JSON.stringify([owner, epoch]), before.migratedFrom);
       return {
         status: enabled && token && !epoch ? 'changed' : 'current',
         session: Object.freeze({ owner, epoch, proof: sessionCredentialProof(owner, token) }),
