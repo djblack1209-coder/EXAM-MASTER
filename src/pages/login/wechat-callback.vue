@@ -100,7 +100,6 @@ const handleWeChatCallback = async (options = {}) => {
   if (requestStarted) return;
   requestStarted = true;
   try {
-    const attempt = storageService.beginLoginAttempt();
     // #ifdef H5
     const desktop = consumeDesktopOAuth('wechat', options);
     if (desktop) {
@@ -113,7 +112,7 @@ const handleWeChatCallback = async (options = {}) => {
       loginSuccess.value = true;
       return;
     }
-    const { code, wechatMode } = consumeWebOAuth('wechat', options);
+    const { code, wechatMode, attempt } = consumeWebOAuth('wechat', options);
     const res =
       wechatMode === 'website' ? await authStore.loginByWechatWeb(code) : await authStore.loginByWechatH5(code);
     if (!active) return;

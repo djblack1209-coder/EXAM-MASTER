@@ -102,6 +102,21 @@ for (const [provider, component, call, key, wechatMode = 'h5'] of [
       expect(location.href).not.toContain(params.state);
       expect(JSON.stringify(logger.log.mock.calls)).not.toContain('oauth-isolated-user');
     });
+    it.each(['logout', 'replacement'])(
+      'order-07-02: late callback after %s never registers a fresh attempt',
+      async (change) => {
+        const params = request(provider, { wechatMode });
+        if (change === 'logout') storageService._clearRevokedCredentials();
+        else storageService.saveLoginSession({ userId: 'account-2', token: 'fixture-2', userInfo: {} });
+        const register = vi.spyOn(storageService, 'beginLoginAttempt');
+        const { wrapper, load } = openCallback(component);
+        await load({ code: params.code, state: params.state });
+        expect(register).not.toHaveBeenCalled();
+        expect(call).not.toHaveBeenCalled();
+        expect(wrapper.text()).toContain('登录失败');
+        expect(getUserId()).toBe(change === 'logout' ? null : 'account-2');
+      }
+    );
     it('无发起记录的回调不能交换授权码或改账户', async () => {
       location.hash = `#/pages/login/${provider === 'qq' ? 'qq' : 'wechat'}-callback?code=unknown123&state=unknown`;
       const { wrapper, load } = openCallback(component);
