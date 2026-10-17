@@ -112,31 +112,35 @@ it.each([1, 2])('fixes-10-02: failed verification retains dedupe target id (%s f
   expect(sent).toEqual([2]);
   expect(read(KEY)).toEqual([]);
 });
-it('fixes-10-04: expire own high tasks before capacity check and preserve foreign rows', async () => {
-  const session = captureSession();
-  const foreign = {
-    id: 'foreign',
-    session: { owner: 'other-account', epoch: 'other_epoch' },
-    timestamp: 0,
-    priority: 'high',
-    state: 'pending',
-    requestData: { value: 'private' }
-  };
-  uni.setStorageSync(KEY, [
-    foreign,
-    ...Array.from({ length: 100 }, (_, i) => ({
-      id: `expired-${i}`,
-      session,
-      timestamp: Date.now() - 86400001,
+it.each([false, true])(
+  'fixes-10-04: expire own high tasks before capacity check and preserve foreign rows relogged=%s',
+  async (relogged) => {
+    const session = captureSession();
+    const foreign = {
+      id: 'foreign',
+      session: { owner: 'other-account', epoch: 'other_epoch' },
+      timestamp: 0,
+      priority: 'high',
       state: 'pending',
-      priority: 'high'
-    }))
-  ]);
-  const a = new OfflineQueue();
-  const id = await a.enqueue({ requestData: { value: 'new' } });
-  expect(id).toBeTypeOf('string');
-  expect(read(KEY)).toEqual([foreign, expect.objectContaining({ id })]);
-});
+      requestData: { value: 'private' }
+    };
+    uni.setStorageSync(KEY, [
+      foreign,
+      ...Array.from({ length: 100 }, (_, i) => ({
+        id: `expired-${i}`,
+        session,
+        timestamp: Date.now() - 86400001,
+        state: 'pending',
+        priority: 'high'
+      }))
+    ]);
+    if (relogged) await login(1);
+    const a = new OfflineQueue();
+    const id = await a.enqueue({ requestData: { value: 'new' } });
+    expect(id).toBeTypeOf('string');
+    expect(read(KEY)).toEqual([foreign, expect.objectContaining({ id })]);
+  }
+);
 it('fixes-10-04: capacity cannot evict foreign or unseen pending tasks', async () => {
   const a = new OfflineQueue();
   const foreign = Array.from({ length: 100 }, (_, i) => ({
