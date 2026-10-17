@@ -1,5 +1,39 @@
 # 重要变更
 
+## 2026-10-16 第六轮终审问题修复（阶段5F）
+
+在`ddedfc83`源码运行最终目标回归：13项全部失败，覆盖11个审计ID；当时其余22项正常/扩展用例未选入基线过滤，不计作通过或环境跳过。回执`tmp/stage5f/baseline-verified.json`；独立共享内存/双VM/Web Locks探针`baseline-races.jsonl`的两个交错均为false。早期进度参数和退出事件总线搭建问题修正后已在原源码重跑，不用测试搭建错误代替失败证据。用于基线探针的临时源码已核实回收106553字节，工作源码恢复后再进行最终冻结核验。
+
+按六类收口：登录保留独立退出栅栏、只允许最新尝试提交，写前复查并在失败时仅清自有候选/别名；回滚不再给旧身份换上新撤销标记。统一持久化读取区分ready/unavailable，所有get严格读取，某绑定/业务键失去可信基础后拒绝快照写入，成功重读才解除；新增队列操作留在内存，读取恢复后合并，写后确认故障不重复应用。暂不可用的兑现结果与抛出一视同仁，离线项不出队/不递增重试、目标不清pending_sync、复习保留投影、流保留errorCode。退出先撤销再清理，不依赖身份读取来撤销；游客用持久撤销代号分代，防抖按key/owner/epoch隔离。目标未确认本机保存时不向后端同步旧基础；成就与事件队列同时迁移。
+
+| 审计ID         | 状态与测试名（`tests/unit/session-round6.spec.js`，另注明fixture）                                                                                                    |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| order-01       | 已修复；`order-01-logout-before-first-mutation`（`tests/fixtures/session-races/round6.mjs`，主回归`latest queued login survives and logout cannot be rolled back`）   |
+| order-02       | 已修复；`order-02-newer-queued-before-first-mutation`（同fixture）；无退出时最新排队登录成功                                                                          |
+| regress-6-01   | 已修复；`failed learning root read preserves projection and history on next start`；另有`an unread write base blocks later snapshot saves until a successful reread`  |
+| MIGRATE-15-02  | 已修复；`failed sync queue throw/empty retains old and new pending rows`；另测离线原答、缓存、错题、成就与事件队列恢复合并                                            |
+| inflight-15-01 | 已修复；`fulfilled unavailable fetchQuestionBankStats/browseQuestions/fetchQuestionBankRandom preserves review projection`；使用真实领域API兑现失败                   |
+| inflight-15-02 | 已修复；`fulfilled learningRequest unavailable retains body and retry count`；真实learningRequest预检无网络，原正文与retryCount=2保持                                 |
+| WRITES-06-02   | 已修复；`real goal API retains unavailable type and pending marker`、`createGoal actual call chain retains pending marker when response preflight becomes unreadable` |
+| inflight-15-03 | 已修复；`stream result keeps unavailable classification`                                                                                                              |
+| regress-6-02   | 已修复；`logout revokes before identity read and completes while reads fail`；`logout revokes before cleanup and never flushes a deferred old-session write`          |
+| WRITES-06-01   | 已修复；`guest binding stays revoked after login then logout`；核对学习根与真实离线原答写入均拒绝                                                                     |
+| MIGRATE-15-01  | 已修复；`unavailable older debounce cannot replace newer owner progress`；真实saveQuizProgress/flush保留较新进度                                                      |
+
+同类排查及全部读取迁移入口按文件/函数/键列于[04](04-API-DOCUMENTATION.md#第六轮终审持久化读取与成功回执阶段5f)：学习事实/生命周期/隐私/恢复/分页/上传登记、全部持久队列、目标/记录/提醒、缓存、错题、复习/学习投影、成就/事件、笔记/计时/选题/旧统计、计划、收藏、FSRS、题库/导入与答题计数。统一get不再保留普通读故障返回默认空值的分支；移除六个管理器load方法的吞错清空分支、旧回滚栅栏改写与退出重复删除凭据分支。
+
+中间全量和定向发现的本批回退均保留回执：首次游客登录初始化代号的正常流程、取消登录别名清理、生命周期标记过早写入影响自定义存储与非法批次、计时末项load吞错，以及访客快照的领域错误过度包装。领域校验与缺页错误现原样保留，仅原生读取故障包装为暂不可用。删除guest:null归一特例，首次游客撤销不会复活；登录页先登记尝试再捕获页面绑定，保持首次登录与年龄票据失败提示。现行enabled及老格式兼容范围不扩大；账户往返的页面/连续性夹具使用真实登录事务，保留原数据和隔离断言。生命周期首次初始化现仅在真实学习事实成功保存后执行，非法批次仍零写入；36项新增定向与相关238项检查分轮核对，不累加为新验收。读取阻写测试新增期间的一轮全量混用了旧模块缓存与扩展测试，仅作为中间回执，不作为最终验证。内存存储测试按真实序列化边界独立克隆输入；目标单元mock返回明确保存true，不能用undefined代表保存成功。退出按本轮“先撤销”合同取消未落盘旧防抖；原连续性用例先显式flush建立已保存事实再退出，事实保持断言未放宽，并新增验证撤销是首笔写入。
+
+最终`YOZI_ISOLATED_BUILD=1 npm test -- --reporter=default --reporter=json --outputFile.json=tmp/stage5f/final-suite.json`通过：272文件中271通过、1既有专用Mongo文件跳过；5162项中5156通过、6项原跳过，零失败和未处理拒绝。新增36项。之后仅移除离线错误对象里未使用的响应正文，改固定错误文案，并补同一用例的私有正文不回显断言；36项本轮回归与31项离线队列用例合计67项通过（`queue-final.json`），不把该定向回执计成又一次全量。最终源码`npm run lint`、变动测试/fixture静态检查、提交钩子及`git diff --check`通过。中间题库门禁一项12.402秒超过原10秒阈值，单独按原阈值1.018秒通过，最终全量同项通过；未改阈值、增加跳过或放开发布阻塞，耗时波动根因未确认。
+
+三端使用`YOZI_ISOLATED_BUILD=1`及各自`UNI_OUTPUT_DIR=tmp/stage5f/dist/build/<平台>`的`npm run build:h5`、`npm run build:mp-weixin`、`npm run build:app`均通过。`npm run audit:public-build -- tmp/stage5f/dist/build/h5 tmp/stage5f/dist/build/mp-weixin tmp/stage5f/dist/build/app`扫描736文件、零发现；微信/App产物检查通过。微信主包333文件/1940957字节，媒体19文件/181028字节，低于2MB/200KB；仅原有选择器提示。113份压缩题库解压后逐项JSON等价，生成源码已恢复原字节；没有提交无关题库改动。新本地文档链接/锚点及差异空白检查通过。
+
+本批源码新增346行、删除231行。正常流程兼容复核两组249项与317项均通过；期间扩大enabled范围导致的45项失败方案已经完整撤回，现行enabled/老格式范围不变，回执保留在`acceptance.json`，不算最终验收。登录页面在登记尝试后捕获本次绑定，删除guest:null归一特例；最初游客退出、再次尝试及全清均不能使旧绑定复活。
+
+复用现有依赖、工作目录与`tmp/audit5/resources.log`；没有启动预览服务、浏览器或产品App。新5F与5E三端入口已核对可读，旧5D生成物经路径/符号链接/跟踪文件/开放引用核验后，回收`tmp/stage5d/dist/build/{h5,mp-weixin,app}`及已用完的临时题库源码副本，共3550文件/335853761逻辑字节；另已回收基线临时源码106553字节与无用格式化输出355042字节，本阶段实际合计336315356逻辑字节。实时磁盘可用空间独立记录，不作为删除字节、RAM或性能改善的证据。5F当前候选、5E回退、各轮历史回执、正式原生恢复链、日常App、源码及用户资料保留。本轮登记的测试/构建进程按PID结束并核对，构建子进程已回收。
+
+未推送、部署、发短信、收费、调用真实模型或替换日常App。真实账户/自然多窗口、微信/App设备及公开发布未验；原内容来源、外部发布门禁不因本批局部验证解除。无Web Locks的跨上下文原子CAS仍不承诺；内存待写依赖当前运行时，确认退出/换代后不能重获权限。功能规划与外部授权范围保持。
+
 ## 2026-10-16 第五轮正常流程回退收口（阶段5E）
 
 在`9cb63354`原源码先运行最终回归集合：60项中24项失败、36项通过（6项新增正常对照及30项既有离线队列用例），覆盖全部审计ID；基线回执为`tmp/stage5e/baseline-complete.json`。另保留首次失败、修复及旧断言兼容回执。首次全量发现6项旧合同断言后，在记录PID上正常终止并回收；分别将“续期=换代”改为真实同账户重新登录、更新只读导航清单及原session服务参数，不降低账户隔离、明确作答、幂等或超时阈值。修复额外覆盖题库页令牌绑定与个人页旧退出确认。
