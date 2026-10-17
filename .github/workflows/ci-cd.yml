@@ -165,7 +165,7 @@ jobs:
           exit "$audit_exit"
 
       - name: Annotate npm audit result
-        if: always()
+        if: ${{ !cancelled() }}
         continue-on-error: true
         env:
           SCAN_OUTCOME: ${{ steps.npm-audit.outcome }}
@@ -193,7 +193,7 @@ jobs:
           exit-code: '0'
 
       - name: Annotate Trivy result
-        if: always()
+        if: ${{ !cancelled() }}
         continue-on-error: true
         env:
           SCAN_OUTCOME: ${{ steps.trivy.outcome }}
