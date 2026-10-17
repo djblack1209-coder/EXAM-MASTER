@@ -1,5 +1,19 @@
 # 重要变更
 
+## 2026-10-17 推送前核验收口（阶段5N）
+
+机械修复单独提交 `fcf56b07`：仅对4份指定文档运行仓库Prettier、4份指定Python运行ruff format；默认进度回调从空函数改为显式返回undefined。新增 `.gitattributes`，只对7份第三方字体许可证关闭whitespace检查，原文件逐字节保持。4份Python AST及4份合并相邻文本节点后的Markdown AST均与改前相同；`git diff -w 4196161c..fcf56b07 --stat` 为10文件、227行新增/79行删除，仍包含换行、表格分隔线和转义调整，不能单凭 `-w` 行数宣称没有实质改动，语义结论另由AST及许可证字节对照支持。
+
+Apple Vision在本阶段没有其他重型作业时单独核验：8逻辑CPU，首次记录uptime为 `1:55 up 3 days, 2:04, load averages: 6.90 36.47 82.97`；热启动/完整套件前为 `1:56 up 3 days, 2:05, load averages: 5.67 31.18 78.09`。本轮新编译二进制首次warmup **32.807秒**，随后的新进程warmup **0.397秒**；45秒预热上限、12秒后续识别上限均未改。冷启动口径为本轮二进制首次启动，未重启系统或清空共享模型缓存，不能据此保证完全无缓存的首次使用。
+
+自有进程采样显示主线程等待TextRecognition，工作线程位于Espresso `e5rt_e5_compiler_compile` / ANE `compileModel`；统一日志同时有模型加载、CoreFSCache失效与编译记录。TCC请求连接约16毫秒后释放，本次识别成功，未见等待权限/授权的证据或新增授权操作。后续进程明显加速支持系统缓存复用判断，但未独立测出缓存命中率。与 `origin/main` 对比，适配器、编译/核验入口、合成夹具/原生测试和私人解析器共6文件为新增；本阶段仅格式化解析器且AST相同，未改原生源码或测试。判断为本机初始化/缓存与负载条件影响，未发现需修补的代码缺陷；上一轮两次超时没有同一时刻的独立负载/采样，无法精确拆分其原因。`npm run test:apple:vision` 退出0，**12项实际执行并通过**（套件7.174秒，完整命令8.035秒），不以预热成功代替测试执行。
+
+App连接器沿[现有SDK约定](09B-APP-CONNECTOR.md#移动-sdk-编译)核对：Android33/36的android.jar及iPhoneOS27.0 SDK存在，四个DCloud classpath/头环境变量未配置；文档指定SDK目录、HBuilderX入口及Spotlight精确文件名查询没有发现官方DCloud/FastJSON包或 `DCUniModule.h`。这是有界查找，不宣称穷尽全盘。`npm run build:app:connector` 仍因两平台官方依赖缺失退出2，无二进制、下载、安装或App改动，属于本机无法完成核验的外部前置条件。
+
+`npm run format:check`、`npm run lint:tooling`、`npm run lint:python`、`npm run lint`均退出0；搜索性能相关原测试1项通过。Python定向原入口首次48通过/2失败，已用相同含空格解释器路径生成的最小合成shebang复现ENOENT；改用该虚拟环境实际指向的无空格Python3.12可执行文件，三个相关模块50项全部通过，未改测试或放宽时限。原虚拟环境入口的夹具路径兼容问题仍存在，不能称该入口通过。机械修改前后的AST相同，不把这一运行环境问题归入格式化回归。
+
+新鲜npm audit仍1 critical/21 high，两个根公告及锁节点版本/integrity在 `origin/main` 已存在；上轮Trivy的braces high对应同一公告。可用修复、全部传播包、实际路径及CI warning行为已登记[依赖安全（下一批次优先）](13-DEVELOPMENT-PLAN.md#依赖安全下一批次优先)。没有升级依赖、修改CI豁免、推送、部署、短信或收费；公开仓库推送条件仍未闭合。核验日志、进程归属与语义对照集中 `tmp/stage5n/`，原生套件沿现有入口的自动夹具/二进制清理执行，日常App、资料、当前候选及恢复基线保持。
+
 ## 2026-10-17 遗留离线队列收窄（阶段5L）
 
 按已确认设计收窄 `EXAM_OFFLINE_QUEUE`：删除生产无消费者的enqueue、去重/合并、pendingEnqueues与重放、容量淘汰和requestFnMap；历史正式99cb72cf存在持久化入口，不能以当前无入队调用推断用户无遗留，未读取真实用户存储。保留旧格式/状态/优先级、按id认领及回执、只取消已载入id、24小时有效期、账户隔离、暂停/恢复、网络恢复和离线提示条。过期清理迁至排空锁内，保留当前账户旧epoch清理及其他账户原件；同运行时认领带归属，锁内和等锁后复核，取消也在等锁后复核活跃认领。

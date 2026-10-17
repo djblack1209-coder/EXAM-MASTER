@@ -1,5 +1,18 @@
 # 开发计划
 
+## 依赖安全（下一批次优先）
+
+2026-10-17阶段5N只核验、归因和登记，不升级依赖、不修改锁文件或安全扫描策略。新鲜 `npm audit --ignore-scripts --package-lock-only --audit-level=critical --json --registry=https://registry.npmjs.org` 仍退出1：**1 critical、21 high**。对照本地 `origin/main`（`bb90018d`）的同日审计为4 critical、34 high；当前两个根公告在基线报告中均已存在，根锁文件的版本和包integrity也相同，属于既有问题。数量包含依赖传播，不代表22个独立公告。
+
+| 包名 / 当前版本                               | 公告编号                                                                                  | 受影响路径                                                                                                                                                                      | 可用修复版本 / 下一步                                                                                                                                                   |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `proxy-addr@2.0.7`，critical                  | [GHSA-jqcg-44mw-7w3h / CVE-2026-90711](https://github.com/advisories/GHSA-jqcg-44mw-7w3h) | 根锁文件 `node_modules/proxy-addr`；`@dcloudio/vite-plugin-uni → express@4.22.3 → proxy-addr`                                                                                   | 公告列 **2.0.8**；下一批次优先做兼容升级和代理信任/IP限流相关验证，本轮保留既有授权及限流。                                                                             |
+| `braces@3.0.3`，high；也是上一轮Trivy唯一high | [GHSA-vfj7-8cjw-p6xm / CVE-2026-93687](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) | 根锁文件 `node_modules/braces`；DCloud工具链经 `uni-cli-shared → chokidar@3.6.0 → braces`，或 `fast-glob@3.3.3 → micromatch@4.0.8 → braces`；`unimport@4.1.1` 也经fast-glob传播 | 2026-10-17核对公告仍**没有已发布修复版本**，上一轮Trivy也没有FixedVersion；等待可靠上游修复/完整替换方案。npm建议的旧DCloud版本不是braces的补丁版本，不据此降级或豁免。 |
+
+21项high包括braces本身及20个传播包：`chokidar`、`fast-glob`、`micromatch`、`unimport`，以及 `@dcloudio/` 下的 `uni-app`、`uni-app-plus`、`uni-app-uts`、`uni-app-vite`、`uni-cli-shared`、`uni-cloud`、`uni-components`、`uni-console`、`uni-h5`、`uni-h5-vite`、`uni-mp-compiler`、`uni-mp-vite`、`uni-mp-weixin`、`uni-push`、`uni-stat`、`vite-plugin-uni`；受影响节点为根锁文件对应的 `node_modules/<包名>`。这些传播项沿同一braces公告处理，尚无已验证兼容修复组合。既有H5模块图拒绝braces进入客户端不消除构建工具输入风险，也不改变扫描结果。
+
+对CI `security-scan` 的实际影响：现有 `npm audit --audit-level=critical` 因proxy-addr退出1；Trivy配置扫描CRITICAL/HIGH、`exit-code: '1'`，上一轮实际因braces退出1。这两步均有 `continue-on-error: true`，随后产生可见warning，不能把作业继续执行称为依赖安全通过；跟踪文件密钥检查仍为硬门禁。本轮未重新下载Trivy或数据库，沿用上一轮报告并核对同版本锁节点；未改变CI或公开发布门禁。公开仓库推送前仍须由指挥方处理未闭合风险，本阶段没有推送。[本阶段验证与环境归因](12-CHANGELOG.md#2026-10-17-推送前核验收口阶段5n)。
+
 **2026-10-17阶段5L【只排空遗留离线任务】**：删除无生产消费者的入队、去重、待写重放、容量淘汰与发送闭包；保留旧格式读取、锁内认领与锁后复核、按id回执、已载入任务取消、有效期、账户隔离、pause/resume、网络恢复及提示条入口。连续审计问题集中在入队路径，故收窄职责而不继续修补重放；未访问用户存储来推断无遗留。现行合同见[04](04-API-DOCUMENTATION.md#阶段5l只排空遗留离线任务现行)、[05](05-DATABASE-SCHEMAS.md#阶段5l遗留队列持久合同现行)，最终验证及资源收尾见[12](12-CHANGELOG.md#2026-10-17-遗留离线队列收窄阶段5l)。最终231项相关回归、全量5279通过/6原Mongo跳过/零失败，lint、三端隔离构建、公开产物与包体检查通过；无性能超时。保留5L/5K候选与指定5G回退，已回收冗余5I/5J构建。不扩展后续功能、推送或生产授权。
 
 ## 阶段5L审计条目处理
