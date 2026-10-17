@@ -169,8 +169,7 @@
                 rel="noopener noreferrer"
                 >{{ t('learning.k6n') }}</a
               ><!-- #endif -->
-              <!-- #ifndef H5 --><text class="reference-credit" selectable>{{ ENERGY_BASIS.url }}</text
-              ><!-- #endif -->
+              <!-- #ifndef H5 --><text class="reference-credit" selectable>{{ ENERGY_BASIS.url }}</text><!-- #endif -->
             </view>
           </template>
           <template v-else>

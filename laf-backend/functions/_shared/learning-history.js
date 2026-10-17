@@ -21,7 +21,7 @@ export function historyChecksum(text) {
 }
 export function splitHistoryText(text) {
   const pages = [];
-  for (let offset = 0; offset < text.length; ) {
+  for (let offset = 0; offset < text.length;) {
     let end = Math.min(text.length, offset + HISTORY_LIMITS.pageCharacters);
     if (end < text.length && /[\uD800-\uDBFF]/.test(text[end - 1])) end--;
     pages.push(text.slice(offset, end));

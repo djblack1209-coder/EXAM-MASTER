@@ -109,7 +109,7 @@ function evidenceLocation(answer, value) {
   const quote = explicit ? value.quote : value;
   requireValue(typeof quote === 'string' && quote.trim() && quote.length <= 250, '原答引用为空或过长');
   const starts = [];
-  for (let from = 0; from <= answer.length; ) {
+  for (let from = 0; from <= answer.length;) {
     const found = answer.indexOf(quote, from);
     if (found < 0) break;
     starts.push(found);
