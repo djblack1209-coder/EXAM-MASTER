@@ -157,6 +157,24 @@ Dependabot #3 的两份 workflow 已按原 PR 的版本引用落地，未合并�
 
 推送后状态（2026-10-17，`5202c969`）：GitHub CI 运行 39068768717 全部通过，Node 24 版 Action 正常执行，npm 缓存命中，h5-build 产物上传成功（278140763 字节），两个部署作业按门控跳过；Dependabot 于 20:57:51Z 自动关闭 #3。9B 复核与该次 CI 日志共同确认一个既有缺口：`.trivyignore` 在 2026-04-25 大扫除（`943b352a`）中被删除后，Trivy 步骤在扫描前即报 `cannot find ignorefile '.trivyignore'` 失败，`continue-on-error` 使安全扫描作业仍显示成功，随后的告警注释误称“发现 CRITICAL/HIGH 级别漏洞”；自那以后文件系统漏洞扫描实际未执行。该缺口非本批引入，留待“恢复安全扫描并分诊结果”批次处理。Dependabot 新开 #17（@tauri-apps/api 2.12.3、@tauri-apps/cli 2.12.2），#15 仍待客户决定。
 
+### 阶段10A：恢复 Trivy 安全扫描（2026-10-17，本地 main）
+
+事实：以 `aa44be83` 为干净本地 main 基线。旧忽略文件由 `git show 943b352a^:.trivyignore` 核对，非注释条目均是路径，两个 GHSA 仅在注释内，引用的 deploy 文件现已不在跟踪树。[v0.70.0 忽略解析器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/result/ignore.go) 跳过注释、把首字段作为 ID，故这些路径不是路径排除规则。决定删除 Action 的 trivyignores 输入，不新建忽略文件，不预先豁免任何发现。
+
+[trivy-action v0.36.0 的实际元数据文件为 action.yaml](https://github.com/aquasecurity/trivy-action/blob/v0.36.0/action.yaml)，默认 Trivy v0.70.0；[入口](https://github.com/aquasecurity/trivy-action/blob/v0.36.0/entrypoint.sh) 先检查显式忽略文件，解释了原扫描启动失败。现在只扫描一次，fs / 默认 vuln,secret / CRITICAL,HIGH，exit-code=0；JSON 输出 `${{ runner.temp }}/yozi-trivy.json`，数据库缓存也移出工作区，报告不上传为产物。独立 Node 脚本离线渲染可读清单与摘要，随后删除两份原始 JSON。漏洞逐条输出目标、包、已装版本、修复版本（没有则“未提供”）、ID、级别；密钥只输出规则 ID、文件、起始行、级别，不读取或序列化匹配值/上下文。
+
+- 扫描范围：[fs 文档](https://github.com/aquasecurity/trivy/blob/v0.70.0/docs/guide/target/filesystem.md) 和 [npm 分析器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/fanal/analyzer/language/nodejs/npm/npm.go) 确认依赖来自锁文件，node_modules 的 package.json 仅用于补许可证；[密钥分析器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/fanal/analyzer/secret/secret.go) 已内置跳过任意层 node_modules。仍显式 `skip-dirs: node_modules,**/node_modules`，统一排除第三方遍历且不漏嵌套目录；不跳过 laf-backend、src-tauri、源码或测试目录，不设置 scanners，保持默认漏洞与密钥组合。[目录 glob 与文件识别依据](https://github.com/aquasecurity/trivy/blob/v0.70.0/docs/guide/configuration/skipping.md)。
+- 开发依赖：[Node 文档](https://github.com/aquasecurity/trivy/blob/v0.70.0/docs/guide/coverage/language/nodejs.md) 明确 npm 开发依赖默认排除；通过 `TRIVY_INCLUDE_DEV_DEPS=true` 纳入，避免遗漏构建工具风险。其效果不推广到所有语言：Cargo.lock 与 Cargo.toml 同扫时，[Cargo 分析器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/fanal/analyzer/language/rust/cargo/cargo.go) 仍移除开发依赖。
+- 清单识别：[pip 分析器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/fanal/analyzer/language/python/pip/pip.go) 默认仅识别名为 requirements.txt 的文件，增加 `TRIVY_FILE_PATTERNS=pip:(^|/)requirements[^/]*\.txt$`，覆盖根与子目录 requirements*.txt，不覆盖默认锁文件识别。现有根/standalone package-lock 与 src-tauri/Cargo.lock 均保留扫描。独立 package.json 不是完整可解析依赖图的替代；[Python 默认只解析精确 == 版本](https://github.com/aquasecurity/trivy/blob/v0.70.0/docs/guide/coverage/language/python.md)，范围和 URL wheel 清单不能宣称全覆盖，不擅自把最低版本当已装版本。
+- 防止空扫误报：[语言扫描器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/scan/langpkg/scan.go) 保留有包但无漏洞的目标，[JSON writer](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/report/json.go) 即使移除 Packages 仍保留非空 Target。故 Results 缺失/空数组、空 Target、不可解析/结构异常或步骤未成功均视为未完成，输出非阻断 error。正常结果有 CRITICAL/HIGH 时按严重级别和漏洞/密钥类别分别计数 warning，无则 notice；三态均写入 GITHUB_STEP_SUMMARY。
+- npm audit 同类修复：原逻辑仅看步骤失败，无法区分网络错误。现在保存 JSON 与实际退出码，仅在有效 v2 报告、清单计数及 critical 阈值与退出状态一致时判定发现/无发现；错误对象、报告缺失/异常或执行未完成报 error。保留 critical 告警阈值，HIGH 在摘要计数并逐条输出日志。扫描/提示失败均不阻断，tracked secrets audit 仍是硬门禁，部署 needs/变量条件不变。
+
+本地 29 个报告场景通过，覆盖发现/无发现、缺文件/扫描失败/跳过/取消、JSON/结构异常、零目标/省略 Results、四类 CRITICAL/HIGH 计数、匹配值/错误正文不外泄及控制行转义；其中两例复用阶段8A报告验证兼容性，不重新联网。YAML 解析、其余全部 job/部署条件与 tracked secrets 步骤逐项不变、四份 requirements 文件匹配、npm 封装退出 0/1 和原始报告删除均通过。`npm run lint:tooling`、`npm run audit:repository`、`npm run format:check` 通过；仓库审计仍记录一项既有测试内引用（client-ip-http.spec.ts 的 fixture 字符串），严格门禁按原规则不视为错误，无新坏链接/脚本/语法问题。
+
+验证异常如实保留：第一次 npm 封装模拟依赖 PATH，本机非交互 shell 启动时前置了真实工具路径，导致一次真实 npm audit，违反本阶段仅限 GitHub 的联网约束。npm 调试日志确认 23 个审计/元数据 HTTP 请求、0 个包 tarball 请求，返回 0 critical/21 high；没有执行安装命令。已用显式 shell 函数调用模拟命令的精确路径，检查 mock 参数与退出码，两种退出均复验通过。证据集中 tmp/p10a-evidence，保留异常简报与最终报告/日志，回收合成输入及一次性驱动；不生成构建副本，不触碰 tmp/p1-*。未运行真实 Trivy、数据库刷新、安装包下载或全量测试/构建，未推送/部署。
+
+推送后由指挥方确认两扫描实际完成、锁文件与清单目标及 npm 开发依赖覆盖、脱敏清单与三态摘要、硬门禁/部署门控保持；再按真实 CRITICAL/HIGH 逐项分诊，届时才决定是否需有依据的忽略清单。作业成功本身不代表扫描完成或风险消失。
+
 **2026-10-17阶段5L【只排空遗留离线任务】**：删除无生产消费者的入队、去重、待写重放、容量淘汰与发送闭包；保留旧格式读取、锁内认领与锁后复核、按id回执、已载入任务取消、有效期、账户隔离、pause/resume、网络恢复及提示条入口。连续审计问题集中在入队路径，故收窄职责而不继续修补重放；未访问用户存储来推断无遗留。现行合同见[04](04-API-DOCUMENTATION.md#阶段5l只排空遗留离线任务现行)、[05](05-DATABASE-SCHEMAS.md#阶段5l遗留队列持久合同现行)，最终验证及资源收尾见[12](12-CHANGELOG.md#2026-10-17-遗留离线队列收窄阶段5l)。最终231项相关回归、全量5279通过/6原Mongo跳过/零失败，lint、三端隔离构建、公开产物与包体检查通过；无性能超时。保留5L/5K候选与指定5G回退，已回收冗余5I/5J构建。不扩展后续功能、推送或生产授权。
 
 ## 阶段5L审计条目处理

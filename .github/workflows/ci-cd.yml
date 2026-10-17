@@ -153,36 +153,60 @@ jobs:
       - name: Install dependencies for audit
         run: npm ci --ignore-scripts
 
-      # npm audit: 记录 critical 漏洞为 warning（不阻断但可见）
+      # npm audit: 发现 critical 和扫描器故障分别提示，均不阻断。
       - name: Run npm audit
         id: npm-audit
         continue-on-error: true
-        run: npm audit --audit-level=critical
+        run: |
+          set +e
+          npm audit --audit-level=critical --json > "$RUNNER_TEMP/yozi-npm-audit.json"
+          audit_exit=$?
+          echo "exit_code=$audit_exit" >> "$GITHUB_OUTPUT"
+          exit "$audit_exit"
 
       - name: Annotate npm audit result
-        if: steps.npm-audit.outcome == 'failure'
-        run: echo "::warning title=npm audit::发现 critical 级别依赖漏洞，请及时处理。运行 npm audit 查看详情。"
+        if: always()
+        continue-on-error: true
+        env:
+          SCAN_OUTCOME: ${{ steps.npm-audit.outcome }}
+          AUDIT_EXIT_CODE: ${{ steps.npm-audit.outputs.exit_code }}
+        run: node scripts/build/report-security-scan.mjs npm "$RUNNER_TEMP/yozi-npm-audit.json" "$SCAN_OUTCOME" "$AUDIT_EXIT_CODE"
 
-      # Trivy: 扫描 CRITICAL/HIGH 漏洞，记录结果但不阻断构建
+      # 只扫描一次；JSON 留在 runner 临时目录，由本地脚本脱敏渲染。
       - name: Run Trivy vulnerability scanner (filesystem)
         uses: aquasecurity/trivy-action@v0.36.0
         id: trivy
         continue-on-error: true
+        env:
+          TRIVY_INCLUDE_DEV_DEPS: 'true'
+          # pip 默认只识别 requirements.txt；补齐仓库 requirements*.txt。
+          TRIVY_FILE_PATTERNS: 'pip:(^|/)requirements[^/]*\.txt$'
         with:
           scan-type: 'fs'
           scan-ref: '.'
-          format: 'table'
+          format: 'json'
+          output: '${{ runner.temp }}/yozi-trivy.json'
+          cache-dir: '${{ runner.temp }}/trivy-cache'
           severity: 'CRITICAL,HIGH'
-          trivyignores: '.trivyignore'
-          exit-code: '1'
+          # 同时匹配根与任意嵌套目录；保留仓库锁文件、清单和源码。
+          skip-dirs: 'node_modules,**/node_modules'
+          exit-code: '0'
 
       - name: Annotate Trivy result
-        if: steps.trivy.outcome == 'failure'
-        run: echo "::warning title=Trivy 安全扫描::发现 CRITICAL/HIGH 级别漏洞，请查看上方扫描报告。"
+        if: always()
+        continue-on-error: true
+        env:
+          SCAN_OUTCOME: ${{ steps.trivy.outcome }}
+        run: node scripts/build/report-security-scan.mjs trivy "$RUNNER_TEMP/yozi-trivy.json" "$SCAN_OUTCOME"
 
       # 密钥泄露检查（硬性门禁 — 发现泄露必须阻断）
       - name: Run tracked secrets audit
         run: npm run audit:secrets:tracked
+
+      - name: Remove raw scan reports
+        if: always()
+        continue-on-error: true
+        run: rm -f "$RUNNER_TEMP/yozi-npm-audit.json" "$RUNNER_TEMP/yozi-trivy.json"
 
   # ==================== 部署到 Staging ====================
   deploy-staging:

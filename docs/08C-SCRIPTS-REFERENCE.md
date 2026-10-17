@@ -247,6 +247,8 @@ learning-records.before-signing.json与learning-records.after-signing.json完整
 
 ## 自动依赖更新
 
+阶段10A修复 CI 安全扫描：Trivy 不再引用已删除的忽略文件，保持 fs 默认漏洞/密钥组合，单次扫描输出 JSON 至 runner.temp；跳过各层 node_modules，纳入 npm 开发依赖，并通过文件识别模式补齐 requirements*.txt。`node scripts/build/report-security-scan.mjs trivy <JSON路径> <步骤outcome>` 离线渲染；npm 对应调用为 `node scripts/build/report-security-scan.mjs npm <JSON路径> <步骤outcome> <实际退出码>`。三态均写入 GITHUB_STEP_SUMMARY：未完成 error、达阈值发现 warning、无相应发现 notice；两者均不阻断。Trivy 按 CRITICAL/HIGH 和漏洞/密钥分别计数，密钥只列规则/文件/行号/级别；npm 保持 critical 阈值并列 HIGH 供分诊。原始报告渲染后删除、不上传，跟踪文件密钥硬门禁和部署门控保持。JSON零目标保护、语言覆盖限制与后续 CI 验收见 [阶段10A](13-DEVELOPMENT-PLAN.md#阶段10a恢复-trivy-安全扫描2026-10-17本地-main)。
+
 阶段9A已在本地 main 更新 `.github/workflows/ci-cd.yml` 与 `.github/workflows/baidu-group-sync.yml`：checkout v7.0.1、setup-node v7.1.0、setup-python v7、upload-artifact v7.0.2、trivy-action v0.36.0、setup-kubectl v5。Action 使用 Node 24（runner 至少 2.327.1），项目构建仍固定 Node 22.22.3；现有显式 npm 缓存、Python 3.12、归档路径/名称与保留期无需调整。部署门控及百度定时/手动触发保持，当前仓库变量/secrets 为空，不触发部署或实际同步。只做本地静态检查，未推送/运行 workflow；迁移依据与后续 CI 验收见 [阶段9A](13-DEVELOPMENT-PLAN.md#阶段9agithub-actions-升级2026-10-17本地-main)。
 
 .github/dependabot.yml 每周检查根/后端 npm、pip、GitHub Actions、Docker。兼容 minor/patch 分组，major 单独审查；Node镜像与Node类型忽略semver-major，后端Express/Express类型/MongoDB/TypeScript的major等待[迁移批次](13-DEVELOPMENT-PLAN.md#dependabot-分流2026-10-17)验收后解锁；npm/pip 设置 7 日冷却。锁文件、ESLint/格式、单元/后端/多端与安全检查保持，不自动合并或部署。忽略规则已由前序推送后生效；本轮依赖升级只在 main 本地提交，不操作 GitHub PR 或部署。
