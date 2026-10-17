@@ -1,5 +1,31 @@
 # API 与工具合同
 
+## 第十轮针对性修复：离线认领与中断身份恢复（阶段5J）
+
+本节修正5I对应条款，不扩大账户功能范围。`processQueue()` 在首个 await 前占用实例 processing，恢复、早退和处理均进入 finally 释放；同运行时共享 `id → 认领对象`。同一身份锁回调内比较持久 id/正文、已有认领和成功回执，再登记认领并持久核验；等待后复核归属，只有持有者发送和释放。失败核验不传输，成功回执仍只补本地确认。本规则覆盖同实例双调用、同上下文双实例和读取恢复，不构成跨窗口发送租约或端到端幂等。
+
+去重事务把实际合并目标 id 保留给入队回执和待核对任务；核对回读失败也沿用原 id，恢复在锁内与持久队列核对，不能另建发送身份。入队先在锁内移除当前账户各epoch的过期任务，再检查容量；容量淘汰仅限当前绑定、已载入、非发送中的 pending low/normal，其他账户及未载入任务保持。取消仍只处理载入 id。
+
+验证通过的格式迁移别名缓存在身份读取层，以 owner/epoch 定位，不包含令牌；身份暂不可用时继续把旧、新 epoch 归到同一逻辑绑定。防抖替换、取消和增量操作沿同一槽位保持入队顺序，不从一次读取失败推断换代。
+
+登录操作入口发现领先完整身份记录时，等待独占身份锁，核对原 generation 与记录证明；锁内没有进行中的写者才安全撤销未提交记录。代数跳过未提交记录的拟议值，避免撤销途中短暂认证它；失败读取不能当作可恢复记录。撤销后回到游客状态，用户重新登录。无可读绑定的 Auth Store 保留创建时可读代数，退出可按此代数本地撤销；完成清理使用本次撤销回执代数复核，后继已提交登录优先，不受旧恢复/退出影响。[持久协议](05-DATABASE-SCHEMAS.md#阶段5j迁移别名与中断身份恢复)。
+
+### 先行并发测试矩阵与回归定位
+
+矩阵在实现前保存在 `tmp/stage5j/queue-matrix.md`；正式回归为 `tests/unit/session-round10-queue.spec.js`、`session-round10.spec.js`，独立写者终止夹具为 `tests/fixtures/session-races/round10-workers.mjs`。
+
+| 场景 / 审计ID | 交错与断言 / 测试名关键词 |
+| --- | --- |
+| fixes-10-01 / inflight-19-01 / migrate-10-04 | same-instance / two-instances / two-recovering-instances：延迟锁后仅一次传输；losing claimant：竞争失败者不得释放持有者 |
+| fixes-10-02 / migrate-10-02 | failed verification retains dedupe target id：更新成功后1/2次读取失败，原id与新正文只发送一次 |
+| fixes-10-03 / migrate-10-01 | verified migration stays one logical binding during unavailable：flush/cancel/update，最新值与增量顺序保持 |
+| fixes-10-04 | expire own high tasks before capacity check：100条过期high先清理，覆盖同账户重新登录后的旧epoch；capacity cannot evict foreign or unseen：其他账户及未载入任务保持 |
+| order-10-02 | app/h5 entry recovers interrupted commit；fresh Store / queued recovery；revocation never publishes；in-progress writer；generation receipt；unreadable binding；actual terminated writer |
+| 跨上下文回执 | 既有 round9 独立双H5夹具及 inflight-18-02：旧成功/失败收尾不覆盖新账户任务；既有离线队列回执失败用例继续只补确认 |
+| migrate-10-03 正文刷新 | 事务刷新/恢复重读探针在4780191a及37206056均发送旧闭包；既有问题，本轮不改，列入13后续批次 |
+
+B类归属使用相同实际Store/组件/存储探针在两个独立worktree运行。提醒编辑跨账户、笔记保存失败与页面草稿清空、计时stop/pause、补读跨续期误删待写，以及正文刷新旧闭包均在4780191a复现，故本轮不修；证据与下一批建议见[13](13-DEVELOPMENT-PLAN.md#账户隔离后续批次第-10-轮审计)。探针模拟受控交错，不把独立线程或VM等同于真实浏览器/设备验收。
+
 ## 第九轮终审：新操作、身份可见性与按 id 写入（阶段5I）
 
 本节替代5H对应条款，历史验证记录保留。[持久协议与理由](05-DATABASE-SCHEMAS.md#阶段5i新意图凭据版本与事务可见性)。新操作捕获当前 `captureSession()`；缓存绑定只服务于该操作自己的回调、计时器、导出和提交续段。`checkSession` 仍按 owner/epoch 判断业务存活，同账户令牌续期不撤销原操作。设置先完整读取当前分区再合并，只在实际保存成功后发布新投影并返回 true；读取失败仍待初始化，恢复后完整重读。`updateUserInfo` 不先检查初始化留下的 null；锁内读取最新资料并合并原补丁。
