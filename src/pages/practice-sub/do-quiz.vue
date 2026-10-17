@@ -910,6 +910,7 @@ export default {
       // ✅ 题目笔记状态
       currentQuestionNotes: [], // 当前题目的笔记
       showNoteModal: false, // 是否显示笔记弹窗
+      noteDraftGeneration: 0,
       noteContent: '', // 笔记内容
       selectedNoteTags: [], // 选中的笔记标签
       passageAnnotations: {},
@@ -1160,6 +1161,13 @@ export default {
     availableNoteTags() {
       return getNoteTags();
     }
+  },
+
+  watch: {
+    currentQuestion: { handler: 'invalidateNoteDraftReceipt', flush: 'sync' },
+    showNoteModal: { handler: 'invalidateNoteDraftReceipt', flush: 'sync' },
+    noteContent: { handler: 'invalidateNoteDraftReceipt', flush: 'sync' },
+    selectedNoteTags: { handler: 'invalidateNoteDraftReceipt', deep: true, flush: 'sync' }
   },
 
   // [F2-FIX] 微信分享配置
@@ -2740,6 +2748,10 @@ export default {
 
     // ==================== 题目笔记相关方法 ====================
 
+    invalidateNoteDraftReceipt() {
+      this.noteDraftGeneration = (this.noteDraftGeneration || 0) + 1;
+    },
+
     // ✅ 打开笔记弹窗
     handleOpenNote(options = {}) {
       if (!this.currentQuestion) return;
@@ -2752,6 +2764,7 @@ export default {
       this.currentQuestionNotes = getNotesByQuestion(this.currentQuestion.id || this.currentQuestion.question);
 
       // 重置输入状态
+      this.invalidateNoteDraftReceipt();
       this.noteContent = '';
       this.selectedNoteTags = [];
       this.showNoteModal = true;
@@ -2777,6 +2790,11 @@ export default {
 
     // ✅ 保存笔记
     async handleSaveNote() {
+      const page = this;
+      const question = page.currentQuestion;
+      const session = page.boundLoginSession;
+      const generation = page.noteDraftGeneration;
+      if (!question || page.quizPageClosed || !page.showNoteModal) return;
       if (!this.noteContent.trim()) {
         toast.info(t('quiz.copy99'));
         return;
@@ -2784,17 +2802,25 @@ export default {
 
       const result = await addQuestionNote(
         {
-          questionId: this.currentQuestion.id || this.currentQuestion.question,
-          questionContent: this.currentQuestion.question,
+          questionId: question.id || question.question,
+          questionContent: question.question,
           content: this.noteContent.trim(),
-          tags: this.selectedNoteTags,
-          category: this.currentQuestion.category
+          tags: [...this.selectedNoteTags],
+          category: question.category
         },
-        this.boundLoginSession
+        session
       );
 
+      if (
+        page.quizPageClosed ||
+        page.currentQuestion !== question ||
+        !page.showNoteModal ||
+        page.noteDraftGeneration !== generation
+      )
+        return;
+
       if (result.success) {
-        if (checkSession(this.boundLoginSession) === 'changed') {
+        if (checkSession(session) === 'changed') {
           toast.info(t('ui.contextChanged'));
           return;
         }
@@ -2802,7 +2828,7 @@ export default {
 
         // 更新当前题目的笔记列表
         try {
-          this.currentQuestionNotes = getNotesByQuestion(this.currentQuestion.id || this.currentQuestion.question);
+          this.currentQuestionNotes = getNotesByQuestion(question.id || question.question);
         } catch {
           // The manager already confirmed this write; a busy refresh must not replay it.
           this.currentQuestionNotes = [
