@@ -16,6 +16,7 @@ laf.yaml
 
 # Lock file (regenerated on install)
 package-lock.json
+!standalone/package-lock.json
 
 # OS
 .DS_Store

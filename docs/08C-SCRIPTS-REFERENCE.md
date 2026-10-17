@@ -152,6 +152,8 @@ H5构建将 `UNI_INPUT_DIR` 统一为绝对路径，避免入口漏挂载/组件
 
 后端先 `tsc --outDir` 到隔离目录，再用 `laf-backend/standalone/package-runtime.mjs --output <项目 tmp 内相对路径>` 打包；绝对路径、`..` 和符号链接会被拒绝。打包成功后再链接既有 `standalone/node_modules`，不安装新包。`verify-backend-http.mjs` 固定使用正式 dist 和测试端口，不直接用于隔离候选。
 
+CI 干净检出核验使用独立安装的依赖，不链接日常环境：根目录与 `laf-backend/standalone/` 分别执行 `npm ci --ignore-scripts`，两处 `package-lock.json` 都须跟踪。`laf-backend/.gitignore` 原规则将锁文件视为安装时再生成，现仅对 `standalone/package-lock.json` 加例外；Laf 源码包的原忽略规则保留。离线核验追加 `--offline`，缓存缺失即停止并记录缺项，不自动联网；Python 开发依赖使用临时 venv 与本机缓存，缓存不足时明确跳过，不借用现有环境冒充干净安装。
+
 Mac日常原生候选当前沿 `tmp/stage1-mobile-20261011/build-source`（Rust主入口与仓库只差既定 `data_store_identifier`）、`native-config.json`、原 `CARGO_TARGET_DIR=desktop-material-prerequisite-target` 和 `--no-bundle --no-sign -- --offline --locked --jobs 1`，只生成程序、不生成新的可见 `.app`。构建前精确核对该一行适配及其余Cargo/业务组件摘要，不能只传相同identifier却从仓库根构建。QA身份仍采用独立资料UUID。更新唯一入口前：先归档当前程序与配对学习记录并试还原（逐文件、模式、链接、扩展属性一致），确认程序无消费者后只原子替换可执行文件，标识、资料、图标和元数据保持。
 
 前序日常界面更新沿`desktop-fields-v3-config.json`及原资料UUID，desktop/API备用地址均为空、不加载私有环境文件。已试还原的完整程序归档与learning-records.before.json保持；wenli-desktop.pre-ui-update.rollback是APFS增量副本，依赖完整归档的其余元数据，不能单独恢复整包。程序暂存严格核对后同目录原子更新，模式/xattrs/mtime保持。随后首次通知申请在许可前拒绝，客户明确批准同身份本机签名修复；先保存完整APFS回滚daily-before-signing.rollback.noindex及revision438公开备份，再在未注册暂存包执行`codesign --force --sign - --identifier cn.wangshiliang.wenli.localqa93d5ef76c442 --timestamp=none <暂存App路径>`。只安装签名程序和Contents/\_CodeSignature，既有内容/元数据与资料保持；暂存及唯一入口的`codesign --verify --strict --verbose=2 <App路径>`均通过。当前为ad-hoc、无TeamIdentifier，不代表正式签名/公证或自动赋予后续重签权限。
