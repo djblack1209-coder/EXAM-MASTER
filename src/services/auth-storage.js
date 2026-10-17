@@ -112,6 +112,7 @@ function getStoredAuthValue(key) {
   try {
     record = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
     if (record && typeof record === 'object' && typeof record.token === 'string') {
+      if (record.generation > readIdentityGeneration()) throw sessionUnavailable();
       if (
         (readIdentityGeneration() > 0 || record.generation !== undefined) &&
         record.generation !== readIdentityGeneration()
@@ -228,6 +229,7 @@ const validEpoch = (value) => typeof value === 'string' && /^[a-zA-Z0-9_-]{8,120
 export const getLoginSessionEpoch = () => {
   if (!supportsIdentityWrites()) return null;
   const value = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
+  if (value?.generation > readIdentityGeneration()) throw sessionUnavailable();
   if (
     value &&
     typeof value === 'object' &&
@@ -266,6 +268,7 @@ export function readSessionSnapshot() {
       const enabled = !!safeGetStorageSync(SESSION_ENABLED_KEY, true);
       const after = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
       if (generation !== readIdentityGeneration()) continue;
+      if (complete && before.generation > generation) return { status: 'unavailable', session: null, token: null };
       if (complete && (generation > 0 || before.generation !== undefined) && before.generation !== generation)
         return { status: 'changed', session: Object.freeze({ owner, epoch: null }), token: null, enabled };
       if (revocation !== (safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null)) continue;

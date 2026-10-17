@@ -92,7 +92,8 @@ import { bindLearningKeyboard, bindLearningDialog } from '@/services/learning/ke
 import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 import { usePageDialog } from '@/composables/usePageDialog.js';
-import { getUserId } from '@/services/auth-storage.js';
+import { storageService } from '@/services/storageService.js';
+import { getUserId, captureSession, checkSession } from '@/services/auth-storage.js';
 import { summarizeLegacyMistakeRecords } from '@/services/quiz-session-contract.js';
 import {
   getCanvasTheme,
@@ -136,11 +137,17 @@ watch(showReportModal, async (visible) => {
 let active = true,
   sequence = 0,
   reportStamp = '',
+  reportSession = null,
   cancelRendering;
 const currentStamp = () =>
   JSON.stringify([props.expectedOwnerId, getUserId() || '', props.mistakes, props.userInfo, props.isDark]);
 function isReportCurrent() {
-  return active && (getUserId() || '') === props.expectedOwnerId && reportStamp === currentStamp();
+  return (
+    active &&
+    checkSession(reportSession) === 'current' &&
+    (getUserId() || '') === props.expectedOwnerId &&
+    reportStamp === currentStamp()
+  );
 }
 function discardImage(path) {
   if (typeof path === 'string' && path.startsWith('blob:')) URL.revokeObjectURL?.(path);
@@ -150,6 +157,7 @@ function closeReport() {
   sequence++;
   cancelRendering?.();
   reportStamp = '';
+  reportSession = null;
   showReportModal.value = false;
   isGenerating.value = false;
   reportImagePath.value = '';
@@ -157,19 +165,29 @@ function closeReport() {
   previewImage.value = false;
 }
 watch(() => JSON.stringify([props.mistakes, props.expectedOwnerId, props.userInfo, props.isDark]), closeReport);
+const stopIdentity = storageService.onIdentityChange(() => {
+  if (reportSession && checkSession(reportSession) === 'changed') closeReport();
+});
 onBeforeUnmount(() => {
+  stopIdentity();
   active = false;
   closeReport();
   releaseKeyboard?.();
   releaseDialog?.();
 });
 async function prepareReport() {
-  if (isGenerating.value) return;
+  if (isGenerating.value) {
+    if (checkSession(reportSession) !== 'changed') return;
+    closeReport();
+  }
+  const session = captureSession();
+  if (checkSession(session) !== 'current') return;
   if ((getUserId() || '') !== props.expectedOwnerId) return toast.info(t('mistake.copy23'));
   const summary = summarizeLegacyMistakeRecords(props.mistakes);
   if (!summary?.recordCount) return toast.info(t('mistake.copy72'));
   closeReport();
   const generation = sequence;
+  reportSession = session;
   reportStamp = currentStamp();
   reportUserName.value = props.userInfo.nickName || t('mistake.learner');
   const categories = summary.categories.map((item) =>
@@ -198,7 +216,10 @@ async function prepareReport() {
   try {
     await drawReport(imageText, generation);
   } finally {
-    if (generation === sequence && isReportCurrent()) isGenerating.value = false;
+    if (generation === sequence) {
+      if (checkSession(reportSession) === 'changed') closeReport();
+      else isGenerating.value = false;
+    }
   }
 }
 function drawReport(content, generation) {

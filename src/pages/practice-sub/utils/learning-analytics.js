@@ -58,6 +58,7 @@ class LearningAnalytics {
     this._loadDailyStats();
     this._loadStreakData();
     this._loadAchievements();
+    assertSession(this._session);
     this.isInitialized = true;
 
     // ✅ F013: 异步从后端拉取成就并合并（不阻塞本地使用）

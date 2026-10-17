@@ -186,7 +186,7 @@ it.each([0, 2])(
       .mockResolvedValue(undefined);
     queue.enqueue({ requestFn: request, requestData: { fixture: true } });
     queue.queue[0].retryCount = retryCount;
-    queue._saveToStorage();
+    queue._saveToStorage(queue.queue[0]);
     const before = structuredClone(uni.getStorageSync('EXAM_OFFLINE_QUEUE'));
     queue.isOnline = true;
     const work = queue.processQueue();

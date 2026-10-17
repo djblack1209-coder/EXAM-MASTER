@@ -111,7 +111,13 @@ export function beginWebOAuth(
   const state = `${nonce}_${attempt.id}`;
   const context = {
     state,
-    attempt: { id: attempt.id, revocation: attempt.revocation, generation: attempt.generation },
+    attempt: {
+      id: attempt.id,
+      revocation: attempt.revocation,
+      generation: attempt.generation,
+      intent: attempt.intent,
+      intentContext: attempt.intentContext
+    },
     redirectUri,
     origin: page.origin,
     createdAt: Date.now(),

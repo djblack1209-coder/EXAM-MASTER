@@ -149,12 +149,22 @@ async function tab(shared, name, locks, platform = 'app') {
         return synth('config', { default: { security: { obfuscationKey: 'value-1' }, isProd: false, env: 'test' } });
       if (spec.endsWith('/logger.js'))
         return synth('logger', { logger: { log: noop, warn: noop, error: noop, debug: noop, info: noop } });
-      return load(path.resolve(path.dirname(parent.identifier), spec));
+      return load(
+        spec.startsWith('@/')
+          ? path.resolve(root, 'src', spec.slice(2))
+          : path.resolve(path.dirname(parent.identifier), spec)
+      );
     });
     return m;
   }
   const m = await load(root + '/src/services/storageService.js');
   await m.evaluate();
+  host.mock = (spec, values) => mocks.set(spec, values);
+  host.load = async (file) => {
+    const module = await load(path.resolve(root, 'src', file));
+    await module.evaluate();
+    return module.namespace;
+  };
   host.storage = m.namespace.storageService;
   host.auth = modules.get(root + '/src/services/auth-storage.js').namespace;
   host.cipher = modules.get(root + '/src/utils/crypto/cipher.js').namespace;

@@ -97,6 +97,7 @@ class AdaptiveLearningEngine {
     this._loadKnowledgeMap();
     this._loadReviewSchedule();
 
+    assertSession(this._session);
     this.isInitialized = true;
     logger.log('[AdaptiveLearning] 初始化完成，错题数:', this.mistakeBook.length);
   }
