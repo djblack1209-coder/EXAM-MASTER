@@ -323,6 +323,20 @@ class QuestionNoteManager {
         if (!savedNotes.success) return savedNotes;
         return this._after(this._persist('tags', tags, session), (savedTags) => {
           if (savedTags.success) return savedTags;
+          if (checkSession(session) !== 'current') return savedTags;
+          try {
+            const options = { session, migrateLegacy: false, throwOnError: true };
+            const persistedTags = storageService.get(STORAGE_KEYS.NOTE_TAGS, [], options);
+            if (!persistedTags.some((row) => row.id === tagId)) {
+              const persistedNotes = storageService.get(STORAGE_KEYS.NOTES, [], options);
+              assertSession(session);
+              this.tags = [...DEFAULT_TAGS, ...persistedTags.filter((row) => row.isCustom)];
+              this.notes = persistedNotes;
+              return { success: true };
+            }
+          } catch (error) {
+            return this._failure(session, error);
+          }
           // Best-effort rollback stays bound to the origin; failed rollback rereads facts.
           return this._after(this._persist('notes', before, session), () => savedTags);
         });

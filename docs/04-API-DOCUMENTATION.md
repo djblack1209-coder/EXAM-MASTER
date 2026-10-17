@@ -1,5 +1,13 @@
 # API 与工具合同
 
+## 第10轮遗留：提醒草稿、笔记回执与计时归属（现行）
+
+- journey-reminders编辑绑定原owner/epoch、记录上下文与对话；确认换代或切换对话撤销，同epoch续期、普通revision更新及unavailable保留草稿，保存不能重定向到后继对话。
+- question-note写入以`{ success, code, retryable }`传递回执（失败含code/retryable）；未确认新增按原绑定保留同草稿ID，重试复用，旧绑定失败不清新绑定待写。deleteTag未确认时，非current不回滚；current下严格重读原绑定标签，已删除则重读内存并成功，仍存在才回滚笔记并返回原失败，读取失败不回滚，回滚失败按持久事实重读并失败。
+- do-quiz保存笔记已成功且会话非changed时提示成功、关闭弹窗、清空草稿，刷新不可读以result.note合并回退；changed提示contextChanged并保留草稿，写入失败沿原分支。提交及参考查看使用retainOnUnavailable，提交暂不可用提示storageBusy并保留选择，计时继续；onShow暂不可读仅恢复本地计时。
+- question-timer的stop/pause显式token只作用于本次计时，生命周期不带选项时不可读仍本地收尾；stop(token, { retainOnUnavailable: true })暂不可读返回SESSION_UNAVAILABLE及采样用时，保留active、interval和暂停状态。resume显式当前token在active且暂停、身份非changed时允许本地恢复，旧token或changed拒绝；省略token仍要求current，interval回调继续校验会话。
+- checkSession快照不可读时，对epoch/revocation补读同样做generation前后夹读；前后不一致或记录generation不符保持unavailable，仅一致读取确认换代，交错续期不丢待写。
+
 ## 阶段5L：只排空遗留离线任务（现行）
 
 本节替代5H—5K中的通用离线队列入队、去重、重放、容量与发送闭包合同；身份恢复/登记等其他合同继续有效。当前 `src/` 无生产入队调用，只有历史正式版本 `99cb72cf` 的 retry-interceptor 曾写入持久任务。连续审计问题集中于仅测试使用的入队路径，因此删除 `enqueue`、去重合并、`pendingEnqueues`/重放、容量淘汰与 `requestFnMap`，不再维护无生产消费者的新提交能力。

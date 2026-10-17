@@ -190,14 +190,22 @@ class QuestionTimer {
     this.elapsed = this.elapsedMs / 1000;
   }
 
-  stop(token) {
+  stop(token, options = {}) {
     if (token === undefined ? !this._matches(token) : token !== this.token)
       return { success: false, code: 'TIMER_CONTEXT_CHANGED', elapsed: 0, elapsedMs: 0 };
     this._sample();
+    const status = this.isInitialized ? checkSession(this._session) : 'current';
+    if (options.retainOnUnavailable && status === 'unavailable') {
+      return {
+        success: false,
+        code: 'SESSION_UNAVAILABLE',
+        elapsed: this.elapsed,
+        elapsedMs: Math.round(this.elapsedMs)
+      };
+    }
     if (this.currentTimer) clearInterval(this.currentTimer);
     this.currentTimer = null;
     this.active = false;
-    const status = this.isInitialized ? checkSession(this._session) : 'current';
     return {
       success: status === 'current',
       ...(status !== 'current'
@@ -221,7 +229,9 @@ class QuestionTimer {
   }
 
   resume(token) {
-    if (!this._matches(token) || !this.active || !this.isPaused) return false;
+    if (!this.active || !this.isPaused) return false;
+    if (token === undefined ? !this._matches(token) : token !== this.token || checkSession(this._session) === 'changed')
+      return false;
     this.isPaused = false;
     this.startTime = monotonicNow();
     if (this.settings.enabled && this.notificationsEnabled) this._startInterval();
@@ -456,8 +466,8 @@ export function startTimer(options) {
   return questionTimer.start(options);
 }
 
-export function stopTimer(token) {
-  return questionTimer.stop(token);
+export function stopTimer(token, options) {
+  return questionTimer.stop(token, options);
 }
 
 export function pauseTimer(token) {
