@@ -23,7 +23,7 @@
  * await storageService.updateMistakeStatus(mistakeId, true)
  */
 
-import { supportsIdentityWrites, browserUpgradeRequired } from './identity-context.js';
+import { supportsIdentityWrites, browserUpgradeRequired, withIdentityLock } from './identity-context.js';
 import { logger } from '@/utils/logger.js';
 import { readPersistent, requirePersistent } from './persistence-read.js';
 import { readLocalHistory } from './learning/history-storage.js';
@@ -296,6 +296,8 @@ const guestWrites = new Map();
 const loginGuestSources = new Map();
 const identityListeners = new Set();
 let identityWriteDepth = 0;
+let loginIntent = 0;
+const loginIntentContext = newIdentityId();
 let pendingIdentityChange;
 function notifyIdentityChange(change) {
   if (identityWriteDepth) {
@@ -398,11 +400,6 @@ function isUnscopedKey(key) {
   return GLOBAL_KEYS.has(key) || UNSCOPED_KEY_PREFIXES.some((prefix) => key.startsWith(prefix));
 }
 
-function withIdentityLock(write) {
-  if (!supportsIdentityWrites()) throw browserUpgradeRequired();
-  const locks = globalThis.navigator?.locks;
-  return locks?.request ? locks.request('exam-master:login-session-v1', { mode: 'exclusive' }, write) : write();
-}
 function advanceIdentityGeneration(expected) {
   if (readIdentityGeneration() !== expected) return null;
   const next = expected + 1;
@@ -483,7 +480,19 @@ function resolveKey(key, session) {
 // 高频写入场景（如练习状态保存）使用防抖，减少 I/O 操作
 const _pendingWrites = new Map(); // key -> { value, timer }
 const _unreadBases = new Set();
-const storageBinding = (key, session) => JSON.stringify([key, session?.owner, session?.epoch]);
+const storageBinding = (key, session) => {
+  const snapshot = readSessionSnapshot(),
+    record = snapshot.record;
+  const epoch =
+    snapshot.status === 'current' &&
+    record &&
+    session?.owner === record.owner &&
+    Object.prototype.hasOwnProperty.call(record, 'migratedFrom') &&
+    (session.epoch === record.epoch || session.epoch === record.migratedFrom)
+      ? record.migratedFrom
+      : session?.epoch;
+  return JSON.stringify([key, session?.owner, epoch]);
+};
 const _pendingUpdates = new Map(); // [key, owner, epoch] -> ordered read/modify/write operations
 const DEBOUNCE_DELAY = 500; // 防抖延迟 500ms
 const isOwnedLearningKey = (key) => key === 'conversation_learning_v1' || key.startsWith('conversation_learning_v1_');
@@ -656,6 +665,7 @@ class StorageService {
   }
 
   beginLoginAttempt() {
+    const intent = ++loginIntent;
     if (!supportsIdentityWrites()) throw browserUpgradeRequired();
     const generation = readIdentityGeneration();
     const snapshot = readSessionSnapshot();
@@ -663,7 +673,9 @@ class StorageService {
     const revocation = uni.getStorageSync(SESSION_REVOCATION_KEY) || null;
     const guestSources = snapshot.session.owner === 'guest' ? new Map(guestWrites) : new Map();
     return withIdentityLock(() => {
-      if (readIdentityGeneration() !== generation) throw new Error('登录尝试已失效，请重试');
+      const isCurrent = () =>
+        intent === loginIntent && (uni.getStorageSync(SESSION_REVOCATION_KEY) || null) === revocation;
+      if (!isCurrent() || readIdentityGeneration() !== generation) throw new Error('登录尝试已失效，请重试');
       let next;
       try {
         if (snapshot.record) {
@@ -676,8 +688,17 @@ class StorageService {
         throw new Error('登录状态未保存，请重新登录', { cause: failure });
       }
       if (next === null) throw new Error('登录尝试已失效，请重试');
-      const attempt = Object.freeze({ id: newIdentityId(), generation: next, revocation, guestSources });
+      if (!isCurrent()) throw new Error('登录尝试已失效，请重试');
+      const attempt = Object.freeze({
+        id: newIdentityId(),
+        intent,
+        intentContext: loginIntentContext,
+        generation: next,
+        revocation,
+        guestSources
+      });
       uni.setStorageSync(LOGIN_ATTEMPT_KEY, attempt.id);
+      if (!isCurrent()) throw new Error('登录尝试已失效，请重试');
       return attempt;
     });
   }
@@ -687,6 +708,7 @@ class StorageService {
       return (
         supportsIdentityWrites() &&
         !!attempt &&
+        (attempt.intentContext !== loginIntentContext || attempt.intent === loginIntent) &&
         readIdentityGeneration() === attempt.generation &&
         uni.getStorageSync(LOGIN_ATTEMPT_KEY) === attempt.id &&
         (uni.getStorageSync(SESSION_REVOCATION_KEY) || null) === attempt.revocation
@@ -821,7 +843,7 @@ class StorageService {
       if (event.key === null) {
         migrations.clear();
         changed({ type: 'logout' });
-      } else if (isIdentityStorageKey(event.key)) {
+      } else if (isIdentityStorageKey(event.key) || IDENTITY_CONTROL_KEYS.has(identityStorageKey(event.key))) {
         const removed = identityWasRemoved(event);
         if (removed) {
           for (const keys of migrations.values()) {
@@ -1101,7 +1123,7 @@ class StorageService {
   saveDebounced(key, value, silent = true, session = captureSession(), delay = DEBOUNCE_DELAY) {
     if (!session || checkSession(session) === 'changed') return false;
     value = JSON.parse(JSON.stringify(value));
-    const pendingKey = JSON.stringify([key, session.owner, session.epoch]);
+    const pendingKey = storageBinding(key, session);
     const existing = _pendingWrites.get(pendingKey);
     if (existing) {
       clearTimeout(existing.timer);
@@ -1129,7 +1151,7 @@ class StorageService {
 
   update(key, fallback, apply, session = captureSession()) {
     if (!session || checkSession(session) === 'changed') return false;
-    const id = JSON.stringify([key, session.owner, session.epoch]);
+    const id = storageBinding(key, session);
     const pending = _pendingUpdates.get(id) || { key, fallback, session, operations: [] };
     pending.operations.push(apply);
     _pendingUpdates.set(id, pending);
@@ -1181,7 +1203,7 @@ class StorageService {
   }
 
   cancelPendingWrite(key, session) {
-    const id = JSON.stringify([key, session?.owner, session?.epoch]);
+    const id = storageBinding(key, session);
     const pending = _pendingWrites.get(id);
     if (pending) {
       clearTimeout(pending.timer);

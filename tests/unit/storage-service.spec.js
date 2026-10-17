@@ -994,7 +994,7 @@ describe('storageService', () => {
 });
 
 describe('阶段5一致会话与存储入口', () => {
-  it('serializes complete logins and rejects a conflicting registration until explicit retry', async () => {
+  it('serializes complete logins so the latest queued intent wins and explicit retry starts a new epoch', async () => {
     const { storageService } = await import('@/services/storageService.js');
     const { captureSession, checkSession, sessionForRequest } = await import('@/services/auth-storage.js');
     uni.clearStorageSync();
@@ -1011,9 +1011,14 @@ describe('阶段5一致会话与存储入口', () => {
         storageService.saveLoginSession({ userId: 'lock-A', token: 'fixture-token-A', userInfo: {} }),
         storageService.saveLoginSession({ userId: 'lock-B', token: 'fixture-token-B', userInfo: {} })
       ]);
-      expect(receipts.map((item) => item.status)).toEqual(['fulfilled', 'rejected']);
+      expect(receipts.map((item) => item.status)).toEqual(['rejected', 'fulfilled']);
+      const winner = captureSession();
+      expect(winner.owner).toBe('lock-B');
+      expect(sessionForRequest(winner).token).toBe('fixture-token-B');
+      expect(checkSession(winner)).toBe('current');
       await storageService.saveLoginSession({ userId: 'lock-B', token: 'fixture-token-B', userInfo: {} });
       const session = captureSession();
+      expect(checkSession(winner)).toBe('changed');
       expect(Object.isFrozen(session)).toBe(true);
       expect(Object.keys(session)).toEqual(['owner', 'epoch', 'proof']);
       expect(session.proof).toMatch(/^[a-f0-9]{64}$/);

@@ -84,6 +84,7 @@ class QuestionTimer {
     this.owner = owner;
     this._loadSettings();
     this._loadTimeRecords();
+    assertSession(this._session);
     this.isInitialized = true;
     logger.log('[QuestionTimer] 初始化完成');
   }
@@ -93,8 +94,18 @@ class QuestionTimer {
    * @param {Object} newSettings - 新设置
    */
   updateSettings(newSettings) {
-    this.settings = { ...this.settings, ...newSettings };
-    this._saveSettings();
+    const session = assertSession(captureSession());
+    this.init();
+    // A new action must reread its own account, even if initialization previously failed.
+    const saved = storageService.get(STORAGE_KEYS.TIMER_SETTINGS, null, { session, migrateLegacy: false });
+    const settings = { ...DEFAULT_SETTINGS, ...saved, ...newSettings };
+    const finish = (result) => {
+      if (result !== true || checkSession(session) !== 'current') return false;
+      this.settings = settings;
+      return true;
+    };
+    const result = storageService.save(STORAGE_KEYS.TIMER_SETTINGS, settings, true, session);
+    return result?.then ? result.then(finish) : finish(result);
   }
 
   /**
@@ -410,23 +421,13 @@ class QuestionTimer {
    */
   _loadSettings() {
     if (typeof uni !== 'undefined') {
-      const saved = storageService.get(STORAGE_KEYS.TIMER_SETTINGS, null, { migrateLegacy: false });
+      const saved = storageService.get(STORAGE_KEYS.TIMER_SETTINGS, null, {
+        migrateLegacy: false,
+        session: this._session
+      });
       if (saved) {
         this.settings = { ...DEFAULT_SETTINGS, ...saved };
       }
-    }
-  }
-
-  /**
-   * 保存设置
-   */
-  _saveSettings() {
-    try {
-      if (typeof uni !== 'undefined') {
-        storageService.save(STORAGE_KEYS.TIMER_SETTINGS, this.settings, true, this._session);
-      }
-    } catch (e) {
-      logger.warn('[QuestionTimer] 保存设置失败:', e);
     }
   }
 
@@ -435,7 +436,10 @@ class QuestionTimer {
    */
   _loadTimeRecords() {
     if (typeof uni !== 'undefined')
-      this.timeRecords = storageService.get(STORAGE_KEYS.TIME_RECORDS, [], { migrateLegacy: false });
+      this.timeRecords = storageService.get(STORAGE_KEYS.TIME_RECORDS, [], {
+        migrateLegacy: false,
+        session: this._session
+      });
   }
 }
 

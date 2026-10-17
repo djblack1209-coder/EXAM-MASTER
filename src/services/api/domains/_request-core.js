@@ -596,9 +596,11 @@ export async function request(path, data = {}, options = {}) {
           rejectActive = reject;
           // No await between the validated snapshot and transport; credentials come from this snapshot.
           assertActive();
+          let credentialProof;
           if (!options.skipAuth) {
             const snapshot = sessionForRequest(session);
             for (const key of Object.keys(headers)) if (/^authorization$/i.test(key)) delete headers[key];
+            credentialProof = snapshot.session.proof;
             if (snapshot.token) headers.Authorization = `Bearer ${snapshot.token}`;
             else if (snapshot.session.owner !== 'guest') {
               headers['X-User-Id'] = snapshot.session.owner;
@@ -637,13 +639,23 @@ export async function request(path, data = {}, options = {}) {
                 resolve(responseData);
               } else if (res.statusCode === 401 || res.statusCode === 403) {
                 logger.warn('[LafService] 认证失败 ([省略]): [省略]');
-                if (res.statusCode === 401 && !options.suppressAuthFailure) {
+                const current = readSessionSnapshot();
+                const renewed =
+                  !options.skipAuth && current.status === 'current' && credentialProof !== current.session.proof;
+                if (
+                  res.statusCode === 401 &&
+                  !options.skipAuth &&
+                  current.status === 'current' &&
+                  !renewed &&
+                  !options.suppressAuthFailure
+                ) {
                   uni.$emit('authFailure', { statusCode: res.statusCode, path });
                 }
                 reject({
                   statusCode: res.statusCode,
                   message: res.statusCode === 401 ? '登录已过期，请重新登录' : '没有访问权限',
-                  retryable: false,
+                  retryable: renewed,
+                  retryPolicy: renewed ? 'credential_changed' : undefined,
                   errorType: 'auth'
                 });
               } else if (nonRetryableStatuses.includes(res.statusCode)) {
@@ -710,7 +722,7 @@ export async function request(path, data = {}, options = {}) {
         const _apiDuration = Date.now() - timestamp;
         perfMonitor.trackApi(path, _apiDuration, err.statusCode || 0);
         const retryBudget = err.retryPolicy === 'laf_cold_start' ? coldStartRetries : maxRetries;
-        if (!err.retryable || attempt >= retryBudget) {
+        if (!err.retryable || err.retryPolicy === 'credential_changed' || attempt >= retryBudget) {
           logger.error(
             '[LafService] ❌ 请求最终失败 ([省略]次尝试): [省略]',
             options.redactErrors ? { code: requestError(err).code } : err

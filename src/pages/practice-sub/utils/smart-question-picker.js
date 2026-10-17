@@ -66,6 +66,7 @@ class SmartQuestionPicker {
     this._loadQuestionHistory();
     this._loadPerformanceMetrics();
 
+    assertSession(this._session);
     this.isInitialized = true;
     logger.log('[SmartPicker] 初始化完成');
   }

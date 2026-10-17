@@ -47,6 +47,7 @@ class QuestionNoteManager {
     if (this.isInitialized) return;
     this._loadNotes();
     this._loadTags();
+    assertSession(this._session);
     this.isInitialized = true;
     logger.log('[QuestionNote] 初始化完成，笔记数:', this.notes.length);
   }

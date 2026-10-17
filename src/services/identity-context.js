@@ -5,3 +5,9 @@ export const supportsIdentityWrites = () =>
   singleIdentityContext() || typeof globalThis.navigator?.locks?.request === 'function';
 export const browserUpgradeRequired = () =>
   Object.assign(new Error('当前浏览器版本过旧，请升级后登录'), { code: 'BROWSER_UPGRADE_REQUIRED' });
+
+export function withIdentityLock(write) {
+  if (!supportsIdentityWrites()) throw browserUpgradeRequired();
+  const locks = globalThis.navigator?.locks;
+  return locks?.request ? locks.request('exam-master:login-session-v1', { mode: 'exclusive' }, write) : write();
+}

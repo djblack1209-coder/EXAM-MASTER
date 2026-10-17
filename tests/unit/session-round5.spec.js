@@ -131,7 +131,7 @@ it('WRITES-03/inflight-14-01: typed unavailable response preserves offline retry
     requestData: { answer: 'A' }
   });
   queue.queue[0].retryCount = 2;
-  queue._saveToStorage();
+  queue._saveToStorage(queue.queue[0]);
   const before = structuredClone(uni.getStorageSync('EXAM_OFFLINE_QUEUE'));
   queue.isOnline = true;
   const pending = queue.processQueue();

@@ -7,7 +7,13 @@
 
 import { defineStore } from 'pinia';
 import { ref, onScopeDispose } from 'vue';
-import { captureSession, checkSession, assertSession, isSessionFormatMigration } from '@/services/auth-storage.js';
+import {
+  captureSession,
+  checkSession,
+  assertSession,
+  isSessionFormatMigration,
+  readSessionSnapshot
+} from '@/services/auth-storage.js';
 import config from '@/config/index.js';
 const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
@@ -52,7 +58,6 @@ export const useProfileStore = defineStore('profile', () => {
    * 更新用户信息（合并）
    */
   const updateUserInfo = (info) => {
-    assertSession(session);
     return setUserInfo(info, captureSession(), true);
   };
 
@@ -70,8 +75,23 @@ export const useProfileStore = defineStore('profile', () => {
       return;
     }
     if (checkSession(session) !== 'changed') return;
+    const snapshot = readSessionSnapshot();
+    if (snapshot.status === 'unavailable') return;
     $reset();
-    session = captureSession();
+    if (snapshot.status !== 'current') {
+      session = null;
+      return;
+    }
+    session = snapshot.session;
+    try {
+      const info = snapshot.record
+        ? snapshot.record.userInfo
+        : storageService.get(APP_CONFIG.cacheKeys.userInfo, null, { session, migrateLegacy: false });
+      if (checkSession(session) === 'current') userInfo.value = info;
+    } catch {
+      // Keep the old binding so the next identity notification can retry restoration.
+      session = null;
+    }
   });
   onScopeDispose(stopIdentity);
 

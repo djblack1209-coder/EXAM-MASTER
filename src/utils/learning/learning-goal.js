@@ -111,6 +111,7 @@ class LearningGoalManager {
     this._loadGoals();
     this._loadRecords();
     this._loadReminderSettings();
+    assertSession(this._session);
     this.isInitialized = true;
     logger.log('[LearningGoal] 初始化完成');
 

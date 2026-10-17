@@ -77,6 +77,7 @@ class SwipeGestureManager {
       this.settings = { ...this.settings, ...options.settings };
     }
 
+    assertSession(this._session);
     this.isInitialized = true;
     logger.log('[SwipeGesture] 初始化完成');
   }
@@ -86,8 +87,18 @@ class SwipeGestureManager {
    * @param {Object} newSettings - 新设置
    */
   updateSettings(newSettings) {
-    this.settings = { ...this.settings, ...newSettings };
-    this._saveSettings();
+    const session = assertSession(captureSession());
+    this.init();
+    // A new action must reread its own account, even if initialization previously failed.
+    const saved = storageService.get(STORAGE_KEY, null, { session, migrateLegacy: false });
+    const settings = { ...DEFAULT_SETTINGS, ...saved, ...newSettings };
+    const finish = (result) => {
+      if (result !== true || checkSession(session) !== 'current') return false;
+      this.settings = settings;
+      return true;
+    };
+    const result = storageService.save(STORAGE_KEY, settings, true, session);
+    return result?.then ? result.then(finish) : finish(result);
   }
 
   /**
@@ -114,6 +125,7 @@ class SwipeGestureManager {
    * @returns {Object} 处理结果
    */
   handleTouchStart(event, context = {}) {
+    this.init();
     if (!this.settings.enabled) return { handled: false };
 
     const touch = event.touches[0];
@@ -399,29 +411,8 @@ class SwipeGestureManager {
    * 加载设置
    */
   _loadSettings() {
-    try {
-      if (typeof uni !== 'undefined') {
-        const saved = storageService.get(STORAGE_KEY);
-        if (saved) {
-          this.settings = { ...DEFAULT_SETTINGS, ...saved };
-        }
-      }
-    } catch (e) {
-      logger.warn('[SwipeGesture] 加载设置失败:', e);
-    }
-  }
-
-  /**
-   * 保存设置
-   */
-  _saveSettings() {
-    try {
-      if (typeof uni !== 'undefined') {
-        storageService.save(STORAGE_KEY, this.settings, true, this._session);
-      }
-    } catch (e) {
-      logger.warn('[SwipeGesture] 保存设置失败:', e);
-    }
+    const saved = storageService.get(STORAGE_KEY, null, { session: this._session, migrateLegacy: false });
+    this.settings = { ...DEFAULT_SETTINGS, ...saved };
   }
 }
 
