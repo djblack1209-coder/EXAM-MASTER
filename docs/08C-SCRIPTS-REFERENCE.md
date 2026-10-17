@@ -247,9 +247,11 @@ learning-records.before-signing.json与learning-records.after-signing.json完整
 
 ## 自动依赖更新
 
-.github/dependabot.yml 每周检查根/后端 npm、pip、GitHub Actions、Docker。兼容 minor/patch 分组，major 单独审查；Node镜像与Node类型忽略semver-major，后端Express/Express类型/MongoDB/TypeScript的major等待[迁移批次](13-DEVELOPMENT-PLAN.md#dependabot-分流2026-10-17)验收后解锁；npm/pip 设置 7 日冷却。锁文件、ESLint/格式、单元/后端/多端与安全检查保持，不自动合并或部署。当前配置未推送到默认分支，托管自动更新尚未实证。
+.github/dependabot.yml 每周检查根/后端 npm、pip、GitHub Actions、Docker。兼容 minor/patch 分组，major 单独审查；Node镜像与Node类型忽略semver-major，后端Express/Express类型/MongoDB/TypeScript的major等待[迁移批次](13-DEVELOPMENT-PLAN.md#dependabot-分流2026-10-17)验收后解锁；npm/pip 设置 7 日冷却。锁文件、ESLint/格式、单元/后端/多端与安全检查保持，不自动合并或部署。忽略规则已由前序推送后生效；本轮依赖升级只在 main 本地提交，不操作 GitHub PR 或部署。
 
 运行版本以根及后端 engines/packageManager/锁为准；已有安全 override 不为追新删除。不能把 npm outdated 的非零退出误当脚本崩溃，也不能从无新依赖推断旧风险已消失。生产依赖与开发工具风险分别记录。
+
+阶段8A将 Python 规范工具更新为 ruff 0.17.0，Baidu requests 下限为 2.34.2、python-dotenv 下限为 1.2.4；用 tmp/p8a-venv 隔离安装完整清单并复用本地已有 OCR/模型依赖，结束删除该环境。Playwright 1.64.0 本机配套 chromium-headless-shell revision 1248；CLI 的 `install --only-shell chromium` 也会安装 FFmpeg，本批下载许可只覆盖 shell，故本机按包内 registry 精确选择 shell，保留旧缓存。CI 原 `npx --no-install playwright install --with-deps --only-shell chromium` 仍匹配浏览器测试，不在本机运行其系统依赖/FFmpeg下载；云端验收另计。Prettier 3.9.10 的四文件格式变化单列提交。完整版本、审计变化和未闭合事项见 [阶段8A](13-DEVELOPMENT-PLAN.md#阶段8a依赖更新2026-10-17本地-main)。
 
 ## 命令索引
 
