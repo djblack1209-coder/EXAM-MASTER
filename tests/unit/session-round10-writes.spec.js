@@ -16,9 +16,11 @@ import JourneyReminders from '@/components/business/learning/journey-reminders.v
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { learningWriteLease } from '@/services/learning/learning-write-lease.js';
 import { toast } from '@/utils/toast.js';
+import { t } from '@/i18n/index.js';
 
 vi.mock('@dcloudio/uni-app', () => ({ onShow() {}, onHide() {}, onLoad() {}, onBackPress() {} }));
 const read = uni.getStorageSync.getMockImplementation();
+const write = uni.setStorageSync.getMockImplementation();
 const login = (n = 1) =>
   storageService.saveLoginSession({ userId: `account-${n}`, token: `fixture-${n}`, userInfo: { id: `account-${n}` } });
 let blocked, wrapper, timer;
@@ -48,6 +50,7 @@ afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
   uni.getStorageSync.mockImplementation(read);
+  uni.setStorageSync.mockImplementation(write);
 });
 function setupJourney(store) {
   store.start('回归学习');
@@ -494,3 +497,277 @@ it('order-10-01: guest supplemental revocation read is bracketed by generation',
   uni.getStorageSync.mockImplementation(read);
   expect(checkSession(guest)).toBe('changed');
 });
+
+function notePage() {
+  return {
+    currentQuestion: { id: 'q', question: 'Question' },
+    boundLoginSession: captureSession(),
+    noteContent: draft.content,
+    selectedNoteTags: ['key_point'],
+    showNoteModal: true,
+    currentQuestionNotes: []
+  };
+}
+it('audit-p1-01: confirmed save survives unavailable page acknowledgement and cannot duplicate on retry', async () => {
+  const page = notePage();
+  const add = questionNoteManager.addNote.bind(questionNoteManager);
+  vi.spyOn(questionNoteManager, 'addNote').mockImplementation((...args) => {
+    const result = add(...args);
+    expect(result.success).toBe(true);
+    blocked = true;
+    return result;
+  });
+  const success = vi.spyOn(toast, 'success'),
+    info = vi.spyOn(toast, 'info');
+  await expect(DoQuiz.methods.handleSaveNote.call(page)).resolves.toBeUndefined();
+  expect(success).toHaveBeenCalledWith(t('quiz.copy100'));
+  expect(info).not.toHaveBeenCalled();
+  expect(page).toMatchObject({ showNoteModal: false, noteContent: '', selectedNoteTags: [] });
+  expect(page.currentQuestionNotes).toMatchObject([{ questionId: 'q', content: draft.content }]);
+  blocked = false;
+  await DoQuiz.methods.handleSaveNote.call(page);
+  expect(read('u_account-1_question_notes')).toHaveLength(1);
+});
+it('audit-p1-01: confirmed origin save reports context change and retains its draft after relogin', async () => {
+  const page = notePage();
+  const add = questionNoteManager.addNote.bind(questionNoteManager);
+  vi.spyOn(questionNoteManager, 'addNote').mockImplementation((...args) => {
+    const result = add(...args);
+    expect(result.success).toBe(true);
+    login(2);
+    return result;
+  });
+  const info = vi.spyOn(toast, 'info'),
+    success = vi.spyOn(toast, 'success');
+  await DoQuiz.methods.handleSaveNote.call(page);
+  expect(info).toHaveBeenLastCalledWith(t('ui.contextChanged'));
+  expect(success).not.toHaveBeenCalled();
+  expect(page).toMatchObject({ showNoteModal: true, noteContent: draft.content, selectedNoteTags: ['key_point'] });
+  expect(read('u_account-1_question_notes')).toHaveLength(1);
+  expect(storageService.get('question_notes', [])).toEqual([]);
+});
+
+function timedPage() {
+  Object.assign(questionTimer, new questionTimer.constructor());
+  timer = questionTimer;
+  const question = { id: 'q', question: 'Q', type: 'single_choice', options: ['A', 'B'], answer: 'A' };
+  return {
+    boundLoginSession: captureSession(),
+    quizOwnerId: 'account-1',
+    canSubmitChoice: true,
+    currentQuestion: question,
+    questions: [question],
+    userChoice: 0,
+    currentIndex: 0,
+    questionTimerToken: timer.start().token,
+    hasAnswered: false,
+    answeredQuestions: [],
+    saveCurrentProgress: vi.fn(),
+    recordAnswerToAnalytics: vi.fn().mockResolvedValue(),
+    updateStudyStats: vi.fn(),
+    clearComboFeedback: vi.fn(),
+    startTimer: vi.fn()
+  };
+}
+it('audit-p1-02: unavailable submission retains the selected answer and records all 6550ms after recovery', async () => {
+  const page = timedPage();
+  vi.advanceTimersByTime(1550);
+  const interval = timer.currentTimer,
+    stop = timer.stop.bind(timer),
+    info = vi.spyOn(toast, 'info');
+  const spy = vi.spyOn(timer, 'stop').mockImplementation((...args) => {
+    blocked = true;
+    return stop(...args);
+  });
+  await DoQuiz.methods.submitChoice.call(page);
+  expect(timer.active).toBe(true);
+  expect(timer.currentTimer).toBe(interval);
+  expect(timer.isPaused).toBe(false);
+  expect(info).toHaveBeenLastCalledWith(t('ui.storageBusy'));
+  expect(page).toMatchObject({ userChoice: 0, hasAnswered: false, answeredQuestions: [] });
+  expect(page.saveCurrentProgress).not.toHaveBeenCalled();
+  expect(page.recordAnswerToAnalytics).not.toHaveBeenCalled();
+  blocked = false;
+  spy.mockRestore();
+  DoQuiz.methods.selectOption.call(page, 1);
+  vi.advanceTimersByTime(5000);
+  await DoQuiz.methods.submitChoice.call(page);
+  expect(page.answeredQuestions).toMatchObject([{ timeSpent: 6550 }]);
+  expect(timer.active).toBe(false);
+});
+it('audit-p1-02: unavailable reference view retains the timer without writing an observation or showing a toast', async () => {
+  const page = timedPage();
+  page.currentQuestion = { id: 'q', question: 'Q', type: 'flashcard', answer: 'A' };
+  const stop = timer.stop.bind(timer);
+  vi.spyOn(timer, 'stop').mockImplementation((...args) => {
+    blocked = true;
+    return stop(...args);
+  });
+  const info = vi.spyOn(toast, 'info');
+  await DoQuiz.methods.flipFlashcard.call(page);
+  expect(timer.active).toBe(true);
+  expect(page.hasAnswered).toBe(false);
+  expect(page.referenceSaved).not.toBe(true);
+  expect(page.recordingObservation).toBe(false);
+  expect(page.saveCurrentProgress).not.toHaveBeenCalled();
+  expect(info).not.toHaveBeenCalled();
+});
+it('audit-p1-02-hide-show: unavailable onHide/onShow resumes local timing and excludes hidden time', () => {
+  const page = timedPage();
+  vi.advanceTimersByTime(1550);
+  blocked = true;
+  DoQuiz.onHide.call(page);
+  expect(timer.isPaused).toBe(true);
+  expect(timer.currentTimer).toBeNull();
+  vi.advanceTimersByTime(20000);
+  DoQuiz.onShow.call(page);
+  expect(timer.active).toBe(true);
+  expect(timer.isPaused).toBe(false);
+  expect(page.questions).toHaveLength(1);
+  vi.advanceTimersByTime(5000);
+  blocked = false;
+  expect(timer.stop(page.questionTimerToken)).toMatchObject({ success: true, elapsedMs: 6550 });
+});
+it.each([true, false])(
+  'audit-p1-02-hide-show: explicit resume works while unavailable, notifications=%s',
+  (enabled) => {
+    timer = new questionTimer.constructor();
+    const onTick = vi.fn(),
+      token = timer.start({ notificationsEnabled: enabled, onTick }).token;
+    vi.advanceTimersByTime(1550);
+    blocked = true;
+    expect(timer.pause(token)).toBe(true);
+    vi.advanceTimersByTime(20000);
+    expect(timer.resume(token)).toBe(true);
+    expect(timer.isPaused).toBe(false);
+    expect(timer.currentTimer !== null).toBe(enabled);
+    onTick.mockClear();
+    vi.advanceTimersByTime(2500);
+    expect(onTick).not.toHaveBeenCalled();
+    blocked = false;
+    vi.advanceTimersByTime(2500);
+    expect(timer.stop(token)).toMatchObject({ success: true, elapsedMs: 6550 });
+  }
+);
+it.each([false, true])('audit-p1-02: stale token cannot resume its paused successor, unavailable=%s', (unavailable) => {
+  timer = new questionTimer.constructor();
+  const old = timer.start().token,
+    current = timer.start().token;
+  timer.pause(current);
+  blocked = unavailable;
+  expect(timer.resume(old)).toBe(false);
+  expect(timer.token).toBe(current);
+  expect(timer.active).toBe(true);
+  expect(timer.isPaused).toBe(true);
+  expect(timer.currentTimer).toBeNull();
+});
+it('audit-p1-02: omitted resume requires current identity and changed identity rejects explicit resume', () => {
+  timer = new questionTimer.constructor();
+  const token = timer.start().token;
+  timer.pause(token);
+  blocked = true;
+  expect(timer.resume()).toBe(false);
+  blocked = false;
+  expect(timer.resume()).toBe(true);
+  timer.pause(token);
+  login(2);
+  expect(timer.resume(token)).toBe(false);
+  expect(timer.isPaused).toBe(true);
+});
+it.each(['current', 'unavailable', 'changed'])(
+  'audit-p1-02: retain option preserves a paused timer only when unavailable; status=%s',
+  (status) => {
+    timer = new questionTimer.constructor();
+    const token = timer.start().token;
+    vi.advanceTimersByTime(1550);
+    timer.pause(token);
+    blocked = status === 'unavailable';
+    if (status === 'changed') login(2);
+    const result = timer.stop(token, { retainOnUnavailable: true });
+    expect(result).toMatchObject({ success: status === 'current', elapsedMs: 1550 });
+    expect(timer.active).toBe(status === 'unavailable');
+    expect(timer.isPaused).toBe(true);
+    expect(timer.currentTimer).toBeNull();
+    if (status === 'unavailable') expect(result.code).toBe('SESSION_UNAVAILABLE');
+    if (status === 'changed') expect(result.code).toBe('TIMER_CONTEXT_CHANGED');
+  }
+);
+
+it.each(['native receipt', 'session confirmation'])(
+  'audit-p1-03: committed tag deletion with lost %s confirms disk without restoring dangling references',
+  async (lost) => {
+    const manager = new questionNoteManager.constructor();
+    const tag = (await manager.createTag({ name: 'Custom' })).tag;
+    await manager.addNote({ ...draft, tags: [tag.id] });
+    let unreadable = 0;
+    uni.getStorageSync.mockImplementation((key) => {
+      if (key === '_enc_EXAM_SESSION_EPOCH' && unreadable > 0) {
+        unreadable--;
+        throw sessionUnavailable();
+      }
+      return read(key);
+    });
+    uni.setStorageSync.mockImplementation((key, value) => {
+      const result = write(key, value);
+      if (key === 'u_account-1_question_note_tags') {
+        if (lost === 'native receipt') throw new Error('synthetic lost native write receipt');
+        unreadable = 2;
+      }
+      return result;
+    });
+    expect(await manager.deleteTag(tag.id)).toEqual({ success: true });
+    const reopened = new questionNoteManager.constructor();
+    reopened.init();
+    expect(reopened.tags.some((row) => row.id === tag.id)).toBe(false);
+    expect(reopened.notes[0].tags).not.toContain(tag.id);
+    expect(manager.notes).toEqual(reopened.notes);
+    expect(manager.tags).toEqual(reopened.tags);
+  }
+);
+it('audit-p1-03: uncommitted tag deletion rolls back note references and returns the original failure', async () => {
+  const manager = new questionNoteManager.constructor();
+  const tag = (await manager.createTag({ name: 'Custom' })).tag;
+  await manager.addNote({ ...draft, tags: [tag.id] });
+  const save = storageService.save.bind(storageService);
+  vi.spyOn(storageService, 'save').mockImplementation((key, ...args) =>
+    key === 'question_note_tags' ? false : save(key, ...args)
+  );
+  expect(await manager.deleteTag(tag.id)).toMatchObject({ success: false, retryable: true });
+  const reopened = new questionNoteManager.constructor();
+  reopened.init();
+  expect(reopened.tags.some((row) => row.id === tag.id)).toBe(true);
+  expect(reopened.notes[0].tags).toContain(tag.id);
+  expect(manager.notes).toEqual(reopened.notes);
+  expect(manager.tags).toEqual(reopened.tags);
+});
+it.each(['unavailable', 'changed', 'tag read failure'])(
+  'audit-p1-03: uncertain tag deletion never rolls back notes after %s',
+  async (failure) => {
+    const manager = new questionNoteManager.constructor();
+    const tag = (await manager.createTag({ name: 'Custom' })).tag;
+    await manager.addNote({ ...draft, tags: [tag.id] });
+    const save = storageService.save.bind(storageService);
+    let noteWrites = 0,
+      failRead = false;
+    uni.getStorageSync.mockImplementation((key) => {
+      if ((blocked && key === '_enc_EXAM_SESSION_EPOCH') || (failRead && key === 'u_account-1_question_note_tags'))
+        throw sessionUnavailable();
+      return read(key);
+    });
+    vi.spyOn(storageService, 'save').mockImplementation((key, ...args) => {
+      if (key === 'question_notes') noteWrites++;
+      const result = save(key, ...args);
+      if (key === 'question_note_tags') {
+        if (failure === 'changed') login(2);
+        else if (failure === 'unavailable') blocked = true;
+        else failRead = true;
+        return false;
+      }
+      return result;
+    });
+    expect(await manager.deleteTag(tag.id)).toMatchObject({ success: false, retryable: failure !== 'changed' });
+    expect(noteWrites).toBe(1);
+    expect(read('u_account-1_question_notes')[0].tags).not.toContain(tag.id);
+    expect(read('u_account-1_question_note_tags').some((row) => row.id === tag.id)).toBe(false);
+  }
+);

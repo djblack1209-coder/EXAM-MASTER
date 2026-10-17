@@ -1255,6 +1255,12 @@ export default {
     }, 16);
   },
   onShow() {
+    if (checkSession(this.boundLoginSession) === 'unavailable') {
+      // Resume only local measurement while identity reads are unavailable.
+      if (this.questions?.length && !this.hasAnswered && !this.showResumeModal)
+        resumeQuestionTimer(this.questionTimerToken);
+      return;
+    }
     if (!quizRecordOwnerMatches(this)) return rejectQuizResume(this);
     // 主题监听已在 onLoad 注册，仅刷新当前值
     // ✅ P1-1: 恢复计时器（onHide 时已暂停）
@@ -1791,8 +1797,11 @@ export default {
       const choice = Array.isArray(this.userChoice) ? [...this.userChoice] : this.userChoice;
       const submittedAnswer = getQuizSelectionAnswer(this.currentQuestion, choice);
       // ✅ 停止单题计时器并记录用时
-      const timerResult = stopQuestionTimer(this.questionTimerToken);
-      if (timerResult.success === false) return;
+      const timerResult = stopQuestionTimer(this.questionTimerToken, { retainOnUnavailable: true });
+      if (timerResult.success === false) {
+        if (timerResult.code === 'SESSION_UNAVAILABLE') toast.info(t('ui.storageBusy'));
+        return;
+      }
       this.hasAnswered = true;
       const timeSpent = timerResult.elapsedMs ?? timerResult.elapsed * 1000; // 转换为毫秒
 
@@ -1925,7 +1934,7 @@ export default {
       this.recordingObservation = true;
       this.observationError = '';
       try {
-        const measured = stopQuestionTimer(this.questionTimerToken);
+        const measured = stopQuestionTimer(this.questionTimerToken, { retainOnUnavailable: true });
         if (measured.success === false) return;
         const timeSpent = measured.elapsedMs ?? measured.elapsed * 1000;
         await recordQuizLearningObservation({
@@ -2784,11 +2793,23 @@ export default {
         this.boundLoginSession
       );
 
-      if (result.success && checkSession(this.boundLoginSession) === 'current') {
+      if (result.success) {
+        if (checkSession(this.boundLoginSession) === 'changed') {
+          toast.info(t('ui.contextChanged'));
+          return;
+        }
         toast.success(t('quiz.copy100'));
 
         // 更新当前题目的笔记列表
-        this.currentQuestionNotes = getNotesByQuestion(this.currentQuestion.id || this.currentQuestion.question);
+        try {
+          this.currentQuestionNotes = getNotesByQuestion(this.currentQuestion.id || this.currentQuestion.question);
+        } catch {
+          // The manager already confirmed this write; a busy refresh must not replay it.
+          this.currentQuestionNotes = [
+            result.note,
+            ...(this.currentQuestionNotes || []).filter((note) => note.id !== result.note.id)
+          ];
+        }
 
         this.showNoteModal = false;
         this.noteContent = '';
