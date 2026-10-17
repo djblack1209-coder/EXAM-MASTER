@@ -71,7 +71,7 @@ const untrackedTsFiles = Array.from(tsStems)
   .filter((path) => !trackedFiles.has(path))
   .sort();
 
-const strictMode = process.argv.includes('--strict');
+const strictMode = process.env.LAF_SOURCE_AUDIT_STRICT === 'true' || process.argv.includes('--strict');
 const pullFunctionsDir = process.env.LAF_PULL_DIR || join('/tmp', 'laf-pull-check', 'functions');
 
 const localTsAll = listTsRelativePaths(functionsDir);

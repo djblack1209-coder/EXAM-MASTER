@@ -98,6 +98,7 @@ describe('[安全审计] send-email-code 敏感信息与错误返回', () => {
 
     const result = await sendEmailCodeHandler({
       body: { email: 'user@validmail.com' },
+      socket: { remoteAddress: '192.0.2.1' },
       headers: {}
     });
 
@@ -111,6 +112,7 @@ describe('[安全审计] send-email-code 敏感信息与错误返回', () => {
 
     const result = await sendEmailCodeHandler({
       body: {},
+      socket: { remoteAddress: '192.0.2.1' },
       headers: {}
     });
 
@@ -125,6 +127,7 @@ describe('[安全审计] send-email-code 敏感信息与错误返回', () => {
 
     const result = await sendEmailCodeHandler({
       body: { email: 'user@validmail.com' },
+      socket: { remoteAddress: '192.0.2.1' },
       headers: {}
     });
 
@@ -140,6 +143,7 @@ describe('[安全审计] send-email-code 敏感信息与错误返回', () => {
 
     const result = await sendEmailCodeHandler({
       body: { email: 'user@validmail.com' },
+      socket: { remoteAddress: '192.0.2.1' },
       headers: {}
     });
 
@@ -153,6 +157,7 @@ describe('[安全审计] send-email-code 敏感信息与错误返回', () => {
 
     await sendEmailCodeHandler({
       body: { email: 'Test.User@Gmail.COM ' },
+      socket: { remoteAddress: '192.0.2.1' },
       headers: {}
     });
 
@@ -169,6 +174,7 @@ describe('[安全审计] send-email-code 敏感信息与错误返回', () => {
 
     const result = await sendEmailCodeHandler({
       body: { email: 'user@example.com' },
+      socket: { remoteAddress: '192.0.2.1' },
       headers: {}
     });
 

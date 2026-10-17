@@ -162,7 +162,10 @@ describe('受保护用户身份索引范围', () => {
     for (const adminSecret of ['', 'unit_admin_secret_for_scoped_indexes']) {
       const setup = await loadLoginHandler({ indexMigration: true, adminSecret });
       try {
-        const result = await setup.handler({ headers: {}, body: { scope: 'user-identities' } });
+        const result = await setup.handler({
+          headers: {},
+          body: { scope: 'user-identities' }
+        });
         expect(result.code).toBe(adminSecret ? 403 : 503);
         expect(setup.collection.createIndex).not.toHaveBeenCalled();
         expect(setup.collectionFactory).not.toHaveBeenCalled();
@@ -250,7 +253,11 @@ describe('[安全审计] login 错误响应形态一致性', () => {
     const { handler, restoreEnv } = await loadLoginHandler({ jwtSecret: '' });
 
     try {
-      const result = await handler({ body: { type: 'wechat', code: 'valid_code_12345' }, headers: {} });
+      const result = await handler({
+        body: { type: 'wechat', code: 'valid_code_12345' },
+        socket: { remoteAddress: '192.0.2.1' },
+        headers: {}
+      });
 
       expect(result.code).toBe(500);
       expect(result.success).toBe(false);
@@ -265,7 +272,11 @@ describe('[安全审计] login 错误响应形态一致性', () => {
     const { handler, restoreEnv } = await loadLoginHandler({ jwtSecret: 'unit_test_jwt' });
 
     try {
-      const result = await handler({ body: { type: 'email', verifyCode: '123456' }, headers: {} });
+      const result = await handler({
+        body: { type: 'email', verifyCode: '123456' },
+        socket: { remoteAddress: '192.0.2.1' },
+        headers: {}
+      });
 
       expect(result.code).toBe(400);
       expect(result.success).toBe(false);
@@ -283,7 +294,11 @@ describe('[安全审计] login 错误响应形态一致性', () => {
     });
 
     try {
-      const result = await handler({ body: { type: 'wechat', code: 'valid_code_12345' }, headers: {} });
+      const result = await handler({
+        body: { type: 'wechat', code: 'valid_code_12345' },
+        socket: { remoteAddress: '192.0.2.1' },
+        headers: {}
+      });
 
       expect(result.code).toBe(429);
       expect(result.success).toBe(false);
@@ -310,7 +325,10 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
     async (code) => {
       const run = await loadLoginHandler();
       try {
-        expect((await run.handler({ body: { ...nativeBody, code }, headers: {} })).code).toBe(400);
+        expect(
+          (await run.handler({ body: { ...nativeBody, code }, socket: { remoteAddress: '192.0.2.1' }, headers: {} }))
+            .code
+        ).toBe(400);
         expect(run.fetch).not.toHaveBeenCalled();
         expect(run.collection.add).not.toHaveBeenCalled();
       } finally {
@@ -321,7 +339,7 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
   it.each([{ mobileAppId: '' }, { mobileSecret: '' }])('缺移动配置不借用小程序或公众号配置', async (config) => {
     const run = await loadLoginHandler(config);
     try {
-      const response = await run.handler({ body: nativeBody, headers: {} });
+      const response = await run.handler({ body: nativeBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} });
       expect(response).toMatchObject({ code: 500, success: false });
       expect(response.message).toContain('移动应用');
       expect(run.fetch).not.toHaveBeenCalled();
@@ -347,6 +365,7 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
           userInfo: { role: 'admin' },
           role: 'admin'
         },
+        socket: { remoteAddress: '192.0.2.1' },
         headers: {}
       });
       expect(response.code).toBe(0);
@@ -390,9 +409,9 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
     });
     try {
       wechatReplies(run.fetch);
-      const first = await run.handler({ body: nativeBody, headers: {} });
+      const first = await run.handler({ body: nativeBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} });
       wechatReplies(run.fetch);
-      const second = await run.handler({ body: nativeBody, headers: {} });
+      const second = await run.handler({ body: nativeBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} });
       expect(first.data.userId).not.toBe('other-app');
       expect(second.data.userId).toBe(first.data.userId);
       expect(second.data.isNewUser).toBe(false);
@@ -407,7 +426,11 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
     });
     wechatReplies(run.fetch, { unionid: 'server-union', profile: { unionid: 'server-union' } });
     try {
-      const response = await run.handler({ body: { ...nativeBody, unionid: 'client-forged-union' }, headers: {} });
+      const response = await run.handler({
+        body: { ...nativeBody, unionid: 'client-forged-union' },
+        socket: { remoteAddress: '192.0.2.1' },
+        headers: {}
+      });
       expect(response.data.userId).toBe('known-user');
       expect(response.data.userInfo.nickname).toBe('我的昵称');
       expect(run.collection.add).not.toHaveBeenCalled();
@@ -424,7 +447,9 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
     const run = await loadLoginHandler();
     wechatReplies(run.fetch, provider);
     try {
-      expect((await run.handler({ body: nativeBody, headers: {} })).code).toBe(401);
+      expect((await run.handler({ body: nativeBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} })).code).toBe(
+        401
+      );
       expect(run.collection.add).not.toHaveBeenCalled();
     } finally {
       run.restoreEnv();
@@ -439,7 +464,9 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
     });
     wechatReplies(run.fetch, { unionid: 'server-union' });
     try {
-      expect((await run.handler({ body: nativeBody, headers: {} })).code).toBe(409);
+      expect((await run.handler({ body: nativeBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} })).code).toBe(
+        409
+      );
       expect(run.records).toHaveLength(2);
       expect(run.records[0]).not.toHaveProperty('unionid');
       expect(run.collection.add).not.toHaveBeenCalled();
@@ -456,7 +483,7 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
     const run = await loadLoginHandler();
     run.fetch.mockResolvedValueOnce(provider);
     try {
-      const response = await run.handler({ body: nativeBody, headers: {} });
+      const response = await run.handler({ body: nativeBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} });
       expect(response.code).toBeGreaterThanOrEqual(400);
       expect(JSON.stringify([response, Object.values(run.logger).flatMap((fn) => fn.mock.calls)])).not.toContain(
         'private-'
@@ -470,7 +497,9 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
     const run = await loadLoginHandler();
     run.fetch.mockRejectedValueOnce(new Error('private-secret-url?code=private-code'));
     try {
-      expect((await run.handler({ body: nativeBody, headers: {} })).code).toBe(502);
+      expect((await run.handler({ body: nativeBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} })).code).toBe(
+        502
+      );
       expect(JSON.stringify(Object.values(run.logger).flatMap((fn) => fn.mock.calls))).not.toContain('private-');
     } finally {
       run.restoreEnv();
@@ -482,7 +511,7 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
     wechatReplies(run.fetch);
     run.collection.add.mockRejectedValueOnce(new Error('TEST_ONLY_private_db_identity'));
     try {
-      const response = await run.handler({ body: nativeBody, headers: {} });
+      const response = await run.handler({ body: nativeBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} });
       expect(response).toMatchObject({ code: 500, success: false });
       expect(JSON.stringify([response, Object.values(run.logger).flatMap((fn) => fn.mock.calls)])).not.toContain(
         'TEST_ONLY_private_db_identity'
@@ -495,7 +524,11 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
     const run = await loadLoginHandler();
     wechatReplies(run.fetch);
     try {
-      const response = await run.handler({ body: { type: 'wechat_h5', code: nativeBody.code }, headers: {} });
+      const response = await run.handler({
+        body: { type: 'wechat_h5', code: nativeBody.code },
+        socket: { remoteAddress: '192.0.2.1' },
+        headers: {}
+      });
       expect(response.code).toBe(0);
       expect(new URL(run.fetch.mock.calls[0][0].url).searchParams.get('appid')).toBe('unit_wx_gzh_appid');
       expect(run.records[0]).toMatchObject({ h5_openid: 'provider-openid' });
@@ -508,7 +541,7 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
   it.each([{ type: 'unknown' }, { ...nativeBody, platform: 'unknown' }])('未知登录方式不回退到小程序', async (body) => {
     const run = await loadLoginHandler();
     try {
-      expect((await run.handler({ body, headers: {} })).code).toBe(400);
+      expect((await run.handler({ body, socket: { remoteAddress: '192.0.2.1' }, headers: {} })).code).toBe(400);
       expect(run.fetch).not.toHaveBeenCalled();
     } finally {
       run.restoreEnv();
@@ -517,7 +550,9 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
   it('移动授权仍受登录限流约束', async () => {
     const run = await loadLoginHandler({ rateLimitAllowed: false });
     try {
-      expect((await run.handler({ body: nativeBody, headers: {} })).code).toBe(429);
+      expect((await run.handler({ body: nativeBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} })).code).toBe(
+        429
+      );
       expect(run.fetch).not.toHaveBeenCalled();
       expect(run.collection.add).not.toHaveBeenCalled();
     } finally {
@@ -529,7 +564,11 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
     const run = await loadLoginHandler();
     run.fetch.mockResolvedValueOnce({ data: { errcode: 40029 } });
     try {
-      const response = await run.handler({ body: { type, code: nativeBody.code }, headers: {} });
+      const response = await run.handler({
+        body: { type, code: nativeBody.code },
+        socket: { remoteAddress: '192.0.2.1' },
+        headers: {}
+      });
       expect(response.code).toBe(401);
       expect(new URL(run.fetch.mock.calls[0][0].url).pathname).toBe('/sns/jscode2session');
     } finally {
@@ -554,7 +593,7 @@ describe('微信移动应用的一次性授权码与服务端身份', () => {
       throw new Error('E11000 duplicate key');
     });
     try {
-      const response = await run.handler({ body: nativeBody, headers: {} });
+      const response = await run.handler({ body: nativeBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} });
       expect(response.code).toBe(expected);
       expect(run.records).toHaveLength(1);
       if (expected === 0) expect(response.data.userId).toBe('raced-user');
@@ -570,7 +609,9 @@ describe('网站微信扫码与独立应用身份', () => {
   it.each([{ webAppId: '' }, { webSecret: '' }])('缺网站配置时不借用公众号或移动应用', async (config) => {
     const run = await loadLoginHandler(config);
     try {
-      expect(await run.handler({ body: websiteBody, headers: {} })).toMatchObject({ code: 500, success: false });
+      expect(
+        await run.handler({ body: websiteBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} })
+      ).toMatchObject({ code: 500, success: false });
       expect(run.fetch).not.toHaveBeenCalled();
       expect(run.collection.add).not.toHaveBeenCalled();
     } finally {
@@ -589,6 +630,7 @@ describe('网站微信扫码与独立应用身份', () => {
       wechatReplies(run.fetch, { profile: { role: 'admin' } });
       const first = await run.handler({
         body: { ...websiteBody, web_openid: 'forged-id', role: 'admin' },
+        socket: { remoteAddress: '192.0.2.1' },
         headers: {}
       });
       expect(first.code).toBe(0);
@@ -609,7 +651,7 @@ describe('网站微信扫码与独立应用身份', () => {
       expect(run.records[3]).not.toHaveProperty('unionid');
       expect(jwtPayload(first.data.token)).toMatchObject({ ...identity, role: 'user' });
       wechatReplies(run.fetch);
-      const second = await run.handler({ body: websiteBody, headers: {} });
+      const second = await run.handler({ body: websiteBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} });
       expect(second.data).toMatchObject({ userId: first.data.userId, isNewUser: false });
       expect(run.collection.add).toHaveBeenCalledTimes(1);
       const exposed = JSON.stringify([first, run.records, Object.values(run.logger).flatMap((fn) => fn.mock.calls)]);
@@ -631,7 +673,11 @@ describe('网站微信扫码与独立应用身份', () => {
     const run = await loadLoginHandler({ users: [original] });
     try {
       wechatReplies(run.fetch, { unionid: 'server-union', profile: { unionid: 'server-union' } });
-      const response = await run.handler({ body: { ...websiteBody, unionid: 'forged-union' }, headers: {} });
+      const response = await run.handler({
+        body: { ...websiteBody, unionid: 'forged-union' },
+        socket: { remoteAddress: '192.0.2.1' },
+        headers: {}
+      });
       expect(response.data.userId).toBe('known');
       expect(run.records[0]).toMatchObject({
         ...original,
@@ -659,7 +705,9 @@ describe('网站微信扫码与独立应用身份', () => {
           run.records.push(structuredClone(user));
           throw new Error('E11000 duplicate key');
         });
-      expect(await run.handler({ body: websiteBody, headers: {} })).toMatchObject({ code: 409, success: false });
+      expect(
+        await run.handler({ body: websiteBody, socket: { remoteAddress: '192.0.2.1' }, headers: {} })
+      ).toMatchObject({ code: 409, success: false });
       expect(run.records).toEqual([user]);
     } finally {
       run.restoreEnv();
@@ -672,7 +720,7 @@ describe('网站微信扫码与独立应用身份', () => {
     ]) {
       const run = await loadLoginHandler({ rateLimitAllowed });
       try {
-        expect((await run.handler({ body, headers: {} })).code).toBe(code);
+        expect((await run.handler({ body, socket: { remoteAddress: '192.0.2.1' }, headers: {} })).code).toBe(code);
         expect(run.fetch).not.toHaveBeenCalled();
         expect(run.collection.add).not.toHaveBeenCalled();
       } finally {
@@ -705,6 +753,7 @@ describe('retired QQ rejects every former credential shape', () => {
     try {
       const result = await setup.handler({
         body: { type: 'qq', platform, code: 'fixture-code', accessToken: 'fixture-token' },
+        socket: { remoteAddress: '192.0.2.1' },
         headers: {}
       });
       expect(result).toMatchObject({ code: 400, errorCode: 'UNSUPPORTED_LOGIN', success: false });

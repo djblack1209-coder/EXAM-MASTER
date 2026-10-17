@@ -16,6 +16,7 @@
  * @version 2.0.0
  */
 
+import { getClientIp, clientIpUnavailable } from './_shared/client-ip.js';
 import cloud from '@lafjs/cloud';
 import { validate } from './_shared/validator.js';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
@@ -55,17 +56,6 @@ const SUBJECT_KEYS = Object.keys(SUBJECTS);
 
 // ==================== 日志工具 ====================
 const logger = createLogger('[LearningResource]');
-
-function extractClientIp(ctx: any): string {
-  const xRealIp = ctx?.headers?.['x-real-ip'];
-  const forwarded = ctx?.headers?.['x-forwarded-for'];
-  const cfIp = ctx?.headers?.['cf-connecting-ip'];
-  const candidate = xRealIp || cfIp || forwarded || 'unknown';
-
-  if (typeof candidate !== 'string') return 'unknown';
-  const firstIp = candidate.split(',')[0].trim();
-  return firstIp || 'unknown';
-}
 
 function toSafeString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
@@ -159,7 +149,8 @@ export default async function (ctx) {
     logger.info(`[${requestId}] action: ${action}, userId: ${userId || 'anonymous'}`);
 
     // 频率限制：按 userId 或 IP 限流
-    const clientIp = extractClientIp(ctx);
+    const clientIp = getClientIp(ctx);
+    if (!clientIp) return clientIpUnavailable();
     const rateLimitKey = userId ? `lr_${userId}` : `lr_ip_${clientIp}`;
     const rateLimit = checkRateLimit(rateLimitKey, 60, 60000); // 60次/分钟
     if (!rateLimit.allowed) {
