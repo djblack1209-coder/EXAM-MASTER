@@ -239,6 +239,14 @@ export function dayKey(time, timezone) {
   const get = (type) => parts.find((part) => part.type === type)?.value;
   return `${get('year')}-${get('month')}-${get('day')}`;
 }
+function validateTimezone(time, timezone, message) {
+  assert(typeof timezone === 'string' && timezone.length >= 1 && timezone.length <= 80, 'INVALID_INPUT', message);
+  try {
+    return dayKey(time, timezone);
+  } catch {
+    throw new LearningError('INVALID_INPUT', message);
+  }
+}
 export function emptyLearningState(owner, timezone = 'Asia/Shanghai') {
   dayKey(Date.now(), timezone);
   return {
@@ -1997,7 +2005,9 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
     }
     case 'plan.set': {
       assert(Array.isArray(data.tasks) && data.tasks.length <= 100, 'INVALID_INPUT', '计划最多 100 个任务');
-      const day = data.day || dayKey(now, state.timezone);
+      const timezone = data.timezone === undefined ? state.timezone : data.timezone;
+      const defaultDay = validateTimezone(now, timezone, '计划时区不合法');
+      const day = data.day || defaultDay;
       assert(/^\d{4}-\d{2}-\d{2}$/.test(day), 'INVALID_INPUT', '日期不合法');
       const previous = state.plans.filter((p) => p.day === day).at(-1);
       const tasks = data.tasks.map((task, index) => {
@@ -2022,7 +2032,7 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       result = {
         id: opId,
         day,
-        timezone: state.timezone,
+        timezone,
         version: (previous?.version || 0) + 1,
         replaces: previous?.id || null,
         reason: text(data.reason || '用户调整计划', 1000),
@@ -2448,7 +2458,7 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       break;
     }
     case 'timezone.set':
-      dayKey(now, data.timezone);
+      validateTimezone(now, data.timezone, '学习时区不合法');
       state.timezone = data.timezone;
       result = { timezone: data.timezone };
       break;

@@ -30,8 +30,9 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.useRealTimers();
 });
-const start = () => {
+const start = (timezone) => {
   const s = useConversationLearningStore();
+  if (timezone) s.commit('timezone.set', { timezone });
   s.start('英文句子组织');
   return s;
 };
@@ -249,7 +250,7 @@ describe('明确原答、帮助、独立与原时区复测', () => {
   it('明日原时区/DST、提前拒绝和幂等，到期的独立正确才完成计划', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-11-01T08:30:00Z'));
-    const s = start(),
+    const s = start('America/Los_Angeles'),
       context = s.writingContext();
     s.submitSentence(context, ['t1', 't2', 't3']);
     const reviews = structuredClone(toRaw(s.state.reviews));
@@ -283,7 +284,7 @@ describe('明确原答、帮助、独立与原时区复测', () => {
   it('看过提示的到期正确不能完成independent_correct，原题和用户校对仍保留', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-10-06T20:00:00Z'));
-    const s = start();
+    const s = start('America/Los_Angeles');
     s.submitSentence(s.writingContext(), ['t1', 't2', 't3']);
     const next = s.scheduleSentenceRetest(s.writingContext());
     s.focus(next.questionKey);
