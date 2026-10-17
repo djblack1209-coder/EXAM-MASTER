@@ -53,16 +53,9 @@ function createQueueStorageCompat() {
   const keyPrefix = '__exam_offline_queue__:';
 
   const readLocal = (key) => {
-    try {
-      if (typeof localStorage !== 'undefined') {
-        const raw = localStorage.getItem(keyPrefix + key);
-        if (raw === null) return undefined;
-        return JSON.parse(raw);
-      }
-      return undefined;
-    } catch {
-      return undefined;
-    }
+    if (typeof localStorage === 'undefined') return undefined;
+    const raw = localStorage.getItem(keyPrefix + key);
+    return raw === null ? undefined : JSON.parse(raw);
   };
 
   const writeLocal = (key, value) => {
@@ -79,28 +72,14 @@ function createQueueStorageCompat() {
 
   return {
     get(key, defaultValue = null) {
-      try {
-        if (typeof uni.getStorageSync === 'function') {
-          const value = uni.getStorageSync(key);
-          if (value !== '' && value !== undefined && value !== null) {
-            return value;
-          }
-        }
-      } catch {
-        /* ignore */
+      // An installed store's read failure must never fall back to an incomplete memory copy.
+      if (typeof uni.getStorageSync === 'function') {
+        const value = uni.getStorageSync(key);
+        return value === '' || value === undefined || value === null ? defaultValue : value;
       }
-
-      if (memoryStore.has(key)) {
-        return memoryStore.get(key);
-      }
-
-      const localValue = readLocal(key);
-      if (localValue !== undefined) {
-        memoryStore.set(key, localValue);
-        return localValue;
-      }
-
-      return defaultValue;
+      const value = readLocal(key);
+      if (value !== undefined) return value;
+      return typeof localStorage === 'undefined' && memoryStore.has(key) ? memoryStore.get(key) : defaultValue;
     },
     set(key, value) {
       let persisted = false;
@@ -143,6 +122,7 @@ const PRIORITY_WEIGHTS = {
 class OfflineQueue {
   constructor() {
     this.queue = [];
+    this._storageLoaded = false;
     this.processing = false;
     this.isOnline = true;
     this.listeners = new Set();
@@ -187,7 +167,7 @@ class OfflineQueue {
       if (stored && Array.isArray(stored)) {
         // 过滤过期的请求
         const now = Date.now();
-        this.queue = stored.filter((item) => {
+        const restored = stored.filter((item) => {
           return (
             now - item.timestamp < MAX_AGE &&
             typeof item.session?.owner === 'string' &&
@@ -197,14 +177,19 @@ class OfflineQueue {
           );
         });
 
-        if (this.queue.length !== stored.length) {
+        const liveIds = new Set(this.queue.map((item) => item.id));
+        this.queue = [...restored.filter((item) => !liveIds.has(item.id)), ...this.queue].sort(
+          (a, b) => (PRIORITY_WEIGHTS[b.priority] || 2) - (PRIORITY_WEIGHTS[a.priority] || 2)
+        );
+        this._storageLoaded = true;
+        if (restored.length !== stored.length) {
           logger.log('[OfflineQueue] 已清理 [省略] 个过期请求');
           this._saveToStorage();
         }
       }
     } catch (error) {
       logger.error('[OfflineQueue] 加载队列失败:', error);
-      this.queue = [];
+      this._storageLoaded = false;
     }
   }
 
@@ -213,6 +198,10 @@ class OfflineQueue {
    * @private
    */
   _saveToStorage() {
+    if (!this._storageLoaded) {
+      this._loadFromStorage();
+      if (!this._storageLoaded) return false;
+    }
     try {
       // 只保存可序列化的数据
       const serializable = this.queue.map((item) => ({
@@ -304,6 +293,7 @@ class OfflineQueue {
    * @returns {string} 请求ID
    */
   enqueue(request) {
+    if (!this._storageLoaded) this._loadFromStorage();
     const session = request.session || captureSession();
     assertSession(session);
     const { requestFn, requestData, priority = 'normal', dedupeKey, metadata = {} } = request;
@@ -430,6 +420,11 @@ class OfflineQueue {
       return { success: false, reason: 'offline' };
     }
 
+    if (!this._storageLoaded) {
+      this._loadFromStorage();
+      if (!this._storageLoaded) return { success: false, reason: 'storage_unavailable' };
+      this._saveToStorage();
+    }
     if (this.queue.length === 0) {
       logger.log('[OfflineQueue] 队列为空');
       return { success: true, processed: 0, failed: 0 };

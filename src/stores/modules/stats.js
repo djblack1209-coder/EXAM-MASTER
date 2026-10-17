@@ -65,15 +65,10 @@ export const useStatsStore = defineStore('stats', () => {
       token: snapshot.token || '',
       session
     };
-    if (
-      !_identity ||
-      checkSession(_identity.session) === 'changed' ||
-      _identity.owner !== next.owner ||
-      _identity.token !== next.token
-    ) {
+    if (!_identity || checkSession(_identity.session) === 'changed' || _identity.owner !== next.owner) {
       clearCache();
-      _identity = next;
     }
+    _identity = next;
     return { revision: _revision, ...next };
   }
   function isCurrent(context) {

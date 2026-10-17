@@ -377,3 +377,42 @@ describe('OfflineQueue', () => {
     });
   });
 });
+
+it('MIGRATE-14-04: failed H5 restore never overwrites unread pending body', async () => {
+  vi.resetModules();
+  const prefix = '__exam_offline_queue__:EXAM_OFFLINE_QUEUE';
+  localStorage.setItem(
+    prefix,
+    JSON.stringify([
+      {
+        id: 'old-pending',
+        priority: 'normal',
+        timestamp: Date.now(),
+        retryCount: 2,
+        session: captureSession(),
+        requestData: { answer: 'original' }
+      }
+    ])
+  );
+  const get = localStorage.getItem.getMockImplementation();
+  let unavailable = true;
+  const read = vi.spyOn(localStorage, 'getItem').mockImplementation((key) => {
+    if (key === prefix && unavailable) throw Error('fixture restore failure');
+    return get(key);
+  });
+  try {
+    const { OfflineQueue } = await import('../../src/utils/core/offline-queue.js');
+    const queue = new OfflineQueue();
+    queue.isOnline = false;
+    queue.enqueue({ requestData: { answer: 'new' } });
+    expect(JSON.parse(get(prefix))).toHaveLength(1);
+    expect(JSON.parse(get(prefix))[0].requestData).toEqual({ answer: 'original' });
+    unavailable = false;
+    queue.enqueue({ requestData: { answer: 'next' } });
+    const stored = JSON.parse(get(prefix));
+    expect(stored.map((item) => item.requestData.answer)).toEqual(['original', 'new', 'next']);
+    expect(stored[0].retryCount).toBe(2);
+  } finally {
+    read.mockRestore();
+  }
+});

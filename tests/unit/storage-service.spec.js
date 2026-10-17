@@ -292,7 +292,7 @@ describe('storageService', () => {
   });
 
   describe('旧错题请求的账户与保存边界', () => {
-    it.each(['reply', 'throw', 'token'])('迟到新增 %s 不写入后来账户或新登录会话', async (outcome) => {
+    it.each(['reply', 'throw', 'relogin'])('迟到新增 %s 不写入后来账户或新登录会话', async (outcome) => {
       uni.setStorageSync('EXAM_USER_ID', 'writer-owner');
       storageService.save('EXAM_TOKEN', 'original-session');
       let resolve, reject;
@@ -305,7 +305,12 @@ describe('storageService', () => {
       );
       const pending = storageService.addMistake({ question: '必须留在原账户的题目', user_answer: 'B' });
       await vi.waitFor(() => expect(resolve).toBeTypeOf('function'));
-      if (outcome === 'token') storageService.save('EXAM_TOKEN', 'new-session');
+      if (outcome === 'relogin')
+        storageService.saveLoginSession({
+          userId: 'writer-owner',
+          token: 'new-session',
+          userInfo: { id: 'writer-owner' }
+        });
       else uni.setStorageSync('EXAM_USER_ID', 'later-owner');
       storageService.save('mistake_book', [{ id: 'keep', question: '后来会话原件' }], true);
       const before = JSON.stringify(global.__mockStorage);

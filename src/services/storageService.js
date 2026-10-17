@@ -331,7 +331,8 @@ import {
   readSessionSnapshot,
   sessionCredentialProof,
   readStorageStrict,
-  sessionUnavailable
+  sessionUnavailable,
+  isSessionUnavailable
 } from './auth-storage.js';
 import { toast } from '@/utils/toast.js';
 
@@ -849,10 +850,12 @@ class StorageService {
     }
   }
 
-  _mistakeContext() {
-    const session = captureSession(),
-      token = getToken();
-    const current = () => checkSession(session) === 'current' && getToken() === token;
+  _mistakeContext(session = captureSession()) {
+    const current = () => {
+      const status = checkSession(session);
+      if (status === 'unavailable') throw sessionUnavailable();
+      return status === 'current';
+    };
     current.session = session;
     return current;
   }
@@ -863,16 +866,35 @@ class StorageService {
 
   _mistakeRequestCancelled(response) {
     for (let depth = 0, failure = response; depth < 4 && failure; depth++, failure = failure.error) {
+      if (isSessionUnavailable(failure)) throw sessionUnavailable();
       if (['account_changed', 'cancelled'].includes(failure.errorType)) return true;
     }
     return false;
   }
 
-  async _withMistakeBookLock(task) {
-    const current = this._mistakeContext();
-    const next = this._mistakeBookMutex.then(async () => (current() ? task(current) : this._mistakeContextChanged()));
+  async _withMistakeBookLock(task, session = captureSession()) {
+    const current = this._mistakeContext(session);
+    let reportUnavailable;
+    const unavailable = new Promise((_resolve, reject) => {
+      reportUnavailable = reject;
+    });
+    const next = this._mistakeBookMutex.then(async () => {
+      // Keep the original queue slot while waiting; later tasks cannot overtake it.
+      for (;;) {
+        try {
+          if (!current()) return this._mistakeContextChanged();
+          break;
+        } catch (error) {
+          if (!isSessionUnavailable(error)) throw error;
+          reportUnavailable(error);
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+      }
+      // Only preflight is retried: a started remote task is never automatically replayed.
+      return task(current);
+    });
     this._mistakeBookMutex = next.catch(() => undefined);
-    return next;
+    return Promise.race([next, unavailable]);
   }
 
   _mistakeBookRows() {
@@ -946,16 +968,27 @@ class StorageService {
    * @param {boolean} silent - 是否静默失败（不显示错误提示）
    * @returns {boolean} 是否保存成功
    */
-  save(key, value, silent = false, session) {
+  save(key, value, silent = false, session, { mergeProfile = false } = {}) {
     if (isIdentityStorageKey(key) && !isSensitiveKey(key)) return false;
     if (!isSensitiveKey(key)) return this._saveValue(key, value, silent, session);
     const origin = readSessionSnapshot();
     session = session === undefined ? origin.session : session;
+    mergeProfile = mergeProfile && ['userInfo', 'EXAM_USER_INFO'].includes(key);
+    const patch = mergeProfile ? JSON.parse(JSON.stringify(value)) : null;
     // Bind operations by owner/epoch; compare the current full snapshot only for this commit.
     const write = () => {
-      if (!identitySnapshotMatches(origin) || checkSession(session) !== 'current') return false;
+      if (checkSession(session) !== 'current') return false;
+      if (!mergeProfile && !identitySnapshotMatches(origin)) return false;
       const latest = readSessionSnapshot();
-      if (!identitySnapshotMatches(origin)) return false;
+      if (latest.status !== 'current') return false;
+      if (mergeProfile)
+        value = {
+          ...(latest.record
+            ? latest.record.userInfo
+            : this.get(key, null, { migrateLegacy: false, throwOnError: true, session })),
+          ...patch
+        };
+      if (checkSession(session) !== 'current' || (!mergeProfile && !identitySnapshotMatches(origin))) return false;
       const attempt = uni.getStorageSync(LOGIN_ATTEMPT_KEY);
       const record = latest.record ? { ...latest.record } : null;
       if (record) {
@@ -1335,7 +1368,7 @@ class StorageService {
       const target = resolveKey(key, session);
       try {
         assertSession(session);
-        const value = readStorageStrict(getRuntimeUni(), key);
+        const value = readStorageStrict(getRuntimeUni(), key, true, { allowEmpty: true });
         if (JSON.stringify(value) !== serialized) {
           sources.delete(key);
           continue;
@@ -1353,13 +1386,13 @@ class StorageService {
         if (!exists) uni.setStorageSync(target, value);
         assertSession(session);
         if (
-          JSON.stringify(readStorageStrict(getRuntimeUni(), key)) !== serialized ||
-          JSON.stringify(readStorageStrict(getRuntimeUni(), target)) !== serialized
+          JSON.stringify(readStorageStrict(getRuntimeUni(), key, true, { allowEmpty: true })) !== serialized ||
+          JSON.stringify(readStorageStrict(getRuntimeUni(), target, true, { allowEmpty: true })) !== serialized
         )
           continue;
-        uni.removeStorageSync(key);
-        const remaining = readStorageStrict(getRuntimeUni(), key);
-        if (remaining !== '' && remaining !== null && remaining !== undefined) continue;
+        assertSession(session);
+        // Guest writers are synchronous on every runtime: no shared atomic compare/delete exists.
+        // Retain the source; consume only this login's proof after verifying the copied value.
         sources.delete(key);
         migrated++;
       } catch {
@@ -1916,7 +1949,7 @@ class StorageService {
    * @param {string} id - 错题ID
    * @returns {Promise<Object>} 返回删除结果 { success: boolean, source: 'cloud'|'local' }
    */
-  async removeMistake(id) {
+  async removeMistake(id, session = captureSession()) {
     if (!['string', 'number'].includes(typeof id) || String(id).trim() === '')
       return { success: false, error: '错题ID不能为空' };
     return this._withMistakeBookLock(async (current) => {
@@ -1935,7 +1968,7 @@ class StorageService {
         logger.warn('[StorageService] 远端移除未确认，仅处理本机指定条目', error);
         return this._removeMistakeLocal(id, current);
       }
-    });
+    }, session);
   }
 
   _removeMistakeLocal(id, current) {
@@ -1953,7 +1986,7 @@ class StorageService {
     }
   }
 
-  async batchRemoveMistakes(ids) {
+  async batchRemoveMistakes(ids, session = captureSession()) {
     if (
       !Array.isArray(ids) ||
       !ids.length ||
@@ -1991,7 +2024,7 @@ class StorageService {
         deleted: Math.max(receipt?.deleted || 0, rows.length - next.length),
         source: receipt ? 'cloud' : 'local'
       };
-    });
+    }, session);
   }
 
   /**
@@ -2009,7 +2042,7 @@ class StorageService {
    * 同步本地待办；结果未确认时保留原件，不立即逐条重发。
    * @returns {Promise<Object>} 返回同步结果 { success: boolean, synced: number, failed: number, conflicts: number }
    */
-  async syncPendingMistakes({ expectedRecords } = {}) {
+  async syncPendingMistakes({ expectedRecords, session = captureSession() } = {}) {
     return this._withMistakeBookLock(async (current) => {
       const userId = getUserId();
       if (!userId) {
@@ -2117,7 +2150,7 @@ class StorageService {
           error: error.message
         };
       }
-    });
+    }, session);
   }
 }
 

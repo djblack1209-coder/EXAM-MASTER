@@ -85,10 +85,10 @@ function safeGetStorageSync(key, strict = false) {
 
 // A runtime may swallow native read errors and return ''. Existing nonempty keys
 // cannot silently become guests. Never cross runtime boundaries after a failed read.
-export function readStorageStrict(runtime, key, strict = true) {
+export function readStorageStrict(runtime, key, strict = true, { allowEmpty = false } = {}) {
   const reader = strict && runtime.getStorageSyncStrict ? 'getStorageSyncStrict' : 'getStorageSync';
   const value = Reflect.get(runtime, reader).call(runtime, key);
-  if (strict && (value === '' || value === undefined || value === null) && runtime.getStorageInfoSync) {
+  if (strict && !allowEmpty && (value === '' || value === undefined || value === null) && runtime.getStorageInfoSync) {
     const info = runtime.getStorageInfoSync();
     if (!Array.isArray(info?.keys) || info.keys.includes(key)) throw sessionUnavailable();
   }

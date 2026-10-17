@@ -1,4 +1,4 @@
-import { captureSession, assertSession, checkSession } from '@/services/auth-storage.js';
+import { captureSession, assertSession, checkSession, isSessionUnavailable } from '@/services/auth-storage.js';
 /**
  * Token 刷新插件
  * 管理 Token 的存取、过期检测、自动刷新和并发去重
@@ -208,14 +208,14 @@ class TokenRefreshPlugin {
     this._preCheckTimer = setInterval(() => {
       try {
         assertSession(session);
-      } catch {
+        if (this.isTokenExpiringSoon()) {
+          this.refreshToken().catch((_err) => {
+            /* silent refresh failure */
+          });
+        }
+      } catch (error) {
+        if (isSessionUnavailable(error)) return;
         this.stopPreCheckTimer();
-        return;
-      }
-      if (this.isTokenExpiringSoon()) {
-        this.refreshToken().catch((_err) => {
-          /* silent refresh failure */
-        });
       }
     }, 60 * 1000);
   }

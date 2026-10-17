@@ -28,17 +28,23 @@ export const useProfileStore = defineStore('profile', () => {
   /**
    * 设置用户信息
    */
-  const setUserInfo = (info, origin = captureSession()) => {
+  const setUserInfo = (info, origin = captureSession(), mergeProfile = false) => {
     assertSession(origin);
     const owner = info?.uid || info?.userId || info?._id || info?.id;
     if (owner && origin.owner !== 'guest' && owner !== origin.owner) return false;
     const finish = (saved) => {
       if (saved !== true || checkSession(origin) !== 'current') return false;
       session = origin;
-      userInfo.value = info;
+      userInfo.value = mergeProfile
+        ? storageService.get(APP_CONFIG.cacheKeys.userInfo, null, {
+            migrateLegacy: false,
+            throwOnError: true,
+            session: origin
+          })
+        : info;
       return true;
     };
-    const saved = storageService.save(APP_CONFIG.cacheKeys.userInfo, info, true, origin);
+    const saved = storageService.save(APP_CONFIG.cacheKeys.userInfo, info, true, origin, { mergeProfile });
     return saved?.then ? saved.then(finish) : finish(saved);
   };
 
@@ -47,7 +53,7 @@ export const useProfileStore = defineStore('profile', () => {
    */
   const updateUserInfo = (info) => {
     assertSession(session);
-    return setUserInfo({ ...userInfo.value, ...info }, captureSession());
+    return setUserInfo(info, captureSession(), true);
   };
 
   /**
