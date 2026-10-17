@@ -53,7 +53,7 @@ class MongoRestoreTests(unittest.TestCase):
         self.calls = self.root / "calls.jsonl"
         for name in ("mongorestore", "mongosh", "df", "tar"):
             path = self.bin / name
-            path.write_text(f"#!{sys.executable}\n" + STUB)
+            path.write_text("#!/usr/bin/env python3\n" + STUB)
             path.chmod(0o755)
         self.env = dict(os.environ)
         for key in (
@@ -67,7 +67,9 @@ class MongoRestoreTests(unittest.TestCase):
             self.env.pop(key, None)
         self.env.update(
             {
-                "PATH": str(self.bin) + os.pathsep + os.environ["PATH"],
+                "PATH": os.pathsep.join(
+                    [str(self.bin), str(Path(sys.executable).parent), os.environ["PATH"]]
+                ),
                 "BACKUP_DIR": str(self.backups),
                 "MONGODB_URI": "mongodb://fixture.invalid/exam-master",
                 "RESTORE_CALL_LOG": str(self.calls),
