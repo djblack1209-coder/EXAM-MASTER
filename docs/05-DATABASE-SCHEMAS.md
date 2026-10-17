@@ -6,9 +6,40 @@
 
 ## 本机登录会话代号（2026-10-16）
 
-全局敏感键`EXAM_SESSION_EPOCH`继续加密保存为`_enc_EXAM_SESSION_EPOCH`；H5保留`__exam_storage__:`及`{value}`包装。完整记录为`{version:1, epoch, owner, token, userInfo, proof, revocation}`，旧`{version:1, epoch, owner, proof}`继续兼容。`proof`为owner/令牌的SHA-256完整性摘要，令牌不写日志、队列或业务绑定。`EXAM_SESSION_ENABLED`保留本设备已启用代号的事实，启用后缺代号按撤销处理，不由缓存恢复补发。
+全局敏感键`EXAM_SESSION_EPOCH`继续加密保存为`_enc_EXAM_SESSION_EPOCH`；H5保留`__exam_storage__:`及`{value}`包装。完整记录为`{version:1, generation, epoch, owner, token, userInfo, proof, revocation}`，旧`{version:1, epoch, owner, proof}`继续兼容。`proof`为owner/令牌的SHA-256完整性摘要，令牌不写日志、队列或业务绑定。`EXAM_SESSION_ENABLED`保留本设备已启用代号的事实，启用后缺代号按撤销处理，不由缓存恢复补发。
 
-### 阶段5G：尝试上下文与待确认发送
+### 阶段5H：身份代数、离线状态机与启动恢复（现行）
+
+本节取代下文5E—5G关于身份并发、无锁降级和队列格式的旧实现条款；历史回执不回写。理由是写后回读不能消除旧完整身份已被其他上下文接受的窗口，退出清理与登录登记也必须采用同一种排序规则。
+
+**身份代数**：新增全局非敏感整数 `EXAM_IDENTITY_GENERATION`，初始缺省0、只增不减，完整加密身份记录增加 `generation`。登记、登录提交、回滚、退出/撤销清理、身份删除、全清、资料/令牌提交与格式迁移，都在入口捕获代数，取得同一 `exam-master:login-session-v1` 独占锁后比较，只有一致才提交并递增。不一致放弃，不删除、覆盖或回滚后继结果。所有锁回调为同步函数，比较与写入之间无await。资料补丁仍在锁内读取完整资料并按字段合并，但不跨过代数冲突自动重放；并发更改/续期使旧补丁返回false，重新明确提交时捕获新代数。顺序更新与续期后的新业务动作保持可用，业务绑定仍为owner/epoch，资料及正常续期不改变epoch。
+
+完整记录先准备带下一代数的密文，再确认撤销标记/启用标记与代数；读者在前后复核代数并要求完整记录匹配。中间状态只按未确认/已变化处理，不能接受旧代数。保存失败只在仍拥有提交代数时回滚，并再推进一次代数；全清及保留指定设置的选择性清空都经过同一事务，保留代数与撤销控制键，禁止先清空再重建计数；普通save/remove拒绝修改这些控制键。退出通知仅促使消费者重读，不再次撤销。登录登记也在锁内，H5调用方须等待登记完成才发送供应商请求；OAuth上下文保存原id/revocation/generation，旧缺generation的上下文重新登录。完整身份提交后只恢复Store投影，不重复持久化同一令牌/资料。
+
+**平台上下文核实**：当前微信目标是uni-app编译的App Service，App是manifest中compilerVersion=3的普通app-vue逻辑包。按[DCloud运行时说明](https://uniapp.dcloud.net.cn/tutorial/index.html#运行时-runtime)及[逻辑层说明](https://uniapp.dcloud.net.cn/tutorial/performance.html)，两者的逻辑代码在独立JS引擎执行；当前源码没有原生nvue/renderjs身份写者，也没有创建原生Worker。`question-dedup-worker.js`只是同步去重函数。结合产物单逻辑入口/共享模块核对，当前微信、app/app-plus编译目标采用单执行上下文同步比较写入；该结论不外推到以后新增Worker、原生插件或多逻辑实例。单元测试用明确UNI_PLATFORM=app模拟此模型；共享存储H5探针与独立worker另以真实串行锁协议验证，不能以native模拟代替浏览器并发证据。
+
+H5和Tauri桌面WKWebView/WebView2一律视为多上下文，必须有原生Web Locks；不以当前仅一个窗口推断单上下文。显式编译平台白名单决定native路径，浏览器不能凭uni/wx同名对象绕过。缺锁时拒绝所有身份写入，登录入口显示“当前浏览器版本过旧，请升级后登录”，现存账户/令牌不对认证读取和Store恢复开放；只提供新的游客绑定供本机游客学习，拒绝旧账户和旧绑定。此路径不尝试无锁CAS。WKWebView/WebView2实测范围及未覆盖平台以本轮[12](12-CHANGELOG.md)回执为准，构建不代替设备验收。
+
+**离线任务**：`EXAM_OFFLINE_QUEUE`每项新增 `state:pending/sending/confirmed/retry`，id为稳定任务身份。旧缺state或未知state项保守转retry，保留原id/正文/次数，不假设从未发送；重启时无运行中证明的sending转retry，confirmed只补本机确认。去重键只合并同owner/epoch的pending；sending、confirmed、retry不复用id。入队克隆原正文，发送前确认sending落盘；请求和重建器额外接收taskId。回执仅确认原id，成功后先保存confirmed再尝试移除；持久确认不可用时保留正文及本运行时id墓碑。没有稳定后端幂等协议时仍不能承诺崩溃后的恰好一次远端效果。普通失败保留retry及次数，不再因第三次失败或暂缺重建器静默删除；原24小时有效期、容量与身份隔离保持。暂不可用恢复原发送前状态/次数，success=false、reason=SESSION_UNAVAILABLE；本地存储不可用也明确非成功。取消/清空先固定已载入id，恢复完整基础后重算，仅删除这些id；发送中的任务拒绝取消，不覆盖未知任务。
+
+**启动与定时器**：App独立完成路由/错误守卫后运行待初始化项；暂不可用保留待办，每秒或onShow重试，成功项不重复执行，根卸载清除重试。埋点先完整读取原队列，再创建分析会话；FSRS/语言/主题读取失败不永久采用空基础或遗失Store方法；通知失败Promise不永久缓存。令牌预检初次未绑定时等待恢复，成功绑定后仅核对原会话与本次timer。QuestionTimer先清旧interval再换绑定，每个回调捕获原session/计时token；题目生成的进度/轮播/续段计时器、短震动与登录导航同样检查原绑定或本次计时器，卸载/重启及时清理。
+
+### 阶段5H：离线任务状态转移测试矩阵（实现前）
+
+| 原状态                 | 输入                       | 预期状态与持久效果                               | 回归                                      |
+| ---------------------- | -------------------------- | ------------------------------------------------ | ----------------------------------------- |
+| 待发                   | 同属主/会话/去重键的新动作 | 合并待发正文，保留任务id                         | round8 normal pending dedupe              |
+| 待发/失败待重试        | 开始发送                   | 发送中，冻结本次id/正文                          | inflight-17-01/migrate-08-01              |
+| 发送中                 | 同去重键的新动作           | 新建待发id，原任务不变                           | inflight-17-01/migrate-08-01              |
+| 发送中                 | 成功回执                   | 仅原id已确认；本地确认失败保留回执，不重发       | round7 sent queue                         |
+| 待发/失败待重试/发送中 | SESSION_UNAVAILABLE        | 恢复原状态与次数，success=false，未同步          | inflight-17-02/regress-8-01/migrate-08-03 |
+| 发送中                 | 普通发送失败               | 失败待重试，次数+1；不合并后来的动作             | round8 normal retry                       |
+| 已载入任务             | 明确取消id                 | 先恢复完整基础，仅移除该id                       | migrate-08-02                             |
+| 未载入基础             | 取消/清空                  | 不覆盖未知任务；保留取消意图或返回失败           | round8 unread cancellation                |
+| 旧缺state/未知状态     | 升级恢复并提交同去重键动作 | 旧id保守转失败待重试，新动作独立id，原正文不合并 | round8 normal legacy state migration      |
+| 发送中（重启恢复）     | 无可靠回执                 | 失败待重试，沿原id；远端幂等仍由服务保证         | round8 restored states                    |
+
+### 阶段5G：尝试上下文与待确认发送（历史）
 
 - `EXAM_LOGIN_ATTEMPT`仍是全局尝试id；发起时先读取并固定`EXAM_SESSION_REVOCATION`，允许首次null，不因登记另建代数。首次非空设备代数仅在仍持有原尝试的提交内创建。原快照可以是等待旧撤销清理的changed状态；新明确登录仍按同一状态/owner/epoch/token与代数核对。登记前后核对原身份快照与同一代数；提交、CAS与回滚均沿原尝试。Web Locks不改变发起时序，缺锁不宣称跨上下文原子CAS。
 - `wx_oauth_state`继续现有键，结构新增`attempt:{id,revocation}`；`state`为32位随机hex加下划线及尝试id，原origin/redirectUri/createdAt/wechatMode保留。只消费一次且10分钟有效；缺attempt的旧上下文要求重新登录，不迁移为新尝试。上下文不含令牌、guestSources或学习正文；整页重载没有旧游客来源证明则保留游客来源、不猜测迁移。桌面broker的`desktop_`上下文与浏览器学习分区独立，回调不写浏览器登录身份。
