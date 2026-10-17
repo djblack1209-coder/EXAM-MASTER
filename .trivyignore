@@ -1,0 +1,2 @@
+# braces@3.0.3 (GHSA-vfj7-8cjw-p6xm): no upstream fix; DCloud build tools only; absent from H5/WeChat/App module graphs. Review on an upstream fix or any runtime dependency change; see docs/13 stage10C.
+CVE-2026-93687 exp:2027-01-15
