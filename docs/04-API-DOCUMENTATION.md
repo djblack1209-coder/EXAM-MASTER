@@ -1,5 +1,25 @@
 # API 与工具合同
 
+## 阶段5L：只排空遗留离线任务（现行）
+
+本节替代5H—5K中的通用离线队列入队、去重、重放、容量与发送闭包合同；身份恢复/登记等其他合同继续有效。当前 `src/` 无生产入队调用，只有历史正式版本 `99cb72cf` 的 retry-interceptor 曾写入持久任务。连续审计问题集中于仅测试使用的入队路径，因此删除 `enqueue`、去重合并、`pendingEnqueues`/重放、容量淘汰与 `requestFnMap`，不再维护无生产消费者的新提交能力。
+
+保留 `EXAM_OFFLINE_QUEUE` 读取、旧格式兼容、24小时有效期、原优先级、状态/监听、暂停/恢复、网络恢复与离线提示条同步入口。旧任务无state时按retry恢复，缺少retryCount按0；无owner/epoch的原始旧任务不自动认领，其他账户任务不改写。排空事务在身份锁内重读，只清理当前账户（含旧epoch）的过期任务，活跃认领不清理；读取或身份暂不可用时返回非成功并保留原投影，界面继续提示“未同步，稍后重试”。
+
+`processQueue` 在首个await前设置processing，并在finally释放。同运行时按任务id保存带归属的认领；锁内复核持久id、正文、绑定、有效期及既有认领/回执，等待后复核原session及认领归属。成功回执按原id保存，持久确认失败后只补本地确认，不重发；竞争失败者不能释放他人认领。`dequeue/clear`仅取消原已载入id，锁内再核对发送认领，未载入及其他账户行保持；不会创建或改名任务。
+
+发送仅通过 `registerRebuilder(fn)`：`fn(requestData, { session, taskId })`，保留调用前后原session验证。当前生产源码没有注册rebuilder，缺失时明确返回 `request_unavailable`、保留任务；本轮验证可注册重建器的实际发送链，不宣称无注册时可自动发送。network-monitor的恢复后延迟同步、pause/resume，以及OfflineIndicator的计数/手动同步/未同步反馈保持。
+
+| 保留行为 | 正式回归 |
+| --- | --- |
+| 同实例/同上下文两实例单次发送、竞争归属 | `session-round10-queue.spec.js`：same-instance/two-instances/two-recovering-instances、losing claimant |
+| 按id确认、确认失败重开不重发、取消范围与锁后复核 | `offline-queue-legacy.spec.js`：receipts match legacy task ids、removes only the loaded legacy ids、rechecks active ownership、canceled during the claim lock wait；`session-round7.spec.js`：sent queue survives unread acknowledgement |
+| 过期、账户隔离、旧格式、不可用与重试 | `session-round10-queue.spec.js`：drain expires own high tasks；`session-round8.spec.js`：unavailable、legacy state migration；`session-round9-queue.spec.js`：late old response；`offline-queue.spec.js`与`offline-queue-legacy.spec.js` |
+| 网络恢复及离线提示条 | `offline-queue-legacy.spec.js`：queue network recovery、network-monitor recovery；原`offline-indicator.spec.js`全部用例保留 |
+
+测试改用预置遗留持久任务驱动，仅删除入队/去重/重放/容量/闭包专用断言；独立上下文夹具继续覆盖取消和迟到回执。审计关闭清单与仍适用的 `order-20-03` 见[13](13-DEVELOPMENT-PLAN.md#阶段5l审计条目处理)。将来需要离线提交，必须按“跨窗口认领租约 + 服务端按任务 id 幂等”重新设计入队，不恢复本次删除的实现。三端构建及合成回归不构成真实设备、已有用户遗留数据或远端恰好一次验收。
+
+
 ## 第十一轮定点修复：恢复登记与去重重放（阶段5K）
 
 本节替代5J的对应恢复/去重条款，仅修复 `fixes-20-01 / order-20-01` 与 `fixes-20-02 / order-20-02`。

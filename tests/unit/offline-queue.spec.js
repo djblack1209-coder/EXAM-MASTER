@@ -1,14 +1,4 @@
 import { captureSession } from '@/services/auth-storage.js';
-/**
- * offline-queue.js 单元测试
- *
- * 覆盖目标：OfflineQueue 核心方法
- * - enqueue: 正常入队 / 优先级排序 / 去重 / 队列满 / 队列满+全高优先级
- * - dequeue: 存在 / 不存在
- * - processQueue: 正常处理 / 离线 / 暂停 / 重试 / 超过重试次数 / rebuilder
- * - clear / getStatus / addListener / pause / resume
- * - _loadFromStorage: 过期清理 / 损坏数据
- */
 // @ts-nocheck
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -50,82 +40,34 @@ describe('OfflineQueue', () => {
     queue = new OfflineQueue();
   });
 
-  // ==================== enqueue ====================
-  describe('enqueue', () => {
-    it('正常入队并返回 ID', () => {
-      const id = queue.enqueue({
-        requestFn: () => Promise.resolve(),
-        requestData: { url: '/api/test' },
-        priority: 'normal'
-      });
+  function seedLegacyTask(queue, { requestFn, ...fields } = {}) {
+    const task = {
+      id: `legacy-${Date.now()}-${Math.random()}`,
+      timestamp: Date.now(),
+      retryCount: 0,
+      priority: 'normal',
+      requestData: { fixture: true },
+      session: captureSession(),
+      ...fields
+    };
+    const stored = JSON.parse(localStorage.getItem(QUEUE_STORAGE_KEY) || '[]');
+    localStorage.setItem(QUEUE_STORAGE_KEY, JSON.stringify([...stored, task]));
+    queue._loadFromStorage();
+    if (requestFn) queue.registerRebuilder(requestFn);
+    return task.id;
+  }
 
-      expect(id).toBeTruthy();
-      expect(queue.queue.length).toBe(1);
-      expect(typeof localStorage.getItem(QUEUE_STORAGE_KEY)).toBe('string');
-    });
-
-    it('高优先级排在低优先级前面', () => {
-      queue.enqueue({ requestFn: () => {}, priority: 'low' });
-      queue.enqueue({ requestFn: () => {}, priority: 'critical' });
-      queue.enqueue({ requestFn: () => {}, priority: 'normal' });
-
-      expect(queue.queue[0].priority).toBe('critical');
-    });
-
-    it('去重：相同 dedupeKey 更新已有请求', () => {
-      const id1 = queue.enqueue({
-        requestFn: () => {},
-        requestData: { v: 1 },
-        dedupeKey: 'save-data'
-      });
-
-      const id2 = queue.enqueue({
-        requestFn: () => {},
-        requestData: { v: 2 },
-        dedupeKey: 'save-data'
-      });
-
-      expect(id1).toBe(id2);
-      expect(queue.queue.length).toBe(1);
-      expect(queue.queue[0].requestData.v).toBe(2);
-    });
-
-    it('队列满时移除低优先级请求', () => {
-      // 填满队列
-      for (let i = 0; i < 100; i++) {
-        queue.enqueue({ requestFn: () => {}, priority: 'low' });
-      }
-      expect(queue.queue.length).toBe(100);
-
-      // 再添加一个
-      const id = queue.enqueue({ requestFn: () => {}, priority: 'high' });
-      expect(id).toBeTruthy();
-      expect(queue.queue.length).toBe(100); // 移除了一个低优先级
-    });
-
-    it('队列满且全是高优先级 → 返回 null', () => {
-      for (let i = 0; i < 100; i++) {
-        queue.enqueue({ requestFn: () => {}, priority: 'critical' });
-      }
-
-      const id = queue.enqueue({ requestFn: () => {}, priority: 'critical' });
-      expect(id).toBeNull();
-    });
-
-    it('通知 listener', () => {
-      const listener = vi.fn();
-      queue.addListener(listener);
-
-      queue.enqueue({ requestFn: () => {} });
-
-      expect(listener).toHaveBeenCalledWith(expect.objectContaining({ type: 'enqueue' }));
-    });
+  it('restores legacy priority order', () => {
+    seedLegacyTask(queue, { priority: 'low' });
+    seedLegacyTask(queue, { priority: 'critical' });
+    seedLegacyTask(queue, { priority: 'normal' });
+    expect(queue.queue.map((item) => item.priority)).toEqual(['critical', 'normal', 'low']);
   });
 
   // ==================== dequeue ====================
   describe('dequeue', () => {
     it('移除存在的请求 → true', () => {
-      const id = queue.enqueue({ requestFn: () => {} });
+      const id = seedLegacyTask(queue, { requestFn: () => {} });
       expect(queue.dequeue(id)).toBe(true);
       expect(queue.queue.length).toBe(0);
     });
@@ -136,7 +78,7 @@ describe('OfflineQueue', () => {
 
     it('通知 listener', () => {
       const listener = vi.fn();
-      const id = queue.enqueue({ requestFn: () => {} });
+      const id = seedLegacyTask(queue, { requestFn: () => {} });
       queue.addListener(listener);
 
       queue.dequeue(id);
@@ -149,7 +91,7 @@ describe('OfflineQueue', () => {
   describe('processQueue', () => {
     it('正常处理队列中的请求', async () => {
       const fn = vi.fn(() => Promise.resolve());
-      queue.enqueue({ requestFn: fn });
+      seedLegacyTask(queue, { requestFn: fn });
 
       const result = await queue.processQueue();
 
@@ -161,7 +103,7 @@ describe('OfflineQueue', () => {
 
     it('离线时不处理', async () => {
       queue.isOnline = false;
-      queue.enqueue({ requestFn: () => Promise.resolve() });
+      seedLegacyTask(queue, { requestFn: () => Promise.resolve() });
 
       const result = await queue.processQueue();
       expect(result.success).toBe(false);
@@ -170,7 +112,7 @@ describe('OfflineQueue', () => {
 
     it('暂停时不处理', async () => {
       queue.pause();
-      queue.enqueue({ requestFn: () => Promise.resolve() });
+      seedLegacyTask(queue, { requestFn: () => Promise.resolve() });
 
       const result = await queue.processQueue();
       expect(result.success).toBe(false);
@@ -185,7 +127,7 @@ describe('OfflineQueue', () => {
 
     it('请求失败 + 重试次数 < 3 → 保留在队列', async () => {
       const fn = vi.fn(() => Promise.reject(new Error('fail')));
-      queue.enqueue({ requestFn: fn });
+      seedLegacyTask(queue, { requestFn: fn });
 
       await queue.processQueue();
 
@@ -196,8 +138,9 @@ describe('OfflineQueue', () => {
 
     it('请求失败 + 重试次数 >= 3 → 保留失败待重试', async () => {
       const fn = vi.fn(() => Promise.reject(new Error('fail')));
-      queue.enqueue({ requestFn: fn });
+      seedLegacyTask(queue, { requestFn: fn });
       queue.queue[0].retryCount = 2; // 已重试 2 次
+      queue._saveToStorage(queue.queue[0]);
 
       await queue.processQueue();
 
@@ -208,13 +151,9 @@ describe('OfflineQueue', () => {
       const rebuilder = vi.fn(() => Promise.resolve('rebuilt'));
       queue.registerRebuilder(rebuilder);
 
-      // 入队时不提供 requestFn，只提供 requestData
-      const id = queue.enqueue({
+      seedLegacyTask(queue, {
         requestData: { url: '/api/test', method: 'POST' }
       });
-
-      // 清除 requestFnMap 模拟持久化后函数引用丢失
-      queue.requestFnMap.delete(id);
 
       await queue.processQueue();
 
@@ -225,8 +164,7 @@ describe('OfflineQueue', () => {
     });
 
     it('无 requestFn + 无 rebuilder → 保留失败待重试', async () => {
-      const id = queue.enqueue({ requestData: { url: '/test' } });
-      queue.requestFnMap.delete(id);
+      seedLegacyTask(queue, { requestData: { url: '/test' } });
 
       const result = await queue.processQueue();
       expect(result.failed).toBe(1);
@@ -236,7 +174,7 @@ describe('OfflineQueue', () => {
     it('处理完成后通知 listener', async () => {
       const listener = vi.fn();
       queue.addListener(listener);
-      queue.enqueue({ requestFn: () => Promise.resolve() });
+      seedLegacyTask(queue, { requestFn: () => Promise.resolve() });
 
       await queue.processQueue();
 
@@ -247,14 +185,13 @@ describe('OfflineQueue', () => {
 
   // ==================== clear ====================
   describe('clear', () => {
-    it('清空队列和 requestFnMap', () => {
-      queue.enqueue({ requestFn: () => {} });
-      queue.enqueue({ requestFn: () => {} });
+    it('清空已载入队列', () => {
+      seedLegacyTask(queue, { requestFn: () => {} });
+      seedLegacyTask(queue, { requestFn: () => {} });
 
       queue.clear();
 
       expect(queue.queue.length).toBe(0);
-      expect(queue.requestFnMap.size).toBe(0);
     });
 
     it('通知 listener', () => {
@@ -270,7 +207,7 @@ describe('OfflineQueue', () => {
   // ==================== getStatus ====================
   describe('getStatus', () => {
     it('返回正确的状态信息', () => {
-      queue.enqueue({ requestFn: () => {}, priority: 'high' });
+      seedLegacyTask(queue, { requestFn: () => {}, priority: 'high' });
 
       const status = queue.getStatus();
 
@@ -326,10 +263,10 @@ describe('OfflineQueue', () => {
     });
 
     it('resume 时在线且有请求 → 自动处理', () => {
-      queue.enqueue({ requestFn: () => Promise.resolve() });
+      seedLegacyTask(queue, { requestFn: () => Promise.resolve() });
       queue.pause();
 
-      const spy = vi.spyOn(queue, 'processQueue');
+      const spy = vi.spyOn(queue, 'processQueue').mockResolvedValue({ success: true });
       queue.resume();
 
       expect(spy).toHaveBeenCalled();
@@ -407,14 +344,16 @@ it('MIGRATE-14-04: failed H5 restore never overwrites unread pending body', asyn
     const { OfflineQueue } = await import('../../src/utils/core/offline-queue.js');
     const queue = new OfflineQueue();
     queue.isOnline = false;
-    queue.enqueue({ requestData: { answer: 'new' } });
+    queue.isOnline = true;
+    expect(await queue.processQueue()).toMatchObject({ success: false, reason: 'storage_unavailable' });
     expect(JSON.parse(get(prefix))).toHaveLength(1);
     expect(JSON.parse(get(prefix))[0].requestData).toEqual({ answer: 'original' });
     unavailable = false;
-    queue.enqueue({ requestData: { answer: 'next' } });
-    const stored = JSON.parse(get(prefix));
-    expect(stored.map((item) => item.requestData.answer)).toEqual(['original', 'new', 'next']);
-    expect(stored[0].retryCount).toBe(2);
+    const send = vi.fn(async () => ({ success: true }));
+    queue.registerRebuilder(send);
+    expect(await queue.processQueue()).toMatchObject({ success: true, processed: 1 });
+    expect(send).toHaveBeenCalledWith({ answer: 'original' }, expect.objectContaining({ taskId: 'old-pending' }));
+    expect(JSON.parse(get(prefix))).toEqual([]);
   } finally {
     read.mockRestore();
   }

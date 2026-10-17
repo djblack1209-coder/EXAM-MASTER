@@ -1,3 +1,4 @@
+import { seedLegacyTask } from '../fixtures/legacy-queue.js';
 import { readFileSync } from 'node:fs';
 import { ref } from 'vue';
 import { aiGenerationMixin } from '@/pages/practice-sub/composables/ai-generation-mixin.js';
@@ -236,7 +237,7 @@ it('MIGRATE-16-02: sent queue survives unread acknowledgement and remount withou
       blocked = 'EXAM_OFFLINE_QUEUE';
       return { code: 0, success: true };
     });
-  queue.enqueue({ requestFn: send, requestData: { answer: 'once' } });
+  seedLegacyTask(queue, { requestFn: send, requestData: { answer: 'once' } });
   const first = queue.processQueue();
   await vi.runAllTimersAsync();
   await first;
@@ -327,25 +328,7 @@ it.each(['flipFlashcard', 'rateFlashcardAndNext'])(
     expect(page.saveCurrentProgress).toHaveBeenCalled();
   }
 );
-it('MIGRATE-16-02: a new deduped action is not mistaken for an already sent receipt', async () => {
-  const queue = new OfflineQueue(),
-    send = vi.fn(async () => {
-      blocked = 'EXAM_OFFLINE_QUEUE';
-      return { success: true };
-    });
-  const old = queue.enqueue({ requestFn: send, requestData: { value: 1 }, dedupeKey: 'same' });
-  await queue.processQueue();
-  expect(send).toHaveBeenCalledOnce();
-  blocked = null;
-  send.mockImplementation(async () => ({ success: true }));
-  const next = queue.enqueue({ requestFn: send, requestData: { value: 2 }, dedupeKey: 'same' });
-  expect(next).not.toBe(old);
-  const pending = queue.processQueue();
-  await vi.runAllTimersAsync();
-  await pending;
-  expect(send).toHaveBeenCalledTimes(2);
-  expect(queue.queue).toHaveLength(0);
-});
+
 it.each(['local-health', 'material-health', 'upload-recovery', 'maintenance', 'original-delete'])(
   'inflight-16-02: %s wrapper retains an explicit revoked binding',
   async (kind) => {

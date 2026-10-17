@@ -1,3 +1,4 @@
+import { seedLegacyTask } from '../fixtures/legacy-queue.js';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia, storeToRefs } from 'pinia';
 import { storageService } from '@/services/storageService.js';
@@ -184,7 +185,7 @@ it.each([0, 2])(
           })
       )
       .mockResolvedValue(undefined);
-    queue.enqueue({ requestFn: request, requestData: { fixture: true } });
+    seedLegacyTask(queue, { requestFn: request, requestData: { fixture: true } });
     queue.queue[0].retryCount = retryCount;
     queue._saveToStorage(queue.queue[0]);
     const before = structuredClone(uni.getStorageSync('EXAM_OFFLINE_QUEUE'));

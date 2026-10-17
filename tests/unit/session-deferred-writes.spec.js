@@ -1,3 +1,4 @@
+import { seedLegacyTask } from '../fixtures/legacy-queue.js';
 import { afterEach, beforeEach, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { storageService } from '@/services/storageService.js';
@@ -170,13 +171,14 @@ it('inflight-3: unavailable after request completion preserves retry count and p
     if (blocked && key === '_enc_EXAM_SESSION_EPOCH') throw new Error('fixture unavailable');
     return read(key);
   });
-  queue.enqueue({
+  seedLegacyTask(queue, {
     requestFn: async () => {
       blocked = true;
     },
     requestData: { fixture: true }
   });
   queue.queue[0].retryCount = 2;
+  queue._saveToStorage(queue.queue[0]);
   queue.isOnline = true;
   await queue.processQueue();
   expect(queue.queue).toHaveLength(1);

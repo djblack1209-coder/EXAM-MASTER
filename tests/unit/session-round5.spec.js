@@ -1,3 +1,4 @@
+import { seedLegacyTask } from '../fixtures/legacy-queue.js';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { readFileSync } from 'node:fs';
@@ -122,7 +123,7 @@ it('WRITES-03/inflight-14-01: typed unavailable response preserves offline retry
     respond = o.success;
     return { abort() {} };
   });
-  queue.enqueue({
+  seedLegacyTask(queue, {
     requestFn: () =>
       request('/round5-queue', { action: 'submit' }, options()).catch((error) => {
         blocked = false;

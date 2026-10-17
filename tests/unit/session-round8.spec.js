@@ -1,3 +1,4 @@
+import { seedLegacyTask } from '../fixtures/legacy-queue.js';
 import { beforeEach, afterEach, it, expect, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { storageService } from '@/services/storageService.js';
@@ -11,13 +12,6 @@ const read = uni.getStorageSync.getMockImplementation();
 let blocked;
 const login = (n = 1) =>
   storageService.saveLoginSession({ userId: `account-${n}`, token: `fixture-${n}`, userInfo: { id: `account-${n}` } });
-const deferred = () => {
-  let resolve;
-  const promise = new Promise((r) => {
-    resolve = r;
-  });
-  return { promise, resolve };
-};
 beforeEach(() => {
   vi.useFakeTimers();
   blocked = null;
@@ -46,41 +40,12 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
 });
-it('inflight-17-01/migrate-08-01: sending id cannot consume a later deduped action', async () => {
-  const q = new OfflineQueue(),
-    gate = deferred(),
-    values = [];
-  const send = vi.fn(async () => {
-    values.push(1);
-    await gate.promise;
-    return { success: true };
-  });
-  const old = q.enqueue({ requestFn: send, requestData: { value: 1 }, dedupeKey: 'same' });
-  const processing = q.processQueue();
-  expect(send).toHaveBeenCalledOnce();
-  const next = q.enqueue({
-    requestFn: async () => {
-      values.push(2);
-      return { success: true };
-    },
-    requestData: { value: 2 },
-    dedupeKey: 'same'
-  });
-  gate.resolve();
-  await vi.runAllTimersAsync();
-  await processing;
-  const second = q.processQueue();
-  await vi.runAllTimersAsync();
-  await second;
-  expect(next).not.toBe(old);
-  expect(values).toEqual([1, 2]);
-  expect(q.queue).toHaveLength(0);
-});
+
 it.each(['preflight', 'fulfilled', 'thrown'])(
   'inflight-17-02/regress-8-01/migrate-08-03: unavailable %s reports unsynced',
   async (kind) => {
     const q = new OfflineQueue();
-    q.enqueue({
+    seedLegacyTask(q, {
       requestData: { value: 1 },
       requestFn: async () => {
         if (kind === 'thrown') throw sessionUnavailable();
@@ -95,16 +60,15 @@ it.each(['preflight', 'fulfilled', 'thrown'])(
     expect(q.processing).toBe(false);
   }
 );
-it('migrate-08-02: cancellation after unread restore preserves unknown tasks', () => {
+it('migrate-08-02: cancellation after unread restore refuses unknown tasks', () => {
   const first = new OfflineQueue();
-  const a = first.enqueue({ requestData: { value: 1 } });
+  const a = seedLegacyTask(first, { requestData: { value: 1 } });
   blocked = 'EXAM_OFFLINE_QUEUE';
   const second = new OfflineQueue();
-  const b = second.enqueue({ requestData: { value: 2 } });
+  expect(second.dequeue(a)).toBe(false);
   blocked = null;
-  expect(second.dequeue(b)).toBe(true);
+  expect(second.clear()).toBe(true);
   expect(read('EXAM_OFFLINE_QUEUE').map((x) => x.id)).toEqual([a]);
-  expect(second.queue.map((x) => x.id)).toEqual([a]);
 });
 it('writes-08-01: unavailable analytics cannot abort core launch and show retries init', () => {
   const prior = { id: 'previous-event', name: 'original' };
@@ -151,32 +115,10 @@ it('writes-08-02: rebinding clears old reminder intervals before resetting', asy
   questionTimer.stop();
   expect(vi.getTimerCount()).toBe(0);
 });
-it('normal pending dedupe freezes caller data and only pending states merge', async () => {
-  const q = new OfflineQueue(),
-    body = { value: 1 };
-  const id = q.enqueue({ requestData: body, dedupeKey: 'same' });
-  body.value = 99;
-  expect(q.queue[0].requestData.value).toBe(1);
-  expect(q.enqueue({ requestData: { value: 2 }, dedupeKey: 'same' })).toBe(id);
-  const send = vi.fn(async () => {
-    throw Error('fixture');
-  });
-  q.registerRebuilder(send);
-  const pending = q.processQueue();
-  await vi.runAllTimersAsync();
-  expect(await pending).toMatchObject({ success: false });
-  expect(q.queue[0]).toMatchObject({ id, state: 'retry', retryCount: 1 });
-  const next = q.enqueue({ requestData: { value: 3 }, dedupeKey: 'same' });
-  expect(next).not.toBe(id);
-  send.mockResolvedValue({ success: true });
-  const retry = q.processQueue();
-  await vi.runAllTimersAsync();
-  expect(await retry).toMatchObject({ success: true, processed: 2 });
-  expect(send.mock.calls[1][1]).toMatchObject({ taskId: id });
-});
+
 it.each(['sending', 'confirmed'])('normal restored states: %s keeps stable id and handles receipt', async (state) => {
   const q = new OfflineQueue(),
-    id = q.enqueue({ requestData: { value: 1 } });
+    id = seedLegacyTask(q, { requestData: { value: 1 } });
   const saved = read('EXAM_OFFLINE_QUEUE');
   saved[0].state = state;
   uni.setStorageSync('EXAM_OFFLINE_QUEUE', saved);
@@ -191,11 +133,9 @@ it.each(['sending', 'confirmed'])('normal restored states: %s keeps stable id an
 });
 it('normal unread cancellation: clear affects known ids and refuses unknown ids', () => {
   const first = new OfflineQueue(),
-    a = first.enqueue({ requestData: { value: 1 } });
+    a = seedLegacyTask(first, { requestData: { value: 1 } });
   blocked = 'EXAM_OFFLINE_QUEUE';
-  const q = new OfflineQueue(),
-    b = q.enqueue({ requestData: { value: 2 } });
-  expect(q.dequeue(b)).toBe(false);
+  const q = new OfflineQueue();
   expect(q.dequeue(a)).toBe(false);
   blocked = null;
   expect(q.clear()).toBe(true);
@@ -265,7 +205,7 @@ it('same-class startup: study engine factory stays complete and restores pending
   expect(engine.sessionHistory).toEqual([{ id: 'saved-history' }]);
   engine.$dispose();
 });
-it('normal legacy state migration: unknown send state never dedupes a later action', async () => {
+it('normal legacy state migration: unknown send state restores retry and stable id', async () => {
   const id = 'legacy-stable-fixture';
   uni.setStorageSync('EXAM_OFFLINE_QUEUE', [
     {
@@ -280,12 +220,10 @@ it('normal legacy state migration: unknown send state never dedupes a later acti
   ]);
   const queue = new OfflineQueue();
   expect(queue.queue[0]).toMatchObject({ id, state: 'retry', retryCount: 2 });
-  const next = queue.enqueue({ requestData: { value: 2 }, dedupeKey: 'same' });
-  expect(next).not.toBe(id);
   const send = vi.fn(async () => ({ success: true }));
   queue.registerRebuilder(send);
   const pending = queue.processQueue();
   await vi.runAllTimersAsync();
-  expect(await pending).toMatchObject({ success: true, processed: 2 });
-  expect(send.mock.calls.map(([body]) => body.value)).toEqual([1, 2]);
+  expect(await pending).toMatchObject({ success: true, processed: 1 });
+  expect(send.mock.calls.map(([body]) => body.value)).toEqual([1]);
 });

@@ -241,7 +241,7 @@ it('round9 independent contexts: queued writes and generation notification', () 
   expect(child.status, child.stderr).toBe(0);
   const rows = child.stdout.trim().split('\n').map(JSON.parse);
   for (const row of rows) expect(row.ok, row.name).toBe(true);
-  expect(rows).toHaveLength(10);
+  expect(rows).toHaveLength(7);
 });
 it.each(['timer', 'swipe'])('normal settings: %s failed save returns false and preserves projection', async (kind) => {
   const manager = kind === 'timer' ? timer : swipe;
