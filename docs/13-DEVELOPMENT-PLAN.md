@@ -1,5 +1,22 @@
 # 开发计划
 
+**2026-10-16阶段5J【推送前针对性修复】**：仅修复 fixes-10-01/02/03/04 与 order-10-02（重复ID见04矩阵）；其他第10轮发现先在4780191a对照归属。发送占用与认领归属、去重目标id、故障期间迁移逻辑槽、过期容量清理及中断身份恢复已落实；最终239项针对性回归、全量5272通过/6原Mongo跳过/零失败、lint及三端隔离构建和产物检查通过；前两轮既有性能波动、归因与收尾见[12](12-CHANGELOG.md)。本阶段明确不推送、不部署，不扩展后续功能批次。
+
+## 账户隔离后续批次（第 10 轮审计）
+
+以下5项均在 `4780191a` 和 `37206056` 以同一探针复现，归属既有问题，按本轮范围要求不修。复现回执为 `tmp/stage5j/attribution-baseline-final.json`、`attribution-current-final.json`（5个探针，计时含stop/pause），正文另见 `body-baseline.json`、`red-body-only.json`。这些回执验证“问题存在”，不是功能验收通过。
+
+| ID / 级别 | 位置 | 场景摘要 | 建议修法 | 归属依据 |
+| --- | --- | --- | --- | --- |
+| **writes-10-01 / P1：下一批次优先** | `src/components/business/learning/journey-reminders.vue` edit/save | 账户1打开草稿，切至已有路线的账户2，原组件保存将旧提醒写入账户2分区；同账户重登录也不撤销旧编辑 | 编辑开始保存原绑定和上下文；保存验证并沿用，owner/epoch换代撤销编辑，同账户续期保留草稿 | 两版本挂载真实组件和Store均出现账户2 reminder.set；5I未修改该文件，edit/save源码相同 |
+| writes-10-02 / regress-10-01 / P2 | `src/pages/practice-sub/question-note.js` addNote/_saveNotes；`do-quiz.vue` handleSaveNote | 底层保存SESSION_UNAVAILABLE，仍返回success，页面提示成功并清空草稿，重载无笔记 | 传递保存回执与暂不可用；仅确认后成功/关闭；失败保留草稿及原绑定待重试，同类笔记/标签同步核对 | 两版本实际存储save注入失败，addNote及真实页面方法均复现；5I仅添加初始化末尾assert，未改保存/页面方法 |
+| regress-10-02 / P2 | `src/pages/practice-sub/question-timer.js` _matches/stop/pause | 身份暂不可用使本地stop/pause失败，interval仍存活并多计隐藏时间 | 按计时token归属立即本地停止/暂停；业务写入/回调另核对原会话；旧token不可停止新计时 | 两版本真实计时器stop/pause均失败且active/interval保持；5I未改_matches/stop/pause |
+| order-10-01 / P2 | `src/services/auth-storage.js` getLoginSessionEpoch/checkSession | 快照失败后补读旧记录，期间同账户续期推进generation，误判changed并删除防抖待写 | 补读前后generation夹读，遇并发保持unavailable与待写，仅确认owner/epoch改变才撤销 | 两版本存储读取钩子在补读记录后交错实际续期，原绑定恢复current但flush后待写已丢；补读无一致性循环在5I前已存在 |
+| migrate-10-03 / P2 | `src/utils/core/offline-queue.js` 事务刷新/恢复与requestFnMap | 第二实例替换正文后，第一实例刷新任务却保留旧闭包；旧正文发送并删除新正文任务 | 发送闭包绑定正文版本；刷新/恢复发现版本变化撤销旧闭包，按当前正文重建 | 两版本transaction及recovery探针都发送正文1、未发正文2；478的旧载入保留本地旧项，372的事务投影更新正文但仍留闭包，缺陷均存在 |
+
+已声明的残留限制：离线队列没有跨窗口发送租约，也没有端到端幂等保证。本轮锁内认领只保证同运行时归属；多窗口、进程崩溃和远端已收但本地未确认须后续协议处理，不宣称恰好一次。
+
+
 **2026-10-16阶段5H【第八轮终审设计收口】**：本批只统一身份generation事务、无Web Locks拒绝登录、离线任务状态机、可恢复启动与原绑定计时器，不提前扩展功能批次。当前候选与有效回执为`tmp/stage5h/`；最终检查与平台缺口见[12](12-CHANGELOG.md)，现行接口/持久合同见[04](04-API-DOCUMENTATION.md#第八轮终审身份事务队列与启动恢复阶段5h)、[05](05-DATABASE-SCHEMAS.md#阶段5h身份代数离线状态机与启动恢复现行)。当前候选核验成功后保留5G回退，回收已覆盖的5F三端生成物；历史回执、日常App与正式原生恢复链保持。WebView2和微信/App真机未验；全量的既有性能夹具准备超时、单项复验通过，波动根因未确认，性能门禁未全绿。公开发布门禁不变。
 
 **2026-10-16阶段5G【第七轮终审收口】**：继续既有会话入口/读取/写入合同，修复发起尝试栅栏、OAuth迟到回调、同步重入重置、可重试初始化、只读导航、连接器续段、处理中退出和离线发送确认；不扩展功能批次。当前隔离候选与回执为`tmp/stage5g/`，最近成功回退保留`tmp/stage5f/`，新候选核验后仅清理被覆盖的5E三端生成物；历史回执、日常App与原生恢复链保持。逐项范围、验证与限制见[12](12-CHANGELOG.md#2026-10-16-第七轮终审修复阶段5g)；真实账号/供应商、自然多窗口、设备和公开门禁继续待验。
