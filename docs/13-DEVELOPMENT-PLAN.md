@@ -155,6 +155,8 @@ Dependabot #3 的两份 workflow 已按原 PR 的版本引用落地，未合并�
 
 证据集中 tmp/p9a-evidence，复用当前依赖；本机 PATH 未发现 actionlint，不安装。YAML 解析、PR 差异/输入/门控比对与 `npm run lint:tooling`、`npm run audit:repository`、`npm run format:check`、`git diff --check` 为本轮静态验收；仓库脚本/测试未引用 workflow 路径或这些 Action 版本，不跑本地全量测试/构建，云端实际执行由指挥方推送后确认。
 
+推送后状态（2026-10-17，`5202c969`）：GitHub CI 运行 39068768717 全部通过，Node 24 版 Action 正常执行，npm 缓存命中，h5-build 产物上传成功（278140763 字节），两个部署作业按门控跳过；Dependabot 于 20:57:51Z 自动关闭 #3。9B 复核与该次 CI 日志共同确认一个既有缺口：`.trivyignore` 在 2026-04-25 大扫除（`943b352a`）中被删除后，Trivy 步骤在扫描前即报 `cannot find ignorefile '.trivyignore'` 失败，`continue-on-error` 使安全扫描作业仍显示成功，随后的告警注释误称“发现 CRITICAL/HIGH 级别漏洞”；自那以后文件系统漏洞扫描实际未执行。该缺口非本批引入，留待“恢复安全扫描并分诊结果”批次处理。Dependabot 新开 #17（@tauri-apps/api 2.12.3、@tauri-apps/cli 2.12.2），#15 仍待客户决定。
+
 **2026-10-17阶段5L【只排空遗留离线任务】**：删除无生产消费者的入队、去重、待写重放、容量淘汰与发送闭包；保留旧格式读取、锁内认领与锁后复核、按id回执、已载入任务取消、有效期、账户隔离、pause/resume、网络恢复及提示条入口。连续审计问题集中在入队路径，故收窄职责而不继续修补重放；未访问用户存储来推断无遗留。现行合同见[04](04-API-DOCUMENTATION.md#阶段5l只排空遗留离线任务现行)、[05](05-DATABASE-SCHEMAS.md#阶段5l遗留队列持久合同现行)，最终验证及资源收尾见[12](12-CHANGELOG.md#2026-10-17-遗留离线队列收窄阶段5l)。最终231项相关回归、全量5279通过/6原Mongo跳过/零失败，lint、三端隔离构建、公开产物与包体检查通过；无性能超时。保留5L/5K候选与指定5G回退，已回收冗余5I/5J构建。不扩展后续功能、推送或生产授权。
 
 ## 阶段5L审计条目处理
