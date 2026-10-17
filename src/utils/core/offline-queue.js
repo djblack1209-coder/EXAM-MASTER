@@ -364,12 +364,11 @@ class OfflineQueue {
     };
     const result = this._transaction((latest) => {
       assertSession(session);
-      // Expiry is scoped to this binding; an unread/foreign account is never rewritten.
+      // Expiry covers this account across login epochs; foreign accounts are never rewritten.
       for (let i = latest.length - 1; i >= 0; i--) {
         const current = latest[i];
         if (
           current.session?.owner === session.owner &&
-          current.session?.epoch === session.epoch &&
           Date.now() - current.timestamp >= MAX_AGE &&
           !sendingIds.has(current.id)
         )
