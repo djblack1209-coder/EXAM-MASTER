@@ -695,12 +695,29 @@ describe('真实 JWT 校验下的新接口隔离合同', () => {
     expect((await models(context({ action: 'delete', profileId: 'byo' }))).success).toBe(true);
     expect([...mock.rows.keys()].filter((id) => id.startsWith('learning_model_keys:'))).toHaveLength(0);
   });
-  it('全新计划操作的非法时区返回 422/INVALID_INPUT，不改变云端原记录', async () => {
+  it.each([
+    ...['plan.set', 'timezone.set'].flatMap((type) =>
+      [
+        ['array', ['UTC']],
+        ['number', 24],
+        ['null', null],
+        ['empty', ''],
+        ['overlong', 'U'.repeat(81)],
+        ['unknown', 'Invalid/Zone']
+      ].map(([label, timezone]) => ({ type, label, fields: { timezone } }))
+    ),
+    { type: 'timezone.set', label: 'missing', fields: {} }
+  ])('全新时区操作 $type/$label 返回 422/INVALID_INPUT，不改变云端原记录', async ({ type, label, fields }) => {
     const saved = await sync(
       context({
         action: 'push',
         operations: [
-          { id: 'valid-sync-zone-plan', type: 'plan.set', at: 1790848800000, data: { tasks: [], timezone: 'UTC' } }
+          {
+            id: `valid-sync-zone-${type}-${label}`,
+            type: 'plan.set',
+            at: 1790848800000,
+            data: { tasks: [], timezone: 'UTC' }
+          }
         ]
       })
     );
@@ -711,16 +728,32 @@ describe('真实 JWT 校验下的新接口隔离合同', () => {
         action: 'push',
         operations: [
           {
-            id: 'fresh-invalid-sync-zone-plan',
-            type: 'plan.set',
+            id: `fresh-invalid-sync-zone-${type}-${label}`,
+            type,
             at: 1790848800000,
-            data: { tasks: [], timezone: 'Invalid/Zone' }
+            data: type === 'plan.set' ? { tasks: [], ...fields } : fields
           }
         ]
       })
     );
     expect(result).toMatchObject({ code: 422, success: false, error: 'INVALID_INPUT' });
     expect([...mock.rows.entries()]).toEqual(before);
+  });
+  it.each(['UTC', 'US/Pacific', '+23:00'])('同步保留合法时区 %s，未指定计划时区时沿用账户', async (timezone) => {
+    const result = await sync(
+      context({
+        action: 'push',
+        operations: [
+          { id: `sync-account-zone-${timezone}`, type: 'timezone.set', at: 1790848800000, data: { timezone } },
+          { id: `sync-explicit-zone-${timezone}`, type: 'plan.set', at: 1790848800000, data: { tasks: [], timezone } },
+          { id: `sync-inherited-zone-${timezone}`, type: 'plan.set', at: 1790848800000, data: { tasks: [] } }
+        ]
+      })
+    );
+    expect(result).toMatchObject({ code: 0, success: true });
+    expect(result.data.state.timezone).toBe(timezone);
+    expect(result.data.state.plans).toHaveLength(2);
+    for (const plan of result.data.state.plans) expect(plan.timezone).toBe(timezone);
   });
   it('同步忽略客户端用户身份且保持私有范围', async () => {
     const result = await sync(

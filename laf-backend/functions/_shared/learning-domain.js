@@ -240,6 +240,7 @@ export function dayKey(time, timezone) {
   return `${get('year')}-${get('month')}-${get('day')}`;
 }
 function validateTimezone(time, timezone, message) {
+  assert(typeof timezone === 'string' && timezone.length >= 1 && timezone.length <= 80, 'INVALID_INPUT', message);
   try {
     return dayKey(time, timezone);
   } catch {
