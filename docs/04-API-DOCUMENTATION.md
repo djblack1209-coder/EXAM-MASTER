@@ -1,5 +1,21 @@
 # API 与工具合同
 
+## 第十一轮定点修复：恢复登记与去重重放（阶段5K）
+
+本节替代5J的对应恢复/去重条款，仅修复 `fixes-20-01 / order-20-01` 与 `fixes-20-02 / order-20-02`。
+
+`beginLoginAttempt()` 同步捕获原意图序号、退出栅栏及generation。一个独占身份锁回调内识别完整领先记录、CAS跳过并撤销中断记录，再核对恢复回执的原栅栏、当前栅栏、generation和原意图，最后登记同一次尝试。恢复回执只衔接本次撤销；不会递归创建意图或重取发起栅栏。锁返回后的旧响应仍须通过尝试id/generation/栅栏核对，后续退出、登录或令牌保存使旧提交失效。单上下文恢复到登记全程同步，无await；通知期间的后继意图同样撤销原尝试。普通退出保持既有容错：不额外要求读取撤销标记；恢复前后栅栏的读取与比较仅用于中断恢复。普通登录的游客迁移证明仍在发起时复制，等待锁期间的新写入或改写不加入本次证明。
+
+`pendingEnqueues` 显式保留每次失败的去重替换，不能仅因持久队列已有id就忽略。恢复只读取持久投影，锁内按原入队顺序重放：目标仍为pending且未被认领/确认时替换正文并将version加一；目标已发送中、已确认或不存在时，给新正文使用新id单独入队。锁内写入并回读确认后才清除这批待重放更新；持久version与enqueueReceipt识别已落盘但核验失败的更新，重复恢复不重复加版本。重放失败不传输旧正文、不清待写。本轮不扩展跨窗口发送租约或旧发送闭包的既有范围。
+
+| 审计ID                    | 状态与测试名关键词                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| fixes-20-01 / order-20-01 | 已修复；`session-round11.spec.js`：`independent H5 recovery continuation rejects logout, successor login and renewal`，双独立VM共享存储/Web Lock，恢复锁回调返回后暂停原Promise续段，真实Auth Store退出、后继登录、实际令牌保存分别交错；另有`single context recovers and registers synchronously in one original intent`、`a successor intent during synchronous recovery cancels the initiating attempt`、`ordinary logout can revoke while the revocation marker is unreadable`、`queued registration retains the initiating guest migration proof`。夹具：`tests/fixtures/session-races/round11.mjs`。 |
+| fixes-20-02 / order-20-02 | 已修复；`session-round11-queue.spec.js`：`replay failed dedupe write before persistence with target pending/sending/confirmed/missing`，`ordered dedupe replays survive repeated writes and failed verification without incrementing twice`，`processQueue retains failed replay until durable confirmation and sends only the new body`，`an active claim forbids replay merging even when durable state still says pending`。                                                                                                                                                                            |
+| order-20-03               | 既有限制，本轮不修；按收到的第20轮审计，两个独立H5上下文共用存储/Web Lock，合成接收worker收到相同taskId两次且分别成功确认；37206056同样复现。证据边界与后续协议见[13](13-DEVELOPMENT-PLAN.md#账户隔离后续批次第-10-轮审计)。                                                                                                                                                                                                                                                                                                                                                                               |
+
+修复前在a64e3582运行新回归，修复后保留同一探针；原基线失败与最终验证回执见[12](12-CHANGELOG.md#2026-10-16-恢复登记与去重重放修复阶段5k)。VM、合成存储故障与隔离构建不代替真实账号、浏览器/设备或远端幂等验收。[持久协议](05-DATABASE-SCHEMAS.md#阶段5k恢复回执与有序去重更新)。
+
 ## 第十轮针对性修复：离线认领与中断身份恢复（阶段5J）
 
 本节修正5I对应条款，不扩大账户功能范围。`processQueue()` 在首个 await 前占用实例 processing，恢复、早退和处理均进入 finally 释放；同运行时共享 `id → 认领对象`。同一身份锁回调内比较持久 id/正文、已有认领和成功回执，再登记认领并持久核验；等待后复核归属，只有持有者发送和释放。失败核验不传输，成功回执仍只补本地确认。本规则覆盖同实例双调用、同上下文双实例和读取恢复，不构成跨窗口发送租约或端到端幂等。
