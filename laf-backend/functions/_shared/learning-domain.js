@@ -1997,7 +1997,10 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
     }
     case 'plan.set': {
       assert(Array.isArray(data.tasks) && data.tasks.length <= 100, 'INVALID_INPUT', '计划最多 100 个任务');
-      const day = data.day || dayKey(now, state.timezone);
+      const timezone = data.timezone === undefined ? state.timezone : data.timezone;
+      assert(typeof timezone === 'string' && timezone.length <= 80, 'INVALID_INPUT', '计划时区不合法');
+      dayKey(now, timezone);
+      const day = data.day || dayKey(now, timezone);
       assert(/^\d{4}-\d{2}-\d{2}$/.test(day), 'INVALID_INPUT', '日期不合法');
       const previous = state.plans.filter((p) => p.day === day).at(-1);
       const tasks = data.tasks.map((task, index) => {
@@ -2022,7 +2025,7 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       result = {
         id: opId,
         day,
-        timezone: state.timezone,
+        timezone,
         version: (previous?.version || 0) + 1,
         replaces: previous?.id || null,
         reason: text(data.reason || '用户调整计划', 1000),

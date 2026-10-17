@@ -155,6 +155,16 @@ export function createLearningRepository(
     );
     return archive;
   };
+  function capturePlanTimezone(state, operation) {
+    if (operation.type !== 'plan.set' || operation.data?.timezone !== undefined) return operation;
+    const previous = state.events.find((event) => event.id === operation.id);
+    // Old operation identities keep their original payload; repeats of new plans reuse the captured zone.
+    if (previous && previous.data?.timezone === undefined) return operation;
+    return {
+      ...operation,
+      data: { ...operation.data, timezone: previous ? previous.data.timezone : state.timezone }
+    };
+  }
   const repository = {
     read,
     assertWriteAccess,
@@ -174,7 +184,7 @@ export function createLearningRepository(
         'CONFLICT',
         '学习记录已更新，请重新读取后重试'
       );
-      const outcome = applyLearningOperation(before, operation);
+      const outcome = applyLearningOperation(before, capturePlanTimezone(before, operation));
       if (!outcome.reused) {
         preparedHistory = null;
         if (operation.type === 'material.delete') {
@@ -221,7 +231,12 @@ export function createLearningRepository(
         '学习批次包含不支持的操作'
       );
       const batch = createLearningOperationBatch(before, operations.length);
-      const results = operations.map((operation) => batch.apply(operation));
+      let staged = before;
+      const results = operations.map((operation) => {
+        const result = batch.apply(capturePlanTimezone(staged, operation));
+        staged = result.state;
+        return result;
+      });
       const after = batch.finish();
       if (after.revision !== before.revision) {
         preparedHistory = null;

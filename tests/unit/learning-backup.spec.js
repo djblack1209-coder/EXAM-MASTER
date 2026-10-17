@@ -46,6 +46,49 @@ function repository(initial = emptyLearningState('u1')) {
 }
 
 describe('学习备份的安全恢复闭环', () => {
+  it.each(['UTC', 'Asia/Shanghai', 'America/New_York', 'America/Los_Angeles'])(
+    '%s 安排后改时区，恢复仍保留原计划的日期、时区和幂等身份',
+    (timezone) => {
+      const { repo } = repository(emptyLearningState('u1', timezone));
+      const at = Date.parse('2026-11-01T06:30:00Z');
+      const plan = {
+        id: 'origin-zone-plan',
+        type: 'plan.set',
+        at,
+        data: { tasks: [{ id: 'origin-task', title: '保留原日历', condition: 'manual' }] }
+      };
+      repo.commit(plan);
+      const original = structuredClone(repo.read().plans[0]);
+      const changedTimezone = timezone === 'Asia/Shanghai' ? 'America/Los_Angeles' : 'Asia/Shanghai';
+      repo.commit({ id: 'changed-zone', type: 'timezone.set', at: at + 1000, data: { timezone: changedTimezone } });
+      expect(repo.commit(plan).reused).toBe(true);
+      const facts = repo.read();
+      const restored = prepareLearningRestore(emptyLearningState('u1', changedTimezone), JSON.stringify(facts), {
+        now: at + 2000
+      });
+      expect(restored.state.plans[0]).toEqual(original);
+      expect(restored.state).toEqual(facts);
+      expect(() => repo.commit({ ...plan, data: { ...plan.data, timezone: 'Invalid/Zone' } })).toThrow();
+      expect(repo.read()).toEqual(facts);
+    }
+  );
+  it('整批计划捕获原时区；换时区后重复整批和旧无时区操作都不改身份', () => {
+    const { repo } = repository(emptyLearningState('u1', 'America/New_York'));
+    const operation = { id: 'batch-zone', type: 'plan.set', at: Date.now(), data: { tasks: [] } };
+    repo.commitBatch([operation], 0);
+    expect(repo.read().events[0].data.timezone).toBe('America/New_York');
+    repo.commit({ id: 'batch-zone-change', type: 'timezone.set', data: { timezone: 'Asia/Shanghai' } });
+    const before = repo.read();
+    expect(repo.commitBatch([operation], before.revision).reused).toBe(true);
+    expect(repo.read()).toEqual(before);
+    expect(() => repo.commit({ ...operation, id: 'bad-zone', data: { tasks: [], timezone: null } })).toThrow();
+    expect(repo.read()).toEqual(before);
+    const legacy = applyLearningOperation(emptyLearningState('u1', 'UTC'), operation).state;
+    const old = repository(legacy).repo;
+    expect(old.commit(operation).reused).toBe(true);
+    expect(old.read()).toEqual(legacy);
+    expect(old.read().events[0].data).not.toHaveProperty('timezone');
+  });
   it('确认绑定本次预览的完整正文，旧预览不能用于另一份有效备份', () => {
     const { repo } = repository();
     const a = JSON.stringify(fixture());

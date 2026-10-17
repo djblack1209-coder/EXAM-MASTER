@@ -75,6 +75,24 @@ describe('服务端历史单文档与分页传输', () => {
     expect(repeated).toEqual(first);
     expect((await syncLearningOperations(db, 'u1', [], 'Asia/Shanghai')).state).toEqual(first.state);
   });
+  it.each(['UTC', 'Asia/Shanghai', 'America/New_York', 'America/Los_Angeles'])(
+    '首次从改过时区的设备同步，%s 计划仍按事件原时区重建',
+    async (timezone) => {
+      const at = Date.parse('2026-10-16T06:30:00Z');
+      const changedTimezone = timezone === 'Asia/Shanghai' ? 'America/Los_Angeles' : 'Asia/Shanghai';
+      const operations = [
+        { id: 'origin-plan', type: 'plan.set', at, data: { timezone, tasks: [] } },
+        { id: 'origin-change', type: 'timezone.set', at: at + 1000, data: { timezone: changedTimezone } }
+      ];
+      let local = emptyLearningState('u1', timezone);
+      for (const operation of operations) local = applyLearningOperation(local, operation).state;
+      const { db } = database(emptyLearningState('u1', changedTimezone), 0);
+      const result = await syncLearningOperations(db, 'u1', operations, changedTimezone);
+      expect(result.state).toEqual(local);
+      expect(result.state.plans[0].timezone).toBe(timezone);
+      expect(await syncLearningOperations(db, 'u1', operations, 'UTC')).toEqual(result);
+    }
+  );
   it('已有事实即使旧存储版本为零，也不按另一设备时区重建', async () => {
     const start = { id: 'old-goal', type: 'conversation.start', at: Date.now(), data: { goal: '保留原目标' } };
     const original = applyLearningOperation(emptyLearningState('u1', 'America/Los_Angeles'), start).state;
