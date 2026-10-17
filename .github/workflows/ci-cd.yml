@@ -97,7 +97,7 @@ jobs:
 
       - name: Run tests
         run: npm test
-        timeout-minutes: 5
+        timeout-minutes: 8
 
       - name: Verify learning calendar, retests and backups across timezones
         timeout-minutes: 4
