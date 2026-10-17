@@ -691,6 +691,7 @@ import { generateAdaptiveSequence, getNextRecommendedQuestion } from '@/utils/le
 import { checkOfflineAvailability } from './services/offline-cache-service.js';
 // ✅ 导入题目笔记模块
 import { addQuestionNote, getNotesByQuestion, getNoteTags } from './question-note.js';
+const noteDraftIdentities = new WeakMap();
 // ✅ P1: 提取的模块
 import { saveToMistakes as saveMistake, updateMistakeWithAI as updateMistakeAI } from './quiz-mistake-handler.js';
 import { fetchAIDeepAnalysis as fetchAIAnalysis } from './quiz-ai-analysis.js';
@@ -2800,6 +2801,12 @@ export default {
         return;
       }
 
+      let draft = noteDraftIdentities.get(page);
+      if (!draft || draft.question !== question || draft.generation !== generation) {
+        draft = { question, generation, key: {} };
+        noteDraftIdentities.set(page, draft);
+      }
+
       const result = await addQuestionNote(
         {
           questionId: question.id || question.question,
@@ -2808,7 +2815,8 @@ export default {
           tags: [...this.selectedNoteTags],
           category: question.category
         },
-        session
+        session,
+        draft.key
       );
 
       if (

@@ -61,6 +61,7 @@ class QuestionNoteManager {
     this.tags = [...DEFAULT_TAGS];
     this.isInitialized = false;
     this._pendingAdds = new Map();
+    this._draftAdds = new WeakMap();
   }
 
   /**
@@ -83,10 +84,16 @@ class QuestionNoteManager {
    * @param {Object} noteData - 笔记数据
    * @returns {Object} 添加结果
    */
-  addNote(noteData, session = captureSession()) {
-    return this._write(() => {
-      const draftKey = JSON.stringify(noteData);
-      const note = this._pendingAdds.get(draftKey) || {
+  addNote(noteData, session = captureSession(), draftIdentity) {
+    try {
+      assertSession(session);
+      this.init();
+      const signature = JSON.stringify([session.owner, session.epoch, noteData]);
+      const draftKey = draftIdentity || signature;
+      const pendingAdds = this._pendingAdds;
+      let pending = pendingAdds.get(draftKey) || (draftIdentity && this._draftAdds.get(draftIdentity));
+      if (pending?.signature !== signature) pending = undefined;
+      const note = pending?.note || {
         id: this._generateId(),
         questionId: noteData.questionId,
         questionContent: noteData.questionContent || '',
@@ -105,16 +112,31 @@ class QuestionNoteManager {
         lastReviewAt: null,
         isImportant: noteData.isImportant || false
       };
-      // Retain the original id until confirmation, including a lost write receipt.
-      const pendingAdds = this._pendingAdds;
-      pendingAdds.set(draftKey, note);
-      const notes = [note, ...this.notes.filter((row) => row.id !== note.id)].slice(0, 1000);
-      return this._after(this._persist('notes', notes, session), (result) => {
-        if (!result.success) return result;
-        if (pendingAdds.get(draftKey) === note) pendingAdds.delete(draftKey);
-        return { success: true, note };
+      // Register before entering the account queue, so every queued submission
+      // keeps the original id alive. The weak editor identity also covers two
+      // synchronous saves before the page consumes its first receipt.
+      // Failed receipts retain only a retry identity.
+      if (!pending) {
+        pending = { note, signature, submissions: 0 };
+        if (draftIdentity) this._draftAdds.set(draftIdentity, pending);
+      }
+      pendingAdds.set(draftKey, pending);
+      pending.submissions++;
+      const result = this._write(() => {
+        const notes = [note, ...this.notes.filter((row) => row.id !== note.id)].slice(0, 1000);
+        return this._after(this._persist('notes', notes, session), (saved) =>
+          saved.success ? { success: true, note } : saved
+        );
+      }, session);
+      return this._after(result, (saved) => {
+        pending.submissions--;
+        if (pending.submissions === 0 && saved.success && pendingAdds.get(draftKey) === pending)
+          pendingAdds.delete(draftKey);
+        return saved;
       });
-    }, session);
+    } catch (error) {
+      return this._failure(session, error);
+    }
   }
 
   /**
@@ -573,8 +595,8 @@ class QuestionNoteManager {
 export const questionNoteManager = new QuestionNoteManager();
 
 // 便捷函数
-export function addQuestionNote(noteData, session = captureSession()) {
-  return questionNoteManager.addNote(noteData, session);
+export function addQuestionNote(noteData, session = captureSession(), draftIdentity) {
+  return questionNoteManager.addNote(noteData, session, draftIdentity);
 }
 
 export function updateQuestionNote(noteId, updates) {

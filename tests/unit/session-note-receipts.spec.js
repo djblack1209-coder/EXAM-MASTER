@@ -25,6 +25,7 @@ beforeEach(async () => {
 afterEach(() => {
   for (const wrapper of wrappers.splice(0)) wrapper.unmount();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 function page() {
@@ -177,3 +178,153 @@ it.each(['false', 'reject', 'unconfirmed'])(
     expect(storageService.get('question_notes')).toHaveLength(1);
   }
 );
+
+function pauseNextNoteSave() {
+  const release = deferred();
+  const started = deferred();
+  const save = storageService.save.bind(storageService);
+  vi.spyOn(storageService, 'save').mockImplementationOnce((...args) => {
+    started.resolve();
+    return release.promise.then(() => save(...args));
+  });
+  return { started: started.promise, release: release.resolve };
+}
+
+const noteReceipts = (add) => Promise.all(add.mock.results.map((call) => call.value));
+
+it.each(['runtime', 'web-lock'])('6G: delayed same-page double submit saves one draft under %s', async (lock) => {
+  const origin = page();
+  if (lock === 'web-lock') {
+    vi.stubGlobal('navigator', {
+      locks: { request: vi.fn((_name, _options, operation) => Promise.resolve().then(operation)) }
+    });
+  }
+  const add = vi.spyOn(questionNoteManager, 'addNote');
+  const success = vi.spyOn(toast, 'success');
+  const gate = pauseNextNoteSave();
+  const first = origin.handleSaveNote();
+  await gate.started;
+  const second = origin.handleSaveNote();
+  gate.release();
+  await Promise.all([first, second]);
+  const receipts = await noteReceipts(add);
+  expect(receipts).toHaveLength(2);
+  expect(receipts[0].success).toBe(true);
+  expect(receipts[1]).toEqual(receipts[0]);
+  expect(storageService.get('question_notes')).toEqual([receipts[0].note]);
+  expect(new questionNoteManager.constructor().getNotes()).toEqual([receipts[0].note]);
+  expect(success).toHaveBeenCalledTimes(1);
+  expect(origin.showNoteModal).toBe(false);
+  expect(origin.noteContent).toBe('');
+});
+
+it('6G: direct manager double submit keeps the same id until the whole queue settles', async () => {
+  const manager = new questionNoteManager.constructor();
+  const gate = pauseNextNoteSave();
+  const first = manager.addNote(draft('same draft'));
+  await gate.started;
+  const second = manager.addNote(draft('same draft'));
+  gate.release();
+  const receipts = await Promise.all([first, second]);
+  expect(receipts[0].success).toBe(true);
+  expect(receipts[1]).toEqual(receipts[0]);
+  expect(new questionNoteManager.constructor().getNotes()).toEqual([receipts[0].note]);
+  // A later intentional draft is independent once both submissions have settled.
+  const next = await manager.addNote(draft('same draft'));
+  expect(next.success).toBe(true);
+  expect(next.note.id).not.toBe(receipts[0].note.id);
+  expect(storageService.get('question_notes')).toHaveLength(2);
+});
+
+it.each(['false', 'reject', 'unconfirmed', 'lost-receipt'])(
+  '6G: first %s write fails honestly and a double retry saves one note without a stuck lock',
+  async (failure) => {
+    const origin = page();
+    const save = storageService.save.bind(storageService);
+    vi.spyOn(storageService, 'save').mockImplementationOnce((...args) => {
+      if (failure === 'reject') return Promise.reject(new Error('fixture failure'));
+      if (failure === 'lost-receipt') save(...args);
+      return Promise.resolve(failure === 'unconfirmed');
+    });
+    const success = vi.spyOn(toast, 'success');
+    const add = vi.spyOn(questionNoteManager, 'addNote');
+    await origin.handleSaveNote();
+    expect((await noteReceipts(add))[0].success).toBe(false);
+    expect(success).not.toHaveBeenCalled();
+    expect(origin.showNoteModal).toBe(true);
+    expect(origin.noteContent).toBe('original draft');
+    const persisted = storageService.get('question_notes', []);
+    expect(persisted).toHaveLength(failure === 'lost-receipt' ? 1 : 0);
+    add.mockClear();
+    const gate = pauseNextNoteSave();
+    const first = origin.handleSaveNote();
+    await gate.started;
+    const second = origin.handleSaveNote();
+    gate.release();
+    await Promise.all([first, second]);
+    const receipts = await noteReceipts(add);
+    expect(receipts[0].success).toBe(true);
+    expect(receipts[1]).toEqual(receipts[0]);
+    expect(storageService.get('question_notes')).toEqual([receipts[0].note]);
+    if (persisted.length) expect(receipts[0].note.id).toBe(persisted[0].id);
+    expect(success).toHaveBeenCalledTimes(1);
+    // Fresh work can enter and leave the same account queue after the failure.
+    origin.handleOpenNote();
+    origin.noteContent = 'next draft';
+    await origin.handleSaveNote();
+    expect(storageService.get('question_notes')).toHaveLength(2);
+    expect(success).toHaveBeenCalledTimes(2);
+  }
+);
+
+it.each(['other-question', 'switch-back', 'reopen', 'other-page'])(
+  '6G: concurrent drafts stay distinct after %s even with identical text and duplicate submits',
+  async (change) => {
+    const origin = page();
+    const add = vi.spyOn(questionNoteManager, 'addNote');
+    const gate = pauseNextNoteSave();
+    const first = origin.handleSaveNote();
+    await gate.started;
+    const firstDuplicate = origin.handleSaveNote();
+    let successor = origin;
+    if (change === 'other-page') successor = page();
+    else {
+      if (change === 'other-question' || change === 'switch-back') origin.currentIndex = 1;
+      if (change === 'switch-back') origin.currentIndex = 0;
+      origin.handleOpenNote();
+      origin.noteContent = 'original draft';
+      origin.selectedNoteTags = ['key_point'];
+    }
+    const second = successor.handleSaveNote();
+    const secondDuplicate = successor.handleSaveNote();
+    gate.release();
+    await Promise.all([first, firstDuplicate, second, secondDuplicate]);
+    const receipts = await noteReceipts(add);
+    expect(receipts.map((receipt) => receipt.success)).toEqual([true, true, true, true]);
+    expect(receipts[1]).toEqual(receipts[0]);
+    expect(receipts[3]).toEqual(receipts[2]);
+    expect(receipts[0].note.id).not.toBe(receipts[2].note.id);
+    const rows = new questionNoteManager.constructor().getNotes();
+    expect(rows).toHaveLength(2);
+    expect(rows.map((row) => row.id).sort()).toEqual([receipts[0].note.id, receipts[2].note.id].sort());
+    expect(rows.map((row) => row.questionId).sort()).toEqual(change === 'other-question' ? ['q1', 'q2'] : ['q1', 'q1']);
+    expect(successor.showNoteModal).toBe(false);
+  }
+);
+
+it('6G: synchronous double submit before page receipt handling still saves one editor draft', async () => {
+  const origin = page();
+  const add = vi.spyOn(questionNoteManager, 'addNote');
+  const first = origin.handleSaveNote();
+  const second = origin.handleSaveNote();
+  await Promise.all([first, second]);
+  const receipts = await noteReceipts(add);
+  expect(receipts[0].success).toBe(true);
+  expect(receipts[1]).toEqual(receipts[0]);
+  expect(storageService.get('question_notes')).toEqual([receipts[0].note]);
+  origin.handleOpenNote();
+  origin.noteContent = 'original draft';
+  origin.selectedNoteTags = ['key_point'];
+  await origin.handleSaveNote();
+  expect(storageService.get('question_notes')).toHaveLength(2);
+});
