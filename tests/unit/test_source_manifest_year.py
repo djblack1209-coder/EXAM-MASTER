@@ -255,7 +255,9 @@ class SourceManifestYearTest(unittest.TestCase):
             {"sourceId": "src_1b0fd1f2d5c9741193305511"},
             {"contentHash": "46f076305pf181eb53d3f3c01172fdd7"},
             {"sha256": "a9db41a6703e349215044e39c980c99fecbb8386321bdf206ee002502e61c068"},
-            {"fileSha256": "sha256:a9db41a6703e349215044e39c980c99fecbb8386321bdf206ee002502e61c068"},
+            {
+                "fileSha256": "sha256:a9db41a6703e349215044e39c980c99fecbb8386321bdf206ee002502e61c068"
+            },
             {"remotePath": "/EXAM-MASTER/【完整版】数学二真题答案解析/2021考研数学二真题 .pdf"},
         ]
         for identity in identities:
@@ -273,20 +275,24 @@ class SourceManifestYearTest(unittest.TestCase):
 
     def test_manifest_quality_rejects_stale_published_branded_copy(self):
         report = analyze_manifest(
-            {"items": [{
-                "sourceId": "src_1b0fd1f2d5c9741193305511",
-                "track": "math2",
-                "year": 2021,
-                "eligible": True,
-                "status": "published",
-                "sourceType": "official_paper",
-                "sourceRole": "paper_answer",
-                "contentHash": "different",
-                "remotePath": "/renamed/2021-math2-paper-answer.pdf",
-                "answerEvidenceStatus": "matched",
-                "riskFlags": [],
-                "legalReview": {"publishBlocked": False},
-            }]},
+            {
+                "items": [
+                    {
+                        "sourceId": "src_1b0fd1f2d5c9741193305511",
+                        "track": "math2",
+                        "year": 2021,
+                        "eligible": True,
+                        "status": "published",
+                        "sourceType": "official_paper",
+                        "sourceRole": "paper_answer",
+                        "contentHash": "different",
+                        "remotePath": "/renamed/2021-math2-paper-answer.pdf",
+                        "answerEvidenceStatus": "matched",
+                        "riskFlags": [],
+                        "legalReview": {"publishBlocked": False},
+                    }
+                ]
+            },
             tracks=["math2"],
             years=[2021],
         )
@@ -312,12 +318,16 @@ class SourceManifestYearTest(unittest.TestCase):
         }
         queue = build_cleaning_queue(
             {"items": [source]},
-            previous_queue={"tasks": [{
-                "sourceId": source["sourceId"],
-                "fingerprint": source["fingerprint"],
-                "action": "download_and_extract",
-                "status": "completed",
-            }]},
+            previous_queue={
+                "tasks": [
+                    {
+                        "sourceId": source["sourceId"],
+                        "fingerprint": source["fingerprint"],
+                        "action": "download_and_extract",
+                        "status": "completed",
+                    }
+                ]
+            },
             raw_inbox_dir=Path("/not-used"),
             now="2026-10-14T00:00:00Z",
         )

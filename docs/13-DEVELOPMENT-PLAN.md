@@ -4,19 +4,18 @@
 
 ## 阶段5L审计条目处理
 
-| ID | 处理与依据 |
-| --- | --- |
-| fixes-21-01 | 随入队路径删除而关闭；无pendingEnqueues及失败重放投影。 |
-| fixes-21-02 | 随入队路径删除而关闭；无重放换id，取消不会产生新任务。 |
-| order-21-01 | 随入队路径删除而关闭；无待重放更新覆盖后继正文。 |
-| order-21-02 | 随入队路径删除而关闭；无重放换id重复发送。 |
-| order-21-03 | 随入队路径删除而关闭；与fixes-21-02同源，dequeue/clear无重放副作用。 |
-| fixes-20-02 / order-20-02 | 随入队路径删除而关闭；5K有序去重更新及专用测试删除，历史验证不回写。 |
-| migrate-10-03 | 随入队路径删除而关闭；requestFnMap删除，发送仅从遗留requestData经rebuilder重建。 |
-| order-20-03 | 保留；跨上下文重复提交对排空遗留任务仍适用，无跨窗口租约与服务端统一taskId幂等。 |
+| ID                        | 处理与依据                                                                       |
+| ------------------------- | -------------------------------------------------------------------------------- |
+| fixes-21-01               | 随入队路径删除而关闭；无pendingEnqueues及失败重放投影。                          |
+| fixes-21-02               | 随入队路径删除而关闭；无重放换id，取消不会产生新任务。                           |
+| order-21-01               | 随入队路径删除而关闭；无待重放更新覆盖后继正文。                                 |
+| order-21-02               | 随入队路径删除而关闭；无重放换id重复发送。                                       |
+| order-21-03               | 随入队路径删除而关闭；与fixes-21-02同源，dequeue/clear无重放副作用。             |
+| fixes-20-02 / order-20-02 | 随入队路径删除而关闭；5K有序去重更新及专用测试删除，历史验证不回写。             |
+| migrate-10-03             | 随入队路径删除而关闭；requestFnMap删除，发送仅从遗留requestData经rebuilder重建。 |
+| order-20-03               | 保留；跨上下文重复提交对排空遗留任务仍适用，无跨窗口租约与服务端统一taskId幂等。 |
 
 今后若需要离线提交，须按“跨窗口认领租约 + 服务端按任务 id 幂等”重新设计入队，不恢复本次删除的实现。当前生产未注册rebuilder，无法重建时任务保留并报告未同步；真实服务端发送/设备验收仍独立成立。
-
 
 **2026-10-16阶段5K【恢复登记与去重重放】**：仅修复 fixes-20-01/order-20-01 与 fixes-20-02/order-20-02；中断恢复和登记保持同一锁回调与原意图/退出栅栏，失败去重替换有序重放并确认后清除；普通退出和游客迁移证明保持既有边界。2026-10-17最终核验：251项相关回归（12项新增）、全量5284通过/6原Mongo跳过/零失败，lint、三端隔离构建、公开产物及包体检查通过。审计ID与测试名见[04](04-API-DOCUMENTATION.md#第十一轮定点修复恢复登记与去重重放阶段5k)，前序超时、自引入差分修正、完整验证及资源收尾见[12](12-CHANGELOG.md#2026-10-16-恢复登记与去重重放修复阶段5k)。order-20-03作为既有限制已补收到的审计证据，本轮不修；不扩展后续功能、推送、生产或设备验收授权。
 
@@ -26,16 +25,15 @@
 
 以下5项的历史归属均在 `4780191a` 和 `37206056` 以同一探针复现，归属既有问题；其中migrate-10-03在5L随入队路径删除而关闭，余4项继续待处理。复现回执为 `tmp/stage5j/attribution-baseline-final.json`、`attribution-current-final.json`（5个探针，计时含stop/pause），正文另见 `body-baseline.json`、`red-body-only.json`。这些回执验证“问题存在”，不是功能验收通过。
 
-| ID / 级别 | 位置 | 场景摘要 | 建议修法 | 归属依据 |
-| --- | --- | --- | --- | --- |
-| **writes-10-01 / P1：下一批次优先** | `src/components/business/learning/journey-reminders.vue` edit/save | 账户1打开草稿，切至已有路线的账户2，原组件保存将旧提醒写入账户2分区；同账户重登录也不撤销旧编辑 | 编辑开始保存原绑定和上下文；保存验证并沿用，owner/epoch换代撤销编辑，同账户续期保留草稿 | 两版本挂载真实组件和Store均出现账户2 reminder.set；5I未修改该文件，edit/save源码相同 |
-| writes-10-02 / regress-10-01 / P2 | `src/pages/practice-sub/question-note.js` addNote/_saveNotes；`do-quiz.vue` handleSaveNote | 底层保存SESSION_UNAVAILABLE，仍返回success，页面提示成功并清空草稿，重载无笔记 | 传递保存回执与暂不可用；仅确认后成功/关闭；失败保留草稿及原绑定待重试，同类笔记/标签同步核对 | 两版本实际存储save注入失败，addNote及真实页面方法均复现；5I仅添加初始化末尾assert，未改保存/页面方法 |
-| regress-10-02 / P2 | `src/pages/practice-sub/question-timer.js` _matches/stop/pause | 身份暂不可用使本地stop/pause失败，interval仍存活并多计隐藏时间 | 按计时token归属立即本地停止/暂停；业务写入/回调另核对原会话；旧token不可停止新计时 | 两版本真实计时器stop/pause均失败且active/interval保持；5I未改_matches/stop/pause |
-| order-10-01 / P2 | `src/services/auth-storage.js` getLoginSessionEpoch/checkSession | 快照失败后补读旧记录，期间同账户续期推进generation，误判changed并删除防抖待写 | 补读前后generation夹读，遇并发保持unavailable与待写，仅确认owner/epoch改变才撤销 | 两版本存储读取钩子在补读记录后交错实际续期，原绑定恢复current但flush后待写已丢；补读无一致性循环在5I前已存在 |
-| migrate-10-03 / P2（5L随入队路径删除而关闭） | `src/utils/core/offline-queue.js` 事务刷新/恢复与requestFnMap | 第二实例替换正文后，第一实例刷新任务却保留旧闭包；旧正文发送并删除新正文任务 | 5L随入队路径删除而关闭：删除requestFnMap，遗留正文仅由rebuilder重建；原绑定闭包建议不再执行 | 两版本transaction及recovery探针都发送正文1、未发正文2；478的旧载入保留本地旧项，372的事务投影更新正文但仍留闭包，缺陷均存在 |
+| ID / 级别                                    | 位置                                                                                        | 场景摘要                                                                                        | 建议修法                                                                                     | 归属依据                                                                                                                    |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **writes-10-01 / P1：下一批次优先**          | `src/components/business/learning/journey-reminders.vue` edit/save                          | 账户1打开草稿，切至已有路线的账户2，原组件保存将旧提醒写入账户2分区；同账户重登录也不撤销旧编辑 | 编辑开始保存原绑定和上下文；保存验证并沿用，owner/epoch换代撤销编辑，同账户续期保留草稿      | 两版本挂载真实组件和Store均出现账户2 reminder.set；5I未修改该文件，edit/save源码相同                                        |
+| writes-10-02 / regress-10-01 / P2            | `src/pages/practice-sub/question-note.js` addNote/\_saveNotes；`do-quiz.vue` handleSaveNote | 底层保存SESSION_UNAVAILABLE，仍返回success，页面提示成功并清空草稿，重载无笔记                  | 传递保存回执与暂不可用；仅确认后成功/关闭；失败保留草稿及原绑定待重试，同类笔记/标签同步核对 | 两版本实际存储save注入失败，addNote及真实页面方法均复现；5I仅添加初始化末尾assert，未改保存/页面方法                        |
+| regress-10-02 / P2                           | `src/pages/practice-sub/question-timer.js` \_matches/stop/pause                             | 身份暂不可用使本地stop/pause失败，interval仍存活并多计隐藏时间                                  | 按计时token归属立即本地停止/暂停；业务写入/回调另核对原会话；旧token不可停止新计时           | 两版本真实计时器stop/pause均失败且active/interval保持；5I未改\_matches/stop/pause                                           |
+| order-10-01 / P2                             | `src/services/auth-storage.js` getLoginSessionEpoch/checkSession                            | 快照失败后补读旧记录，期间同账户续期推进generation，误判changed并删除防抖待写                   | 补读前后generation夹读，遇并发保持unavailable与待写，仅确认owner/epoch改变才撤销             | 两版本存储读取钩子在补读记录后交错实际续期，原绑定恢复current但flush后待写已丢；补读无一致性循环在5I前已存在                |
+| migrate-10-03 / P2（5L随入队路径删除而关闭） | `src/utils/core/offline-queue.js` 事务刷新/恢复与requestFnMap                               | 第二实例替换正文后，第一实例刷新任务却保留旧闭包；旧正文发送并删除新正文任务                    | 5L随入队路径删除而关闭：删除requestFnMap，遗留正文仅由rebuilder重建；原绑定闭包建议不再执行  | 两版本transaction及recovery探针都发送正文1、未发正文2；478的旧载入保留本地旧项，372的事务投影更新正文但仍留闭包，缺陷均存在 |
 
 已声明的残留限制 **order-20-03 / P2：跨上下文重复提交同一任务**：离线队列没有跨窗口发送租约，也没有端到端幂等保证。收到的第20轮order审计证据为：两个独立H5执行上下文共用存储及同一Web Lock，第一个发送后等待确认，第二个处理已载入的同一任务；独立合成接收worker实际收到相同taskId两次、分别确认成功，最终持久队列为空。`37206056`对照同样存在，属于既有限制，本轮不修；此处记录提供的审计证据，本轮未重新运行该接收worker探针。后续须持久化带归属/恢复期限的认领、锁内核对，并由服务端按任务id幂等接收。同运行时认领不等同于跨窗口发送租约；多窗口、进程崩溃和远端已收但本地未确认须协议处理，不宣称恰好一次。
-
 
 **2026-10-16阶段5H【第八轮终审设计收口】**：本批只统一身份generation事务、无Web Locks拒绝登录、离线任务状态机、可恢复启动与原绑定计时器，不提前扩展功能批次。当前候选与有效回执为`tmp/stage5h/`；最终检查与平台缺口见[12](12-CHANGELOG.md)，现行接口/持久合同见[04](04-API-DOCUMENTATION.md#第八轮终审身份事务队列与启动恢复阶段5h)、[05](05-DATABASE-SCHEMAS.md#阶段5h身份代数离线状态机与启动恢复现行)。当前候选核验成功后保留5G回退，回收已覆盖的5F三端生成物；历史回执、日常App与正式原生恢复链保持。WebView2和微信/App真机未验；全量的既有性能夹具准备超时、单项复验通过，波动根因未确认，性能门禁未全绿。公开发布门禁不变。
 

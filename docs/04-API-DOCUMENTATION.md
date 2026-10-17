@@ -10,15 +10,14 @@
 
 发送仅通过 `registerRebuilder(fn)`：`fn(requestData, { session, taskId })`，保留调用前后原session验证。当前生产源码没有注册rebuilder，缺失时明确返回 `request_unavailable`、保留任务；本轮验证可注册重建器的实际发送链，不宣称无注册时可自动发送。network-monitor的恢复后延迟同步、pause/resume，以及OfflineIndicator的计数/手动同步/未同步反馈保持。
 
-| 保留行为 | 正式回归 |
-| --- | --- |
-| 同实例/同上下文两实例单次发送、竞争归属 | `session-round10-queue.spec.js`：same-instance/two-instances/two-recovering-instances、losing claimant |
+| 保留行为                                         | 正式回归                                                                                                                                                                                                                                 |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 同实例/同上下文两实例单次发送、竞争归属          | `session-round10-queue.spec.js`：same-instance/two-instances/two-recovering-instances、losing claimant                                                                                                                                   |
 | 按id确认、确认失败重开不重发、取消范围与锁后复核 | `offline-queue-legacy.spec.js`：receipts match legacy task ids、removes only the loaded legacy ids、rechecks active ownership、canceled during the claim lock wait；`session-round7.spec.js`：sent queue survives unread acknowledgement |
-| 过期、账户隔离、旧格式、不可用与重试 | `session-round10-queue.spec.js`：drain expires own high tasks；`session-round8.spec.js`：unavailable、legacy state migration；`session-round9-queue.spec.js`：late old response；`offline-queue.spec.js`与`offline-queue-legacy.spec.js` |
-| 网络恢复及离线提示条 | `offline-queue-legacy.spec.js`：queue network recovery、network-monitor recovery；原`offline-indicator.spec.js`全部用例保留 |
+| 过期、账户隔离、旧格式、不可用与重试             | `session-round10-queue.spec.js`：drain expires own high tasks；`session-round8.spec.js`：unavailable、legacy state migration；`session-round9-queue.spec.js`：late old response；`offline-queue.spec.js`与`offline-queue-legacy.spec.js` |
+| 网络恢复及离线提示条                             | `offline-queue-legacy.spec.js`：queue network recovery、network-monitor recovery；原`offline-indicator.spec.js`全部用例保留                                                                                                              |
 
 测试改用预置遗留持久任务驱动，仅删除入队/去重/重放/容量/闭包专用断言；独立上下文夹具继续覆盖取消和迟到回执。审计关闭清单与仍适用的 `order-20-03` 见[13](13-DEVELOPMENT-PLAN.md#阶段5l审计条目处理)。将来需要离线提交，必须按“跨窗口认领租约 + 服务端按任务 id 幂等”重新设计入队，不恢复本次删除的实现。三端构建及合成回归不构成真实设备、已有用户遗留数据或远端恰好一次验收。
-
 
 ## 第十一轮定点修复：恢复登记与去重重放（阶段5K）
 
@@ -50,15 +49,15 @@
 
 矩阵在实现前保存在 `tmp/stage5j/queue-matrix.md`；正式回归为 `tests/unit/session-round10-queue.spec.js`、`session-round10.spec.js`，独立写者终止夹具为 `tests/fixtures/session-races/round10-workers.mjs`。
 
-| 场景 / 审计ID | 交错与断言 / 测试名关键词 |
-| --- | --- |
-| fixes-10-01 / inflight-19-01 / migrate-10-04 | same-instance / two-instances / two-recovering-instances：延迟锁后仅一次传输；losing claimant：竞争失败者不得释放持有者 |
-| fixes-10-02 / migrate-10-02 | failed verification retains dedupe target id：更新成功后1/2次读取失败，原id与新正文只发送一次 |
-| fixes-10-03 / migrate-10-01 | verified migration stays one logical binding during unavailable：flush/cancel/update，最新值与增量顺序保持 |
-| fixes-10-04 | expire own high tasks before capacity check：100条过期high先清理，覆盖同账户重新登录后的旧epoch；capacity cannot evict foreign or unseen：其他账户及未载入任务保持 |
-| order-10-02 | app/h5 entry recovers interrupted commit；fresh Store / queued recovery；revocation never publishes；in-progress writer；generation receipt；unreadable binding；actual terminated writer |
-| 跨上下文回执 | 既有 round9 独立双H5夹具及 inflight-18-02：旧成功/失败收尾不覆盖新账户任务；既有离线队列回执失败用例继续只补确认 |
-| migrate-10-03 正文刷新 | 事务刷新/恢复重读探针在4780191a及37206056均发送旧闭包；既有问题，本轮不改，列入13后续批次 |
+| 场景 / 审计ID                                | 交错与断言 / 测试名关键词                                                                                                                                                                 |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| fixes-10-01 / inflight-19-01 / migrate-10-04 | same-instance / two-instances / two-recovering-instances：延迟锁后仅一次传输；losing claimant：竞争失败者不得释放持有者                                                                   |
+| fixes-10-02 / migrate-10-02                  | failed verification retains dedupe target id：更新成功后1/2次读取失败，原id与新正文只发送一次                                                                                             |
+| fixes-10-03 / migrate-10-01                  | verified migration stays one logical binding during unavailable：flush/cancel/update，最新值与增量顺序保持                                                                                |
+| fixes-10-04                                  | expire own high tasks before capacity check：100条过期high先清理，覆盖同账户重新登录后的旧epoch；capacity cannot evict foreign or unseen：其他账户及未载入任务保持                        |
+| order-10-02                                  | app/h5 entry recovers interrupted commit；fresh Store / queued recovery；revocation never publishes；in-progress writer；generation receipt；unreadable binding；actual terminated writer |
+| 跨上下文回执                                 | 既有 round9 独立双H5夹具及 inflight-18-02：旧成功/失败收尾不覆盖新账户任务；既有离线队列回执失败用例继续只补确认                                                                          |
+| migrate-10-03 正文刷新                       | 事务刷新/恢复重读探针在4780191a及37206056均发送旧闭包；既有问题，本轮不改，列入13后续批次                                                                                                 |
 
 B类归属使用相同实际Store/组件/存储探针在两个独立worktree运行。提醒编辑跨账户、笔记保存失败与页面草稿清空、计时stop/pause、补读跨续期误删待写，以及正文刷新旧闭包均在4780191a复现，故本轮不修；证据与下一批建议见[13](13-DEVELOPMENT-PLAN.md#账户隔离后续批次第-10-轮审计)。探针模拟受控交错，不把独立线程或VM等同于真实浏览器/设备验收。
 
