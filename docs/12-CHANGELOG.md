@@ -1,5 +1,11 @@
 # 重要变更
 
+## 2026-10-17 首次真实安全扫描分诊（阶段10C）
+
+复核 CI `39075070763`：两检查 success、部署均 skipped，Trivy v0.70.0 实扫 5 个目标，0 CRITICAL / 1 HIGH；npm audit 为 0 critical / 21 high。逐项核对 18 份跟踪清单/包元数据，确认 npm dev 被纳入，登记百度版本范围、Docling wheel URL、托管 Laf 未锁定版本及随库模块的覆盖边界。21 个 npm HIGH 是同一 braces 通告的包级传播，与 Trivy 合并后仅 1 条独立通告；沿现有三端模块守卫日志及未变源码判断 braces 3.0.3 仅用于开发/构建、未进入 H5/微信/App，仍有恶意模式导致构建进程栈耗尽的风险。
+
+按既定规则为 CVE-2026-93687 单独提交 `.trivyignore`，到期 2027-01-15；只读 GitHub 核实暂无上游修复、默认忽略路径及 exp 语法，未改扫描阈值或发布门禁。记录 10B2 复核通过、依赖后续批次及 Ubuntu 26 迁移观察项；本轮不运行扫描器、不下载/升级、不推送部署，原 CI 完整日志继续保留。覆盖表、发现表、对账和决定见[阶段10C](13-DEVELOPMENT-PLAN.md#阶段10c首次真实扫描分诊2026-10-17)。
+
 ## 2026-10-17 恢复 Trivy 安全扫描（阶段10A）
 
 移除对已删除 `.trivyignore` 的引用，不恢复无效路径条目。Trivy 保留 fs 与默认漏洞/密钥组合，改为一次 JSON 扫描、exit-code=0；结果与数据库缓存位于 runner.temp，结果不上传，脱敏渲染后删除原始报告。新增可单独运行的 `scripts/build/report-security-scan.mjs`：扫描器失败、报告缺失/不可解析/结构异常或零目标报非阻断 error；发现 CRITICAL/HIGH 按漏洞/密钥分别计数并 warning；无相应发现 notice。三态均写入步骤摘要，日志逐条列出漏洞目标、包、已装/修复版本、ID、级别；密钥只列规则、文件、起始行和级别，不输出 Match/Code。
