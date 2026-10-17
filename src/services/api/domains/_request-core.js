@@ -12,7 +12,14 @@
 
 import { logger } from '@/utils/logger.js';
 import config from '../../../config/index.js';
-import { captureSession, checkSession, sessionForRequest, readSessionSnapshot } from '../../auth-storage.js';
+import {
+  captureSession,
+  checkSession,
+  sessionForRequest,
+  readSessionSnapshot,
+  sessionUnavailable,
+  isSessionUnavailable
+} from '../../auth-storage.js';
 import { perfMonitor } from '@/utils/core/performance.js';
 
 // ==================== 双服务器自动切换 ====================
@@ -182,6 +189,14 @@ function _toFriendlyMessage(rawMsg) {
  * @returns {ApiResponse}
  */
 export function normalizeError(error, context = '', { redact = false } = {}) {
+  if (isSessionUnavailable(error))
+    return {
+      code: 'SESSION_UNAVAILABLE',
+      errorCode: 'SESSION_UNAVAILABLE',
+      success: false,
+      message: '登录状态暂不可读，请重试',
+      data: null
+    };
   const rawMessage =
     error && typeof error === 'object'
       ? error.message || error.errMsg || '请求失败'
@@ -390,27 +405,15 @@ function _cacheKey(path, data, scope = 'public') {
 
 function _getAuthCacheScope(options = {}) {
   if (options.skipAuth) return 'public';
-  try {
-    const snapshot = readSessionSnapshot();
-    const userId = snapshot.session?.owner;
-    const token = snapshot.token;
-    const session = snapshot.session?.epoch;
-    if (
-      !_authIdentity ||
-      _authIdentity.userId !== userId ||
-      _authIdentity.token !== token ||
-      _authIdentity.session !== session
-    ) {
-      _authIdentity = { userId, token, session };
-      _authGeneration++;
-      _cache.clear();
-    }
-    // 密钥只参与内存中的身份比较，不进入请求标识、缓存键或日志。
-    return `uid:${userId || 'anon'}:generation:${_authGeneration}`;
-  } catch (_e) {
-    // ignore
+  const snapshot = readSessionSnapshot();
+  if (snapshot.status === 'unavailable') throw sessionUnavailable();
+  if (!_authIdentity || checkSession(_authIdentity) === 'changed') {
+    _authGeneration++;
+    _cache.clear();
   }
-  return `anon:generation:${_authGeneration}`;
+  _authIdentity = snapshot.session;
+  // Credentials are read again at each send; renewal and format migration retain this scope.
+  return `uid:${snapshot.session?.owner || 'anon'}:generation:${_authGeneration}`;
 }
 
 function _getCache(key) {
@@ -509,8 +512,7 @@ export async function request(path, data = {}, options = {}) {
   const assertActive = () => {
     if (cancelled) throw { message: '请求已取消', retryable: false, errorType: 'cancelled' };
     options.assertCurrent?.();
-    if (!options.skipAuth && checkSession(session) === 'unavailable')
-      throw { message: '登录状态暂不可读，请重试', code: 503, retryable: false, errorType: 'session_unavailable' };
+    if (!options.skipAuth && checkSession(session) === 'unavailable') throw sessionUnavailable();
     if (!options.skipAuth && (checkSession(session) !== 'current' || authScope !== _getAuthCacheScope(options))) {
       throw { message: '账户已变化，请重新操作', retryable: false, errorType: 'account_changed' };
     }

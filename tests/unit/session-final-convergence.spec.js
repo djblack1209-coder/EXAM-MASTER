@@ -271,7 +271,8 @@ it('migrate-04: copied target is verified on retry before source proof retiremen
   uni.getStorageSync.mockImplementation(originalRead);
   expect(storageService.migrateUserKeys()).toBe(1);
   expect(storageService.get('study_stats')).toEqual({ count: 11 });
-  expect(originalRead('study_stats')).toBe('');
+  // No portable cross-window compare/delete: verified copies retain the guest source.
+  expect(originalRead('study_stats')).toEqual({ count: 11 });
 });
 it('regress-01/order-02: same owner and epoch binding survives credential renewal', async () => {
   const session = captureSession();
