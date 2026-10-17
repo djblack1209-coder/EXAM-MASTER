@@ -8,6 +8,7 @@
  * { code: 0, message: '验证码已发送' }
  */
 
+import { getClientIp, clientIpUnavailable } from './_shared/client-ip.js';
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
 import { createLogger } from './_shared/api-response.js';
@@ -145,24 +146,23 @@ export default async function (ctx) {
     }
 
     // 安全修复：基于 IP 的全局限流（每个 IP 每小时最多 20 次）
-    const clientIP = ctx.headers?.['x-forwarded-for']?.split(',')[0]?.trim() || ctx.headers?.['x-real-ip'] || 'unknown';
+    const clientIP = getClientIp(ctx);
+    if (!clientIP) return clientIpUnavailable();
 
-    if (clientIP !== 'unknown') {
-      const ipHourlyCount = await codesCollection
-        .where({
-          client_ip: clientIP,
-          created_at: db.command.gt(now - 60 * 60 * 1000)
-        })
-        .count();
+    const ipHourlyCount = await codesCollection
+      .where({
+        client_ip: clientIP,
+        created_at: db.command.gt(now - 60 * 60 * 1000)
+      })
+      .count();
 
-      if (ipHourlyCount.total >= 20) {
-        return {
-          code: 429,
-          success: false,
-          message: '请求过于频繁，请稍后再试',
-          requestId
-        };
-      }
+    if (ipHourlyCount.total >= 20) {
+      return {
+        code: 429,
+        success: false,
+        message: '请求过于频繁，请稍后再试',
+        requestId
+      };
     }
 
     // 生成6位验证码

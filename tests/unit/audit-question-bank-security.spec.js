@@ -136,6 +136,7 @@ describe('[安全审计] question-bank 安全防护', () => {
             pageSize: 999
           }
         },
+        socket: { remoteAddress: '192.0.2.1' },
         headers: {}
       })
     );
@@ -164,6 +165,7 @@ describe('[安全审计] question-bank 安全防护', () => {
             ids: [1, { $gt: '' }, null]
           }
         },
+        socket: { remoteAddress: '192.0.2.1' },
         headers: {}
       })
     );
@@ -194,6 +196,7 @@ describe('[安全审计] question-bank 安全防护', () => {
             ids: ['id_1', '', 'id_2', 123]
           }
         },
+        socket: { remoteAddress: '192.0.2.1' },
         headers: {}
       })
     );
@@ -213,6 +216,7 @@ describe('[安全审计] question-bank 安全防护', () => {
           action: 'admin_sync',
           data: {}
         },
+        socket: { remoteAddress: '192.0.2.1' },
         headers: {}
       })
     );
@@ -230,6 +234,7 @@ describe('[安全审计] question-bank 安全防护', () => {
           action: 'random',
           data: { count: 1 }
         },
+        socket: { remoteAddress: '192.0.2.1' },
         headers: {
           authorization: 'Bearer invalid_token'
         }

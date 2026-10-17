@@ -1,5 +1,22 @@
 # API 与工具合同
 
+## 可信客户端 IP（阶段7A）
+
+客户端 IP 是 standalone 按连接来源与受信代理地址白名单，从右向左解析代理链后得到的首个不受信地址；业务统一调用 `_shared/client-ip.ts`，只读入口提供的 `ctx.socket.remoteAddress`。直连忽略转发头，IPv4 映射 IPv6、端口和空白归一化，非法地址不作为 IP。地址不是用户身份，不能代替认证或授权；NAT 共用出口仍可能共用 IP 限流。
+
+| 原读取位置                | 用途                                | 现行规则                      |
+| ------------------------- | ----------------------------------- | ----------------------------- |
+| login.ts                  | 分布式登录限流、本地封禁回退        | 规范 IP 的原 HMAC 键          |
+| \_shared/desktop-oauth.ts | poll/cancel 限流，先于会话读取      | 规范 IP                       |
+| question-bank.ts          | 匿名题库分布式限流及本地回退        | 已认证用户 ID，否则规范 IP    |
+| learning-resource.ts      | 普通/搜索两组本地限流               | 已认证用户 ID，否则规范 IP    |
+| send-email-code.ts        | 每小时 IP 计数、既有 client_ip 记录 | 规范 IP；不再跳过未知来源限流 |
+| getHomeData.ts            | 首页分布式限流及本地回退            | 规范 IP；限流日志不含地址     |
+
+共6个业务读取位置；standalone 入口1处统一判定，腾讯 Nginx 两份配置共6处覆盖 XFF，cf-origin-proxy 仅删除来路 IP 头，不提供可信客户端身份。任何业务不得读取 XFF、X-Real-IP、CF-Connecting-IP、True-Client-IP、X-Client-IP 或 Forwarded 的 for 参数。
+
+无可信有效地址时返回 `503`、`retryAfter: 5`，入口同时返回 HTTP 503；历史兼容函数直接调用返回业务 code 503。不生成随机身份、不使用共享 unknown 桶、不降级到请求头。Laf 托管仅保留 socket 对端的安全兼容，不采用 ctx.ip；仓库没有当前 Laf 托管生产验收证据，未来启用须另验其传输元数据合同，不能恢复退役 lafService。
+
 ## 第10轮遗留：提醒草稿、笔记回执与计时归属（现行）
 
 - journey-reminders编辑绑定原owner/epoch、记录上下文与对话；确认换代或切换对话撤销，同epoch续期、普通revision更新及unavailable保留草稿，保存不能重定向到后继对话。

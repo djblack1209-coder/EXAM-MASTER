@@ -3,6 +3,7 @@
  * 支持操作：get, random, getByIds
  */
 
+import { getClientIp, clientIpUnavailable } from './_shared/client-ip.js';
 import cloud from '@lafjs/cloud';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import { checkRateLimitDistributed, createLogger } from './_shared/api-response.js';
@@ -69,11 +70,8 @@ export default async function (ctx) {
       return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId, timestamp: Date.now() };
     }
 
-    const clientIp =
-      ctx.headers?.['x-forwarded-for']?.split(',')[0]?.trim() ||
-      ctx.headers?.['x-real-ip'] ||
-      ctx.socket?.remoteAddress ||
-      'unknown';
+    const clientIp = getClientIp(ctx);
+    if (!clientIp) return clientIpUnavailable();
     const rateLimitKey = `question-bank:${authUserId || clientIp}:${action}`;
     const rateLimit = await checkRateLimitDistributed(
       rateLimitKey,

@@ -9,6 +9,8 @@
 
 import express from 'express';
 import cors from 'cors';
+import { compileTrustedProxies, resolveClientIp } from './client-ip.js';
+import { clientIpUnavailable } from '../functions/_shared/client-ip.js';
 import multer from 'multer';
 import * as http from 'http';
 import * as fs from 'fs';
@@ -26,8 +28,8 @@ const STORAGE_DIR = process.env.STORAGE_DIR || '/app/storage';
 
 const app = express();
 
-// 信任一层代理（Nginx），确保 req.ip 获取真实客户端 IP，防止 X-Forwarded-For 欺骗
-app.set('trust proxy', 1);
+// Compile once before listening; reject invalid or hop-count configuration at startup.
+app.set('trust proxy', compileTrustedProxies());
 
 // ==================== 中间件 ====================
 
@@ -179,6 +181,8 @@ async function registerFunctions() {
 
     // 注册路由: /:funcName
     const handler = async (req: express.Request, res: express.Response) => {
+      const clientIp = resolveClientIp(req);
+      if (!clientIp) return res.status(503).json(clientIpUnavailable());
       const mod = await loadFunction(funcName);
       if (!mod || !mod.default) {
         return res.status(404).json({ code: 404, message: `Function ${funcName} not found` });
@@ -191,7 +195,7 @@ async function registerFunctions() {
         method: req.method,
         query: req.query as Record<string, string>,
         params: req.params,
-        socket: { remoteAddress: req.ip || req.socket.remoteAddress },
+        socket: { remoteAddress: clientIp },
         request: { body: req.body },
         files: null as any
       };
@@ -353,7 +357,9 @@ async function main() {
   process.on('SIGINT', () => shutdown('SIGINT'));
 
   server.listen(PORT, HOST, () => {
-    console.log(`\n[server] Listening on http://${HOST}:${PORT}`);
+    const address = server.address();
+    const listeningPort = typeof address === 'object' && address ? address.port : PORT;
+    console.log(`\n[server] Listening on http://${HOST}:${listeningPort}`);
     console.log(`[server] Health check: http://${HOST}:${PORT}/health`);
   });
 }

@@ -19,6 +19,8 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      # Host Nginx reaches the published loopback port through this pinned gateway.
+      - TRUST_PROXY=${TRUST_PROXY-172.30.87.1/32}
       - TZ=Asia/Shanghai
       - MONGODB_URI=mongodb://exam_app:${MONGO_APP_PASSWORD}@mongo:27017/exam-master?authSource=exam-master
       - STORAGE_DIR=/app/storage
@@ -78,6 +80,10 @@ services:
 networks:
   exam-net:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.87.0/24
+          gateway: 172.30.87.1
 
 volumes:
   mongo-data:

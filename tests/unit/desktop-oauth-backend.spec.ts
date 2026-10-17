@@ -56,7 +56,7 @@ function fixture() {
         method,
         body: { type: 'desktop_oauth', ...body },
         headers: { origin },
-        socket: { remoteAddress: 'unit-test-ip' }
+        socket: { remoteAddress: '192.0.2.1' }
       },
       deps
     );

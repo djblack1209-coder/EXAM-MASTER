@@ -1,3 +1,4 @@
+import { getClientIp, clientIpUnavailable } from './_shared/client-ip.js';
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
 import {
@@ -477,11 +478,8 @@ export default async function (ctx) {
     }
 
     // 0. 登录频率限制检查（防止暴力破解）
-    const clientIp =
-      ctx.headers?.['x-forwarded-for']?.split(',')[0]?.trim() ||
-      ctx.headers?.['x-real-ip'] ||
-      ctx.socket?.remoteAddress ||
-      'unknown';
+    const clientIp = getClientIp(ctx);
+    if (!clientIp) return clientIpUnavailable();
 
     // Poll/cancel cannot exchange a supplier credential. They use their own
     // bounded limit before session reads; other login attempts keep 5/min.

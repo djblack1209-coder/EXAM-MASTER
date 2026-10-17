@@ -1,3 +1,4 @@
+import { getClientIp, clientIpUnavailable } from './client-ip.js';
 import crypto from 'crypto';
 import { isIP } from 'net';
 
@@ -86,11 +87,8 @@ export async function handleDesktopOAuth(ctx: any, deps: Dependencies) {
   if (action !== 'complete' && !native) return fail(403, '桌面授权来源无效');
   // Bound unauthenticated proof attempts before any session read as well.
   if (['poll', 'cancel'].includes(action)) {
-    const ip =
-      ctx.headers?.['x-forwarded-for']?.split(',')[0]?.trim() ||
-      ctx.headers?.['x-real-ip'] ||
-      ctx.socket?.remoteAddress ||
-      'unknown';
+    const ip = getClientIp(ctx);
+    if (!ip) return clientIpUnavailable();
     if (!(await deps.pollAllowed(ip))) return fail(429, '请求过于频繁，请稍后再试');
   }
   if (action === 'begin') {

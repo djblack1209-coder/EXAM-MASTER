@@ -181,6 +181,7 @@ describe('[安全审计] learning-resource 关键防护', () => {
         userId: 'spoof_user',
         data: { resourceId: 'res_1', progress: 20 }
       },
+      socket: { remoteAddress: '192.0.2.1' },
       headers: {}
     });
 
@@ -196,6 +197,7 @@ describe('[安全审计] learning-resource 关键防护', () => {
         userId: 'spoof_user',
         data: { resourceId: 'res_1', progress: 20 }
       },
+      socket: { remoteAddress: '192.0.2.1' },
       headers: {}
     });
 
@@ -212,6 +214,7 @@ describe('[安全审计] learning-resource 关键防护', () => {
         userId: 'spoof_user',
         data: { resourceId: 'res_missing', action: 'add' }
       },
+      socket: { remoteAddress: '192.0.2.1' },
       headers: { authorization: 'Bearer valid_token' }
     });
 
@@ -236,6 +239,7 @@ describe('[安全审计] learning-resource 关键防护', () => {
           duration: 999999
         }
       },
+      socket: { remoteAddress: '192.0.2.1' },
       headers: { authorization: 'Bearer valid_token' }
     });
 
@@ -259,6 +263,7 @@ describe('[安全审计] learning-resource 关键防护', () => {
         userId: 'spoof_user',
         data: { page: 1, limit: 20 }
       },
+      socket: { remoteAddress: '192.0.2.1' },
       headers: { authorization: 'Bearer valid_token' }
     });
 
@@ -275,7 +280,8 @@ describe('[安全审计] learning-resource 关键防护', () => {
         userId: 'spoof_user',
         data: { period: 'week' }
       },
-      headers: { 'x-real-ip': '1.2.3.4' }
+      socket: { remoteAddress: '1.2.3.4' },
+      headers: { 'x-real-ip': '9.9.9.9' }
     });
 
     expect(result.code).toBe(0);
@@ -288,6 +294,7 @@ describe('[安全审计] learning-resource 关键防护', () => {
         action: 'getHotResources',
         data: { category: '$ne_hack', period: 'all' }
       },
+      socket: { remoteAddress: '192.0.2.1' },
       headers: {}
     });
 
@@ -301,6 +308,7 @@ describe('[安全审计] learning-resource 关键防护', () => {
         action: 'search',
         data: { keyword: '考研', subject: 'DROP_TABLE' }
       },
+      socket: { remoteAddress: '192.0.2.1' },
       headers: {}
     });
 
