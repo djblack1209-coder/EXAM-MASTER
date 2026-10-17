@@ -33,6 +33,44 @@ Store将结果绑定原记录生命周期。明确打开时先重读规范记录
 
 <a id="会话用时检查覆盖清单阶段4h"></a>
 
+### 第七轮终审：尝试、重置与续段（阶段5G）
+
+`beginLoginAttempt`进入时先固定退出撤销代数（首次无标记时为null），读取原身份后在登记前后核对原代数与完整快照；登记不初始化或采纳中途写入的新代数；设备首次非空代数仅由仍持有原尝试的提交创建。允许在旧撤销清理排队期间发起新的明确登录，但其前后快照/代数仍必须一致。提交和失败回滚继续核对同一尝试。登录页在发布busy前捕获尝试，微信网页发起复用此尝试；OAuth `state=随机nonce_尝试id`，校验上下文仅保存id/撤销代数、地址、来源、时间和微信模式，不保存令牌或学习正文。回调消费原上下文，在换码前确认仍有效；缺失、过期、换代或state不匹配均提示重新登录，不登记新尝试。旧无尝试上下文拒绝。整页重载没有原游客写入证明时不擅自迁移游客资料，原件保持。
+
+src登录入口与回调清单：
+
+| 文件 | 入口/续段与绑定 |
+| --- | --- |
+| `pages/login/index.vue`、`email-auth-utils.js` | 邮箱密码登录、邮箱注册验证码均经`submitEmail → run(accept) → saveLoginInfo`；发验证码不提交身份 |
+| `pages/login/index.vue` | 手机验证码登录`submitPhone → run(accept)`；短信发送能力/授权合同不变，本批仅合成接口 |
+| `pages/login/index.vue`、`provider-utils.js` | Apple、Google：同一run尝试贯穿challenge、SDK/popup和最终身份提交；SDK state/nonce仍独立核对 |
+| `pages/login/index.vue`、`oauth-utils.js` | 微信小程序uni.login、App onlyAuthorize原生SDK均沿run尝试；等待期间核对原页面/owner/epoch，最终提交再核对尝试 |
+| `pages/login/index.vue`、`oauth-utils.js` | 微信公众号H5与网站扫码各自AppID/scope，state绑定发起尝试，回调不改变wechatMode |
+| `public/oauth/wechat.html`、`public/oauth/callback.js`、`pages/login/wechat-callback.vue` | 静态桥仅转发并清除参数；普通回调消费原尝试，禁止beginLoginAttempt |
+| `services/desktop/oauth.js`、`pages/login/wechat-callback.vue` | 桌面发起由run尝试覆盖proof/系统浏览器/轮询；desktop_回调仅向broker提交一次授权结果，不改浏览器身份；原桌面尝试决定能否提交 |
+| `stores/modules/auth.js` | 小程序静默login在首个await前捕获尝试；Auth缓存恢复/凭据续期只恢复原绑定，非新登录 |
+| `services/api/domains/auth.api.js`、`utils/auth/loginGuard.js` | API仅返回结果，守卫只导航；不提交登录身份，无额外入口 |
+
+Store初始化先建立全部ref/动作，再读取学习根、导入待办和同步冲突；首次暂不可用保留`recordReadState=pending`、完整动作和不可写状态，下次动作访问/refresh重试，成功完整读取后才发布ready投影。只有pending暂不可用状态自动重试；不兼容数据保留error与空投影，纯阅读不重新抛出格式错误，明确refresh才重读。已有可信投影读取失败继续保留。重置先同步递增绑定代数、设置重置深度，再清空任何定位/投影；整个替换与失败清理都由finally覆盖，重入只读刷新不能取得写权限。每次写入仍核对原操作绑定代数；正常新账户动作在重置结束后可用。
+
+全部公开动作显式分类（代码`CONVERSATION_ACTION_EFFECTS`，测试同时遍历实际action表，新增漏分类即失败；外发可能包含本机写入，按最大能力分类）：
+
+| 分类 | 数量 | 动作名 |
+| --- | --- | --- |
+| 只读 read | 31 | `reloadRecords`, `searchRecords`, `openRecord`, `dismissLocatedRecord`, `locateConversation`, `scopedSummary`, `journeyContext`, `selectTraining`, `reminderQueue`, `openReminder`, `notificationContext`, `attachNotifications`, `writingContext`, `sentenceCanSubmit`, `oatutorContext`, `vocabularyTaskFor`, `vocabularyCanSubmit`, `scienceCanSubmit`, `writingCanSubmit`, `observeCalendar`, `computeReferenceContext`, `cancelModelReads`, `recordContext`, `materialContext`, `refresh`, `exportData`, `cancelHistory`, `cancelMaterial`, `isSyncConflictCurrent`, `cancelSync`, `exportSyncConflict` |
+| 写入 write | 54 | `ensureSessionCurrent`, `configureJourney`, `startTraining`, `submitTraining`, `openTrainingFeedback`, `startWeakness`, `confirmRecap`, `planNextTraining`, `configureReminder`, `reminderReceipt`, `prepareNotificationConsent`, `startWriting`, `submitSentence`, `recordSentenceHelp`, `startSentenceTask`, `scheduleSentenceRetest`, `recordWritingHelp`, `readWritingReference`, `openVocabulary`, `submitVocabulary`, `startOatutor`, `oatutorAction`, `startVocabularyTask`, `recordDiagramHelp`, `recordScienceHelp`, `startScience`, `scheduleScienceRetest`, `scheduleWritingRetest`, `diagnosePrerequisite`, `prepareMaterialAction`, `start`, `setRhythm`, `commit`, `importText`, `previewMaterialDeletion`, `structureQuestion`, `structureObjective`, `correctQuestion`, `setRubric`, `correctAssessment`, `generateVariant`, `focus`, `previewRestore`, `restoreData`, `rollbackRecords`, `deleteData`, `migrateLegacy`, `migrateGuest`, `previewPendingRemoval`, `forgetPendingUpload`, `restorePendingLocator`, `restoreConflictLocal`, `clearSyncConflict`, `previewGuestMigration` |
+| 外发 send | 27 | `requestWritingFeedback`, `requestVocabularyFeedback`, `requestComputeReference`, `requestGrammarHelp`, `interpretQuestionImage`, `testModel`, `checkLocalConnection`, `checkMaterialConnection`, `recoverModelResult`, `send`, `submit`, `cancel`, `loadModels`, `loadUsage`, `saveModel`, `removeModel`, `deleteMaterial`, `retryOriginalDeletion`, `importFile`, `inspectUpload`, `recoverUpload`, `closeUpload`, `previewUploadMaintenance`, `compactUploadReceipts`, `syncRecords`, `deleteCloudRecords`, `adoptCloudRecords` |
+
+`openRecord`只读查找与定位不经过写入守卫；命中题目时`focus → commit`单独检查写权限。`openReminder`同理；`cancel`先本地中止，选做的远端取消继续检查原绑定，暂不可用不发请求。其余本地取消只释放自身资源，不依赖身份可读。已有全动作换代遍历继续确认无写入/无网络；不以只读类别授权题目聚焦或事实写入。
+
+同类排查：
+
+- **续段/分页**：`material-connector`的parse/health/recovery/maintenance/delete与`local-connector`的chat/health入口固定session并传给所有嵌套requestConnector；parse在uploadIntent、分页请求、onBatch、onUploadSaved及onProgress之后复核。`learning-sync`拉取分页/补传/冲突采用共用入口绑定和每次发送检查；`learning-backup`历史分批/`history-storage`恢复采用原assertCurrent；`storageService.getMistakes`、Review列表与页面分页各次请求及结果沿原绑定，未发现额外重新捕获续段。字节解码offset不属于分页请求。
+- **处理中状态**：闪卡翻面/自评采用本地操作对象清理recordingObservation，失败/取消/身份暂不可用也复位，旧finally不能清除新操作；计时失败纳入finally。学习Store的model/history准备阶段也纳入try或推迟busy发布；同类新增`pages/mistake/index.vue.loadErrorClusters`身份读取纳入finally，`ai-generation-mixin.handleUpload`在导入登记成功后才发布处理中，两项真实方法回归先失败后修复；资料导入/恢复/维护/删除、连接检查、同步及模型读取按controller/operation归属清理；Review/Stats待处理集合、登录busy、收藏读取、练习诊断/原答同步与离线processing均核对退出路径。收藏finally条件为`!== changed`，包含unavailable，不存在本项同因。另核对`useBankStatus`、首页loadData、quiz-result.loadNextSteps、study-detail/FSRSOptimizer与loadStudyData、学习页recordPreview/appFile/recordFile、计划loadAIPlan，均有finally/明确失败回调或被内部catch覆盖的Promise.all；无额外同因改动。
+- **离线队列**：通用OfflineQueue由network-monitor与offline-indicator控制，src中没有其enqueue/rebuilder生产调用，也未提供统一远端幂等协议；练习原答已有attemptId/idempotencyKey及`answer-submit`按账户/编号派生唯一_id、正文指纹一致性回执和并发唯一冲突回读去重，是另一条队列，不移植成虚假通用保证。通用队列存储返回明确成功与回读确认；发送成功先留模块内id墓碑，出队落盘失败保留正文、次数与待确认回执，同运行时重新实例化只补本地确认。带dedupeKey的新动作取得新id，不能被旧发送回执吞掉。
+
+基线`569f7cc3`的`baseline-corrected.json`为71项/14失败/57正常对照；8个审计ID全部复现。最终回归/全量与隔离产物回执集中在`tmp/stage5g/`，资源复用`tmp/audit5/resources.log`；对应持久化合同见[05](05-DATABASE-SCHEMAS.md#阶段5g尝试上下文与待确认发送)。不承诺无Web Locks原子CAS、运行时退出后的内存回执恢复或真实设备/供应商验收。
+
 ### 第六轮终审：持久化读取与成功回执（阶段5F）
 
 `storageService.read(key, fallback, options)`返回`{status:'ready', value}`或`{status:'unavailable', error}`，成功包括不存在、合法空列表/空对象及标量空值；现存集合键读成空串、运行时读取异常与不可确认的身份均返回暂不可用。`get`沿同一入口取值，失败抛出`code=SESSION_UNAVAILABLE`，不再通过defaultValue或`|| [] / || {}`提供写入基础；换代仍抛出CONTEXT_CHANGED。某绑定/业务键读取失败后拒绝快照保存，成功重读才解除，防止调用方捕获异常后继续回写旧投影。底层`readPersistent/requirePersistent`同时供无存储服务依赖的离线队列使用。业务操作仍核对owner/epoch，身份完整性与同账户续期规则不变。
