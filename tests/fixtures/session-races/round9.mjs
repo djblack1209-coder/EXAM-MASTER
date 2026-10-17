@@ -64,32 +64,47 @@ for (const event of s.events.filter((event) => event.source === b.name)) a.deliv
 out('order-09-03 actual cross-window profile restore', a.profile.userInfo?.id === 'account-2');
 a.profile.$dispose();
 b.profile.$dispose();
+const key = '__exam_offline_queue__:EXAM_OFFLINE_QUEUE';
+const stored = () => JSON.parse(s.map.get(key) || '[]');
+const seed = (host, id, value) => {
+  s.map.set(
+    key,
+    JSON.stringify([
+      ...stored(),
+      {
+        id,
+        timestamp: Date.now(),
+        retryCount: 0,
+        priority: 'normal',
+        session: host.auth.captureSession(),
+        requestData: { value }
+      }
+    ])
+  );
+  return id;
+};
+const one = seed(a, 'legacy-one', 1),
+  two = seed(b, 'legacy-two', 2);
 const qa = new (await a.load('utils/core/offline-queue.js')).OfflineQueue();
 const qb = new (await b.load('utils/core/offline-queue.js')).OfflineQueue();
-const one = await qa.enqueue({ requestData: { value: 1 } });
-const two = await qb.enqueue({ requestData: { value: 2 } });
-const stored = () => JSON.parse(s.map.get('__exam_offline_queue__:EXAM_OFFLINE_QUEUE') || '[]');
-out(
-  'migrate-09-02 locked two-window enqueue',
-  stored().some((x) => x.id === one) && stored().some((x) => x.id === two)
-);
 await qa.dequeue(one);
 out('migrate-09-02 locked id cancellation', stored().length === 1 && stored()[0].id === two);
 await qb.clear();
 let release;
-await qa.enqueue({
-  requestData: { value: 3 },
-  requestFn: () =>
+seed(a, 'legacy-inflight', 3);
+qa._loadFromStorage();
+qa.registerRebuilder(
+  () =>
     new Promise((resolve) => {
       release = resolve;
     })
-});
+);
 const processing = qa.processQueue();
-for (let i = 0; i < 30 && !release; i++) await Promise.resolve();
+for (let i = 0; i < 60 && !release; i++) await Promise.resolve();
 await b.login(1);
-const newer = await qb.enqueue({ requestData: { value: 4 } });
+const newer = seed(b, 'legacy-new-account', 4);
 release({ success: true });
-for (let i = 0; i < 60; i++) {
+for (let i = 0; i < 100; i++) {
   await Promise.resolve();
   a.flush();
 }
@@ -98,55 +113,21 @@ out(
   'inflight-18-02 locked late response preserves new task',
   stored().some((x) => x.id === newer)
 );
+qb._loadFromStorage();
 await qb.clear();
 await qa.clear();
 const sent = [];
-const olderTask = await qa.enqueue({
-  requestData: { value: 5 },
-  dedupeKey: 'claim-race',
-  requestFn: async () => {
-    sent.push(5);
-    return { success: true };
-  }
-});
-const replacement = qb.enqueue({
-  requestData: { value: 6 },
-  dedupeKey: 'claim-race',
-  requestFn: async () => {
-    sent.push(6);
-    return { success: true };
-  }
-});
-const staleProcessing = qa.processQueue();
-await replacement;
-for (let i = 0; i < 80; i++) {
-  await Promise.resolve();
-  a.flush();
-}
-await staleProcessing;
-out(
-  'same-class pending replacement before locked claim cannot consume newer body',
-  !sent.includes(5) && stored().some((x) => x.id === olderTask && x.requestData.value === 6)
-);
-const latestProcessing = qb.processQueue();
-for (let i = 0; i < 80; i++) {
-  await Promise.resolve();
-  b.flush();
-}
-await latestProcessing;
-out('normal latest pending replacement still sends its own body', sent.includes(6));
-const canceledTask = await qa.enqueue({
-  requestData: { value: 7 },
-  requestFn: async () => {
-    sent.push(7);
-    return { success: true };
-  }
+const canceledTask = seed(a, 'legacy-cancel', 7);
+qa._loadFromStorage();
+qa.registerRebuilder(async (body) => {
+  sent.push(body.value);
+  return { success: true };
 });
 qb._loadFromStorage();
 const cancelBeforeClaim = qb.dequeue(canceledTask);
 const canceledProcessing = qa.processQueue();
 await cancelBeforeClaim;
-for (let i = 0; i < 80; i++) {
+for (let i = 0; i < 100; i++) {
   await Promise.resolve();
   a.flush();
 }

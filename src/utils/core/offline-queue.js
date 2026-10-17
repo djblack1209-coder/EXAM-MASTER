@@ -7,27 +7,9 @@ import {
   readStorageStrict
 } from '@/services/auth-storage.js';
 /**
- * 离线请求队列 (Offline Queue)
- *
- * 功能：
- * 1. 网络断开时缓存请求
- * 2. 网络恢复后自动重发
- * 3. 请求持久化（localStorage）
- * 4. 队列优先级管理
- * 5. 请求去重和合并
- *
- * 使用示例：
- * import { offlineQueue } from '@/utils/core/offline-queue.js'
- *
- * // 添加请求到队列
- * offlineQueue.enqueue({
- *   requestFn: () => http.post('/api/data', payload),
- *   priority: 'high',
- *   dedupeKey: 'save-user-data'
- * })
- *
- * // 手动处理队列
- * await offlineQueue.processQueue()
+ * 只排空旧版本持久任务；不接受新的离线提交。
+ * 保留身份隔离、按 id 确认/取消、有效期与网络恢复入口。
+ * 发送仅由注册的 rebuilder 从持久 requestData 重建。
  */
 
 import { logger } from '@/utils/logger.js';
@@ -118,7 +100,6 @@ export const QUEUE_STATE = Object.freeze({
   CONFIRMED: 'confirmed',
   RETRY: 'retry'
 });
-const MAX_QUEUE_SIZE = 100;
 const MAX_AGE = 24 * 60 * 60 * 1000; // 24小时过期
 
 /**
@@ -138,12 +119,10 @@ class OfflineQueue {
   constructor() {
     for (const [id, sentAt] of sentReceipts) if (Date.now() - sentAt >= MAX_AGE) sentReceipts.delete(id);
     this.queue = [];
-    this.pendingEnqueues = new Map();
     this._storageLoaded = false;
     this.processing = false;
     this.isOnline = true;
     this.listeners = new Set();
-    this.requestFnMap = new Map(); // 存储请求函数引用
     this._rebuilder = null; // ✅ 请求重建函数（由请求调用方注册）
 
     // 初始化
@@ -182,6 +161,9 @@ class OfflineQueue {
     return items
       .filter(
         (item) =>
+          item &&
+          typeof item.id === 'string' &&
+          !!item.id &&
           Date.now() - item.timestamp < MAX_AGE &&
           typeof item.session?.owner === 'string' &&
           !!item.session.owner &&
@@ -190,6 +172,7 @@ class OfflineQueue {
       )
       .map((item) => ({
         ...item,
+        retryCount: item.retryCount || 0,
         state: sentReceipts.has(item.id)
           ? QUEUE_STATE.CONFIRMED
           : item.state === QUEUE_STATE.SENDING && !sendingIds.has(item.id)
@@ -212,82 +195,20 @@ class OfflineQueue {
     }
   }
 
-  _replayEnqueues(latest, pending) {
-    const order = new Map(pending.map(([, item], index) => [item.enqueueReceipt, index]));
-    for (const [index, [, item]] of pending.entries()) {
-      const current = latest.find((task) => task.id === item.id);
-      // A later receipt in this ordered batch proves the earlier update was also persisted.
-      // Keep receipts through verification failures so a retry cannot apply the update twice.
-      if (current && (order.get(current.enqueueReceipt) ?? -1) >= index) continue;
-      if (item.updateTarget) {
-        if (current?.state === QUEUE_STATE.PENDING && !sendingIds.has(current.id) && !sentReceipts.has(current.id)) {
-          Object.assign(current, {
-            requestData: item.requestData,
-            timestamp: item.timestamp,
-            metadata: { ...current.metadata, ...item.metadata },
-            version: (current.version || 1) + 1,
-            enqueueReceipt: item.enqueueReceipt
-          });
-          continue;
-        }
-        // The old target has left pending; this body is a separate unsent task.
-        const oldId = item.id;
-        item.id = item.enqueueReceipt;
-        if (item.pendingRequestFn) {
-          if (this.requestFnMap.get(oldId) === item.pendingRequestFn) this.requestFnMap.delete(oldId);
-          this.requestFnMap.set(item.id, item.pendingRequestFn);
-        }
-        item.updateTarget = null;
-        item.version = 1;
-      }
-      if (!latest.some((task) => task.id === item.id)) latest.push({ ...item });
-    }
-  }
-
   // Only transactions may persist. The base is read inside the same origin-wide identity lock.
   _transaction(apply) {
     const write = () => {
       const latest = queueStorage.get(STORAGE_KEY, []);
       if (!Array.isArray(latest)) return false;
-      const pending = [...this.pendingEnqueues.entries()];
       const next = latest.map((item) => ({ ...item }));
-      this._replayEnqueues(next, pending);
       const result = apply(next);
       if (result === false) return false;
-      const serializable = next.map(
-        ({
-          id,
-          priority,
-          dedupeKey,
-          timestamp,
-          retryCount,
-          state,
-          requestData,
-          session,
-          metadata,
-          version,
-          enqueueReceipt
-        }) => ({
-          id,
-          priority,
-          dedupeKey,
-          timestamp,
-          retryCount,
-          state,
-          requestData,
-          session,
-          metadata,
-          version,
-          enqueueReceipt
-        })
-      );
       if (
-        !queueStorage.set(STORAGE_KEY, serializable) ||
-        JSON.stringify(queueStorage.get(STORAGE_KEY, [])) !== JSON.stringify(serializable)
+        !queueStorage.set(STORAGE_KEY, next) ||
+        JSON.stringify(queueStorage.get(STORAGE_KEY, [])) !== JSON.stringify(next)
       )
         return false;
-      for (const [key, item] of pending) if (this.pendingEnqueues.get(key) === item) this.pendingEnqueues.delete(key);
-      this.queue = this._restore(serializable);
+      this.queue = this._restore(next);
       this._storageLoaded = true;
       return result;
     };
@@ -303,12 +224,11 @@ class OfflineQueue {
     return this._transaction((latest) => {
       if (item) {
         const index = latest.findIndex((current) => current.id === item.id);
-        // A task canceled or replaced while waiting for the lock cannot use the old transport closure.
+        // Never restore a canceled task or acknowledge a different body after lock wait.
         if (
           item.state === QUEUE_STATE.SENDING &&
           (index === -1 || JSON.stringify(latest[index].requestData) !== JSON.stringify(item.requestData))
         ) {
-          this.requestFnMap.delete(item.id);
           this._loadFromStorage();
           return false;
         }
@@ -344,7 +264,7 @@ class OfflineQueue {
         logger.log('[OfflineQueue] 网络状态变化: [省略] ([省略])');
 
         // 从离线恢复到在线，自动处理队列
-        if (wasOffline && this.isOnline && this.queue.length > 0) {
+        if (wasOffline && this.isOnline && (this.queue.length > 0 || !this._storageLoaded)) {
           logger.log('[OfflineQueue] 网络恢复，开始处理离线队列...');
           this.processQueue();
         }
@@ -373,121 +293,17 @@ class OfflineQueue {
     });
   }
 
-  /**
-   * 生成唯一ID
-   * @private
-   */
-  _generateId() {
-    return `offline_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
-  }
-
-  /**
-   * 添加请求到队列
-   * @param {Object} request - 请求配置
-   * @param {Function} request.requestFn - 请求函数
-   * @param {Object} request.requestData - 请求数据（用于持久化）
-   * @param {string} request.priority - 优先级 (critical/high/normal/low)
-   * @param {string} request.dedupeKey - 去重键（相同键的请求会被合并）
-   * @param {Object} request.metadata - 元数据
-   * @returns {string} 请求ID
-   */
-  enqueue(request) {
-    const session = assertSession(request.session || captureSession());
-    const { requestFn, requestData, priority = 'normal', dedupeKey, metadata = {} } = request;
-    const item = {
-      id: this._generateId(),
-      version: 1,
-      priority,
-      dedupeKey,
-      timestamp: Date.now(),
-      retryCount: 0,
-      state: QUEUE_STATE.PENDING,
-      session,
-      requestData: requestData === undefined ? undefined : JSON.parse(JSON.stringify(requestData)),
-      metadata: JSON.parse(JSON.stringify(metadata))
-    };
-    item.enqueueReceipt = item.id;
-    const result = this._transaction((latest) => {
-      assertSession(session);
-      // Expiry covers this account across login epochs; foreign accounts are never rewritten.
-      for (let i = latest.length - 1; i >= 0; i--) {
-        const current = latest[i];
-        if (
-          current.session?.owner === session.owner &&
-          Date.now() - current.timestamp >= MAX_AGE &&
-          !sendingIds.has(current.id)
-        )
-          latest.splice(i, 1);
-      }
-      const existing =
-        dedupeKey &&
-        latest.find(
-          (current) =>
-            current.state === QUEUE_STATE.PENDING &&
-            !sendingIds.has(current.id) &&
-            !sentReceipts.has(current.id) &&
-            current.dedupeKey === dedupeKey &&
-            current.session?.owner === session.owner &&
-            current.session?.epoch === session.epoch
-        );
-      if (existing) {
-        // Retain the actual target even if the durable verification read fails.
-        item.id = existing.id;
-        item.updateTarget = existing.id;
-        item.version = (existing.version || 1) + 1;
-        Object.assign(existing, {
-          requestData: item.requestData,
-          timestamp: item.timestamp,
-          metadata: { ...existing.metadata, ...item.metadata },
-          version: item.version,
-          enqueueReceipt: item.enqueueReceipt
-        });
-        return existing.id;
-      }
-      if (latest.length >= MAX_QUEUE_SIZE) {
-        const index = latest.findIndex(
-          (current) =>
-            current.state === QUEUE_STATE.PENDING &&
-            ['low', 'normal'].includes(current.priority) &&
-            current.session?.owner === session.owner &&
-            current.session?.epoch === session.epoch &&
-            this.queue.some((loaded) => loaded.id === current.id) &&
-            !sendingIds.has(current.id)
-        );
-        if (index === -1) return null;
-        latest.splice(index, 1);
-      }
-      latest.push(item);
-      return item.id;
-    });
-    const finish = (id) => {
-      if (id === false) {
-        if (checkSession(session) !== 'current') return null;
-        item.pendingRequestFn = requestFn;
-        this.pendingEnqueues.set(this.pendingEnqueues.has(item.id) ? item.enqueueReceipt : item.id, item);
-        this.queue = [...this.queue.filter((current) => current.id !== item.id), item];
-        this._storageLoaded = false;
-        id = item.id;
-      }
-      if (id && requestFn) this.requestFnMap.set(id, requestFn);
-      if (id) this._notifyListeners({ type: 'enqueue', request: item, queueLength: this.queue.length });
-      return id;
-    };
-    return result?.then ? result.then(finish) : finish(result);
-  }
-
   dequeue(id) {
     if (!this.queue.some((item) => item.id === id) || sendingIds.has(id)) return false;
     const removed = this.queue.find((item) => item.id === id);
     const result = this._transaction((latest) => {
+      if (sendingIds.has(id)) return false;
       const index = latest.findIndex((item) => item.id === id);
       if (index !== -1) latest.splice(index, 1);
       return true;
     });
     const finish = (saved) => {
       if (saved) {
-        this.pendingEnqueues.delete(id);
-        this.requestFnMap.delete(id);
         this._notifyListeners({ type: 'dequeue', request: removed, queueLength: this.queue.length });
       }
       return saved;
@@ -515,11 +331,25 @@ class OfflineQueue {
     const results = { processed: 0, failed: 0, errors: [] };
     this.processing = true;
     try {
-      if (!this._storageLoaded || this.pendingEnqueues.size) {
-        this._loadFromStorage();
-        if (!this._storageLoaded) return { success: false, reason: 'storage_unavailable' };
-        if (!(await this._saveToStorage())) return { success: false, reason: 'storage_unavailable' };
-      }
+      // Refresh and expire under the same lock, including old epochs of this account.
+      // An unavailable identity is never permission to clean another account's records.
+      const session = captureSession();
+      if (!session) return { success: false, reason: 'SESSION_UNAVAILABLE' };
+      let refreshed = this._transaction((latest) => {
+        assertSession(session);
+        for (let i = latest.length - 1; i >= 0; i--) {
+          const task = latest[i];
+          if (
+            task.session?.owner === session.owner &&
+            Date.now() - task.timestamp >= MAX_AGE &&
+            !sendingIds.has(task.id)
+          )
+            latest.splice(i, 1);
+        }
+        return true;
+      });
+      if (refreshed?.then) refreshed = await refreshed;
+      if (!refreshed) return { success: false, reason: 'storage_unavailable' };
       if (this.queue.length === 0) {
         logger.log('[OfflineQueue] 队列为空');
         return { success: true, processed: 0, failed: 0 };
@@ -565,22 +395,14 @@ class OfflineQueue {
             results.processed++;
             continue;
           }
-          // 获取请求函数
-          let requestFn = this.requestFnMap.get(item.id);
-
-          // ✅ 问题清单修复：函数引用丢失时，尝试从 requestData 重建
-          if (!requestFn && item.requestData && this._rebuilder) {
-            try {
-              logger.log('[OfflineQueue] 🔧 尝试从 requestData 重建请求: [省略]');
-              requestFn = () => this._rebuilder(item.requestData, { session: item.session, taskId: item.id });
-            } catch (rebuildErr) {
-              logger.log('[OfflineQueue] ⚠️ 请求重建失败: [省略]', rebuildErr);
-            }
-          }
+          const requestFn =
+            item.requestData && this._rebuilder
+              ? () => this._rebuilder(item.requestData, { session: item.session, taskId: item.id })
+              : null;
 
           if (!requestFn) {
             // 无法执行也无法重建，跳过
-            logger.log('[OfflineQueue] ⚠️ 请求 [省略] 无法执行（函数引用丢失且无法重建），跳过');
+            logger.log('[OfflineQueue] ⚠️ 请求 [省略] 无法执行（缺少请求数据或重建器），跳过');
             item.state = QUEUE_STATE.RETRY;
             results.reason = 'request_unavailable';
             results.failed++;
@@ -600,8 +422,13 @@ class OfflineQueue {
             assertSession(item.session);
             if (sendingIds.has(item.id) || sentReceipts.has(item.id)) return false;
             const current = latest.find((task) => task.id === item.id);
-            if (!current || JSON.stringify(current.requestData) !== JSON.stringify(item.requestData)) {
-              this.requestFnMap.delete(item.id);
+            if (
+              !current ||
+              Date.now() - current.timestamp >= MAX_AGE ||
+              current.session?.owner !== item.session.owner ||
+              current.session?.epoch !== item.session.epoch ||
+              JSON.stringify(current.requestData) !== JSON.stringify(item.requestData)
+            ) {
               this._loadFromStorage();
               return false;
             }
@@ -613,10 +440,17 @@ class OfflineQueue {
           if (saved?.then) saved = await saved;
           if (!saved || sendingIds.get(item.id) !== claim) {
             item.state = previousState;
-            results.reason = sendingIds.has(item.id) ? 'already_processing' : 'storage_unavailable';
+            results.reason =
+              sendingIds.has(item.id) && sendingIds.get(item.id) !== claim
+                ? 'already_processing'
+                : 'storage_unavailable';
             break;
           }
           assertSession(item.session);
+          if (this.paused || !this.isOnline) {
+            results.reason = this.paused ? 'paused' : 'offline';
+            break;
+          }
           item.state = QUEUE_STATE.SENDING;
           const response = await requestFn({ session: item.session, taskId: item.id });
           if (isSessionUnavailable(response)) {
@@ -759,7 +593,7 @@ class OfflineQueue {
     logger.log('[OfflineQueue] 队列处理已恢复');
 
     // 如果在线且有待处理请求，自动开始处理
-    if (this.isOnline && this.queue.length > 0) {
+    if (this.isOnline && (this.queue.length > 0 || !this._storageLoaded)) {
       this.processQueue();
     }
   }

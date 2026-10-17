@@ -1,3 +1,4 @@
+import { seedLegacyTask } from '../fixtures/legacy-queue.js';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { spawnSync } from 'node:child_process';
@@ -171,7 +172,7 @@ it.each(['fetchQuestionBankStats', 'browseQuestions', 'fetchQuestionBankRandom']
 it('inflight-15-02: fulfilled learningRequest unavailable retains body and retry count', async () => {
   const queue = new OfflineQueue();
   const session = captureSession();
-  queue.enqueue({
+  seedLegacyTask(queue, {
     requestFn: () => {
       blocked = '_enc_EXAM_SESSION_EPOCH';
       const result = learningRequest('/learning-sync', { action: 'push' }, { session });
@@ -182,6 +183,7 @@ it('inflight-15-02: fulfilled learningRequest unavailable retains body and retry
     session
   });
   queue.queue[0].retryCount = 2;
+  queue._saveToStorage(queue.queue[0]);
   const pending = queue.processQueue();
   await vi.runAllTimersAsync();
   await pending;
@@ -391,7 +393,7 @@ it('review normal remote and offline queue successful receipt remain usable', as
   const store = useReviewStore();
   expect(await store.fetchQuestionBankStats()).toMatchObject({ success: true, source: 'remote', data: { total: 3 } });
   const queue = new OfflineQueue();
-  queue.enqueue({ requestFn: async () => ({ code: 0, success: true }), requestData: { normal: true } });
+  seedLegacyTask(queue, { requestFn: async () => ({ code: 0, success: true }), requestData: { normal: true } });
   const pending = queue.processQueue();
   await vi.runAllTimersAsync();
   expect(await pending).toMatchObject({ processed: 1 });
@@ -423,7 +425,7 @@ it('analytics and achievement queues retain unread originals and new tasks', asy
 });
 it('ordinary failed offline receipt is never recorded as a successful send', async () => {
   const queue = new OfflineQueue();
-  queue.enqueue({
+  seedLegacyTask(queue, {
     requestFn: async () => ({
       success: false,
       code: 400,
