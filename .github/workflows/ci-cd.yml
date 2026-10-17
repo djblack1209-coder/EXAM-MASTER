@@ -95,9 +95,19 @@ jobs:
           python -m pip install -r requirements-dev.txt
           npm run lint:python
 
-      - name: Run tests
-        run: npm test
+      - name: Run unit and component tests
+        run: npm test -- --exclude tests/unit/mobile-viewport-smoke.spec.js
         timeout-minutes: 8
+
+      - name: Install matching mobile smoke browser
+        run: npx --no-install playwright install --with-deps --only-shell chromium
+        timeout-minutes: 2
+
+      # Real browser work runs after the unit worker pool has exited. Local npm
+      # test still includes this file; neither step retries or skips its cases.
+      - name: Run mobile viewport browser smoke tests
+        run: npm test -- --maxWorkers=1 tests/unit/mobile-viewport-smoke.spec.js
+        timeout-minutes: 2
 
       - name: Verify learning calendar, retests and backups across timezones
         timeout-minutes: 4
