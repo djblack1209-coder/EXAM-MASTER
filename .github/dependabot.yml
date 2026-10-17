@@ -10,6 +10,10 @@ updates:
     open-pull-requests-limit: 5
     cooldown:
       default-days: 7
+    # Runtime stays on Node 22 LTS; see docs/13-DEVELOPMENT-PLAN.md (Dependabot 分流).
+    ignore:
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
     versioning-strategy: increase
     commit-message:
       prefix: chore
@@ -45,6 +49,19 @@ updates:
     open-pull-requests-limit: 5
     cooldown:
       default-days: 7
+    # Node 22 LTS types stay aligned with the runtime (docs/13-DEVELOPMENT-PLAN.md).
+    # Other majors wait for the backend migration batches and their acceptance gates there.
+    ignore:
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
+      - dependency-name: express
+        update-types: [version-update:semver-major]
+      - dependency-name: '@types/express'
+        update-types: [version-update:semver-major]
+      - dependency-name: mongodb
+        update-types: [version-update:semver-major]
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
     groups:
       backend-compatible:
         patterns: ['*']
@@ -81,6 +98,10 @@ updates:
       include: scope
   - package-ecosystem: docker
     directory: /deploy/tencent
+    # Pin Node 22 LTS; Node 25 is not LTS (docs/13-DEVELOPMENT-PLAN.md).
+    ignore:
+      - dependency-name: node
+        update-types: [version-update:semver-major]
     schedule:
       interval: weekly
       day: monday

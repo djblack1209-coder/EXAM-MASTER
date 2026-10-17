@@ -154,6 +154,8 @@ H5构建将 `UNI_INPUT_DIR` 统一为绝对路径，避免入口漏挂载/组件
 
 CI 干净检出核验使用独立安装的依赖，不链接日常环境：根目录与 `laf-backend/standalone/` 分别执行 `npm ci --ignore-scripts`，两处 `package-lock.json` 都须跟踪。`laf-backend/.gitignore` 原规则将锁文件视为安装时再生成，现仅对 `standalone/package-lock.json` 加例外；Laf 源码包的原忽略规则保留。离线核验追加 `--offline`，缓存缺失即停止并记录缺项，不自动联网；Python 开发依赖使用临时 venv 与本机缓存，缓存不足时明确跳过，不借用现有环境冒充干净安装。
 
+2026-10-17阶段6C：根及standalone锁文件下载源统一为`registry.npmjs.org`，主机归一不得改变包版本或integrity。proxy-addr使用缓存元数据升至2.0.8；离线独立安装因54个tarball缺缓存（首个报告`whatwg-url@14.2.0`）未通过，不联网补齐。隔离依赖副本的构建/测试不替代CI在线`npm ci`，根critical审计留给Security Scan；具体信任边界与剩余风险见[依赖安全](13-DEVELOPMENT-PLAN.md#阶段6c离线修复2026-10-17)。
+
 Mac日常原生候选当前沿 `tmp/stage1-mobile-20261011/build-source`（Rust主入口与仓库只差既定 `data_store_identifier`）、`native-config.json`、原 `CARGO_TARGET_DIR=desktop-material-prerequisite-target` 和 `--no-bundle --no-sign -- --offline --locked --jobs 1`，只生成程序、不生成新的可见 `.app`。构建前精确核对该一行适配及其余Cargo/业务组件摘要，不能只传相同identifier却从仓库根构建。QA身份仍采用独立资料UUID。更新唯一入口前：先归档当前程序与配对学习记录并试还原（逐文件、模式、链接、扩展属性一致），确认程序无消费者后只原子替换可执行文件，标识、资料、图标和元数据保持。
 
 前序日常界面更新沿`desktop-fields-v3-config.json`及原资料UUID，desktop/API备用地址均为空、不加载私有环境文件。已试还原的完整程序归档与learning-records.before.json保持；wenli-desktop.pre-ui-update.rollback是APFS增量副本，依赖完整归档的其余元数据，不能单独恢复整包。程序暂存严格核对后同目录原子更新，模式/xattrs/mtime保持。随后首次通知申请在许可前拒绝，客户明确批准同身份本机签名修复；先保存完整APFS回滚daily-before-signing.rollback.noindex及revision438公开备份，再在未注册暂存包执行`codesign --force --sign - --identifier cn.wangshiliang.wenli.localqa93d5ef76c442 --timestamp=none <暂存App路径>`。只安装签名程序和Contents/\_CodeSignature，既有内容/元数据与资料保持；暂存及唯一入口的`codesign --verify --strict --verbose=2 <App路径>`均通过。当前为ad-hoc、无TeamIdentifier，不代表正式签名/公证或自动赋予后续重签权限。
@@ -245,7 +247,7 @@ learning-records.before-signing.json与learning-records.after-signing.json完整
 
 ## 自动依赖更新
 
-.github/dependabot.yml 每周检查根/后端 npm、pip、GitHub Actions、Docker。兼容 minor/patch 分组，major 单独审查；npm/pip 设置 7 日冷却。锁文件、ESLint/格式、单元/后端/多端与安全检查保持，不自动合并或部署。当前配置未推送到默认分支，托管自动更新尚未实证。
+.github/dependabot.yml 每周检查根/后端 npm、pip、GitHub Actions、Docker。兼容 minor/patch 分组，major 单独审查；Node镜像与Node类型忽略semver-major，后端Express/Express类型/MongoDB/TypeScript的major等待[迁移批次](13-DEVELOPMENT-PLAN.md#dependabot-分流2026-10-17)验收后解锁；npm/pip 设置 7 日冷却。锁文件、ESLint/格式、单元/后端/多端与安全检查保持，不自动合并或部署。当前配置未推送到默认分支，托管自动更新尚未实证。
 
 运行版本以根及后端 engines/packageManager/锁为准；已有安全 override 不为追新删除。不能把 npm outdated 的非零退出误当脚本崩溃，也不能从无新依赖推断旧风险已消失。生产依赖与开发工具风险分别记录。
 
