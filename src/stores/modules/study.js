@@ -52,10 +52,15 @@ export const useStudyStore = defineStore('study', () => {
    * 从本地缓存恢复进度数据（App 启动时调用）
    */
   const restoreProgress = () => {
+    const current = captureSession();
+    const owner = getUserId() || '';
+    const cached = storageService.get(APP_CONFIG.cacheKeys.studyProgress, null, {
+      migrateLegacy: false,
+      session: current
+    });
     $reset();
-    session = captureSession();
-    restoredOwner = getUserId() || '';
-    const cached = storageService.get(APP_CONFIG.cacheKeys.studyProgress, null, { migrateLegacy: false });
+    session = current;
+    restoredOwner = owner;
     if (cached?.progress && typeof cached.progress === 'object' && !Array.isArray(cached.progress)) {
       studyProgress.value = { ...studyProgress.value, ...cached.progress };
     }

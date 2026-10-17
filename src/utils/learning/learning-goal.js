@@ -188,11 +188,11 @@ class LearningGoalManager {
       this._triggerCompletionNotification(goal);
     }
 
-    this._saveGoals();
+    const saved = this._saveGoals();
     this._recordProgress(goal, value);
 
     // ✅ F012: 异步同步进度增量到后端
-    this._syncProgressToServer(goal.type, value);
+    if (saved) this._syncProgressToServer(goal.type, value);
 
     return goal;
   }
@@ -637,12 +637,8 @@ class LearningGoalManager {
    * 加载目标
    */
   _loadGoals() {
-    try {
-      if (typeof uni !== 'undefined') {
-        this.goals = storageService.get(STORAGE_KEYS.GOALS, []);
-      }
-    } catch (_e) {
-      this.goals = [];
+    if (typeof uni !== 'undefined') {
+      this.goals = storageService.get(STORAGE_KEYS.GOALS, []);
     }
   }
 
@@ -652,9 +648,10 @@ class LearningGoalManager {
   _saveGoals() {
     try {
       if (typeof uni !== 'undefined') {
-        storageService.save(STORAGE_KEYS.GOALS, this.goals, true, this._session);
+        if (storageService.save(STORAGE_KEYS.GOALS, this.goals, true, this._session) !== true) return false;
         // ✅ F012: 触发后端同步（异步，不阻塞本地保存）
         this._syncToServer();
+        return true;
       }
     } catch (e) {
       logger.warn('[LearningGoal] 保存目标失败:', e);
@@ -667,8 +664,8 @@ class LearningGoalManager {
    */
   async _fetchAndMergeFromServer() {
     const originSession = this._session;
-    assertSession(originSession);
     try {
+      assertSession(originSession);
       const userId = storageService.get('EXAM_USER_ID');
       if (!userId) return;
 
@@ -719,8 +716,8 @@ class LearningGoalManager {
    */
   async _syncProgressToServer(type, value) {
     const originSession = this._session;
-    assertSession(originSession);
     try {
+      assertSession(originSession);
       const userId = storageService.get('EXAM_USER_ID');
       if (!userId) return;
 
@@ -738,8 +735,8 @@ class LearningGoalManager {
    */
   async _syncToServer() {
     const originSession = this._session;
-    assertSession(originSession);
     try {
+      assertSession(originSession);
       const userId = storageService.get('EXAM_USER_ID');
       if (!userId) return; // 未登录不同步
 
@@ -751,7 +748,8 @@ class LearningGoalManager {
       // 标记待同步
       storageService.save('learning_goals_pending_sync', true, true, this._session);
 
-      await syncLearningGoals(userId, syncData, { session: originSession });
+      const result = await syncLearningGoals(userId, syncData, { session: originSession });
+      if (result?.success !== true) return;
       assertSession(originSession);
       storageService.remove('learning_goals_pending_sync', true, this._session);
       logger.log('[LearningGoal] 目标已同步到服务器');
@@ -765,12 +763,8 @@ class LearningGoalManager {
    * 加载记录
    */
   _loadRecords() {
-    try {
-      if (typeof uni !== 'undefined') {
-        this.records = storageService.get(STORAGE_KEYS.GOAL_RECORDS, []);
-      }
-    } catch (_e) {
-      this.records = [];
+    if (typeof uni !== 'undefined') {
+      this.records = storageService.get(STORAGE_KEYS.GOAL_RECORDS, []);
     }
   }
 
@@ -791,15 +785,11 @@ class LearningGoalManager {
    * 加载提醒设置
    */
   _loadReminderSettings() {
-    try {
-      if (typeof uni !== 'undefined') {
-        const saved = storageService.get(STORAGE_KEYS.REMINDER_SETTINGS);
-        if (saved) {
-          this.reminderSettings = { ...this.reminderSettings, ...saved };
-        }
+    if (typeof uni !== 'undefined') {
+      const saved = storageService.get(STORAGE_KEYS.REMINDER_SETTINGS);
+      if (saved) {
+        this.reminderSettings = { ...this.reminderSettings, ...saved };
       }
-    } catch (e) {
-      logger.warn('[LearningGoal] 加载提醒设置失败:', e);
     }
   }
 

@@ -773,11 +773,7 @@ class SmartQuestionPicker {
   // ==================== 数据持久化 ====================
 
   _loadUserProfile() {
-    try {
-      this.userProfile = storageService.get(STORAGE_KEYS.USER_PROFILE, null);
-    } catch (_e) {
-      this.userProfile = null;
-    }
+    this.userProfile = storageService.get(STORAGE_KEYS.USER_PROFILE, null);
   }
 
   _saveUserProfile() {
@@ -789,11 +785,7 @@ class SmartQuestionPicker {
   }
 
   _loadQuestionHistory() {
-    try {
-      this.questionHistory = storageService.get(STORAGE_KEYS.QUESTION_HISTORY, []);
-    } catch (_e) {
-      this.questionHistory = [];
-    }
+    this.questionHistory = storageService.get(STORAGE_KEYS.QUESTION_HISTORY, []);
   }
 
   _saveQuestionHistory() {
@@ -809,11 +801,7 @@ class SmartQuestionPicker {
   }
 
   _loadPerformanceMetrics() {
-    try {
-      this.performanceMetrics = storageService.get(STORAGE_KEYS.PERFORMANCE_METRICS, {});
-    } catch (_e) {
-      this.performanceMetrics = {};
-    }
+    this.performanceMetrics = storageService.get(STORAGE_KEYS.PERFORMANCE_METRICS, {});
   }
 
   _savePerformanceMetrics() {

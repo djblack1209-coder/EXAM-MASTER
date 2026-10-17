@@ -15,7 +15,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../../src/services/storageService.js', () => ({
   default: {
     get: vi.fn((_key, defaultValue = null) => defaultValue),
-    save: vi.fn(),
+    save: vi.fn(() => true),
     remove: vi.fn()
   }
 }));

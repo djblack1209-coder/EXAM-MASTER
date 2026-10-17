@@ -1,4 +1,4 @@
-import { captureSession, assertSession, checkSession } from '@/services/auth-storage.js';
+import { captureSession, checkSession } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 /**
  * 离线缓存服务
@@ -88,11 +88,13 @@ export const offlineCache = {
   cacheQuestions(questions, category = 'all', session = captureSession()) {
     try {
       if (!Array.isArray(questions) || questions.length === 0) return;
-      const cached = storageService.get(STORAGE_KEYS.CACHED_QUESTIONS, null, { migrateLegacy: false }) || {};
-      assertSession(session);
-      cached[category] = questions;
-      storageService.save(STORAGE_KEYS.CACHED_QUESTIONS, cached, true, session);
-      logger.log('[OfflineCacheService] 缓存 [省略] 道题目 ([省略])');
+      const copy = JSON.parse(JSON.stringify(questions));
+      return storageService.update(
+        STORAGE_KEYS.CACHED_QUESTIONS,
+        {},
+        (cached) => ({ ...cached, [category]: copy }),
+        session
+      );
     } catch (err) {
       logger.warn('[OfflineCacheService] cacheQuestions 失败:', err);
     }
@@ -105,11 +107,8 @@ export const offlineCache = {
    */
   addToSyncQueue(action, data, session = captureSession()) {
     try {
-      const queue = storageService.get(STORAGE_KEYS.SYNC_QUEUE, [], { migrateLegacy: false }) || [];
-      assertSession(session);
-      queue.push({ action, data, timestamp: Date.now(), session });
-      storageService.save(STORAGE_KEYS.SYNC_QUEUE, queue, true, session);
-      logger.log('[OfflineCacheService] 加入同步队列: [省略]');
+      const item = JSON.parse(JSON.stringify({ action, data, timestamp: Date.now(), session }));
+      return storageService.update(STORAGE_KEYS.SYNC_QUEUE, [], (queue) => [...queue, item], session);
     } catch (err) {
       logger.warn('[OfflineCacheService] addToSyncQueue 失败:', err);
     }
@@ -124,8 +123,8 @@ export const offlineCache = {
       return (storageService.get(STORAGE_KEYS.SYNC_QUEUE, [], { migrateLegacy: false }) || []).filter(
         (item) => checkSession(item.session) === 'current'
       );
-    } catch {
-      return [];
+    } catch (error) {
+      throw error;
     }
   },
 

@@ -1,5 +1,5 @@
 import { storageService } from '../../storageService.js';
-import { captureSession, assertSession, sessionForRequest } from '../../auth-storage.js';
+import { isSessionUnavailable, captureSession, assertSession, sessionForRequest } from '../../auth-storage.js';
 /**
  * 用户服务 API
  * 职责：账号注销、用户统计概览、
@@ -125,8 +125,11 @@ export async function syncLearningGoals(userId, syncData, options = { session: c
           },
           { session }
         );
+        if (isSessionUnavailable(response)) return response;
+        if (response?.success === false || !(response?.code === 0 || response?.ok === true)) failCount++;
         results.push(response);
       } catch (goalErr) {
+        if (isSessionUnavailable(goalErr)) return normalizeError(goalErr);
         failCount++;
         logger.warn('[LafService] 单个目标同步失败:', goal.type, goalErr);
         results.push({ code: -1, success: false, type: goal.type });
@@ -134,7 +137,7 @@ export async function syncLearningGoals(userId, syncData, options = { session: c
     }
 
     const successCount = results.length - failCount;
-    if (failCount > 0 && successCount === 0) {
+    if (failCount > 0) {
       return { code: -1, success: false, message: '同步失败', data: results };
     }
     return { code: 0, success: true, message: `已同步 ${successCount}/${activeGoals.length} 个目标`, data: results };
@@ -222,16 +225,23 @@ export async function checkAchievements(options = { session: captureSession() })
         const remaining = [];
         for (const aid of pending) {
           try {
-            await request(
+            const result = await request(
               '/achievement-manager',
               { action: 'unlock', userId, data: { achievementId: aid } },
               { session }
             );
+            if (result?.success === false || isSessionUnavailable(result)) throw result;
           } catch (_e) {
             remaining.push(aid);
           }
         }
-        storageService.save('achievement_retry_v1', remaining, true, session);
+        const completed = new Set(pending.filter((aid) => !remaining.includes(aid)));
+        storageService.update(
+          'achievement_retry_v1',
+          [],
+          (latest) => latest.filter((aid) => !completed.has(aid)),
+          session
+        );
       }
     } catch (_e) {
       /* 重试失败不影响主流程 */
@@ -302,16 +312,17 @@ export async function unlockAchievement(achievementId, options = { session: capt
       },
       { session }
     );
+    if (response?.success === false || isSessionUnavailable(response)) throw response;
     return response;
   } catch (error) {
     logger.warn('[LafService] 解锁成就失败，已缓存待重试:', achievementId, error);
     try {
-      assertSession(session);
-      const pending = storageService.get('achievement_retry_v1', [], { session, migrateLegacy: false }) || [];
-      if (!pending.includes(achievementId)) {
-        pending.push(achievementId);
-        storageService.save('achievement_retry_v1', pending, true, session);
-      }
+      storageService.update(
+        'achievement_retry_v1',
+        [],
+        (pending) => (pending.includes(achievementId) ? pending : [...pending, achievementId]),
+        session
+      );
     } catch (_e) {
       /* 存储失败忽略 */
     }
