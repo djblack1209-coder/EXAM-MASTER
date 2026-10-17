@@ -8,6 +8,15 @@
 
 全局敏感键`EXAM_SESSION_EPOCH`继续加密保存为`_enc_EXAM_SESSION_EPOCH`；H5保留`__exam_storage__:`及`{value}`包装。完整记录为`{version:1, epoch, owner, token, userInfo, proof, revocation}`，旧`{version:1, epoch, owner, proof}`继续兼容。`proof`为owner/令牌的SHA-256完整性摘要，令牌不写日志、队列或业务绑定。`EXAM_SESSION_ENABLED`保留本设备已启用代号的事实，启用后缺代号按撤销处理，不由缓存恢复补发。
 
+### 阶段5G：尝试上下文与待确认发送
+
+- `EXAM_LOGIN_ATTEMPT`仍是全局尝试id；发起时先读取并固定`EXAM_SESSION_REVOCATION`，允许首次null，不因登记另建代数。首次非空设备代数仅在仍持有原尝试的提交内创建。原快照可以是等待旧撤销清理的changed状态；新明确登录仍按同一状态/owner/epoch/token与代数核对。登记前后核对原身份快照与同一代数；提交、CAS与回滚均沿原尝试。Web Locks不改变发起时序，缺锁不宣称跨上下文原子CAS。
+- `wx_oauth_state`继续现有键，结构新增`attempt:{id,revocation}`；`state`为32位随机hex加下划线及尝试id，原origin/redirectUri/createdAt/wechatMode保留。只消费一次且10分钟有效；缺attempt的旧上下文要求重新登录，不迁移为新尝试。上下文不含令牌、guestSources或学习正文；整页重载没有旧游客来源证明则保留游客来源、不猜测迁移。桌面broker的`desktop_`上下文与浏览器学习分区独立，回调不写浏览器登录身份。
+- Store的`pending/ready`初始化状态、绑定代数、重置深度、闪卡操作对象均为内存控制，不新增学习事实字段或数据库迁移。根/待办/冲突完整读取后才发布可信投影；暂不可用重试原分区，确认换代先立栅栏再发布新分区。
+- `EXAM_OFFLINE_QUEUE`持久格式不变。模块内发送墓碑仅为`id → sentAt`，不含正文、令牌或用户身份；最长按原24小时寿命保留。远端成功但本地读/写/回读失败时不确认出队、不增加重试，同运行时跨队列实例跳过发送并补本地确认。新dedupe动作另建id；退出运行时后墓碑不保留，因此不能宣称崩溃后的恰好一次投递，未来真实通用接入仍需稳定后端幂等协议。
+
+完整动作分类、全部登录入口及同类排查见[04阶段5G](04-API-DOCUMENTATION.md#第七轮终审尝试重置与续段阶段5g)。
+
 阶段5F设计澄清（后续实现与回归以此为准）：
 
 1. **绑定与完整性分开**：操作只绑定`{owner, epoch}`；`captureSession`可附带proof用于快照自校验，不能据旧proof拒绝同账户续期后的动作。身份写入在进入事务前捕获完整快照，在写锁内比较owner/epoch/token，防止排队的旧快照覆盖后提交的身份；同一绑定发起的新动作读取当前快照。资料增量补丁只按owner/epoch接受，在实际取得锁后读取最新资料，仅合并本次字段；不携带调用时整份旧资料，不因排队期间续期而失败。正常续期不换代，资料、练习、计划、复习与在途学习继续可用。公共请求作用域/去重/缓存、错题互斥队列、作答续段、统计投影及页面确认均遵守同一绑定。实现：`auth-storage`的`checkSession/sessionForRequest`、存储`save`、Profile新动作及学习Store。
