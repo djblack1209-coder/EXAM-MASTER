@@ -13,9 +13,9 @@
 | send-email-code.ts        | 每小时 IP 计数、既有 client_ip 记录 | 规范 IP；不再跳过未知来源限流 |
 | getHomeData.ts            | 首页分布式限流及本地回退            | 规范 IP；限流日志不含地址     |
 
-共6个业务读取位置；standalone 入口1处统一判定，腾讯 Nginx 两份配置共6处覆盖 XFF，cf-origin-proxy 仅删除来路 IP 头，不提供可信客户端身份。任何业务不得读取 XFF、X-Real-IP、CF-Connecting-IP、True-Client-IP、X-Client-IP 或 Forwarded 的 for 参数。
+共6个业务读取位置；standalone 入口1处统一判定，腾讯 Nginx 两份配置共7处覆盖 XFF，cf-origin-proxy 仅删除来路 IP 头，不提供可信客户端身份。任何业务不得读取 XFF、X-Real-IP、CF-Connecting-IP、True-Client-IP、X-Client-IP、X-Cluster-Client-IP 或 Forwarded 的 for 参数。
 
-无可信有效地址时返回 `503`、`retryAfter: 5`，入口同时返回 HTTP 503；历史兼容函数直接调用返回业务 code 503。不生成随机身份、不使用共享 unknown 桶、不降级到请求头。Laf 托管仅保留 socket 对端的安全兼容，不采用 ctx.ip；仓库没有当前 Laf 托管生产验收证据，未来启用须另验其传输元数据合同，不能恢复退役 lafService。
+无可信有效地址时返回 `503`、`retryAfter: 5`，入口同时返回 HTTP 503；历史兼容函数直接调用返回业务 code 503。不生成随机身份、不使用共享 unknown 桶、不降级到请求头。**此版本不得部署到 Laf 托管**：已装 laf-cli 将 `ctx.socket` 声明为 WebSocket，合成 HTTP 上下文会让依赖 IP 的函数返回503；托管运行时下是否必然为空尚未实证，须先完成可信入口适配和验收。本修复仅在授权部署到 standalone/腾讯后生效；仍连接 Laf 旧函数的客户端不受本修复保护。托管是否在用未核验，不恢复退役 lafService。
 
 ## 第10轮遗留：提醒草稿、笔记回执与计时归属（现行）
 

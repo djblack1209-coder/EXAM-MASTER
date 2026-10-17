@@ -23,7 +23,8 @@ export function normalizeClientIp(value: unknown): string | null {
 
 /**
  * Standalone supplies the once-resolved trusted address in this transport field.
- * Historical Laf compatibility uses only its socket peer, never request headers/ctx.ip.
+ * Laf-hosted HTTP transport is not adapted/verified; missing metadata fails closed.
+ * Never falls back to request headers or ctx.ip.
  */
 export function getClientIp(ctx: any): string | null {
   return normalizeClientIp(ctx?.socket?.remoteAddress);
