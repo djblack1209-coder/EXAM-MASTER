@@ -636,17 +636,30 @@ class StorageService {
   }
 
   beginLoginAttempt() {
+    // Capture before reading identity or registering: never adopt a fence written by logout.
+    const revocation = uni.getStorageSync(SESSION_REVOCATION_KEY) || null;
     const snapshot = readSessionSnapshot();
     if (snapshot.status === 'unavailable') throw sessionUnavailable();
-    const session = snapshot.session;
-    if (!uni.getStorageSync(SESSION_REVOCATION_KEY)) uni.setStorageSync(SESSION_REVOCATION_KEY, newIdentityId());
-    const id = newIdentityId();
-    uni.setStorageSync(LOGIN_ATTEMPT_KEY, id);
-    return Object.freeze({
-      id,
-      revocation: uni.getStorageSync(SESSION_REVOCATION_KEY) || null,
-      guestSources: session.owner === 'guest' ? new Map(guestWrites) : new Map()
+    const unchanged = () => {
+      const now = readSessionSnapshot();
+      return (
+        (uni.getStorageSync(SESSION_REVOCATION_KEY) || null) === revocation &&
+        now.status === snapshot.status &&
+        now.status !== 'unavailable' &&
+        now.session.owner === snapshot.session.owner &&
+        now.session.epoch === snapshot.session.epoch &&
+        now.token === snapshot.token
+      );
+    };
+    if (!unchanged()) throw new Error('登录尝试已失效，请重试');
+    const attempt = Object.freeze({
+      id: newIdentityId(),
+      revocation,
+      guestSources: snapshot.session.owner === 'guest' ? new Map(guestWrites) : new Map()
     });
+    uni.setStorageSync(LOGIN_ATTEMPT_KEY, attempt.id);
+    if (!unchanged() || !this.isLoginAttemptCurrent(attempt)) throw new Error('登录尝试已失效，请重试');
+    return attempt;
   }
 
   isLoginAttemptCurrent(attempt) {
@@ -679,7 +692,7 @@ class StorageService {
       );
       let written;
       const aliasWrites = new Map();
-      const commitRevocation = attempt.revocation;
+      let commitRevocation = attempt.revocation;
       identityWriteDepth++;
       try {
         const record = {
@@ -692,6 +705,14 @@ class StorageService {
           revocation: attempt.revocation
         };
         if (!current()) throw new Error('登录尝试已失效，请重试');
+        // Publish a first device fence only in the owning commit, never during attempt registration.
+        if (!commitRevocation) {
+          const firstFence = newIdentityId();
+          uni.setStorageSync(SESSION_REVOCATION_KEY, firstFence);
+          commitRevocation = firstFence;
+          if (!current()) throw new Error('登录尝试已失效，请重试');
+          record.revocation = firstFence;
+        }
         uni.setStorageSync(SESSION_ENABLED_KEY, true);
         written = obfuscate(record);
         if (!commitIdentityRecord(record, attempt.id, written)) throw new Error('登录尝试已失效，请重试');

@@ -390,12 +390,13 @@ async function proceed(method) {
 async function run(action, accept = false) {
   if (!consent() || busy.value) return;
   let valid = current();
-  busy.value = true;
-  error.value = '';
   try {
     const attempt = accept ? storageService.beginLoginAttempt() : null;
-    valid = current();
-    const response = await action();
+    const pageCurrent = current();
+    valid = () => pageCurrent() && (!attempt || storageService.isLoginAttemptCurrent(attempt));
+    busy.value = true;
+    error.value = '';
+    const response = await action(attempt);
     if (!valid() || !response) return;
     if (response.code !== 0) {
       error.value = loginErrorText(response);
@@ -521,7 +522,7 @@ function toggleRegister() {
   error.value = '';
 }
 async function wechat() {
-  await run(async () => {
+  await run(async (attempt) => {
     if (desktop)
       return loginDesktopOAuth('wechat', authStore.desktopOAuth, current(), () => {
         error.value = t('login.browser');
@@ -541,7 +542,7 @@ async function wechat() {
       'wechat',
       mode === 'h5' ? config.wx.gzhAppId : config.wx.webAppId,
       mode === 'website' ? config.wx.webRedirectUri : '',
-      { wechatMode: mode }
+      { wechatMode: mode, attempt }
     );
     return null;
   }, true);

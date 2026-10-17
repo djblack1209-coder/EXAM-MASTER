@@ -72,7 +72,12 @@ function requireWebOAuth(provider) {
   }
 }
 
-export function beginWebOAuth(provider, appId, configuredRedirect = '', { wechatMode = 'h5' } = {}) {
+export function beginWebOAuth(
+  provider,
+  appId,
+  configuredRedirect = '',
+  { wechatMode = 'h5', attempt = storageService.beginLoginAttempt() } = {}
+) {
   const info = providerInfo(provider);
   requireWebOAuth(provider);
   if (provider === 'wechat' && !['h5', 'website'].includes(wechatMode)) {
@@ -97,15 +102,21 @@ export function beginWebOAuth(provider, appId, configuredRedirect = '', { wechat
     throw new Error('当前环境不支持安全授权，请使用邮箱登录');
   }
   globalThis.crypto.getRandomValues(bytes);
-  const state = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+  const nonce = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+  if (!storageService.isLoginAttemptCurrent(attempt)) throw new Error('登录尝试已失效，请重新登录');
+  const state = `${nonce}_${attempt.id}`;
   const context = {
     state,
+    attempt: { id: attempt.id, revocation: attempt.revocation },
     redirectUri,
     origin: page.origin,
     createdAt: Date.now(),
     ...(provider === 'wechat' ? { wechatMode } : {})
   };
-  if (!storageService.save(info.key, context, true, captureSession())) {
+  if (
+    !storageService.save(info.key, context, true, captureSession()) ||
+    !storageService.isLoginAttemptCurrent(attempt)
+  ) {
     throw new Error('无法保存授权校验信息，请重新登录');
   }
   const authUrl = new URL(
@@ -180,7 +191,10 @@ export function consumeWebOAuth(provider, options = {}) {
   const wechatMode = context?.wechatMode ?? 'h5';
   if (
     !context ||
-    !/^[a-f0-9]{32}$/.test(context.state) ||
+    !/^[a-f0-9]{32}_[a-zA-Z0-9_-]{8,120}$/.test(context.state) ||
+    !context.attempt ||
+    !context.state.endsWith(`_${context.attempt.id}`) ||
+    !storageService.isLoginAttemptCurrent(context.attempt) ||
     params.state !== context.state ||
     context.origin !== page.origin ||
     !Number.isFinite(age) ||
@@ -198,6 +212,7 @@ export function consumeWebOAuth(provider, options = {}) {
   }
   return {
     code: params.code,
+    attempt: Object.freeze({ ...context.attempt, guestSources: new Map() }),
     redirectUri: context.redirectUri,
     ...(provider === 'wechat' ? { wechatMode } : {})
   };
