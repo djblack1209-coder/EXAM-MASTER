@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { createLearningRepository, LEARNING_KEY } from '@/services/learning/learning-repository.js';
-import { emptyLearningState, applyLearningOperation, summarizeLearning } from '@/services/learning/learning-domain.js';
+import {
+  emptyLearningState,
+  dayKey,
+  applyLearningOperation,
+  summarizeLearning
+} from '@/services/learning/learning-domain.js';
 import { prepareLearningRestore } from '@/services/learning/learning-backup.js';
 
 const at = Date.now() - 10000;
@@ -46,6 +51,37 @@ function repository(initial = emptyLearningState('u1')) {
 }
 
 describe('学习备份的安全恢复闭环', () => {
+  it.each(['Invalid/Zone', '', null, 24])('全新计划操作拒绝非法时区 %j，错误码为 INVALID_INPUT', (timezone) => {
+    const { repo } = repository();
+    repo.commit({ id: 'valid-zone-plan', type: 'plan.set', at, data: { tasks: [] } });
+    const before = repo.read();
+    expect(() =>
+      applyLearningOperation(before, {
+        id: 'fresh-invalid-zone-plan',
+        type: 'plan.set',
+        at,
+        data: { tasks: [], timezone }
+      })
+    ).toThrow(expect.objectContaining({ code: 'INVALID_INPUT', message: '计划时区不合法' }));
+    expect(repo.read()).toEqual(before);
+  });
+  it.each(['UTC', 'US/Pacific', '+23:00'])('账户与计划沿用相同的运行时时区接受范围 %s', (timezone) => {
+    const initial = emptyLearningState('u1');
+    const account = applyLearningOperation(initial, {
+      id: 'account-zone',
+      type: 'timezone.set',
+      at,
+      data: { timezone }
+    });
+    const plan = applyLearningOperation(account.state, {
+      id: 'plan-zone',
+      type: 'plan.set',
+      at,
+      data: { tasks: [], timezone }
+    });
+    expect(account.state.timezone).toBe(timezone);
+    expect(plan.state.plans[0]).toMatchObject({ timezone, day: dayKey(at, timezone) });
+  });
   it.each(['UTC', 'Asia/Shanghai', 'America/New_York', 'America/Los_Angeles'])(
     '%s 安排后改时区，恢复仍保留原计划的日期、时区和幂等身份',
     (timezone) => {
