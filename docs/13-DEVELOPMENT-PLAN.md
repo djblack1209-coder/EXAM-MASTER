@@ -123,6 +123,20 @@ lint、format:check、lint:tooling、audit:repository、audit:subpkg-sync、后�
 - #3、#4、#6、#7、#12–#14 维持上表决定。
 - 同次 CI 中，根目录与 standalone 的干净安装均通过；standalone 审计为 0 个漏洞；Security Scan 的 critical 审计通过。根依赖仍有 21 个 high 级别漏洞，含既有 braces，等上游修复。
 
+### 阶段8A依赖更新（2026-10-17，本地 main）
+
+客户已授权本批目标安装包及必要传递依赖联网下载。只读核对 #4/#6/#7/#12/#13/#14/#16 后，在当前 main 重建锁文件，未合并旧 Dependabot 分支；两个 npm 锁文件的网络 resolved 主机均为 registry.npmjs.org，DCloud 运行包渠道与既有安全 override 保持。
+
+- Python：ruff 0.17.0、requests >=2.34.2,<3、python-dotenv >=1.2.4,<2；隔离 Python 3.12 环境复用已安装 OCR/模型依赖，只下载 Ruff/dotenv，未调用真实百度或模型 API。Ruff 130 文件通过；pytest 最终 219 通过。旧环境同样复现夹具 shebang 空格路径失败，改用 env python3 并显式带上当前解释器目录，保持原恢复/子进程断言与超时。
+- 框架：@dcloudio/types ^3.4.32、@vitejs/plugin-vue ^6.0.10；测试：@vue/test-utils ^2.5.1、happy-dom ^20.14.6。组件/邮件专项 6 文件 190 项通过，没有放宽断言。
+- 工具：@tauri-apps/api 固定 2.12.2；eslint-plugin-vue ^10.11.1、playwright ^1.64.0、postcss ^8.5.29、prettier ^3.9.10、sass ^1.105.1、terser ^5.51.2、vue-eslint-parser ^10.4.1、yaml ^2.9.1，锁定 PR 指定版本。Prettier 新格式只影响 4 文件，已单独提交；Ruff 未放宽规则。API/CLI/Cargo tauri 同为 2.12 次版本，未做 Rust/Tauri 编译。
+- 后端：nodemailer ^10.1.0、@types/node ^22.20.5。邮件验证码路径用真实安装包的 JSON/自定义无网络传输验证发件人、信封、内容、5000/5000/8000 毫秒超时选项、暂态保留与鉴权失败回滚；禁止套接字连接，没有发信。连接超时现在覆盖整个建连阶段；本路径没有连接池或附件流。当前源码只有 send-email-code 一处 createTransport/sendMail，未发现独立共享邮件模块；Laf 托管邮件包由运行时提供，standalone 升级不替代托管验收。
+- Playwright 本机仅新增配套 headless shell 156.0.8078.4（revision 1248），标准安装会附带 FFmpeg，因此本机沿包内 registry 安装器仅选择该 shell；未动旧浏览器缓存，未安装完整 Chromium/Firefox/WebKit/新版 FFmpeg。CI 的 --with-deps --only-shell chromium 及独立单 worker 28 项命令仍匹配；本机 28/28 通过，云端 CI 尚未运行。
+- audit 前后：根均 0 critical / 21 high / 0 moderate / 0 low，standalone 均 0，公告节点集合保持。既有 braces 及传播风险未闭合，不运行 audit fix --force，不降低安全或公开发布门禁。
+- #3 仍 OPEN，保留 Actions 大版本迁移批次；#15 仍 OPEN，维持不单独切换 DCloud 渠道的决定，关闭与否由客户决定。本批不合并、关闭或评论任何 PR，不推送、不部署。
+
+本批证据集中 tmp/p8a-evidence。首次 npm caret 解析误取 Playwright/core 1.64.1 与 Sass 1.105.2（PostCSS 8.5.30 仅命中已有缓存），已在提交前纠正到 PR 指定版本；多余下载也记入 downloads.json，不删除共享 npm/浏览器缓存。下载总计 31 项、130366323 字节；包元数据/只读 PR 内容不计入安装包体积。全量 `TZ=UTC npm test -- --maxWorkers=1` 耗时 592.44 秒，288 文件通过/1 搜索文件失败/1 原 Mongo 文件跳过，5476 项通过/7 项跳过，零断言失败，整体退出 1。唯一失败是搜索 beforeAll 超原 60 秒，实际准备 134.29 秒；相关测试与基准脚本未改，history 仅有 Prettier 分号后空格变化。前序 7C 也有同类超时，尚未独立证明归因于负载；保留本次全量失败，单独复跑不替代全量。随后记录一分钟负载 8.36，搜索单文件按原阈值复跑 1/1 通过（35.77 秒）；没有扩大阈值或重写全量结果。lint、lint:tooling、lint:python、format:check、仓库/分包审计、后端类型/隔离打包/29 个运行时入口及严格 Laf 源码审计通过。H5/微信/App 隔离构建与产物审计通过（53.14/23.26/30.54 秒）；微信主包全文件 334 个、1954082 字节，媒体 19 个、181028 字节，满足 2 MB/200 KB 门槛。构建无 Sass 弃用警告，微信保留 a 标签选择器不受支持提示。113 库生成表逐库解压 JSON 相等后还原原字节。Python 虚拟环境和 wheel 临时包已删除，四份主构建共 335430104 文件字节已核验摘要并回收；Spotlight 只读索引曾暂缓收尾，未停止系统进程。只留报告、哈希和日志，p1 并行目录、当前依赖、日常 App、用户资料与恢复基线保持。文件字节不等于磁盘净增或 RAM 释放。云端 CI/干净安装、真实设备、托管 Laf/SMTP 和公开发布门禁仍未验收；本批未推送、部署、短信、真实邮件或收费。
+
 **2026-10-17阶段5L【只排空遗留离线任务】**：删除无生产消费者的入队、去重、待写重放、容量淘汰与发送闭包；保留旧格式读取、锁内认领与锁后复核、按id回执、已载入任务取消、有效期、账户隔离、pause/resume、网络恢复及提示条入口。连续审计问题集中在入队路径，故收窄职责而不继续修补重放；未访问用户存储来推断无遗留。现行合同见[04](04-API-DOCUMENTATION.md#阶段5l只排空遗留离线任务现行)、[05](05-DATABASE-SCHEMAS.md#阶段5l遗留队列持久合同现行)，最终验证及资源收尾见[12](12-CHANGELOG.md#2026-10-17-遗留离线队列收窄阶段5l)。最终231项相关回归、全量5279通过/6原Mongo跳过/零失败，lint、三端隔离构建、公开产物与包体检查通过；无性能超时。保留5L/5K候选与指定5G回退，已回收冗余5I/5J构建。不扩展后续功能、推送或生产授权。
 
 ## 阶段5L审计条目处理

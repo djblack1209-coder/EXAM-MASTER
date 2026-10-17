@@ -1,5 +1,17 @@
 # 重要变更
 
+## 2026-10-17 依赖更新批次（阶段8A）
+
+在 main 按组完成 Dependabot #4/#6/#7/#12/#13/#14/#16 的目标版本更新与当前基线锁文件重建，没有合并旧 PR 分支或操作 GitHub PR。所有 npm resolved 网络地址为 registry.npmjs.org，DCloud 同渠道版本、安全 override、限流/授权/预算等合同保持；#3 仍 OPEN、留 Actions 迁移，#15 仍 OPEN、维持不升级且关闭待客户决定。版本与行为核对详见 [13](13-DEVELOPMENT-PLAN.md#阶段8a依赖更新2026-10-17本地-main)。
+
+Prettier 3.9.10 的 4 文件格式变化单独提交，Ruff 0.17 原规则下 130 文件通过。Python 3.12 隔离环境复用既有 OCR/模型库，只下载 Ruff/dotenv；pytest 首次 5 个失败在旧环境复现，为合成脚本解释器 shebang 含空格路径，改用 env python3 并显式保留解释器目录，原断言/超时保持，最终 219 通过。资料脚本只做语法及禁网络导入。新增真实 Nodemailer 10.1.0 的 JSON/自定义离线传输回归，覆盖发件人、内容、信封、SMTP 超时选项、超时保留与鉴权失败回滚；没有真实发信，源码未发现独立共享邮件模块，托管 Laf 邮件包版本另行验收。
+
+邮件/组件专项 6 文件 190 项通过（70.41 秒），配套 Playwright 1.64.0 headless shell 的独立移动视口 28/28 通过（21.49 秒）；本机仅新增 shell revision 1248，不安装完整浏览器或新版 FFmpeg，旧浏览器缓存保留。API 2.12.2 与 CLI/Cargo tauri 2.12.1 主次版本一致，没有 Rust/Tauri 编译。完整 `TZ=UTC npm test -- --maxWorkers=1` 命令 592.44 秒，288 文件通过/1 搜索文件失败/1 原 Mongo 文件跳过，5476 项通过/7 项跳过，零断言失败，整体退出 1。搜索 beforeAll 实际 134.29 秒超过原 60 秒；前序 7C 同类失败仍在，测试与基准脚本未改、history 仅格式变化，不将负载当作已证根因。随后记录一分钟负载 8.36，单文件按原阈值复跑 1/1 通过（35.77 秒），不替代全量门禁。
+
+lint、format:check、lint:tooling、lint:python、audit:repository、audit:subpkg-sync、后端 typecheck、隔离 tsc/打包、29/29 运行时加载与 `LAF_SOURCE_AUDIT_STRICT=true` 源码审计通过。H5/微信/App 隔离构建（53.14/23.26/30.54 秒）及三端公开产物、微信/App 专项和微信包体审计通过；主包 334 文件 1954082 字节、媒体 19 文件 181028 字节。无 Sass 弃用警告，微信仍提示 a 标签选择器不受支持。113 库生成表解压 JSON 逐库一致后还原原字节。
+
+新鲜 npm audit 前后根均 0 critical/21 high、standalone 均 0，公告节点集合未变；既有 braces 风险与公开发布门禁保持，不用 audit fix --force。下载清单共 31 项、130366323 字节，首次 caret 误取 Playwright/core 1.64.1、Sass 1.105.2，提交前已纠正到 PR 版本，多余下载同样记入清单；PostCSS 8.5.30 仅命中旧缓存后纠正，没有手动删共享缓存。证据集中 `tmp/p8a-evidence/`；虚拟环境、wheel 临时包和四份主构建回收，主构建共 335430104 文件字节，仅留报告/哈希/日志。Spotlight 读取一度暂缓清理，未停止系统进程；p1、日常 App、用户资料与恢复材料保持。文件字节不等于磁盘净增或 RAM 释放；云端 CI、干净安装、设备、托管 SMTP/Laf 及公开发布未验收，本轮不推送或部署。
+
 ## 2026-10-17 可信客户端 IP 审计补修（阶段7C）
 
 修复7A引入的exam 443前缀路径经8080导致IP聚合：新增与api 443一致的 `/exam-master/` 后端直达块，补齐两块协议头，8080保持原样。新增公开443/80路由及覆盖头静态检查；扩展IP守卫到standalone，精确白名单仅放行既有可信读取，补齐7B漏网变体。
