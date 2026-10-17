@@ -2767,13 +2767,13 @@ export default {
     },
 
     // ✅ 保存笔记
-    handleSaveNote() {
+    async handleSaveNote() {
       if (!this.noteContent.trim()) {
         toast.info(t('quiz.copy99'));
         return;
       }
 
-      const result = addQuestionNote(
+      const result = await addQuestionNote(
         {
           questionId: this.currentQuestion.id || this.currentQuestion.question,
           questionContent: this.currentQuestion.question,
@@ -2784,7 +2784,7 @@ export default {
         this.boundLoginSession
       );
 
-      if (result.success) {
+      if (result.success && checkSession(this.boundLoginSession) === 'current') {
         toast.success(t('quiz.copy100'));
 
         // 更新当前题目的笔记列表
@@ -2794,7 +2794,7 @@ export default {
         this.noteContent = '';
         this.selectedNoteTags = [];
       } else {
-        toast.info(t('quiz.copy101'));
+        toast.info(result.retryable ? t('ui.storageBusy') : t('quiz.copy101'));
       }
     },
 

@@ -191,13 +191,18 @@ class QuestionTimer {
   }
 
   stop(token) {
-    if (!this._matches(token)) return { success: false, code: 'TIMER_CONTEXT_CHANGED', elapsed: 0, elapsedMs: 0 };
+    if (token === undefined ? !this._matches(token) : token !== this.token)
+      return { success: false, code: 'TIMER_CONTEXT_CHANGED', elapsed: 0, elapsedMs: 0 };
     this._sample();
     if (this.currentTimer) clearInterval(this.currentTimer);
     this.currentTimer = null;
     this.active = false;
+    const status = this.isInitialized ? checkSession(this._session) : 'current';
     return {
-      success: true,
+      success: status === 'current',
+      ...(status !== 'current'
+        ? { code: status === 'unavailable' ? 'SESSION_UNAVAILABLE' : 'TIMER_CONTEXT_CHANGED' }
+        : {}),
       elapsed: this.elapsed,
       elapsedMs: Math.round(this.elapsedMs),
       timeLimit: this.timeLimit,
@@ -207,7 +212,7 @@ class QuestionTimer {
   }
 
   pause(token) {
-    if (!this._matches(token)) return false;
+    if (token === undefined ? !this._matches(token) : token !== this.token) return false;
     this._sample();
     this.isPaused = true;
     if (this.currentTimer) clearInterval(this.currentTimer);
