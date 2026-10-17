@@ -1,5 +1,5 @@
 # 构建、ESM 打包和运行目录使用同一合同；任一步失败即停止构建。
-FROM node:22-alpine AS builder
+FROM node:25-alpine AS builder
 WORKDIR /build/laf-backend/standalone
 COPY laf-backend/standalone/package.json laf-backend/standalone/package-lock.json ./
 RUN npm ci --include=dev --ignore-scripts
@@ -8,7 +8,7 @@ COPY laf-backend/ ./laf-backend/
 WORKDIR /build/laf-backend/standalone
 RUN npm run build && npm prune --omit=dev --ignore-scripts
 
-FROM node:22-alpine AS production
+FROM node:25-alpine AS production
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001 -G nodejs
 RUN apk add --no-cache dumb-init curl
 WORKDIR /app
