@@ -695,6 +695,33 @@ describe('真实 JWT 校验下的新接口隔离合同', () => {
     expect((await models(context({ action: 'delete', profileId: 'byo' }))).success).toBe(true);
     expect([...mock.rows.keys()].filter((id) => id.startsWith('learning_model_keys:'))).toHaveLength(0);
   });
+  it('全新计划操作的非法时区返回 422/INVALID_INPUT，不改变云端原记录', async () => {
+    const saved = await sync(
+      context({
+        action: 'push',
+        operations: [
+          { id: 'valid-sync-zone-plan', type: 'plan.set', at: 1790848800000, data: { tasks: [], timezone: 'UTC' } }
+        ]
+      })
+    );
+    expect(saved.code).toBe(0);
+    const before = structuredClone([...mock.rows.entries()]);
+    const result = await sync(
+      context({
+        action: 'push',
+        operations: [
+          {
+            id: 'fresh-invalid-sync-zone-plan',
+            type: 'plan.set',
+            at: 1790848800000,
+            data: { tasks: [], timezone: 'Invalid/Zone' }
+          }
+        ]
+      })
+    );
+    expect(result).toMatchObject({ code: 422, success: false, error: 'INVALID_INPUT' });
+    expect([...mock.rows.entries()]).toEqual(before);
+  });
   it('同步忽略客户端用户身份且保持私有范围', async () => {
     const result = await sync(
       context({
