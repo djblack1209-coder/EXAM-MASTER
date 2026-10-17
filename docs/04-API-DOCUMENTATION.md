@@ -3,8 +3,8 @@
 ## 第10轮遗留：提醒草稿、笔记回执与计时归属（现行）
 
 - journey-reminders编辑绑定原owner/epoch、记录上下文与对话；确认换代或切换对话撤销，同epoch续期、普通revision更新及unavailable保留草稿，保存不能重定向到后继对话。
-- question-note写入以`{ success, code, retryable }`传递回执（失败含code/retryable）；未确认新增按原绑定保留同草稿ID，重试复用，旧绑定失败不清新绑定待写。deleteTag未确认时，非current不回滚；current下严格重读原绑定标签，已删除则重读内存并成功，仍存在才回滚笔记并返回原失败，读取失败不回滚，回滚失败按持久事实重读并失败。
-- do-quiz保存笔记已成功且会话非changed时提示成功、关闭弹窗、清空草稿，刷新不可读以result.note合并回退；changed提示contextChanged并保留草稿，写入失败沿原分支。提交及参考查看使用retainOnUnavailable，提交暂不可用提示storageBusy并保留选择，计时继续；onShow暂不可读仅恢复本地计时。
+- question-note写入以`{ success, code, retryable }`传递回执（失败含code/retryable）；按原账户串行执行读、改、写和回读确认，锁内通过现有storageService重读最新笔记与标签（H5没有全局uni对象也读取），保存非true、异常或回读不一致均不返回成功。支持Web Locks的H5同源且使用本实现的标签页共用Web Lock；App/微信同一JS运行时的各页面与管理器共用账户队列，无异步前序时保留同步存储的同步返回。无Web Locks的独立H5标签、独立原生运行时或旧版/外部写入者没有共同锁，回读只能发现确认时已发生的冲突，不保证之后不被覆盖，也不自动重放。未确认新增按原绑定保留同草稿ID，重试复用，旧绑定失败不清新绑定待写。deleteTag未确认时，非current不回滚；current下严格重读原绑定标签，已删除则重读内存并成功，仍存在才回滚笔记并返回原失败，读取失败不回滚，回滚失败按持久事实重读并失败，不构成多键原子事务。
+- do-quiz保存笔记捕获原页面实例、题目对象、登录会话和草稿generation；仅页面未卸载、仍为原题、原弹窗打开且generation未变时处理页面回执。切题、重开/关闭弹窗、修改正文或标签立即换代，旧成功/失败回执不改新草稿、列表或提示。原对象保存已确认且会话非changed才提示成功、关闭弹窗、清空草稿，刷新不可读仅向原题列表合并result.note；changed提示contextChanged并保留草稿，写入失败保留输入。提交及参考查看在计时停止返回SESSION_UNAVAILABLE时使用retainOnUnavailable保留选择和计时，提示storageBusy；提交入口的身份读取失败仍走拒绝清空流程，此既有缺口见[13](13-DEVELOPMENT-PLAN.md#阶段6d笔记异步回执与后续项)。onShow暂不可读仅恢复本地计时。
 - question-timer的stop/pause显式token只作用于本次计时，生命周期不带选项时不可读仍本地收尾；stop(token, { retainOnUnavailable: true })暂不可读返回SESSION_UNAVAILABLE及采样用时，保留active、interval和暂停状态。resume显式当前token在active且暂停、身份非changed时允许本地恢复，旧token或changed拒绝；省略token仍要求current，interval回调继续校验会话。
 - checkSession快照不可读时，对epoch/revocation补读同样做generation前后夹读；前后不一致或记录generation不符保持unavailable，仅一致读取确认换代，交错续期不丢待写。
 

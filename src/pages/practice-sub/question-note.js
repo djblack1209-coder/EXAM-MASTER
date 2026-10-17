@@ -16,6 +16,31 @@ const STORAGE_KEYS = {
   NOTE_TAGS: 'question_note_tags'
 };
 
+// Shared by every manager/page in this runtime; Web Locks also cover H5 tabs.
+const accountWrites = new Map();
+function withNoteWriteLock(session, operation) {
+  const key = JSON.stringify([session?.owner]);
+  const run = () => {
+    const locks = globalThis.navigator?.locks;
+    return locks?.request
+      ? locks.request(`exam-master:question-notes:${key}`, { mode: 'exclusive' }, operation)
+      : operation();
+  };
+  const previous = accountWrites.get(key);
+  const result = previous ? previous.then(run) : run();
+  if (result?.then) {
+    const settled = Promise.resolve(result).then(
+      () => undefined,
+      () => undefined
+    );
+    accountWrites.set(key, settled);
+    void settled.then(() => {
+      if (accountWrites.get(key) === settled) accountWrites.delete(key);
+    });
+  }
+  return result;
+}
+
 // 预定义标签
 const DEFAULT_TAGS = [
   { id: 'key_point', name: '重点', color: '#F44336', icon: 'tag-keypoint' },
@@ -99,19 +124,21 @@ class QuestionNoteManager {
    * @returns {Object} 更新结果
    */
   updateNote(noteId, updates, session = captureSession()) {
-    return this._write((session) => {
-      const original = this.notes.find((note) => note.id === noteId);
-      if (!original) return { success: false, error: '笔记不存在' };
-      const note = { ...original, ...updates, updatedAt: Date.now() };
-      return this._after(
-        this._persist(
-          'notes',
-          this.notes.map((row) => (row.id === noteId ? note : row)),
-          session
-        ),
-        (result) => (result.success ? { success: true, note } : result)
-      );
-    }, session);
+    return this._write((session) => this._updateNote(noteId, updates, session), session);
+  }
+
+  _updateNote(noteId, updates, session) {
+    const original = this.notes.find((note) => note.id === noteId);
+    if (!original) return { success: false, error: '笔记不存在' };
+    const note = { ...original, ...updates, updatedAt: Date.now() };
+    return this._after(
+      this._persist(
+        'notes',
+        this.notes.map((row) => (row.id === noteId ? note : row)),
+        session
+      ),
+      (result) => (result.success ? { success: true, note } : result)
+    );
   }
 
   /**
@@ -239,7 +266,7 @@ class QuestionNoteManager {
     return this._write((session) => {
       const note = this.notes.find((row) => row.id === noteId);
       if (!note) return { success: false, error: '笔记不存在' };
-      return this.updateNote(
+      return this._updateNote(
         noteId,
         { isImportant: isImportant !== undefined ? isImportant : !note.isImportant },
         session
@@ -255,7 +282,7 @@ class QuestionNoteManager {
     return this._write((session) => {
       const note = this.notes.find((row) => row.id === noteId);
       if (!note) return { success: false, error: '笔记不存在' };
-      return this.updateNote(noteId, { reviewCount: note.reviewCount + 1, lastReviewAt: Date.now() }, session);
+      return this._updateNote(noteId, { reviewCount: note.reviewCount + 1, lastReviewAt: Date.now() }, session);
     });
   }
 
@@ -467,13 +494,16 @@ class QuestionNoteManager {
 
   _write(operation, session = captureSession()) {
     try {
-      assertSession(session);
-      this.init();
-      // New actions read persisted facts, never an unconfirmed optimistic projection.
-      this._loadNotes();
-      this._loadTags();
-      assertSession(session);
-      return operation(session);
+      const result = withNoteWriteLock(session, () => {
+        assertSession(session);
+        this.init();
+        // Re-read inside the account lock, after the previous write was confirmed.
+        this._loadNotes();
+        this._loadTags();
+        assertSession(session);
+        return operation(session);
+      });
+      return result?.catch ? result.catch((error) => this._failure(session, error)) : result;
     } catch (error) {
       return this._failure(session, error);
     }
@@ -498,11 +528,15 @@ class QuestionNoteManager {
       assertSession(session);
       const finish = (saved) => {
         if (saved !== true || checkSession(session) !== 'current') return failed();
-        this[field] = value;
+        const key = field === 'notes' ? STORAGE_KEYS.NOTES : STORAGE_KEYS.NOTE_TAGS;
+        const persisted = storageService.get(key, [], { session, migrateLegacy: false, throwOnError: true });
+        assertSession(session);
+        if (JSON.stringify(persisted) !== JSON.stringify(value)) return failed();
+        this[field] = persisted;
         return { success: true };
       };
       const result = field === 'notes' ? this._saveNotes(value, session) : this._saveTags(value, session);
-      return result?.then ? result.then(finish, failed) : finish(result);
+      return result?.then ? result.then(finish).catch(failed) : finish(result);
     } catch (error) {
       return failed(error);
     }
@@ -513,9 +547,7 @@ class QuestionNoteManager {
   }
 
   _loadNotes() {
-    if (typeof uni !== 'undefined') {
-      this.notes = storageService.get(STORAGE_KEYS.NOTES, [], { session: this._session, migrateLegacy: false });
-    }
+    this.notes = storageService.get(STORAGE_KEYS.NOTES, [], { session: this._session, migrateLegacy: false });
   }
 
   _saveNotes(notes = this.notes, session = this._session) {
@@ -523,14 +555,12 @@ class QuestionNoteManager {
   }
 
   _loadTags() {
-    if (typeof uni !== 'undefined') {
-      const saved = storageService.get(STORAGE_KEYS.NOTE_TAGS, null, { session: this._session, migrateLegacy: false });
-      this.tags = [...DEFAULT_TAGS];
-      if (saved && saved.length > 0) {
-        // 合并默认标签和自定义标签
-        const customTags = saved.filter((t) => t.isCustom);
-        this.tags = [...DEFAULT_TAGS, ...customTags];
-      }
+    const saved = storageService.get(STORAGE_KEYS.NOTE_TAGS, null, { session: this._session, migrateLegacy: false });
+    this.tags = [...DEFAULT_TAGS];
+    if (saved && saved.length > 0) {
+      // 合并默认标签和自定义标签
+      const customTags = saved.filter((t) => t.isCustom);
+      this.tags = [...DEFAULT_TAGS, ...customTags];
     }
   }
 
