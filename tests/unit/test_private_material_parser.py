@@ -669,10 +669,17 @@ class AppleReadinessHTTPTests(unittest.TestCase):
 
 @unittest.skipUnless(sys.platform == "darwin", "macOS connector process lifecycle")
 class AppleWarmupShutdownTests(unittest.TestCase):
+    def setUp(self):
+        environment = patch.dict(
+            os.environ, {"PATH": str(Path(sys.executable).parent) + os.pathsep + os.environ["PATH"]}
+        )
+        environment.start()
+        self.addCleanup(environment.stop)
+
     def test_stopping_synthetic_warmup_reaps_its_real_child_without_promoting_late_readiness(self):
         with tempfile.TemporaryDirectory(prefix="yozi-warmup-stop-") as root:
             binary = Path(root) / "synthetic-adapter"
-            binary.write_text(f"#!{sys.executable}\nimport time\ntime.sleep(60)\n")
+            binary.write_text("#!/usr/bin/env python3\nimport time\ntime.sleep(60)\n")
             binary.chmod(0o700)
             with patch.dict(os.environ, {"MATERIAL_APPLE_VISION_BIN": str(binary)}):
                 try:
@@ -710,7 +717,7 @@ class AppleWarmupShutdownTests(unittest.TestCase):
                 "languages": PARSER.APPLE_LANGUAGES,
             }
             binary.write_text(
-                f"#!{sys.executable}\nimport os,sys,json,time\n"
+                "#!/usr/bin/env python3\nimport os,sys,json,time\n"
                 f"if sys.argv[1]=='--capabilities': print({json.dumps({'success': True, 'data': caps})!r})\n"
                 f"else:\n open({str(marker)!r},'w').write(str(os.getpid()))\n time.sleep(60)\n"
             )
