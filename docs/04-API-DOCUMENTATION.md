@@ -33,7 +33,36 @@ Store将结果绑定原记录生命周期。明确打开时先重读规范记录
 
 <a id="会话用时检查覆盖清单阶段4h"></a>
 
-### 用户数据持有者 → 绑定方式（阶段5）
+### 第六轮终审：持久化读取与成功回执（阶段5F）
+
+`storageService.read(key, fallback, options)`返回`{status:'ready', value}`或`{status:'unavailable', error}`，成功包括不存在、合法空列表/空对象及标量空值；现存集合键读成空串、运行时读取异常与不可确认的身份均返回暂不可用。`get`沿同一入口取值，失败抛出`code=SESSION_UNAVAILABLE`，不再通过defaultValue或`|| [] / || {}`提供写入基础；换代仍抛出CONTEXT_CHANGED。某绑定/业务键读取失败后拒绝快照保存，成功重读才解除，防止调用方捕获异常后继续回写旧投影。底层`readPersistent/requirePersistent`同时供无存储服务依赖的离线队列使用。业务操作仍核对owner/epoch，身份完整性与同账户续期规则不变。
+
+读取迁移覆盖统一get的全部现存调用；下表按后续写入基础列出入口（纯展示读取同时获得有类型失败，不作为空库）：
+
+| 文件/目录 | 迁移调用点与键范围 |
+| --- | --- |
+| `services/storageService.js` | `get/read`全体调用；`_mistakeBookRows`、错题增删改/冲突/批量同步/云列表合并；防抖回读；游客学习快照与迁移目标读取 |
+| `services/learning/learning-repository.js`、`history-storage.js` | Repository代理的全部get：学习根、lifecycle、privacy_pending、recovery、migration_backup、sync_conflict；历史catalog、history_write、head及分页；恢复、迁移、冲突与清理均需完整读取 |
+| `services/learning/pending-upload-journal.js`、`learning-notifications.js` | 上传journal/list/新增/移除、通知consent；不能依据未确认空值覆盖恢复登记 |
+| `utils/core/offline-queue.js` | `_loadFromStorage/_saveToStorage`的EXAM_OFFLINE_QUEUE；原生与H5严格恢复，暂不可用不出队或递增重试 |
+| `pages/practice-sub/services/offline-cache-service.js`、`offline-cache.js` | `cacheQuestions/addToSyncQueue/getSyncQueue/saveOfflineAnswer`：题目分组缓存、同步队列、离线原答；新增操作保留内存，严格重读后合并 |
+| `services/api/domains/user.api.js` | `checkAchievements/unlockAchievement`的achievement_retry_v1；所有目标须明确成功后才确认完成 |
+| `utils/learning/learning-goal.js` | `_loadGoals/_loadRecords/_loadReminderSettings`及后续保存；目标、记录、提醒设置与pending_sync |
+| `utils/learning/adaptive-learning-engine.js` | `_loadMistakeBook/_loadLearningHistory/_loadKnowledgeMap/_loadReviewSchedule`及后续保存 |
+| `pages/practice-sub/utils/learning-analytics.js`、`smart-question-picker.js` | dailyStats/streakData/achievements、userProfile/questionHistory/performanceMetrics的各load/save |
+| `pages/practice-sub/question-note.js`、`question-timer.js`、`swipe-gesture.js` | 笔记/标签、计时设置/旧记录、手势设置的load/save；初始化读失败不变成成功空状态 |
+| `utils/analytics/event-bus-analytics.js` | 事件队列restore/save/upload、analytics_uploaded、用户属性、会话、留存的读改写 |
+| `stores/modules/study.js`、`study-engine.js`、`review.js`、`profile.js` | restoreProgress、readPersistedState/readArray、localBank及三个远端入口、资料/进度恢复；读取完成后才发布投影 |
+| `pages/plan/intelligent-plan-manager.js`、`practice-sub/utils/practice-mode-manager.js` | plans/learningData/reminders、practice_history/current_practice_session/mistake_book的恢复与续写 |
+| `utils/favorite/question-favorite.js`、`services/fsrs-service.js` | favorites/folders/settings的init、卡片/参数load；失败不生成可写空投影 |
+| `pages/practice-sub/question-bank.vue`、`composables/useFlashcardBank.js/useBankStatus.js/useQuizAutoSave.js`、`utils/flashcard-adapter.js` | 题库/已载清单、闪卡导入/删除、练习恢复/时间戳及保存回读 |
+| `pages/practice-sub/composables/ai-generation-mixin.js`、`do-quiz.vue`、`pages/study-detail/index.vue` | 导入记录/题库/文件清单、passage_annotations/统计计数/日期、daily_study_records的读改写 |
+
+`storageService.update`按`[业务键,owner,epoch]`保存有序内存修改；读取失败返回false并保留待写，恢复后由同入口或`flushPendingWrites`重读合并，确认写入才移除；已换代操作作废。防抖按同一三元组隔离，旧绑定不能替换/取消新绑定任务。退出先撤销，缓存清理不能中断退出。游客epoch使用持久撤销代号，登录再退出后旧游客不能复活。
+
+登录的撤销代号只随退出/失败关闭改变；登录尝试使用最新登记编号裁定，旧事务不得改变更新尝试捕获的退出栅栏。锁内失败仅在尝试与撤销仍有效、候选仍属自己时恢复原身份；退出或后继尝试发生后只能清本事务候选。Review三个入口、离线队列、目标同步与流式封装同时处理兑现/抛出的暂不可用；finally结束loading，目标标记只在全部成功回执后移除。
+
+## 用户数据持有者 → 绑定方式（阶段5）
 
 以下是`src/`中持有用户内容、属主键写入或用户传输的覆盖清单；纯展示组件通过所属页面/Store接入，不独立重绑。原112个学习action的用时守卫继续保留，入口绑定同时覆盖Store以外的持有者。
 
