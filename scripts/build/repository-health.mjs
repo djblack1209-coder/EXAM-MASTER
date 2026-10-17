@@ -1,9 +1,10 @@
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vueParser from 'vue-eslint-parser';
+import { DUPLICATE_PAIRS } from './check-subpkg-duplicates.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const sourceExtensions = new Set(['.js', '.mjs', '.cjs', '.ts', '.vue', '.py', '.sh', '.css', '.scss']);
@@ -72,6 +73,7 @@ export function scanRepository(projectRoot = root) {
   const missingImports = [];
   const parseErrors = [];
   const brokenLinks = [];
+  const localLinks = [];
   const imports = [];
   const hashes = new Map();
   let sourceBytes = 0;
@@ -110,11 +112,38 @@ export function scanRepository(projectRoot = root) {
         brokenLinks.push({ file, link });
         continue;
       }
-      if (target && !existsSync(path.resolve(projectRoot, path.dirname(file), target))) {
-        brokenLinks.push({ file, link });
-      }
+      if (target)
+        localLinks.push({
+          file,
+          link,
+          target: path.relative(projectRoot, path.resolve(projectRoot, path.dirname(file), target))
+        });
     }
   }
+  // Classify evidence before existence checks so local artifacts cannot mask CI failures.
+  // Git keeps tracked paths eligible even when an ignore rule matches their parent.
+  const targets = [...new Set(localLinks.map((item) => item.target))].filter(
+    (target) => target && target !== '..' && !target.startsWith(`..${path.sep}`)
+  );
+  const ignored = new Set();
+  if (targets.length) {
+    const result = spawnSync('git', ['check-ignore', '--stdin', '-z'], {
+      cwd: projectRoot,
+      input: targets.join('\0') + '\0',
+      encoding: 'utf8'
+    });
+    if (result.error) throw result.error;
+    if (result.status !== 0 && result.status !== 1) throw new Error(result.stderr || 'git check-ignore failed');
+    for (const target of result.stdout.split('\0').filter(Boolean)) ignored.add(target);
+  }
+  const ignoredLocalLinks = [];
+  for (const { file, link, target } of localLinks) {
+    if (ignored.has(target)) ignoredLocalLinks.push({ file, link, target });
+    else if (!existsSync(path.resolve(projectRoot, target))) brokenLinks.push({ file, link });
+  }
+  const duplicates = [...hashes.values()].filter((group) => group.length > 1);
+  const isSubpackagePair = (group) =>
+    DUPLICATE_PAIRS.some((pair) => pair.length === group.length && pair.every((file) => group.includes(file)));
   const referenced = new Set(imports.map((entry) => entry.target));
   const reviewCandidates = sources.filter(
     (file) =>
@@ -147,14 +176,27 @@ export function scanRepository(projectRoot = root) {
     parseErrors,
     missingScripts,
     brokenLinks,
-    exactSourceDuplicates: [...hashes.values()].filter((group) => group.length > 1),
+    ignoredLocalLinks,
+    exactSourceDuplicates: duplicates.filter((group) => !isSubpackagePair(group)),
+    intentionalSourceDuplicates: duplicates.filter(isSubpackagePair),
     reviewCandidates,
     limitations: [
       'JS/Vue literal imports use AST; TypeScript uses a conservative textual inventory. Dynamic loaders, auto-imports and platform branches require manual review.',
       'No files are deleted or executed. Secrets, ignored data and third-party vendored code are excluded.',
+      'Git-ignored local Markdown targets are inventoried, not required; tracked targets, imports and scripts remain checked. Link anchors are not checked.',
       'Zero inbound literal references do not prove a module is unused.'
     ]
   };
+}
+
+export function hasRepositoryErrors(report) {
+  return Boolean(
+    report.counts.missingTracked ||
+    report.missingScripts.length ||
+    report.brokenLinks.length ||
+    report.parseErrors.length ||
+    report.missingImports.some((item) => !item.file.startsWith('tests/'))
+  );
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
@@ -169,17 +211,12 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       parseErrors: report.parseErrors.length,
       missingScripts: report.missingScripts.length,
       brokenLinks: report.brokenLinks.length,
+      ignoredLocalLinks: report.ignoredLocalLinks.length,
       duplicateGroups: report.exactSourceDuplicates.length,
+      intentionalDuplicateGroups: report.intentionalSourceDuplicates.length,
       reviewCandidates: report.reviewCandidates.length,
       output
     })
   );
-  if (
-    process.argv.includes('--strict') &&
-    (report.missingScripts.length ||
-      report.brokenLinks.length ||
-      report.parseErrors.length ||
-      report.missingImports.some((item) => !item.file.startsWith('tests/')))
-  )
-    process.exitCode = 1;
+  if (process.argv.includes('--strict') && hasRepositoryErrors(report)) process.exitCode = 1;
 }
