@@ -132,6 +132,7 @@ lint、format:check、lint:tooling、audit:repository、audit:subpkg-sync、后�
 - 工具：@tauri-apps/api 固定 2.12.2；eslint-plugin-vue ^10.11.1、playwright ^1.64.0、postcss ^8.5.29、prettier ^3.9.10、sass ^1.105.1、terser ^5.51.2、vue-eslint-parser ^10.4.1、yaml ^2.9.1，锁定 PR 指定版本。Prettier 新格式只影响 4 文件，已单独提交；Ruff 未放宽规则。API/CLI/Cargo tauri 同为 2.12 次版本，未做 Rust/Tauri 编译。
 - 后端：nodemailer ^10.1.0、@types/node ^22.20.5。邮件验证码路径用真实安装包的 JSON/自定义无网络传输验证发件人、信封、内容、5000/5000/8000 毫秒超时选项、暂态保留与鉴权失败回滚；禁止套接字连接，没有发信。连接超时现在覆盖整个建连阶段；本路径没有连接池或附件流。当前源码只有 send-email-code 一处 createTransport/sendMail，未发现独立共享邮件模块；Laf 托管邮件包由运行时提供，standalone 升级不替代托管验收。
 - Playwright 本机仅新增配套 headless shell 156.0.8078.4（revision 1248），标准安装会附带 FFmpeg，因此本机沿包内 registry 安装器仅选择该 shell；未动旧浏览器缓存，未安装完整 Chromium/Firefox/WebKit/新版 FFmpeg。CI 的 --with-deps --only-shell chromium 及独立单 worker 28 项命令仍匹配；本机 28/28 通过，云端 CI 尚未运行。
+- 锁文件与 PR 的唯一差异：postcss 8.5.29 依赖 `nanoid ^3.3.19`，本地重建锁文件时选用兼容补丁 3.3.20（PR 锁文件为 3.3.19），属目标包的必要传递依赖，8B 复核接受。
 - audit 前后：根均 0 critical / 21 high / 0 moderate / 0 low，standalone 均 0，公告节点集合保持。既有 braces 及传播风险未闭合，不运行 audit fix --force，不降低安全或公开发布门禁。
 - #3 仍 OPEN，保留 Actions 大版本迁移批次；#15 仍 OPEN，维持不单独切换 DCloud 渠道的决定，关闭与否由客户决定。本批不合并、关闭或评论任何 PR，不推送、不部署。
 
