@@ -51,19 +51,38 @@ function repository(initial = emptyLearningState('u1')) {
 }
 
 describe('学习备份的安全恢复闭环', () => {
-  it.each(['Invalid/Zone', '', null, 24])('全新计划操作拒绝非法时区 %j，错误码为 INVALID_INPUT', (timezone) => {
+  it.each([
+    ...['plan.set', 'timezone.set'].flatMap((type) =>
+      [
+        ['array', ['UTC']],
+        ['number', 24],
+        ['null', null],
+        ['empty', ''],
+        ['overlong', 'U'.repeat(81)],
+        ['unknown', 'Invalid/Zone']
+      ].map(([label, timezone]) => ({ type, label, fields: { timezone } }))
+    ),
+    { type: 'timezone.set', label: 'missing', fields: {} }
+  ])('全新时区操作拒绝非法输入 $type/$label，错误码为 INVALID_INPUT 且不写入', ({ type, label, fields }) => {
     const { repo } = repository();
-    repo.commit({ id: 'valid-zone-plan', type: 'plan.set', at, data: { tasks: [] } });
+    repo.commit({ id: `valid-zone-plan-${type}-${label}`, type: 'plan.set', at, data: { tasks: [] } });
     const before = repo.read();
-    expect(() =>
-      applyLearningOperation(before, {
-        id: 'fresh-invalid-zone-plan',
-        type: 'plan.set',
-        at,
-        data: { tasks: [], timezone }
-      })
-    ).toThrow(expect.objectContaining({ code: 'INVALID_INPUT', message: '计划时区不合法' }));
-    expect(repo.read()).toEqual(before);
+    const snapshot = structuredClone(before);
+    const operation = {
+      id: `fresh-invalid-zone-${type}-${label}`,
+      type,
+      at,
+      data: type === 'plan.set' ? { tasks: [], ...fields } : fields
+    };
+    const message = type === 'plan.set' ? '计划时区不合法' : '学习时区不合法';
+    expect(() => applyLearningOperation(before, operation)).toThrow(
+      expect.objectContaining({ code: 'INVALID_INPUT', message })
+    );
+    expect(before).toEqual(snapshot);
+    expect(() => repo.commit({ ...operation, id: `repository-invalid-zone-${type}-${label}` })).toThrow(
+      expect.objectContaining({ code: 'INVALID_INPUT', message })
+    );
+    expect(repo.read()).toEqual(snapshot);
   });
   it.each(['UTC', 'US/Pacific', '+23:00'])('账户与计划沿用相同的运行时时区接受范围 %s', (timezone) => {
     const initial = emptyLearningState('u1');
@@ -81,6 +100,14 @@ describe('学习备份的安全恢复闭环', () => {
     });
     expect(account.state.timezone).toBe(timezone);
     expect(plan.state.plans[0]).toMatchObject({ timezone, day: dayKey(at, timezone) });
+    const inherited = applyLearningOperation(plan.state, {
+      id: `plan-account-zone-${timezone}`,
+      type: 'plan.set',
+      at,
+      data: { tasks: [] }
+    });
+    expect(inherited.state.timezone).toBe(timezone);
+    expect(inherited.state.plans.at(-1)).toMatchObject({ timezone, day: dayKey(at, timezone) });
   });
   it.each(['UTC', 'Asia/Shanghai', 'America/New_York', 'America/Los_Angeles'])(
     '%s 安排后改时区，恢复仍保留原计划的日期、时区和幂等身份',
