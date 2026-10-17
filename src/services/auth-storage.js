@@ -238,7 +238,14 @@ export function readSessionSnapshot() {
       if (before && typeof before === 'object' && 'revocation' in before && before.revocation !== revocation)
         return { status: 'changed', session: Object.freeze({ owner, epoch: null }), token, enabled };
       if (before !== after && JSON.stringify(before) !== JSON.stringify(after)) continue;
-      const epoch = validEpoch(before?.epoch) ? before.epoch : validEpoch(before) ? before : null;
+      const epoch =
+        owner === 'guest' && !token
+          ? revocation
+          : validEpoch(before?.epoch)
+            ? before.epoch
+            : validEpoch(before)
+              ? before
+              : null;
       if (
         before &&
         typeof before === 'object' &&
@@ -290,7 +297,8 @@ export function checkSession(session) {
     // A confirmed different/missing epoch revokes old work even while the next login is incomplete.
     // A failed read or mismatched credentials within the same epoch remains retryable.
     try {
-      const epoch = getLoginSessionEpoch();
+      const epoch =
+        session?.owner === 'guest' ? safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null : getLoginSessionEpoch();
       // A formerly absent epoch may have been filled by a format migration. Until
       // the full record is readable, keep that old binding blocked but retryable.
       if (session && epoch !== session.epoch && (session.epoch !== null || epoch === null)) return 'changed';

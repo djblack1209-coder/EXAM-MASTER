@@ -24,6 +24,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import { readPersistent, requirePersistent } from './persistence-read.js';
 import { readLocalHistory } from './learning/history-storage.js';
 import {
   addMistake as apiAddMistake,
@@ -460,6 +461,9 @@ function resolveKey(key, session) {
 // ==================== 防抖写入机制 ====================
 // 高频写入场景（如练习状态保存）使用防抖，减少 I/O 操作
 const _pendingWrites = new Map(); // key -> { value, timer }
+const _unreadBases = new Set();
+const storageBinding = (key, session) => JSON.stringify([key, session?.owner, session?.epoch]);
+const _pendingUpdates = new Map(); // [key, owner, epoch] -> ordered read/modify/write operations
 const DEBOUNCE_DELAY = 500; // 防抖延迟 500ms
 const isOwnedLearningKey = (key) => key === 'conversation_learning_v1' || key.startsWith('conversation_learning_v1_');
 const PRIVATE_QUIZ_KEYS = new Set([
@@ -538,7 +542,8 @@ class StorageService {
       this._finishRevocation();
       return null;
     }
-    if (!migrateLegacy || !snapshot.token || snapshot.session.owner === 'guest') return snapshot.session.epoch;
+    if (snapshot.session.owner === 'guest') return null;
+    if (!migrateLegacy || !snapshot.token) return snapshot.session.epoch;
     if (snapshot.enabled) return snapshot.session.epoch;
     // Only the never-enabled legacy format may be upgraded, without changing its epoch.
     return this._newSessionEpoch(snapshot.session.epoch || undefined, { ...snapshot.session, token: snapshot.token });
@@ -673,7 +678,8 @@ class StorageService {
         )
       );
       let written;
-      let commitRevocation = attempt.revocation;
+      const aliasWrites = new Map();
+      const commitRevocation = attempt.revocation;
       identityWriteDepth++;
       try {
         const record = {
@@ -683,10 +689,9 @@ class StorageService {
           token,
           userInfo,
           proof: sessionCredentialProof(userId, token),
-          revocation: newIdentityId()
+          revocation: attempt.revocation
         };
-        commitRevocation = record.revocation;
-        uni.setStorageSync(SESSION_REVOCATION_KEY, commitRevocation);
+        if (!current()) throw new Error('登录尝试已失效，请重试');
         uni.setStorageSync(SESSION_ENABLED_KEY, true);
         written = obfuscate(record);
         if (!commitIdentityRecord(record, attempt.id, written)) throw new Error('登录尝试已失效，请重试');
@@ -704,7 +709,8 @@ class StorageService {
           ['userInfo', userInfo],
           ['EXAM_TOKEN', token]
         ]) {
-          if (!current() || !this._saveValue(key, value, true)) throw new Error('登录尝试已失效，请重试');
+          if (!current() || !this._saveValue(key, value, true, undefined, aliasWrites))
+            throw new Error('登录尝试已失效，请重试');
         }
         if (!current()) throw new Error('登录尝试已失效，请重试');
         loginGuestSources.clear();
@@ -715,9 +721,11 @@ class StorageService {
       } catch (failure) {
         try {
           if (written && uni.getStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`) === written) {
-            if ((uni.getStorageSync(SESSION_REVOCATION_KEY) || null) !== commitRevocation)
+            if (!current()) {
               uni.removeStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`);
-            else {
+              for (const [name, value] of aliasWrites)
+                if (uni.getStorageSync(name) === value) uni.removeStorageSync(name);
+            } else {
               // Restore aliases only while the complete record still proves write ownership.
               // This also handles a cancelled first login with no previous complete record.
               for (const [name, value] of aliases) {
@@ -727,29 +735,16 @@ class StorageService {
               // Restore only our own failed commit while holding the same writer lock.
               if (previous) {
                 if (globalThis.navigator?.locks?.request) {
-                  const restored = deobfuscate(previous);
-                  const value =
-                    restored && typeof restored === 'object' && 'revocation' in restored
-                      ? obfuscate({ ...restored, revocation: commitRevocation })
-                      : previous;
-                  uni.setStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`, value);
+                  uni.setStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`, previous);
                 } else removeLoginEpoch();
               } else uni.removeStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`);
               if (enabled) uni.setStorageSync(SESSION_ENABLED_KEY, enabled);
               else uni.removeStorageSync(SESSION_ENABLED_KEY);
             }
           } else if (current() && uni.getStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`) === previous) {
-            // The complete-record write failed before touching it. Roll back only our
-            // fence, then verify ownership again; never rewrite the previous identity.
+            // The complete record was untouched. Only restore our enabled flag.
             if (enabled) uni.setStorageSync(SESSION_ENABLED_KEY, enabled);
             else uni.removeStorageSync(SESSION_ENABLED_KEY);
-            uni.setStorageSync(SESSION_REVOCATION_KEY, attempt.revocation);
-            if (
-              uni.getStorageSync(LOGIN_ATTEMPT_KEY) !== attempt.id ||
-              uni.getStorageSync(`_enc_${LOGIN_SESSION_EPOCH_KEY}`) !== previous ||
-              uni.getStorageSync(SESSION_REVOCATION_KEY) !== attempt.revocation
-            )
-              removeLoginEpoch();
           }
         } catch {
           /* A read failure cannot authorize cleanup of another writer. */
@@ -883,6 +878,7 @@ class StorageService {
       for (;;) {
         try {
           if (!current()) return this._mistakeContextChanged();
+          this._mistakeBookRows();
           break;
         } catch (error) {
           if (!isSessionUnavailable(error)) throw error;
@@ -1020,10 +1016,11 @@ class StorageService {
     }
   }
 
-  _saveValue(key, value, silent = false, session) {
+  _saveValue(key, value, silent = false, session, identityWrites) {
     try {
       if (session !== undefined) assertSession(session);
       else if (!isUnscopedKey(key)) session = assertSession(captureSession());
+      if (!isUnscopedKey(key) && _unreadBases.has(storageBinding(key, session))) return false;
       const rk = resolveKey(key, session);
       // ✅ B021: 敏感数据加密后存储
       if (isSensitiveKey(key)) {
@@ -1034,6 +1031,7 @@ class StorageService {
             (plain !== '' && plain !== null && plain !== undefined) ||
             uni.getStorageInfoSync?.().keys?.includes(rk) === true;
           return migrateIdentityKeys(hasPlain ? [rk, `${LOCAL_COMPAT_PREFIX}${rk}`] : [], () => {
+            identityWrites?.set(`_enc_${rk}`, encrypted);
             uni.setStorageSync(`_enc_${rk}`, encrypted);
             if (JSON.stringify(deobfuscate(uni.getStorageSync(`_enc_${rk}`))) !== JSON.stringify(value))
               throw new Error('加密存储未确认，旧副本保留');
@@ -1072,14 +1070,15 @@ class StorageService {
   saveDebounced(key, value, silent = true, session = captureSession(), delay = DEBOUNCE_DELAY) {
     if (!session || checkSession(session) === 'changed') return false;
     value = JSON.parse(JSON.stringify(value));
-    const existing = _pendingWrites.get(key);
+    const pendingKey = JSON.stringify([key, session.owner, session.epoch]);
+    const existing = _pendingWrites.get(pendingKey);
     if (existing) {
       clearTimeout(existing.timer);
     }
     const timer = setTimeout(() => {
-      this._flushPendingWrite(key);
+      this._flushPendingWrite(pendingKey);
     }, delay);
-    _pendingWrites.set(key, { value, timer, session, silent });
+    _pendingWrites.set(pendingKey, { key, value, timer, session, silent });
     return true;
   }
 
@@ -1087,25 +1086,86 @@ class StorageService {
    * 立即刷新所有待写入的防抖数据（页面卸载时调用）
    */
   flushPendingWrites(key) {
-    if (key !== undefined) return this._flushPendingWrite(key, true);
-    for (const name of _pendingWrites.keys()) this._flushPendingWrite(name, true);
+    let result;
+    for (const [name, pending] of _pendingWrites)
+      if (key === undefined || pending.key === key) {
+        const saved = this._flushPendingWrite(name, true);
+        result = result === false ? false : saved;
+      }
+    for (const [id, pending] of _pendingUpdates) if (key === undefined || pending.key === key) this._flushUpdate(id);
+    return result;
   }
 
-  cancelPendingWrite(key, session) {
-    const pending = _pendingWrites.get(key);
-    if (pending && pending.session.owner === session?.owner && pending.session.epoch === session?.epoch) {
-      clearTimeout(pending.timer);
-      _pendingWrites.delete(key);
+  update(key, fallback, apply, session = captureSession()) {
+    if (!session || checkSession(session) === 'changed') return false;
+    const id = JSON.stringify([key, session.owner, session.epoch]);
+    const pending = _pendingUpdates.get(id) || { key, fallback, session, operations: [] };
+    pending.operations.push(apply);
+    _pendingUpdates.set(id, pending);
+    return this._flushUpdate(id);
+  }
+
+  _flushUpdate(id) {
+    const pending = _pendingUpdates.get(id);
+    if (!pending) return true;
+    const status = checkSession(pending.session);
+    if (status === 'changed') {
+      _pendingUpdates.delete(id);
+      return false;
+    }
+    if (status !== 'current') return false;
+    try {
+      const { key, fallback, session, operations } = pending;
+      let value = JSON.parse(JSON.stringify(this.get(key, fallback, { session, migrateLegacy: false })));
+      if (
+        (Array.isArray(fallback) && !Array.isArray(value)) ||
+        (fallback &&
+          !Array.isArray(fallback) &&
+          typeof fallback === 'object' &&
+          (!value || typeof value !== 'object' || Array.isArray(value)))
+      )
+        throw sessionUnavailable();
+      if (pending.written && JSON.stringify(value) === pending.written.value) {
+        operations.splice(0, pending.written.count);
+        pending.written = null;
+      }
+      if (!operations.length) {
+        _pendingUpdates.delete(id);
+        return true;
+      }
+      for (const apply of operations) value = apply(value);
+      pending.written = { value: JSON.stringify(value), count: operations.length };
+      if (!this.save(key, value, true, session)) return false;
+      if (JSON.stringify(this.get(key, null, { session, migrateLegacy: false })) !== JSON.stringify(value))
+        return false;
+      _pendingUpdates.delete(id);
+      return true;
+    } catch (error) {
+      if (!isSessionUnavailable(error)) {
+        _pendingUpdates.delete(id);
+        throw error;
+      }
+      return false;
     }
   }
 
-  _flushPendingWrite(key, silent) {
-    const pending = _pendingWrites.get(key);
+  cancelPendingWrite(key, session) {
+    const id = JSON.stringify([key, session?.owner, session?.epoch]);
+    const pending = _pendingWrites.get(id);
+    if (pending) {
+      clearTimeout(pending.timer);
+      _pendingWrites.delete(id);
+    }
+  }
+
+  _flushPendingWrite(id, silent) {
+    const pending = _pendingWrites.get(id);
+    const key = pending?.key;
     if (!pending) return;
     clearTimeout(pending.timer);
     const status = checkSession(pending.session);
     if (status === 'changed') {
-      _pendingWrites.delete(key);
+      _pendingWrites.delete(id);
       return false;
     }
     if (status !== 'current') return false;
@@ -1113,7 +1173,7 @@ class StorageService {
       if (this.save(key, pending.value, silent ?? pending.silent, pending.session) !== true) return false;
       const saved = this.get(key, null, { migrateLegacy: false, throwOnError: true, session: pending.session });
       if (JSON.stringify(saved) !== JSON.stringify(pending.value)) return false;
-      if (_pendingWrites.get(key) === pending) _pendingWrites.delete(key);
+      if (_pendingWrites.get(id) === pending) _pendingWrites.delete(id);
       return true;
     } catch {
       return false;
@@ -1126,7 +1186,24 @@ class StorageService {
    * @param {any} defaultValue - 如果不存在时返回的默认值
    * @returns {any} 存储的值或默认值
    */
-  get(key, defaultValue = null, { migrateLegacy = true, throwOnError = false, session } = {}) {
+  read(key, defaultValue = null, options = {}) {
+    const session = options.session === undefined && !isUnscopedKey(key) ? captureSession() : options.session;
+    const result = readPersistent(() => this._readValue(key, defaultValue, { ...options, session }));
+    if (session && !isUnscopedKey(key)) {
+      const id = storageBinding(key, session);
+      if (result.status === 'ready') _unreadBases.delete(id);
+      else _unreadBases.add(id);
+    }
+    return result;
+  }
+
+  get(key, defaultValue = null, options = {}) {
+    const result = this.read(key, defaultValue, options);
+    if (result.status !== 'ready') throw result.error;
+    return result.value;
+  }
+
+  _readValue(key, defaultValue = null, { migrateLegacy = true, session } = {}) {
     try {
       if (session === undefined && !isUnscopedKey(key)) session = captureSession();
       if (session !== undefined) assertSession(session);
@@ -1140,7 +1217,7 @@ class StorageService {
       const rk = resolveKey(key, session);
       const read = (name) => {
         const runtime = getRuntimeUni();
-        const value = throwOnError ? readStorageStrict(runtime, name) : uni.getStorageSync(name);
+        const value = readStorageStrict(runtime, name, true, { allowEmpty: typeof defaultValue === 'string' });
         if (session) assertSession(session);
         return value;
       };
@@ -1203,9 +1280,7 @@ class StorageService {
       return value;
     } catch (error) {
       logger.error('[StorageService] 读取失败: [省略]', error);
-      if (throwOnError || error.code === 'SESSION_UNAVAILABLE' || (session && error.code === 'CONTEXT_CHANGED'))
-        throw error;
-      return defaultValue;
+      throw error;
     }
   }
 
@@ -1374,7 +1449,7 @@ class StorageService {
           continue;
         }
         const runtime = getRuntimeUni();
-        const existing = runtime.getStorageSync(target);
+        const existing = readStorageStrict(runtime, target, true, { allowEmpty: true });
         const exists =
           (existing !== '' && existing !== undefined && existing !== null) ||
           runtime.getStorageInfoSync().keys.includes(target);
@@ -1412,7 +1487,7 @@ class StorageService {
   clearUserData(uid, { preserveLearning = false } = {}) {
     const userId = uid || getUserId();
     if (!userId) return 0;
-    if (preserveLearning && userId === getUserId()) this.flushPendingWrites();
+    if (preserveLearning) this.flushPendingWrites();
     clearPendingWrites();
 
     let cleared = 0;
@@ -1438,16 +1513,21 @@ class StorageService {
     } catch (error) {
       logger.error('[StorageService] 清理用户数据失败:', error);
     } finally {
-      if (cleared > 0 && userId === getUserId()) notifyIdentityChange({ type: 'records' });
+      try {
+        if (cleared > 0 && userId === getUserId()) notifyIdentityChange({ type: 'records' });
+      } catch {
+        /* Cache cleanup cannot interrupt revocation. */
+      }
     }
     return cleared;
   }
 
   // 只用于用户明确确认的访客迁移，不开放任意账户的原始键读取。
   getGuestLearningSnapshot() {
-    const value = uni.getStorageSync('conversation_learning_v1');
+    const read = (key) => requirePersistent(() => readStorageStrict(getRuntimeUni(), key));
+    const value = read('conversation_learning_v1');
     return value && typeof value === 'object'
-      ? JSON.parse(JSON.stringify(readLocalHistory(value, (key) => uni.getStorageSync(key), 'guest')))
+      ? JSON.parse(JSON.stringify(readLocalHistory(value, read, 'guest')))
       : null;
   }
 
@@ -1932,6 +2012,7 @@ class StorageService {
         source: 'local'
       };
     } catch (error) {
+      if (isSessionUnavailable(error)) throw error;
       logger.error('[StorageService] 本地获取错题失败:', error);
       return {
         list: [],

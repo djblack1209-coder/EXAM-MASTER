@@ -389,11 +389,12 @@ async function proceed(method) {
 }
 async function run(action, accept = false) {
   if (!consent() || busy.value) return;
-  const valid = current();
+  let valid = current();
   busy.value = true;
   error.value = '';
   try {
     const attempt = accept ? storageService.beginLoginAttempt() : null;
+    valid = current();
     const response = await action();
     if (!valid() || !response) return;
     if (response.code !== 0) {

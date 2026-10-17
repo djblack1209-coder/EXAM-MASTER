@@ -35,6 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isLogin = ref(false);
   const sessionStatus = ref('current');
   let authLifecycle = 0;
+  let boundSession = captureSession();
 
   // 需要 userInfo 引用来判断登录状态，由 facade 注入
   let _userInfoRef = null;
@@ -60,6 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
       isLogin.value = false;
       return;
     }
+    boundSession = snapshot.session;
     token.value = snapshot.token;
     isLogin.value = true;
   });
@@ -184,17 +186,23 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = () => {
     const cleanupLifecycle = ++authLifecycle;
     const pinia = getActivePinia();
-    // 清理会话缓存，学习事实留在账户隔离键中；删除由用户另行确认。
-    storageService.clearUserData(undefined, { preserveLearning: true });
+    if (!boundSession || checkSession(boundSession) === 'changed') {
+      const message = !boundSession ? '登录状态暂不可读，请重试退出' : '登录会话已变化，请重新确认退出';
+      toast.info(message);
+      return { success: false, code: !boundSession ? 'SESSION_UNAVAILABLE' : 'CONTEXT_CHANGED', message };
+    }
+    // Revoke first; account-cache reads and cleanup cannot authorize or block logout.
+    storageService._clearRevokedCredentials();
+    if (boundSession?.owner && boundSession.owner !== 'guest') {
+      try {
+        storageService.clearUserData(boundSession.owner, { preserveLearning: true });
+      } catch {
+        /* already revoked */
+      }
+    }
     token.value = '';
     isLogin.value = false;
 
-    // 清除缓存
-    storageService.remove(APP_CONFIG.cacheKeys.token, true);
-    storageService.remove(APP_CONFIG.cacheKeys.userInfo, true);
-    storageService.remove('EXAM_USER_ID');
-    storageService.remove('EXAM_TOKEN');
-    storageService.remove('userInfo');
     tokenRefreshPlugin.stopPreCheckTimer();
 
     // 通知所有子 store 重置
@@ -234,6 +242,7 @@ export const useAuthStore = defineStore('auth', () => {
       return false;
     }
     sessionStatus.value = 'current';
+    boundSession = session;
     const snapshot = sessionForRequest(session);
     const cachedUserInfo = storageService.get(APP_CONFIG.cacheKeys.userInfo, null, { session });
     const cachedUserId = session.owner === 'guest' ? null : session.owner;
