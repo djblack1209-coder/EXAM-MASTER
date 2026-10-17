@@ -1,4 +1,4 @@
-import { captureSession, checkSession, assertSession } from '@/services/auth-storage.js';
+import { captureSession, checkSession, assertSession, isSessionUnavailable } from '@/services/auth-storage.js';
 /**
  * 集中式 FSRS 间隔重复调度服务 (Centralized FSRS Spaced Repetition Service)
  *
@@ -163,8 +163,10 @@ export function restoreUserParams() {
     if (saved?.w?.length) {
       loadUserParams(saved);
     }
+    return true;
   } catch (e) {
     logger.warn('[FSRSService] 恢复用户参数失败', e);
+    return !isSessionUnavailable(e);
   }
 }
 

@@ -5,6 +5,7 @@
  * 所有声音都可通过 quiz_sound_enabled 关闭，且带节流，避免连续答题时堆叠。
  */
 
+import { captureSession, checkSession } from '@/services/auth-storage.js';
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 
@@ -14,15 +15,19 @@ export const STORAGE_KEY = 'quiz_sound_enabled';
 let _soundEnabled = true;
 const _lastPlayedAt = new Map();
 
-// 启动时从存储读取偏好（已设置过的用户尊重其选择）
-try {
-  const stored = uni.getStorageSync(STORAGE_KEY);
-  if (stored === false) {
-    _soundEnabled = false; // 只有明确关闭过才禁用
+let soundPreferenceReady = false;
+const hapticTimers = new Set();
+function restoreSoundPreference() {
+  if (soundPreferenceReady) return true;
+  try {
+    _soundEnabled = uni.getStorageSync(STORAGE_KEY) !== false;
+    soundPreferenceReady = true;
+    return true;
+  } catch {
+    return false;
   }
-} catch (_e) {
-  _soundEnabled = true;
 }
+restoreSoundPreference();
 
 // ==================== Web Audio API 检测 ====================
 
@@ -95,7 +100,7 @@ const AUDIO_EVENTS = {
 };
 
 function shouldPlay(eventName) {
-  if (!_soundEnabled) return false;
+  if (!restoreSoundPreference() || !_soundEnabled) return false;
   const config = AUDIO_EVENTS[eventName] || { throttle: 80 };
   const now = Date.now();
   const last = _lastPlayedAt.get(eventName) || 0;
@@ -147,8 +152,13 @@ function vibrateFallback(pattern = 'light') {
 }
 
 function vibratePattern(count, interval = 100) {
+  const session = captureSession();
   for (let i = 0; i < count; i++) {
-    setTimeout(() => vibrateFallback('light'), i * interval);
+    const timer = setTimeout(() => {
+      hapticTimers.delete(timer);
+      if (isSoundEnabled() && checkSession(session) === 'current') vibrateFallback('light');
+    }, i * interval);
+    hapticTimers.add(timer);
   }
 }
 
@@ -313,6 +323,7 @@ export function setSoundEnabled(enabled) {
   _soundEnabled = !!enabled;
   try {
     uni.setStorageSync(STORAGE_KEY, _soundEnabled);
+    soundPreferenceReady = true;
   } catch (_e) {
     logger.warn('[QuizSound] 保存音效设置失败:', _e);
   }
@@ -323,13 +334,15 @@ export function setSoundEnabled(enabled) {
  * @returns {boolean}
  */
 export function isSoundEnabled() {
-  return _soundEnabled;
+  return restoreSoundPreference() && _soundEnabled;
 }
 
 /**
  * 销毁音频资源（页面卸载时调用）
  */
 export function destroySoundResources() {
+  hapticTimers.forEach(clearTimeout);
+  hapticTimers.clear();
   _lastPlayedAt.clear();
 
   if (_audioCtx && _audioCtx.state !== 'closed') {

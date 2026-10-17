@@ -232,9 +232,11 @@ it.each(['flipFlashcard', 'rateFlashcardAndNext'])(
 );
 it('MIGRATE-16-02: sent queue survives unread acknowledgement and remount without resending', async () => {
   const queue = new OfflineQueue(),
-    send = vi.fn(async () => ({ code: 0, success: true }));
+    send = vi.fn(async () => {
+      blocked = 'EXAM_OFFLINE_QUEUE';
+      return { code: 0, success: true };
+    });
   queue.enqueue({ requestFn: send, requestData: { answer: 'once' } });
-  blocked = 'EXAM_OFFLINE_QUEUE';
   const first = queue.processQueue();
   await vi.runAllTimersAsync();
   await first;
@@ -327,11 +329,15 @@ it.each(['flipFlashcard', 'rateFlashcardAndNext'])(
 );
 it('MIGRATE-16-02: a new deduped action is not mistaken for an already sent receipt', async () => {
   const queue = new OfflineQueue(),
-    send = vi.fn(async () => ({ success: true }));
+    send = vi.fn(async () => {
+      blocked = 'EXAM_OFFLINE_QUEUE';
+      return { success: true };
+    });
   const old = queue.enqueue({ requestFn: send, requestData: { value: 1 }, dedupeKey: 'same' });
-  blocked = 'EXAM_OFFLINE_QUEUE';
   await queue.processQueue();
+  expect(send).toHaveBeenCalledOnce();
   blocked = null;
+  send.mockImplementation(async () => ({ success: true }));
   const next = queue.enqueue({ requestFn: send, requestData: { value: 2 }, dedupeKey: 'same' });
   expect(next).not.toBe(old);
   const pending = queue.processQueue();

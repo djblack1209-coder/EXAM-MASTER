@@ -25,9 +25,45 @@ async function proxyAI(_action, _data) {
 
 export const aiGenerationMixin = {
   data() {
-    return { generationSession: captureSession() };
+    return { generationSession: captureSession(), generationRetryTimer: null };
+  },
+  beforeUnmount() {
+    this.stopGenerationTimers?.();
+  },
+  onUnload() {
+    this.stopGenerationTimers?.();
   },
   methods: {
+    stopGenerationTimers() {
+      for (const key of ['soupTimer', 'progressTimer']) {
+        clearInterval(this[key]);
+        this[key] = null;
+      }
+      clearTimeout(this.generationRetryTimer);
+      this.generationRetryTimer = null;
+    },
+    _startGenerationInterval(key, callback, delay) {
+      clearInterval(this[key]);
+      const session = this.generationSession;
+      const timer = setInterval(() => {
+        const status = checkSession(session);
+        if (this[key] !== timer || this.generationSession !== session || status === 'changed') {
+          clearInterval(timer);
+          if (this[key] === timer) this[key] = null;
+          return;
+        }
+        if (status !== 'current') return;
+        try {
+          callback();
+        } catch (error) {
+          if (!isSessionUnavailable(error)) {
+            clearInterval(timer);
+            if (this[key] === timer) this[key] = null;
+          }
+        }
+      }, delay);
+      this[key] = timer;
+    },
     // ==================== 文件导入 ====================
     chooseImportSource() {
       safeNavigateTo('/pages/practice-sub/question-bank');
@@ -268,6 +304,7 @@ export const aiGenerationMixin = {
 
     // ==================== 智能题目生成 ====================
     startAI() {
+      this.stopGenerationTimers();
       this.generationSession = captureSession();
       assertSession(this.generationSession);
       if (!this.fullFileContent && !this.fileName) {
@@ -344,7 +381,9 @@ export const aiGenerationMixin = {
       } finally {
         if (this.generationSession === session) this.isRequestInFlight = false;
         if (this.generationSession === session && this.isLooping && !this.isPaused) {
-          setTimeout(() => {
+          clearTimeout(this.generationRetryTimer);
+          this.generationRetryTimer = setTimeout(() => {
+            this.generationRetryTimer = null;
             if (this.generationSession === session && this.isLooping && !this.isPaused) {
               this.generateNextBatch();
             }
@@ -463,7 +502,7 @@ export const aiGenerationMixin = {
       this.isLooping = false;
       this.isPaused = false;
       this.showMask = false;
-      clearInterval(this.soupTimer);
+      this.stopGenerationTimers();
       this.refreshBankStatus();
       this.updateUploadRecordStatus('completed');
       toast.success('智能出题完毕');
@@ -472,13 +511,14 @@ export const aiGenerationMixin = {
     startSoupRotation() {
       let i = 0;
       this.currentSoup = this.soupList[0];
-      if (this.soupTimer) {
-        clearInterval(this.soupTimer);
-      }
-      this.soupTimer = setInterval(() => {
-        i = (i + 1) % this.soupList.length;
-        this.currentSoup = this.soupList[i];
-      }, 2500);
+      this._startGenerationInterval(
+        'soupTimer',
+        () => {
+          i = (i + 1) % this.soupList.length;
+          this.currentSoup = this.soupList[i];
+        },
+        2500
+      );
     },
 
     clearAll() {
@@ -487,6 +527,7 @@ export const aiGenerationMixin = {
     },
 
     pauseGeneration() {
+      this.stopGenerationTimers();
       if (!this.isLooping) return;
       this.isPaused = true;
       this.isLooping = false;
@@ -528,12 +569,7 @@ export const aiGenerationMixin = {
     },
 
     startProgressTimer() {
-      if (this.progressTimer) {
-        clearInterval(this.progressTimer);
-      }
-      this.progressTimer = setInterval(() => {
-        this.updateGenerationProgress();
-      }, 1000);
+      this._startGenerationInterval('progressTimer', () => this.updateGenerationProgress(), 1000);
     },
 
     updateGenerationProgress() {

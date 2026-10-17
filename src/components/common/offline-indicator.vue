@@ -326,6 +326,8 @@ async function handleSync() {
 
     if (result.success) {
       toast.success(`同步完成：${result.processed} 条`);
+    } else {
+      toast.info('未同步，稍后重试');
     }
   } catch (error) {
     logger.error('[OfflineIndicator] 同步失败:', error);

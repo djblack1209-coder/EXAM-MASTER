@@ -66,7 +66,9 @@ describe('lightweight i18n', () => {
     uni.getSystemInfoSync.mockImplementation(() => {
       throw Error('unavailable');
     });
-    expect(initI18n()).toBe('zh-CN');
+    expect(initI18n()).toBe(false);
+    uni.getStorageSync.mockReturnValue('en');
+    expect(initI18n()).toBe('en');
   });
   it('refreshes existing reactive text and current navigation title without remounting', async () => {
     const label = computed(() => t('nav.practice'));

@@ -110,6 +110,13 @@ const STORAGE_KEY = 'EXAM_OFFLINE_QUEUE';
 // A successful remote response is not a local dequeue receipt. Retain it across queue instances
 // in this runtime until expiry; retry acknowledgement only, never resend the same item.
 const sentReceipts = new Map();
+const sendingIds = new Set();
+export const QUEUE_STATE = Object.freeze({
+  PENDING: 'pending',
+  SENDING: 'sending',
+  CONFIRMED: 'confirmed',
+  RETRY: 'retry'
+});
 const MAX_QUEUE_SIZE = 100;
 const MAX_AGE = 24 * 60 * 60 * 1000; // 24小时过期
 
@@ -175,15 +182,26 @@ class OfflineQueue {
       if (stored && Array.isArray(stored)) {
         // 过滤过期的请求
         const now = Date.now();
-        const restored = stored.filter((item) => {
-          return (
-            now - item.timestamp < MAX_AGE &&
-            typeof item.session?.owner === 'string' &&
-            !!item.session.owner &&
-            (item.session.epoch === null || /^[a-zA-Z0-9_-]{8,120}$/.test(item.session.epoch || '')) &&
-            checkSession(item.session) !== 'changed'
-          );
-        });
+        const restored = stored
+          .filter((item) => {
+            return (
+              now - item.timestamp < MAX_AGE &&
+              typeof item.session?.owner === 'string' &&
+              !!item.session.owner &&
+              (item.session.epoch === null || /^[a-zA-Z0-9_-]{8,120}$/.test(item.session.epoch || '')) &&
+              checkSession(item.session) !== 'changed'
+            );
+          })
+          .map((item) => ({
+            ...item,
+            state: sentReceipts.has(item.id)
+              ? QUEUE_STATE.CONFIRMED
+              : item.state === QUEUE_STATE.SENDING && !sendingIds.has(item.id)
+                ? QUEUE_STATE.RETRY
+                : Object.values(QUEUE_STATE).includes(item.state)
+                  ? item.state
+                  : QUEUE_STATE.RETRY
+          }));
 
         const liveIds = new Set(this.queue.map((item) => item.id));
         this.queue = [...restored.filter((item) => !liveIds.has(item.id)), ...this.queue].sort(
@@ -207,6 +225,8 @@ class OfflineQueue {
    */
   _saveToStorage(queue) {
     if (!this._storageLoaded) {
+      // An explicit snapshot computed before recovery cannot represent unread tasks.
+      if (queue) return false;
       this._loadFromStorage();
       if (!this._storageLoaded) return false;
     }
@@ -220,6 +240,7 @@ class OfflineQueue {
         dedupeKey: item.dedupeKey,
         timestamp: item.timestamp,
         retryCount: item.retryCount,
+        state: item.state,
         requestData: item.requestData, // 请求数据（可序列化）
         session: item.session,
         metadata: item.metadata
@@ -313,10 +334,13 @@ class OfflineQueue {
     // 检查队列大小
     if (this.queue.length >= MAX_QUEUE_SIZE) {
       // 移除最旧的低优先级请求
-      const lowPriorityIndex = this.queue.findIndex((item) => item.priority === 'low' || item.priority === 'normal');
+      const lowPriorityIndex = this.queue.findIndex(
+        (item) => item.state === QUEUE_STATE.PENDING && (item.priority === 'low' || item.priority === 'normal')
+      );
 
       if (lowPriorityIndex !== -1) {
-        this.queue.splice(lowPriorityIndex, 1);
+        const [removed] = this.queue.splice(lowPriorityIndex, 1);
+        this.requestFnMap.delete(removed.id);
         logger.log('[OfflineQueue] 队列已满，移除旧请求: [省略]');
       } else {
         logger.warn('[OfflineQueue] 队列已满，无法添加新请求');
@@ -328,7 +352,7 @@ class OfflineQueue {
     if (dedupeKey) {
       const existingIndex = this.queue.findIndex(
         (item) =>
-          !sentReceipts.has(item.id) &&
+          item.state === QUEUE_STATE.PENDING &&
           item.dedupeKey === dedupeKey &&
           item.session?.owner === session.owner &&
           item.session?.epoch === session.epoch
@@ -336,7 +360,7 @@ class OfflineQueue {
       if (existingIndex !== -1) {
         // 更新现有请求
         const existing = this.queue[existingIndex];
-        existing.requestData = requestData;
+        existing.requestData = requestData === undefined ? undefined : JSON.parse(JSON.stringify(requestData));
         existing.timestamp = Date.now();
         existing.metadata = { ...existing.metadata, ...metadata };
 
@@ -359,9 +383,10 @@ class OfflineQueue {
       dedupeKey,
       timestamp: Date.now(),
       retryCount: 0,
+      state: QUEUE_STATE.PENDING,
       session,
-      requestData,
-      metadata
+      requestData: requestData === undefined ? undefined : JSON.parse(JSON.stringify(requestData)),
+      metadata: JSON.parse(JSON.stringify(metadata))
     };
 
     // 保存请求函数引用（不可序列化）
@@ -400,6 +425,10 @@ class OfflineQueue {
    * @returns {boolean} 是否成功移除
    */
   dequeue(id) {
+    // Cancel only a task the caller's queue has actually loaded; recovery may add unknown ids.
+    if (!this.queue.some((item) => item.id === id) || sendingIds.has(id)) return false;
+    if (!this._storageLoaded) this._loadFromStorage();
+    if (!this._storageLoaded) return false;
     const index = this.queue.findIndex((item) => item.id === id);
     if (index !== -1) {
       const next = this.queue.filter((item) => item.id !== id);
@@ -463,17 +492,26 @@ class OfflineQueue {
         // 检查网络状态
         if (!this.isOnline) {
           logger.log('[OfflineQueue] 网络断开，暂停处理');
+          results.reason = 'offline';
           break;
         }
 
+        if (!this.queue.some((current) => current.id === item.id)) continue;
+        const previousState = item.state;
         try {
           const status = checkSession(item.session);
-          if (status === 'unavailable') break;
+          if (status === 'unavailable') {
+            results.reason = 'SESSION_UNAVAILABLE';
+            break;
+          }
           if (status !== 'current') {
-            this.dequeue(item.id);
+            if (!this.dequeue(item.id)) {
+              results.reason = 'storage_unavailable';
+              break;
+            }
             continue;
           }
-          if (sentReceipts.has(item.id)) {
+          if (sentReceipts.has(item.id) || item.state === QUEUE_STATE.CONFIRMED) {
             if (!this.dequeue(item.id)) {
               results.reason = 'storage_unavailable';
               break;
@@ -488,7 +526,7 @@ class OfflineQueue {
           if (!requestFn && item.requestData && this._rebuilder) {
             try {
               logger.log('[OfflineQueue] 🔧 尝试从 requestData 重建请求: [省略]');
-              requestFn = () => this._rebuilder(item.requestData, { session: item.session });
+              requestFn = () => this._rebuilder(item.requestData, { session: item.session, taskId: item.id });
             } catch (rebuildErr) {
               logger.log('[OfflineQueue] ⚠️ 请求重建失败: [省略]', rebuildErr);
             }
@@ -497,8 +535,10 @@ class OfflineQueue {
           if (!requestFn) {
             // 无法执行也无法重建，跳过
             logger.log('[OfflineQueue] ⚠️ 请求 [省略] 无法执行（函数引用丢失且无法重建），跳过');
-            this.dequeue(item.id);
+            item.state = QUEUE_STATE.RETRY;
+            results.reason = 'request_unavailable';
             results.failed++;
+            this._saveToStorage();
             continue;
           }
 
@@ -506,8 +546,24 @@ class OfflineQueue {
 
           // 执行请求
           assertSession(item.session);
-          const response = await requestFn({ session: item.session });
-          if (isSessionUnavailable(response)) break;
+          if (sendingIds.has(item.id)) {
+            results.reason = 'already_processing';
+            break;
+          }
+          item.state = QUEUE_STATE.SENDING;
+          if (!this._saveToStorage()) {
+            item.state = previousState;
+            results.reason = 'storage_unavailable';
+            break;
+          }
+          sendingIds.add(item.id);
+          const response = await requestFn({ session: item.session, taskId: item.id });
+          if (isSessionUnavailable(response)) {
+            item.state = previousState;
+            results.reason = 'SESSION_UNAVAILABLE';
+            this._saveToStorage();
+            break;
+          }
           if (
             response?.success === false ||
             response?.ok === false ||
@@ -515,7 +571,13 @@ class OfflineQueue {
           )
             throw new Error('请求未确认成功');
           sentReceipts.set(item.id, Date.now());
+          item.state = QUEUE_STATE.CONFIRMED;
+          sendingIds.delete(item.id);
           assertSession(item.session);
+          if (!this._saveToStorage()) {
+            results.reason = 'storage_unavailable';
+            break;
+          }
 
           // Only local persistence confirms dequeue; retain body and receipt on failure.
           if (!this.dequeue(item.id)) {
@@ -527,28 +589,34 @@ class OfflineQueue {
           logger.log('[OfflineQueue] ✅ 请求成功: [省略]');
         } catch (error) {
           const status = checkSession(item.session);
-          if (status === 'unavailable' || isSessionUnavailable(error)) break;
+          if (status === 'unavailable' || isSessionUnavailable(error)) {
+            if (!sentReceipts.has(item.id)) item.state = previousState;
+            results.reason = 'SESSION_UNAVAILABLE';
+            this._saveToStorage();
+            break;
+          }
+          sendingIds.delete(item.id);
           if (status === 'changed') {
-            this.dequeue(item.id);
+            if (!this.dequeue(item.id)) {
+              results.reason = 'storage_unavailable';
+              break;
+            }
             continue;
           }
           logger.error('[OfflineQueue] ❌ 请求失败: [省略]', error);
 
           item.retryCount++;
+          item.state = QUEUE_STATE.RETRY;
+          results.reason = 'request_failed';
           results.errors.push({
             id: item.id,
             error: error.message || error
           });
 
-          // 超过重试次数，移除
-          if (item.retryCount >= 3) {
-            logger.log('[OfflineQueue] 🗑️ 请求超过重试次数，移除: [省略]');
-            this.dequeue(item.id);
-            results.failed++;
-          } else {
-            // 更新重试次数
-            this._saveToStorage();
-          }
+          results.failed++;
+          this._saveToStorage();
+        } finally {
+          sendingIds.delete(item.id);
         }
 
         // 请求间隔，避免过快
@@ -575,15 +643,15 @@ class OfflineQueue {
    * 清空队列
    */
   clear() {
-    this.queue = [];
-    this.requestFnMap.clear();
-    this._saveToStorage();
+    const ids = this.queue.map((item) => item.id);
+    const cleared = ids.map((id) => this.dequeue(id)).every(Boolean);
 
     logger.log('[OfflineQueue] 队列已清空');
     this._notifyListeners({
       type: 'clear',
-      queueLength: 0
+      queueLength: this.queue.length
     });
+    return cleared;
   }
 
   /**
@@ -600,6 +668,7 @@ class OfflineQueue {
         priority: item.priority,
         timestamp: item.timestamp,
         retryCount: item.retryCount,
+        state: item.state,
         age: Date.now() - item.timestamp
       }))
     };

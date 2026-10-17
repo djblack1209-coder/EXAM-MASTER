@@ -1,4 +1,4 @@
-import { captureSession, checkSession } from '@/services/auth-storage.js';
+import { checkSession, readSessionSnapshot, isSessionUnavailable } from '@/services/auth-storage.js';
 /**
  * 事件总线分析系统 - 检查点 5.1
  * 核心转化路径监控
@@ -82,50 +82,38 @@ class AnalyticsService {
    * 初始化分析服务
    */
   init(options = {}) {
-    if (this.isInitialized) return;
-    // Registration/age screening must not create an anonymous analytics profile.
-    // Existing signed-in accounts retain their established analytics flow.
-    if (!storageService.get('EXAM_USER_ID', null)) return;
-
-    this.session = captureSession();
-    if (!this.session) return;
-    this.stopIdentity?.();
-    this.stopIdentity = storageService.onIdentityChange(() => this._checkSession());
-
-    // 合并配置
+    if (this.isInitialized && this._checkSession()) return true;
     this.config = { ...this.config, ...options };
-
-    // 生成或恢复会话ID
-    this.sessionId = this._getOrCreateSession();
-
-    // 恢复用户ID
-    this.userId = storageService.get('EXAM_USER_ID', null);
-
-    // 恢复未上报的事件
-    this._restoreEventQueue();
-
-    // 启动定时上报
-    this._startUploadTimer();
-
-    // 记录会话开始
-    this.track('session_start', {
-      sessionId: this.sessionId,
-      timestamp: Date.now()
-    });
-
-    // 检查留存
-    this._checkRetention();
-
-    this.isInitialized = true;
-    logger.log('[Analytics] 初始化完成，会话ID:', this.sessionId);
+    try {
+      // Read the durable queue before creating or writing any analytics state.
+      if (this.session) this._checkSession();
+      const snapshot = readSessionSnapshot();
+      if (snapshot.status === 'unavailable') return false;
+      const session = snapshot.session;
+      if (snapshot.status !== 'current' || session.owner === 'guest') return true;
+      this.session = session;
+      this._restoreEventQueue();
+      this.sessionId = this._getOrCreateSession();
+      this.userId = session.owner;
+      this.stopIdentity?.();
+      this.stopIdentity = storageService.onIdentityChange(() => this._checkSession());
+      this._checkRetention();
+      this.isInitialized = true;
+      this._startUploadTimer();
+      this.track('session_start', { sessionId: this.sessionId, timestamp: Date.now() });
+      return true;
+    } catch (error) {
+      if (!isSessionUnavailable(error)) logger.warn('[Analytics] 初始化待重试');
+      return false;
+    }
   }
 
   _checkSession() {
-    if (!this.session && storageService.get('EXAM_USER_ID', null)) {
-      const session = captureSession();
-      if (session && session.owner !== 'guest') {
-        this.session = session;
-        this.userId = session.owner;
+    if (!this.session) {
+      const snapshot = readSessionSnapshot();
+      if (snapshot.status === 'current' && snapshot.session.owner !== 'guest') {
+        this.session = snapshot.session;
+        this.userId = snapshot.session.owner;
       }
     }
     if (!this.session) return false;
@@ -414,7 +402,8 @@ class AnalyticsService {
   _restoreEventQueue() {
     try {
       const savedEvents = storageService.get(STORAGE_KEYS.EVENTS, []);
-      this.eventQueue = savedEvents;
+      const ids = new Set(savedEvents.map((item) => item.id));
+      this.eventQueue = [...savedEvents, ...this.eventQueue.filter((item) => !ids.has(item.id))];
     } catch (e) {
       logger.error('[Analytics] 恢复事件队列失败:', e);
       throw e;
@@ -429,7 +418,9 @@ class AnalyticsService {
       clearInterval(this.uploadTimer);
     }
 
+    const session = this.session;
     this.uploadTimer = setInterval(() => {
+      if (this.session !== session) return;
       this._uploadBatch();
     }, this.config.uploadInterval);
   }

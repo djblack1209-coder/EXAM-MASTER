@@ -194,14 +194,14 @@ describe('OfflineQueue', () => {
       expect(queue.queue[0].retryCount).toBe(1);
     });
 
-    it('请求失败 + 重试次数 >= 3 → 移除', async () => {
+    it('请求失败 + 重试次数 >= 3 → 保留失败待重试', async () => {
       const fn = vi.fn(() => Promise.reject(new Error('fail')));
       queue.enqueue({ requestFn: fn });
       queue.queue[0].retryCount = 2; // 已重试 2 次
 
       await queue.processQueue();
 
-      expect(queue.queue.length).toBe(0);
+      expect(queue.queue).toEqual([expect.objectContaining({ state: 'retry', retryCount: 3 })]);
     });
 
     it('无 requestFn + 有 rebuilder → 使用 rebuilder', async () => {
@@ -218,16 +218,19 @@ describe('OfflineQueue', () => {
 
       await queue.processQueue();
 
-      expect(rebuilder).toHaveBeenCalledWith({ url: '/api/test', method: 'POST' }, { session: captureSession() });
+      expect(rebuilder).toHaveBeenCalledWith(
+        { url: '/api/test', method: 'POST' },
+        { session: captureSession(), taskId: expect.any(String) }
+      );
     });
 
-    it('无 requestFn + 无 rebuilder → 跳过并移除', async () => {
+    it('无 requestFn + 无 rebuilder → 保留失败待重试', async () => {
       const id = queue.enqueue({ requestData: { url: '/test' } });
       queue.requestFnMap.delete(id);
 
       const result = await queue.processQueue();
       expect(result.failed).toBe(1);
-      expect(queue.queue.length).toBe(0);
+      expect(queue.queue[0]).toMatchObject({ state: 'retry', retryCount: 0 });
     });
 
     it('处理完成后通知 listener', async () => {
