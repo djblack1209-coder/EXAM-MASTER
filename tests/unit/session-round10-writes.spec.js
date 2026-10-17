@@ -9,6 +9,7 @@ import {
   getLoginSessionEpoch,
   sessionUnavailable
 } from '@/services/auth-storage.js';
+import * as authStorage from '@/services/auth-storage.js';
 import { questionNoteManager } from '@/pages/practice-sub/question-note.js';
 import { questionTimer } from '@/pages/practice-sub/question-timer.js';
 import DoQuiz from '@/pages/practice-sub/do-quiz.vue';
@@ -771,3 +772,57 @@ it.each(['unavailable', 'changed', 'tag read failure'])(
     expect(read('u_account-1_question_note_tags').some((row) => row.id === tag.id)).toBe(false);
   }
 );
+
+it.each(['sign-out', 'revocation', 'account-switch'])(
+  'settled-null %s: reminder draft, note, tags and timer cannot write',
+  async (change) => {
+    const { store, actions } = await reminders();
+    const stale = read('_enc_EXAM_SESSION_EPOCH');
+    if (change === 'account-switch') await login(2);
+    else if (change === 'revocation') storageService.remove('EXAM_SESSION_EPOCH', true);
+    else storageService._clearRevokedCredentials();
+    // Model the old migration write arriving after the identity transition.
+    write('_enc_EXAM_SESSION_EPOCH', stale);
+    expect(getLoginSessionEpoch()).toBeNull();
+    const missing = captureSession();
+    expect(missing).toBeNull();
+    const scoped = () => Object.entries(global.__mockStorage).filter(([key]) => key.startsWith('u_'));
+    const before = structuredClone(scoped());
+    const configure = vi.spyOn(store, 'configureReminder');
+    const save = vi.spyOn(storageService, 'save');
+    actions.save();
+    await flushPromises();
+    expect(wrapper.find('.reminder-form').exists()).toBe(false);
+    expect(configure).not.toHaveBeenCalled();
+    // Store observers may clean revoked credentials; keep the torn migration visible.
+    write('_enc_EXAM_SESSION_EPOCH', stale);
+    expect((await questionNoteManager.addNote(draft, missing)).success).toBe(false);
+    expect((await questionNoteManager.updateNote('old-note', { content: 'discard' }, missing)).success).toBe(false);
+    expect((await questionNoteManager.createTag({ name: 'discard' })).success).toBe(false);
+    timer = new questionTimer.constructor();
+    expect(() => timer.updateSettings({ defaultTimeLimit: 45 })).toThrow();
+    expect(save).not.toHaveBeenCalled();
+    expect(scoped()).toEqual(before);
+    save.mockRestore();
+    await login(2);
+    // An explicit null from the old action must not capture the successor account.
+    expect((await questionNoteManager.addNote(draft, missing)).success).toBe(false);
+    expect(read('u_account-1_question_notes')).toBeFalsy();
+    expect(read('u_account-2_question_notes')).toBeFalsy();
+    expect(read('u_account-2_question_note_tags')).toBeFalsy();
+    expect(reminderEvents(read('u_account-2_conversation_learning_v1'))).toEqual([]);
+  }
+);
+
+it('null reminder capture never opens an unbound draft in an otherwise valid account', async () => {
+  const { store, actions } = await reminders();
+  actions.edit();
+  const configure = vi.spyOn(store, 'configureReminder');
+  vi.spyOn(authStorage, 'captureSession').mockReturnValue(null);
+  actions.edit();
+  actions.save();
+  await flushPromises();
+  expect(wrapper.find('.reminder-form').exists()).toBe(false);
+  expect(configure).not.toHaveBeenCalled();
+  expect(reminderEvents(read('u_account-1_conversation_learning_v1'))).toEqual([]);
+});

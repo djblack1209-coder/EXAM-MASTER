@@ -231,13 +231,15 @@ export const getLoginSessionEpoch = () => {
   const value = strictAuthValue(LOGIN_SESSION_EPOCH_KEY);
   const revocation = safeGetStorageSync(SESSION_REVOCATION_KEY, true) || null;
   if (generation !== readIdentityGeneration()) throw sessionUnavailable();
+  // A future record has not committed yet; an older record is settled revocation.
+  if (value?.generation > generation) throw sessionUnavailable();
   if (
     value &&
     typeof value === 'object' &&
     (generation > 0 || value.generation !== undefined) &&
     value.generation !== generation
   )
-    throw sessionUnavailable();
+    return null;
   if (value && typeof value === 'object' && 'revocation' in value && value.revocation !== revocation) return null;
   return validEpoch(value?.epoch) ? value.epoch : validEpoch(value) ? value : null;
 };
