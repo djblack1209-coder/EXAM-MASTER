@@ -1,0 +1,8 @@
+# Preserve upstream font licenses verbatim, including their original whitespace.
+docs/prototypes/assets/dmsans-OFL.txt -whitespace
+docs/prototypes/assets/epilogue-OFL.txt -whitespace
+docs/prototypes/assets/playfairdisplay-OFL.txt -whitespace
+public/fonts/OFL-dmsans.txt -whitespace
+public/fonts/OFL-epilogue.txt -whitespace
+public/fonts/OFL-playfairdisplay.txt -whitespace
+public/fonts/OFL-poppins.txt -whitespace

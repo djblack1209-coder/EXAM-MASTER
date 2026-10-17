@@ -51,22 +51,35 @@ def docling_command(payload, *, deadline=None, cancelled=None):
     """Opt-in one-page adapter; None verifies files without model inference."""
     if os.environ.get("MATERIAL_DOCLING_ENABLED") != "1" or sys.platform != "darwin":
         raise ParserError("DOCLING_UNAVAILABLE")
-    configured = [os.environ.get(key, "") for key in (
-        "MATERIAL_DOCLING_PYTHON", "MATERIAL_DOCLING_RUNTIME", "MATERIAL_DOCLING_MODELS")]
+    configured = [
+        os.environ.get(key, "")
+        for key in (
+            "MATERIAL_DOCLING_PYTHON",
+            "MATERIAL_DOCLING_RUNTIME",
+            "MATERIAL_DOCLING_MODELS",
+        )
+    ]
     if not all(os.path.isabs(path) for path in configured):
         raise ParserError("DOCLING_UNAVAILABLE")
     python, runtime, models = configured
-    if not (os.path.isfile(python) and os.access(python, os.X_OK)
-            and os.path.isdir(runtime) and os.path.isdir(models)):
+    if not (
+        os.path.isfile(python)
+        and os.access(python, os.X_OK)
+        and os.path.isdir(runtime)
+        and os.path.isdir(models)
+    ):
         raise ParserError("DOCLING_UNAVAILABLE")
     capabilities = payload is None
-    if not capabilities and (not isinstance(payload, dict)
-            or set(payload) != {"contentBase64", "sha256", "page", "allowOCR"}
-            or type(payload.get("allowOCR")) is not bool
-            or type(payload.get("page")) is not int or not 1 <= payload["page"] <= 2048
-            or not isinstance(payload.get("sha256"), str)
-            or not re.fullmatch("[a-f0-9]{64}", payload["sha256"])
-            or not isinstance(payload.get("contentBase64"), str)):
+    if not capabilities and (
+        not isinstance(payload, dict)
+        or set(payload) != {"contentBase64", "sha256", "page", "allowOCR"}
+        or type(payload.get("allowOCR")) is not bool
+        or type(payload.get("page")) is not int
+        or not 1 <= payload["page"] <= 2048
+        or not isinstance(payload.get("sha256"), str)
+        or not re.fullmatch("[a-f0-9]{64}", payload["sha256"])
+        or not isinstance(payload.get("contentBase64"), str)
+    ):
         raise ParserError("DOCLING_INPUT_INVALID")
     try:
         encoded = b"" if capabilities else json.dumps(payload, ensure_ascii=False).encode()
@@ -90,9 +103,14 @@ def docling_command(payload, *, deadline=None, cancelled=None):
     worker = Path(__file__).with_name("private-material-docling.py")
     # No shell or inherited credentials. All model loads use verified local paths.
     environment = {
-        "PATH": "/usr/bin:/bin", "TMPDIR": os.environ.get("TMPDIR", "/tmp"),
-        "PYTHONDONTWRITEBYTECODE": "1", "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1",
-        "HF_HUB_DISABLE_TELEMETRY": "1", "DO_NOT_TRACK": "1", "OMP_NUM_THREADS": "2",
+        "PATH": "/usr/bin:/bin",
+        "TMPDIR": os.environ.get("TMPDIR", "/tmp"),
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "HF_HUB_DISABLE_TELEMETRY": "1",
+        "DO_NOT_TRACK": "1",
+        "OMP_NUM_THREADS": "2",
         "TOKENIZERS_PARALLELISM": "false",
     }
     process = None
@@ -103,13 +121,27 @@ def docling_command(payload, *, deadline=None, cancelled=None):
         workspace = tempfile.TemporaryDirectory(prefix="yozi-docling-job-")
         environment["TMPDIR"] = workspace.name
         process = subprocess.Popen(
-            [python, "-I", "-B", str(worker), runtime, models, *(["--capabilities"] if capabilities else [])],
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=environment,
+            [
+                python,
+                "-I",
+                "-B",
+                str(worker),
+                runtime,
+                models,
+                *(["--capabilities"] if capabilities else []),
+            ],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=environment,
         )
         sent, stderr_bytes, next_sample = 0, 0, 0
         with selectors.DefaultSelector() as selector:
-            for pipe, mode in ((process.stdin, selectors.EVENT_WRITE),
-                               (process.stdout, selectors.EVENT_READ), (process.stderr, selectors.EVENT_READ)):
+            for pipe, mode in (
+                (process.stdin, selectors.EVENT_WRITE),
+                (process.stdout, selectors.EVENT_READ),
+                (process.stderr, selectors.EVENT_READ),
+            ):
                 os.set_blocking(pipe.fileno(), False)
                 selector.register(pipe, mode)
             while selector.get_map() or process.poll() is None:
@@ -120,11 +152,15 @@ def docling_command(payload, *, deadline=None, cancelled=None):
                     raise ParserError("DOCLING_CANCELLED")
                 if now >= next_sample and process.poll() is None:
                     sample = subprocess.run(
-                        ["/bin/ps", "-o", "rss=", "-p", str(process.pid)], capture_output=True, timeout=1,
+                        ["/bin/ps", "-o", "rss=", "-p", str(process.pid)],
+                        capture_output=True,
+                        timeout=1,
                     )
                     rss = sample.stdout.strip()
                     if rss.isdigit():
-                        if int(rss) * 1024 > (128 * 1024 * 1024 if capabilities else 2 * 1024 * 1024 * 1024):
+                        if int(rss) * 1024 > (
+                            128 * 1024 * 1024 if capabilities else 2 * 1024 * 1024 * 1024
+                        ):
                             raise ParserError("DOCLING_MEMORY_LIMIT")
                     elif process.poll() is None:
                         # Allow a normal-exit/ps race, without accepting a live unmonitored child.
@@ -137,7 +173,7 @@ def docling_command(payload, *, deadline=None, cancelled=None):
                     pipe = key.fileobj
                     if pipe is process.stdin:
                         try:
-                            sent += os.write(pipe.fileno(), encoded[sent:sent + 16384])
+                            sent += os.write(pipe.fileno(), encoded[sent : sent + 16384])
                         except BrokenPipeError:
                             sent = len(encoded)
                         if sent == len(encoded):
@@ -153,38 +189,60 @@ def docling_command(payload, *, deadline=None, cancelled=None):
                         if len(output) > (65536 if capabilities else 2 * 1024 * 1024):
                             raise ParserError("DOCLING_RESULT_LIMIT")
                     else:
-                        stderr_bytes += len(chunk)  # Discard upstream logs; never persist private input.
+                        stderr_bytes += len(
+                            chunk
+                        )  # Discard upstream logs; never persist private input.
                         if stderr_bytes > 256 * 1024:
                             raise ParserError("DOCLING_RESULT_LIMIT")
         process.wait(timeout=max(0.01, end - time.monotonic()))
         value = json.loads(output)
         if process.returncode or value.get("success") is not True:
-            allowed = {"DOCLING_MODEL_UNAVAILABLE", "DOCLING_MODEL_CHANGED", "DOCLING_VERSION_MISMATCH",
-                       "DOCLING_RESULT_LIMIT", "DOCLING_PAGE_FAILED", "DOCLING_SOURCE_CHANGED",
-                       "DOCLING_OFFLINE_REQUIRED", "DOCLING_INVALID_RESULT"}
+            allowed = {
+                "DOCLING_MODEL_UNAVAILABLE",
+                "DOCLING_MODEL_CHANGED",
+                "DOCLING_VERSION_MISMATCH",
+                "DOCLING_RESULT_LIMIT",
+                "DOCLING_PAGE_FAILED",
+                "DOCLING_SOURCE_CHANGED",
+                "DOCLING_OFFLINE_REQUIRED",
+                "DOCLING_INVALID_RESULT",
+            }
             code = value.get("errorCode")
             raise ParserError(code if code in allowed else "DOCLING_FAILED")
         result = value.get("data")
         if capabilities:
-            if (not isinstance(result, dict) or result.get("contract") != "yozi-docling-page-v1"
-                    or result.get("status") != "files_verified" or result.get("runtime") != "macos_connector"
-                    or result.get("recognitionState") != "not_tested"
-                    or type(result.get("maxPagesPerRequest")) is not int or result["maxPagesPerRequest"] != 1
-                    or result.get("maxBytes") != MAX_BYTES
-                    or result.get("dataFlow") != "authorized_local_connector" or result.get("extraCloudCost") != 0):
+            if (
+                not isinstance(result, dict)
+                or result.get("contract") != "yozi-docling-page-v1"
+                or result.get("status") != "files_verified"
+                or result.get("runtime") != "macos_connector"
+                or result.get("recognitionState") != "not_tested"
+                or type(result.get("maxPagesPerRequest")) is not int
+                or result["maxPagesPerRequest"] != 1
+                or result.get("maxBytes") != MAX_BYTES
+                or result.get("dataFlow") != "authorized_local_connector"
+                or result.get("extraCloudCost") != 0
+            ):
                 raise ParserError("DOCLING_INVALID_RESULT")
             return result
-        if (not isinstance(result, dict) or result.get("contract") != "yozi-docling-page-v1"
-                or result.get("sourceSha256") != payload["sha256"] or result.get("page") != payload["page"]
-                or result.get("allowOCR") is not payload["allowOCR"] or result.get("gradingAuthority") is not False
-                or result.get("dataFlow") != "authorized_local_connector" or result.get("extraCloudCost") != 0
-                or not isinstance(result.get("segment"), dict)
-                or result["segment"].get("reviewRequired") is not True
-                or result["segment"].get("role") != "unassigned"
-                or result["segment"].get("page") != payload["page"]
-                or result["segment"].get("extractionVersion") != "yozi-docling-page-v1"
-                or result["segment"].get("coordinateSpace") != "pdf_points_top_left"
-                or result["segment"].get("method") != ("docling_rapidocr" if payload["allowOCR"] else "docling_structure")):
+        if (
+            not isinstance(result, dict)
+            or result.get("contract") != "yozi-docling-page-v1"
+            or result.get("sourceSha256") != payload["sha256"]
+            or result.get("page") != payload["page"]
+            or result.get("allowOCR") is not payload["allowOCR"]
+            or result.get("gradingAuthority") is not False
+            or result.get("dataFlow") != "authorized_local_connector"
+            or result.get("extraCloudCost") != 0
+            or not isinstance(result.get("segment"), dict)
+            or result["segment"].get("reviewRequired") is not True
+            or result["segment"].get("role") != "unassigned"
+            or result["segment"].get("page") != payload["page"]
+            or result["segment"].get("extractionVersion") != "yozi-docling-page-v1"
+            or result["segment"].get("coordinateSpace") != "pdf_points_top_left"
+            or result["segment"].get("method")
+            != ("docling_rapidocr" if payload["allowOCR"] else "docling_structure")
+        ):
             raise ParserError("DOCLING_INVALID_RESULT")
         if cancelled and cancelled():
             raise ParserError("DOCLING_CANCELLED")
@@ -212,8 +270,12 @@ def docling_command(payload, *, deadline=None, cancelled=None):
 
 
 def docling_capabilities():
-    empty = {"available": False, "contract": "yozi-docling-page-v1",
-             "runtime": "macos_connector", "recognitionState": "not_tested"}
+    empty = {
+        "available": False,
+        "contract": "yozi-docling-page-v1",
+        "runtime": "macos_connector",
+        "recognitionState": "not_tested",
+    }
     if not DOCLING_CAP_SLOT.acquire(blocking=False):
         return empty
     try:
@@ -230,7 +292,9 @@ def docling_pdf_info(original, cancelled, deadline):
     executable = shutil.which("pdfinfo")
     if not executable:
         raise ParserError("TOOL_UNAVAILABLE:pdfinfo")
-    process = subprocess.Popen([executable, str(original)], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    process = subprocess.Popen(
+        [executable, str(original)], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
+    )
     try:
         end = min(deadline, time.monotonic() + 20)
         while True:
@@ -263,10 +327,18 @@ def docling_pdf_page(original, page, data, fingerprint, allow_ocr, cancelled, de
             raise ParserError("DOCLING_CANCELLED")
         if time.monotonic() >= deadline:
             raise ParserError("DOCLING_TIMEOUT")
+
     check()
-    result = docling_command({"contentBase64": base64.b64encode(data).decode(),
-                              "sha256": fingerprint, "page": page, "allowOCR": allow_ocr},
-                             deadline=deadline, cancelled=cancelled)
+    result = docling_command(
+        {
+            "contentBase64": base64.b64encode(data).decode(),
+            "sha256": fingerprint,
+            "page": page,
+            "allowOCR": allow_ocr,
+        },
+        deadline=deadline,
+        cancelled=cancelled,
+    )
     segment = result["segment"]
     check()
     # A cancellable owned renderer; page images are receipts, not persistent cache files.
@@ -278,8 +350,21 @@ def docling_pdf_page(original, page, data, fingerprint, allow_ocr, cancelled, de
         prefix = Path(directory) / "page"
         try:
             process = subprocess.Popen(
-                [executable, "-f", str(page), "-l", str(page), "-singlefile", "-scale-to", "1200", "-png",
-                 str(original), str(prefix)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                [
+                    executable,
+                    "-f",
+                    str(page),
+                    "-l",
+                    str(page),
+                    "-singlefile",
+                    "-scale-to",
+                    "1200",
+                    "-png",
+                    str(original),
+                    str(prefix),
+                ],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
             )
             preview_deadline = min(deadline, time.monotonic() + 15)
             while process.poll() is None:
@@ -298,7 +383,11 @@ def docling_pdf_page(original, page, data, fingerprint, allow_ocr, cancelled, de
                 raise ParserError("PREVIEW_INVALID")
             width, height = struct.unpack(">II", raw[16:24])
             size = segment["dimensions"]
-            if not width or not height or abs(width / height - size["width"] / size["height"]) > 0.005:
+            if (
+                not width
+                or not height
+                or abs(width / height - size["width"] / size["height"]) > 0.005
+            ):
                 raise ParserError("PREVIEW_COORDINATES_MISMATCH")
             segment["preview"] = "data:image/png;base64," + base64.b64encode(raw).decode()
         finally:
@@ -1523,8 +1612,11 @@ def _parse_material(payload, storage_root, *, cancelled=None):
     segments = []
     if is_pdf:
         deadline = time.monotonic() + 25 if ocr_engine == "apple-vision" else None
-        info = (docling_pdf_info(original, cancelled, docling_deadline) if ocr_engine == "docling"
-                else run_tool("pdfinfo", [original], timeout=20).decode("utf8"))
+        info = (
+            docling_pdf_info(original, cancelled, docling_deadline)
+            if ocr_engine == "docling"
+            else run_tool("pdfinfo", [original], timeout=20).decode("utf8")
+        )
         match = re.search(r"^Pages:\s+(\d+)", info, re.M)
         if not match:
             raise ParserError("PDF_PAGE_COUNT_UNKNOWN")
@@ -1535,7 +1627,9 @@ def _parse_material(payload, storage_root, *, cancelled=None):
             raise ParserError("PAGE_RANGE_INVALID") from error
         if start < 1 or start > total:
             raise ParserError("PAGE_RANGE_INVALID")
-        if ocr_engine == "docling" and (type(payload.get("startPage", 1)) is not int or total > 2048):
+        if ocr_engine == "docling" and (
+            type(payload.get("startPage", 1)) is not int or total > 2048
+        ):
             raise ParserError("PAGE_RANGE_INVALID")
         end = min(total, start if ocr_engine == "docling" else start + 4)
         started = time.monotonic()
@@ -1545,7 +1639,9 @@ def _parse_material(payload, storage_root, *, cancelled=None):
                 break
             try:
                 segment = (
-                    docling_pdf_page(original, page, data, fingerprint, allow_ocr, cancelled, docling_deadline)
+                    docling_pdf_page(
+                        original, page, data, fingerprint, allow_ocr, cancelled, docling_deadline
+                    )
                     if ocr_engine == "docling"
                     else parse_pdf_page(original, page, directory, allow_ocr, ocr_engine, deadline)
                 )
@@ -1569,9 +1665,16 @@ def _parse_material(payload, storage_root, *, cancelled=None):
                         "status": "failed",
                         "reviewRequired": True,
                         "errorCode": "PAGE_PARSE_FAILED",
-                        **({"role": "unassigned", "sourceSha256": fingerprint,
-                            "extractionVersion": "yozi-docling-page-v1", "gradingAuthority": False}
-                           if ocr_engine == "docling" else {}),
+                        **(
+                            {
+                                "role": "unassigned",
+                                "sourceSha256": fingerprint,
+                                "extractionVersion": "yozi-docling-page-v1",
+                                "gradingAuthority": False,
+                            }
+                            if ocr_engine == "docling"
+                            else {}
+                        ),
                     }
                 )
             completed = page
@@ -1644,7 +1747,11 @@ def _parse_material(payload, storage_root, *, cancelled=None):
         if any(s.get("method") == "pdf_text" for s in segments)
         else VERSION,
         "recognitionEngine": ocr_engine,
-        **({"recognitionAllowed": allow_ocr, "gradingAuthority": False} if ocr_engine == "docling" else {}),
+        **(
+            {"recognitionAllowed": allow_ocr, "gradingAuthority": False}
+            if ocr_engine == "docling"
+            else {}
+        ),
         "status": "partial"
         if next_page
         else "needs_retry"

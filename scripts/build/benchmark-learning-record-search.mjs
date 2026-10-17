@@ -10,7 +10,7 @@ import { HISTORY_LIMITS } from '../../laf-backend/functions/_shared/learning-his
 import { createLearningRecordSearch } from '../../laf-backend/functions/_shared/learning-record-search.js';
 
 // Synthetic canonical facts, produced by the real operation reducer; no stored user data or model calls.
-export function recordSearchFixture(count = 5000, onPhase = () => {}) {
+export function recordSearchFixture(count = 5000, onPhase = () => undefined) {
   onPhase('start');
   let state = emptyLearningState('search-bench', 'America/Los_Angeles');
   let batch = createLearningOperationBatch(state, 500),

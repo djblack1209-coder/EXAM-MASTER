@@ -8,14 +8,11 @@
 
 保留行为的原回归改用预置遗留持久任务，只移除入队/去重/容量/重放专用测试；独立上下文夹具仍验证取消及迟到回执，新补14项遗留队列回归。最终相关12组231项通过。新增检查首次暴露认领写失败被误报为already_processing，现只在他人持有时使用该原因，自身持有但落盘失败报告storage_unavailable并释放；另一个首次失败为测试uni夹具未提供网络订阅，已补受控订阅后重跑。变更测试lint最初发现删路径后遗留的deferred辅助函数，已删除，原失败日志保留。
 
-
 源码范围仅 `src/utils/core/offline-queue.js`，新增53行、删除219行，净减少166行。专项扫描229个源码文件和303个三端脚本均无enqueue调用、pendingEnqueues/requestFnMap/重放/容量常量；AST核对源码及三端共4个队列类，保留排空接口且无enqueue。737份公开产物零发现，微信/App产物零阻塞；微信主包全部334文件/1952755字节，全部媒体（含视频扩展）19文件/181028字节、最大32728字节，分别低于2MiB/200KiB。三端隔离构建通过；113份压缩题库语义一致，4份仅JSON空白不同，生成表已恢复原源码字节。回执集中 `tmp/stage5l/`。
-
 
 最终冻结源码统一检查：`YOZI_ISOLATED_BUILD=1 npm test -- --reporter=default --reporter=json --outputFile=tmp/stage5l/full-final.json` 为281文件通过/1原Mongo文件跳过，5279项通过/6原跳过/零失败（668.52秒）。6项跳过名称与5K最终回执逐项一致；搜索性能用例25.928秒通过，无性能超时、无阈值或跳过调整。`npm run lint`、变动测试/夹具ESLint、三端 `YOZI_ISOLATED_BUILD=1 VITE_API_BASE_URL=https://test.example.com UNI_OUTPUT_DIR=tmp/stage5l/dist/build/<平台>` 构建、`npm run audit:public-build -- <三端目录>`、微信/App审计、文档新增链接/锚点及 `git diff --check` 均通过；完整日志/JSON留在 `tmp/stage5l/`。
 
 资源收尾复用现有依赖与资源账本格式，未启动常驻服务或用户浏览器窗口；自动测试的临时浏览器由测试关闭。已核对无符号链接、Git跟踪、打开引用或测试消费者，回收被最终候选覆盖的 `tmp/stage5i/dist` 与 `tmp/stage5j/dist`（合计7102文件/668170824逻辑字节）；连同本轮已消费的临时源码副本、编辑/审计脚本和过渡成功结果，约670.1MB逻辑字节。空 `tmp/audit21` 已rmdir删除。保留5L/5K三端候选、指定5G回退、失败/最终回执、日常App、原生恢复材料和用户资料；磁盘可用空间前后另记 `resources.log`，不把删除量当作RAM或性能改善。验证PID与启动时间/进程树及退出回收逐项记账，临时runner/提交消息在命令结束后撤下。未推送、部署、发送短信、真实收费或替换日常App；真实账户/远端发送、跨窗口幂等和设备验收不由本次回归替代。
-
 
 ## 2026-10-16 恢复登记与去重重放修复（阶段5K）
 
@@ -54,7 +51,6 @@ B的5项全部在4780191a与37206056复现，保留原实现，未顺手修复�
 最终源码lint、变更测试/fixture lint、H5/微信/App隔离构建及`npm run audit:public-build -- <三端目录>`通过；737个公开产物文件零发现，App/微信产物零阻塞。微信主包334文件/1954084字节，媒体19文件/181028字节，均低于2MiB/200KiB。113份题库逐项结构等价，4份仅JSON空白不同，生成表已恢复源码原字节。最终日志为`build-*-complete.log`、`*-artifacts-complete.log`、`public-build-complete.log`、`audit-expiry-final.json`及`full-complete.log/json`；链接/锚点与`git diff --check`通过。
 
 已按归属回收两个对照worktree、空`tmp/audit19`、压缩表临时副本、旧成功中间回执及临时runner，共801643831逻辑字节；没有把它等同于实时空闲空间或RAM增量，未采集前态故不计算空闲增量。所有已登记命令及所属进程组已退出，未启动浏览器/常驻服务；当前候选、5I前一成功候选、5G指定回退、失败/最终审计回执、日常App、用户资料和托管运行时保持。资源记录续接`tmp/stage5j/resources.log`。本轮不推送、不部署、不发短信、不收费、不接触真实用户数据或替换日常App；独立线程/VM、组件与隔离产物不替代设备、真实供应商或公开发布验收。
-
 
 ## 2026-10-16 第九轮终审修复（阶段5I）
 

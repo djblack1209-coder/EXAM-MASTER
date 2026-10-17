@@ -33,23 +33,43 @@ class VerifiedSourceRegistryTest(unittest.TestCase):
                 "note": "Synthetic permission covers this exact file.",
             }
             source = {
-                "id": "synthetic", "localPath": str(original), "sourceUrl": source_url,
-                "track": "math1", "year": 2024, "sourceType": "official_paper",
-                "answerEvidenceStatus": "matched", "sourceRole": "paper_answer",
-                "verifiedBy": "synthetic-verifier", "evidenceNote": "Synthetic source verification.",
+                "id": "synthetic",
+                "localPath": str(original),
+                "sourceUrl": source_url,
+                "track": "math1",
+                "year": 2024,
+                "sourceType": "official_paper",
+                "answerEvidenceStatus": "matched",
+                "sourceRole": "paper_answer",
+                "verifiedBy": "synthetic-verifier",
+                "evidenceNote": "Synthetic source verification.",
                 "publicUseEvidence": proof,
             }
             registry = folder / "registry.json"
             registry.write_text(json.dumps({"sources": [source]}))
             exported = build_verified_source_export(registry)["files"][0]
-            item = normalize_record(exported, provider="local", source_channel="verified_registry", now="2020-01-01T00:00:00Z")
+            item = normalize_record(
+                exported,
+                provider="local",
+                source_channel="verified_registry",
+                now="2020-01-01T00:00:00Z",
+            )
             self.assertEqual(item["publicUseEvidence"], proof)
             merged, _ = merge_manifest({"items": [item]}, [dict(item)], "2020-01-02T00:00:00Z")
             self.assertEqual(merged["items"][0]["publicUseEvidence"], proof)
-            for change in [{"scope": "personal_use"}, {"sourceUrl": "https://example.invalid/other.pdf"},
-                           {"evidenceUrl": "file:///permission"}, {"verifiedBy": ""}, {"verifiedAt": "invalid"}]:
+            for change in [
+                {"scope": "personal_use"},
+                {"sourceUrl": "https://example.invalid/other.pdf"},
+                {"evidenceUrl": "file:///permission"},
+                {"verifiedBy": ""},
+                {"verifiedAt": "invalid"},
+            ]:
                 with self.subTest(change=change):
-                    registry.write_text(json.dumps({"sources": [{**source, "publicUseEvidence": {**proof, **change}}]}))
+                    registry.write_text(
+                        json.dumps(
+                            {"sources": [{**source, "publicUseEvidence": {**proof, **change}}]}
+                        )
+                    )
                     with self.assertRaisesRegex(ValueError, "publicUseEvidence"):
                         build_verified_source_export(registry)
             registry.write_text(json.dumps({"sources": [source]}))

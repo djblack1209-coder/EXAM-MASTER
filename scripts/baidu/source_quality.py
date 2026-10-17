@@ -33,7 +33,10 @@ def public_use_evidence_errors(item: dict[str, Any]) -> list[str]:
     if evidence.get("basis") not in {"public_domain", "open_license", "permission"}:
         errors.append("publicUseEvidence.basis=unverified")
     file_hash = str(item.get("contentHash") or item.get("sha256") or "").strip()
-    if not re.fullmatch(r"sha256:[a-f0-9]{64}", file_hash) or evidence.get("sourceHash") != file_hash:
+    if (
+        not re.fullmatch(r"sha256:[a-f0-9]{64}", file_hash)
+        or evidence.get("sourceHash") != file_hash
+    ):
         errors.append("publicUseEvidence.sourceHash=mismatch_or_missing")
     source_url = str(item.get("sourceUrl") or "").strip()
     if evidence.get("sourceUrl") != source_url:
@@ -41,7 +44,12 @@ def public_use_evidence_errors(item: dict[str, Any]) -> list[str]:
     for field, value in (("sourceUrl", source_url), ("evidenceUrl", evidence.get("evidenceUrl"))):
         try:
             parsed = urlsplit(str(value or ""))
-            valid = parsed.scheme == "https" and parsed.hostname and not parsed.username and not parsed.password
+            valid = (
+                parsed.scheme == "https"
+                and parsed.hostname
+                and not parsed.username
+                and not parsed.password
+            )
         except ValueError:
             valid = False
         if not valid:
@@ -50,12 +58,16 @@ def public_use_evidence_errors(item: dict[str, Any]) -> list[str]:
         if not isinstance(evidence.get(field), str) or not evidence[field].strip():
             errors.append(f"publicUseEvidence.{field}=missing")
     try:
-        verified_at = datetime.fromisoformat(str(evidence.get("verifiedAt") or "").replace("Z", "+00:00"))
+        verified_at = datetime.fromisoformat(
+            str(evidence.get("verifiedAt") or "").replace("Z", "+00:00")
+        )
         if verified_at.tzinfo is None:
             raise ValueError("timezone required")
     except ValueError:
         errors.append("publicUseEvidence.verifiedAt=invalid")
     return errors
+
+
 SOURCE_QUALITY_MANUAL_REVIEW_FLAGS = {
     SOURCE_CONTENT_MISMATCH_FLAG,
     "manual_review_required",
