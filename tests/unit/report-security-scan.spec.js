@@ -18,13 +18,27 @@ afterAll(() => {
 });
 
 // Invoke only the reporter with inline fixtures, never a scanner or an npm command.
-function runReport(scanner, report, { outcome = 'success', exitCode = '0', raw } = {}) {
+function runReport(scanner, report, { outcome = 'success', exitCode = '0', raw, failOnDetail = false } = {}) {
   const fixture = mkdtempSync(join(fixtures, 'case-'));
   try {
     const file = join(fixture, 'report.json');
     const summary = join(fixture, 'summary.md');
     if (report !== undefined || raw !== undefined) writeFileSync(file, raw ?? JSON.stringify(report));
-    const result = spawnSync(process.execPath, [script, scanner, file, outcome, exitCode], {
+    const nodeArgs = [];
+    if (failOnDetail) {
+      const hook = join(fixture, 'render-error.mjs');
+      writeFileSync(
+        hook,
+        `const log = console.log;
+console.log = (...args) => {
+  if (args[0]?.startsWith('漏洞 |')) throw new Error(${JSON.stringify(privateMarker)});
+  log(...args);
+};
+`
+      );
+      nodeArgs.push('--import', hook);
+    }
+    const result = spawnSync(process.execPath, [...nodeArgs, script, scanner, file, outcome, exitCode], {
       cwd: fixture,
       encoding: 'utf8',
       env: { GITHUB_STEP_SUMMARY: summary },
@@ -40,9 +54,25 @@ function runReport(scanner, report, { outcome = 'success', exitCode = '0', raw }
   }
 }
 
+function isolatedOutput(result) {
+  const lines = result.stdout.trimEnd().split('\n');
+  const start = lines[0].match(/^::stop-commands::([\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12})$/);
+  expect(start).not.toBeNull();
+  const token = start[1];
+  const end = lines.indexOf(`::${token}::`);
+  expect(end).toBeGreaterThan(0);
+  expect(lines.filter((line) => line === `::${token}::`)).toHaveLength(1);
+  const outside = lines.slice(end + 1);
+  // Exactly one trusted annotation after parsing resumes, with no second command.
+  expect(outside).toHaveLength(1);
+  expect(outside[0]).toMatch(/^::(?:error|warning|notice) title=(?:Trivy 安全扫描|npm audit)::[^\r\n]*$/);
+  expect(outside[0]).not.toMatch(/##\[|::.*::.*::/);
+  return { token, details: lines.slice(1, end), outside };
+}
+
 function expectReport(result, scanner, level, message) {
   const title = scanner === 'trivy' ? 'Trivy 安全扫描' : 'npm audit';
-  expect(result.stdout.split('\n')[0]).toBe(`::${level} title=${title}::${message}`);
+  expect(isolatedOutput(result).outside).toEqual([`::${level} title=${title}::${message}`]);
   expect(result.summary).toBe(`### ${title}\n\n${message}\n\n`);
   expect(result.stdout).not.toContain(privateMarker);
   expect(result.summary).not.toContain(privateMarker);
@@ -50,7 +80,7 @@ function expectReport(result, scanner, level, message) {
 
 function expectIncomplete(result, scanner, reason) {
   expectReport(result, scanner, 'error', `扫描未完成：${reason}。`);
-  expect(result.stdout.trim().split('\n')).toHaveLength(1);
+  expect(isolatedOutput(result).details).toEqual([]);
 }
 
 const trivy = (Results = [{ Target: 'package-lock.json' }]) => ({ SchemaVersion: 2, Results });
@@ -114,12 +144,11 @@ describe('Trivy scan reporter', () => {
     const result = runReport('trivy', trivy([{ Target: 'src/fixture.js', Secrets: secrets }]));
     const message = '发现问题；目标=1；漏洞 CRITICAL=0 HIGH=0；密钥 CRITICAL=1 HIGH=1。';
     expectReport(result, 'trivy', 'warning', message);
-    expect(result.stdout).toBe(
-      `::warning title=Trivy 安全扫描::${message}\n` +
-        '目标 "src/fixture.js"\n' +
-        '密钥 | 规则="fixture-rule-0" | 文件="src/fixture.js" | 行=10 | CRITICAL\n' +
-        '密钥 | 规则="fixture-rule-1" | 文件="src/fixture.js" | 行=11 | HIGH\n'
-    );
+    expect(isolatedOutput(result).details).toEqual([
+      '目标 "src/fixture.js"',
+      '密钥 | 规则="fixture-rule-0" | 文件="src/fixture.js" | 行=10 | CRITICAL',
+      '密钥 | 规则="fixture-rule-1" | 文件="src/fixture.js" | 行=11 | HIGH'
+    ]);
   });
 
   it.each([
@@ -143,6 +172,9 @@ describe('Trivy scan reporter', () => {
     ['skipped step', trivy(), { outcome: 'skipped' }, '扫描器未成功完成'],
     ['unsupported schema', { SchemaVersion: 1, Results: trivy().Results }, {}, '结果结构无法识别'],
     ['invalid targets', { SchemaVersion: 2, Results: {} }, {}, '结果结构无法识别'],
+    ['null Results', trivy(null), {}, '结果结构无法识别'],
+    ['null Vulnerabilities', trivy([{ Target: 'package-lock.json', Vulnerabilities: null }]), {}, '结果结构无法识别'],
+    ['null Secrets', trivy([{ Target: 'src/fixture.js', Secrets: null }]), {}, '结果结构无法识别'],
     ['empty target', trivy([{ Target: '' }]), {}, '结果结构无法识别'],
     [
       'missing vulnerability fields',
@@ -218,5 +250,90 @@ describe('npm audit reporter', () => {
     ]
   ])('reports incomplete for %s in both outputs', (_name, report, options, reason) => {
     expectIncomplete(runReport('npm', report, options), 'npm', reason);
+  });
+});
+
+describe('workflow command isolation', () => {
+  const injections = [
+    '##[error]x',
+    '##[add-mask]HIGH',
+    '::warning::x',
+    '%0A',
+    '\n::warning::x\r\n##[error]x',
+    '::stop-commands::attacker\n::attacker::',
+    '<img src=x onerror=alert(1)>|[link](https://example.invalid)\n# heading'
+  ];
+
+  it.each(injections)('isolates Trivy package, path and IDs and omits titles containing %j', (payload) => {
+    const result = runReport(
+      'trivy',
+      trivy([
+        {
+          Target: payload,
+          Vulnerabilities: [
+            {
+              ...vulnerability('HIGH', payload),
+              PkgName: payload,
+              InstalledVersion: payload,
+              FixedVersion: payload,
+              Title: `${privateMarker}${payload}`
+            }
+          ],
+          Secrets: [{ Severity: 'HIGH', RuleID: payload, StartLine: 1, Title: `${privateMarker}${payload}` }]
+        }
+      ])
+    );
+    expectReport(result, 'trivy', 'warning', '发现问题；目标=1；漏洞 CRITICAL=0 HIGH=1；密钥 CRITICAL=0 HIGH=1。');
+    const { details } = isolatedOutput(result);
+    const encoded = JSON.stringify(payload);
+    expect(details).toEqual([
+      `目标 ${encoded}`,
+      `漏洞 | 文件=${encoded} | 包=${encoded} | 已装=${encoded} | 修复=${encoded} | ID=${encoded} | HIGH`,
+      `密钥 | 规则=${encoded} | 文件=${encoded} | 行=1 | HIGH`
+    ]);
+    // Summaries deliberately contain only trusted aggregate status, not scan fields.
+    expect(result.summary).not.toMatch(/##\[|::|<|>|\||%0A|example\.invalid/);
+  });
+
+  it.each(injections)(
+    'isolates npm package, path and fix fields and omits advisory titles containing %j',
+    (payload) => {
+      const report = npmAudit(['high']);
+      report.vulnerabilities = {
+        [payload]: {
+          severity: 'high',
+          via: [
+            { url: `https://github.com/advisories/GHSA-test-test-test${payload}`, title: `${privateMarker}${payload}` }
+          ],
+          nodes: [payload],
+          range: payload,
+          fixAvailable: { name: payload, version: payload }
+        }
+      };
+      const result = runReport('npm', report);
+      expectReport(result, 'npm', 'notice', '没有 CRITICAL；CRITICAL=0 HIGH=1（HIGH 供分诊，告警阈值仍为 CRITICAL）。');
+      expect(isolatedOutput(result).details).toEqual([
+        `依赖 | 包=${JSON.stringify(payload)} | HIGH | 范围=${JSON.stringify(payload)} | ID="GHSA-test-test-test" | 修复建议=${JSON.stringify(`${payload}@${payload}`)} | 节点=${JSON.stringify(payload)}`
+      ]);
+      expect(result.summary).not.toMatch(/##\[|::|<|>|\||%0A|example\.invalid/);
+    }
+  );
+
+  it('generates a different unpredictable resume token on each invocation', () => {
+    const first = isolatedOutput(runReport('trivy', trivy()));
+    const second = isolatedOutput(runReport('trivy', trivy()));
+    expect(first.token).not.toBe(second.token);
+  });
+
+  it('resumes parsing in finally when rendering throws after a target was printed', () => {
+    const result = runReport(
+      'trivy',
+      trivy([{ Target: 'package-lock.json', Vulnerabilities: [vulnerability('HIGH')] }]),
+      {
+        failOnDetail: true
+      }
+    );
+    expectReport(result, 'trivy', 'error', '扫描未完成：结果输出异常。');
+    expect(isolatedOutput(result).details).toEqual(['目标 "package-lock.json"']);
   });
 });

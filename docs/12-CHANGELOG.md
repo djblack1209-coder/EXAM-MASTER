@@ -6,6 +6,8 @@
 
 npm audit 同样保存 JSON 与实际退出码，校验报告、计数及 critical 阈值的一致性，区分网络/执行错误、发现和无 critical；HIGH 保留在日志供分诊。两扫描及提示均不阻断，跟踪文件密钥硬门禁和部署条件保持。跳过根及任意层 node_modules，显式纳入 npm 开发依赖，补充 requirements*.txt 的 pip 文件识别；Python 版本范围/URL 与 Cargo 开发依赖等上游限制、源码依据和推送后验收见 [阶段10A](13-DEVELOPMENT-PLAN.md#阶段10a恢复-trivy-安全扫描2026-10-17本地-main)。29 个报告场景及 YAML/门禁/封装验证通过，tooling、仓库、格式检查通过；不运行 Trivy，不下载数据库、包或工具，不推送或部署。验证封装时本机 shell 重排 PATH，使模拟 npm 被真实 npm audit 替代一次，越出只读 GitHub 的联网范围；npm 日志确认 23 个审计/元数据请求、0 个 tarball 请求，返回 0 critical/21 high。已改为显式绑定模拟命令并复验，事件留在本地证据，不以这次意外审计代替 CI 验收；真实 Trivy 清单须等 CI 后分诊。 10A2 补交 `tests/unit/report-security-scan.spec.js` 的 31 项可重复离线回归，逐例断言 annotation 与步骤摘要，连同相关原测试共 48 项通过；两个 Annotate 步骤改为 `!cancelled()`、原始报告清理仍为 `always()`，并按 Action 源码确认两项扫描 env 不被覆盖且 runner.temp 缓存仍接入恢复机制（实际命中待 CI）。
 
+10A3 用每次运行的随机 UUID 将扫描明细包在 `stop-commands` 与 `finally` 恢复行之间，阻断 `::` 和旧式 `##[` 命令注入，可信 annotation 位于隔离块外且摘要仅保留 Markdown 安全转义的汇总，并新增恶意字段、token 唯一性、渲染异常恢复及 Results/Vulnerabilities/Secrets 为 null 的离线回归。
+
 ## 2026-10-17 GitHub Actions 升级（阶段9A）
 
 在 main 按 Dependabot #3 的实际差异更新两份 workflow：checkout v7.0.1、setup-node v7.1.0、setup-python v7、upload-artifact v7.0.2、trivy-action v0.36.0、setup-kubectl v5；没有合并 Dependabot 分支。逐个读取跨越的大版本发布说明及目标 Action 元数据，现有输入和使用方式兼容，无需补充输入；Action 的 Node 24 运行时与项目 Node 22.22.3 分开，runner 最低 2.327.1。凭据持久化、缓存、Python 版本解析与产物行为的依据见 [阶段9A](13-DEVELOPMENT-PLAN.md#阶段9agithub-actions-升级2026-10-17本地-main)。

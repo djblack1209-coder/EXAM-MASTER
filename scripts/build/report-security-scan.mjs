@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { appendFileSync, readFileSync } from 'node:fs';
 
 // Render only whitelisted fields: Trivy Match/Code and raw scanner errors can contain secrets.
@@ -128,9 +129,36 @@ try {
 }
 
 const escapeCommand = (value) => value.replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A');
+const escapeMarkdown = (value) =>
+  value
+    .replace(/([\\`*_[\]{}()#+.!~-])/g, '\\$1')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('|', '&#124;')
+    .replace(/[\r\n]+/g, ' ');
+
+// Runner v2.338.0 ActionCommandManager.cs:70-102 applies the stopped state after
+// BOTH V2 (::) and legacy (##[ anywhere in a line) parsing. Never derive this token
+// from scan data; only this unpredictable command may resume parsing.
+const stopToken = randomUUID();
+console.log(`::stop-commands::${stopToken}`);
+try {
+  for (const line of result.lines) console.log(line);
+} catch {
+  // Keep raw exceptions out of logs; they may contain scanner-controlled text.
+  result = { level: 'error', message: '扫描未完成：结果输出异常。', lines: [] };
+} finally {
+  console.log(`::${stopToken}::`);
+}
+// Only trusted titles, validated counts and fixed status messages reach annotations.
+// The runner consumes a V2 annotation once, without reparsing its escaped data.
 console.log(`::${result.level} title=${title}::${escapeCommand(result.message)}`);
-for (const line of result.lines) console.log(line);
 if (process.env.GITHUB_STEP_SUMMARY) {
-  appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### ${title}\n\n${result.message}\n\n`);
+  // Keep scan fields in isolated logs; the summary contains only the safe status.
+  appendFileSync(
+    process.env.GITHUB_STEP_SUMMARY,
+    `### ${escapeMarkdown(title)}\n\n${escapeMarkdown(result.message)}\n\n`
+  );
 }
 // An annotation describes scan status; neither findings nor scanner failures block CI.
