@@ -1,5 +1,6 @@
+// @vitest-environment node
+// Playwright owns the real document; the harness needs Node HTTP/process APIs.
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { existsSync } from 'node:fs';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -92,9 +93,31 @@ describe('mobile viewport smoke config', () => {
   });
 });
 
-describe('mobile entry initialization checks with synthetic pages', () => {
+// verifyMobileRoute has separate navigation and readiness deadlines. A normal
+// route can spend the readiness budget both before and after observation; splash
+// uses three waits but overrides readiness to 1500ms (3 * 1500 < 2 * 5000).
+const NAVIGATION_TIMEOUT_MS = 10_000;
+const READY_TIMEOUT_MS = 5000;
+const OBSERVATION_MS = 120;
+const CONTEXT_SETUP_BUDGET_MS = 5000;
+const PROTOCOL_AND_ASSERTION_BUDGET_MS = 5000;
+const CONTEXT_CLOSE_BUDGET_MS = 5000;
+const CHECK_TIMEOUT_MS =
+  CONTEXT_SETUP_BUDGET_MS +
+  NAVIGATION_TIMEOUT_MS +
+  2 * READY_TIMEOUT_MS +
+  OBSERVATION_MS +
+  PROTOCOL_AND_ASSERTION_BUDGET_MS +
+  CONTEXT_CLOSE_BUDGET_MS; // 35,120ms, including failure paths and cleanup.
+// Playwright allows up to 30s for launch and graceful browser shutdown. The
+// hooks must outlive that deadline and still close the server/remove fixtures.
+const BROWSER_LIFECYCLE_BUDGET_MS = 30_000;
+const SERVER_AND_FIXTURE_BUDGET_MS = 5000;
+const ENTRY_TEST_OPTIONS = { timeout: CHECK_TIMEOUT_MS, concurrent: false };
+
+// Keep a single browser; every check gets its own profile, page and listeners.
+describe('mobile entry initialization checks with synthetic pages', ENTRY_TEST_OPTIONS, () => {
   let browser;
-  let context;
   let root;
   let server;
   let baseUrl;
@@ -107,43 +130,45 @@ describe('mobile entry initialization checks with synthetic pages', () => {
     server = served.server;
     baseUrl = `http://127.0.0.1:${served.port}`;
     browser = await chromium.launch({
+      timeout: BROWSER_LIFECYCLE_BUDGET_MS,
       // Synthetic DOM/resource checks need no GPU work. Actual product visuals
       // are verified separately with the browser's normal graphics path.
       args: ['--disable-gpu'],
-      channel:
-        process.env.YOZI_MOBILE_SMOKE_BROWSER_CHANNEL || (existsSync(chromium.executablePath()) ? undefined : 'chrome')
+      // Use Playwright's matching headless shell. A branded browser is an
+      // explicit diagnostic override, never an implicit fallback to a new version.
+      channel: process.env.YOZI_MOBILE_SMOKE_BROWSER_CHANNEL || undefined
     });
-    // These synthetic documents share no cookies or storage. Keep one dedicated
-    // context instead of browser.newPage() creating/retiring a cold profile per check.
-    // Each check still owns a fresh page, handlers, bindings and document globals.
-    context = await browser.newContext({ viewport: MOBILE_VIEWPORTS[0] });
-  });
+  }, BROWSER_LIFECYCLE_BUDGET_MS + SERVER_AND_FIXTURE_BUDGET_MS);
 
   afterAll(async () => {
     try {
-      try {
-        await context?.close();
-      } finally {
-        await browser?.close();
-      }
+      await browser?.close();
     } finally {
       server?.closeAllConnections();
       if (server) await new Promise((resolve) => server.close(resolve));
       if (root) await rm(root, { recursive: true, force: true });
     }
-  });
+  }, BROWSER_LIFECYCLE_BUDGET_MS + SERVER_AND_FIXTURE_BUDGET_MS);
 
   async function check(html, options = {}, configure = () => {}) {
     await writeFile(
       path.join(root, 'index.html'),
       `<!doctype html><html><head><link rel="icon" href="data:,"></head><body>${html}</body></html>`
     );
-    const page = await context.newPage();
+    const context = await browser.newContext({ viewport: MOBILE_VIEWPORTS[0] });
     try {
+      const page = await context.newPage();
       await configure(page);
-      return await verifyMobileRoute(page, { baseUrl, route, readyTimeoutMs: 5000, observationMs: 120, ...options });
+      return await verifyMobileRoute(page, {
+        baseUrl,
+        route,
+        navigationTimeoutMs: NAVIGATION_TIMEOUT_MS,
+        readyTimeoutMs: READY_TIMEOUT_MS,
+        observationMs: OBSERVATION_MS,
+        ...options
+      });
     } finally {
-      await page.close();
+      await context.close();
     }
   }
 
@@ -270,7 +295,7 @@ describe('mobile entry initialization checks with synthetic pages', () => {
     });
   });
 
-  it('rejects a hidden entry and a shell stuck in loading', async () => {
+  it('rejects a hidden entry and a shell stuck in loading', { timeout: 2 * CHECK_TIMEOUT_MS }, async () => {
     for (const html of [
       `<div style="display:none">${readyMarkup}</div>`,
       `${readyMarkup}<div class="base-state--loading">加载中</div>`
