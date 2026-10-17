@@ -20,22 +20,27 @@ export async function saveOfflineAnswer(answerData, session = captureSession()) 
     const key = 'EXAM_OFFLINE_ANSWERS';
     assertSession(session);
     if ((answerData.userId || 'guest') !== session.owner) return false;
-    const stored = storageService.get(key, [], { session, migrateLegacy: false });
-    const existing = stored === '' || stored == null ? [] : stored;
-    if (!Array.isArray(existing)) return false;
-    const index = isValidQuizAttemptId(answerData.attemptId)
-      ? existing.findIndex((item) => item.attemptId === answerData.attemptId && item.userId === answerData.userId)
-      : -1;
-    const next = [...existing];
-    if (index >= 0) {
-      const previous = existing[index];
-      // 同一账户/原编号不得覆盖原题、原会话、原答或原用时。
-      if (['sessionId', 'questionId', 'userAnswer', 'timeSpent'].some((key) => previous[key] !== answerData[key]))
-        return false;
-      if (answerData.submission?.status !== 'received' || previous.submission?.status === 'received') return true;
-      next[index] = { ...previous, submission: answerData.submission };
-    } else next.push({ ...answerData, savedAt: Date.now() });
-    return storageService.save(key, next, true, session);
+    const original = JSON.parse(JSON.stringify(answerData));
+    return storageService.update(
+      key,
+      [],
+      (existing) => {
+        if (!Array.isArray(existing)) throw new Error('离线原答暂不可读');
+        const index = isValidQuizAttemptId(original.attemptId)
+          ? existing.findIndex((item) => item.attemptId === original.attemptId && item.userId === original.userId)
+          : -1;
+        const next = [...existing];
+        if (index >= 0) {
+          const previous = existing[index];
+          if (['sessionId', 'questionId', 'userAnswer', 'timeSpent'].some((key) => previous[key] !== original[key]))
+            throw new Error('原答编号冲突，原件保留');
+          if (original.submission?.status === 'received' && previous.submission?.status !== 'received')
+            next[index] = { ...previous, submission: original.submission };
+        } else next.push({ ...original, savedAt: Date.now() });
+        return next;
+      },
+      session
+    );
   } catch (err) {
     logger.warn('[OfflineCache] saveOfflineAnswer failed:', err);
     return false;

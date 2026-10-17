@@ -357,11 +357,7 @@ class LearningAnalytics {
   }
 
   _loadDailyStats() {
-    try {
-      this.dailyStats = storageService.get(STORAGE_KEYS.DAILY_STATS, {});
-    } catch (_e) {
-      this.dailyStats = {};
-    }
+    this.dailyStats = storageService.get(STORAGE_KEYS.DAILY_STATS, {});
   }
 
   _saveDailyStats() {
@@ -377,15 +373,11 @@ class LearningAnalytics {
   }
 
   _loadStreakData() {
-    try {
-      this.streakData = storageService.get(STORAGE_KEYS.STREAK_DATA, {
-        currentStreak: 0,
-        longestStreak: 0,
-        lastStudyDate: null
-      });
-    } catch (_e) {
-      this.streakData = { currentStreak: 0, longestStreak: 0, lastStudyDate: null };
-    }
+    this.streakData = storageService.get(STORAGE_KEYS.STREAK_DATA, {
+      currentStreak: 0,
+      longestStreak: 0,
+      lastStudyDate: null
+    });
   }
 
   _saveStreakData() {
@@ -397,11 +389,7 @@ class LearningAnalytics {
   }
 
   _loadAchievements() {
-    try {
-      this.achievements = storageService.get(STORAGE_KEYS.ACHIEVEMENT_DATA, []);
-    } catch (_e) {
-      this.achievements = [];
-    }
+    this.achievements = storageService.get(STORAGE_KEYS.ACHIEVEMENT_DATA, []);
   }
 
   _saveAchievements() {

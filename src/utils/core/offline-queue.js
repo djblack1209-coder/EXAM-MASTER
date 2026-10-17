@@ -1,4 +1,10 @@
-import { captureSession, checkSession, assertSession, isSessionUnavailable } from '@/services/auth-storage.js';
+import {
+  captureSession,
+  checkSession,
+  assertSession,
+  isSessionUnavailable,
+  readStorageStrict
+} from '@/services/auth-storage.js';
 /**
  * 离线请求队列 (Offline Queue)
  *
@@ -24,6 +30,7 @@ import { captureSession, checkSession, assertSession, isSessionUnavailable } fro
  */
 
 import { logger } from '@/utils/logger.js';
+import { requirePersistent } from '@/services/persistence-read.js';
 
 /**
  * 队列直接使用 uni 存储，避免与 storageService 的请求同步链循环依赖。
@@ -74,10 +81,10 @@ function createQueueStorageCompat() {
     get(key, defaultValue = null) {
       // An installed store's read failure must never fall back to an incomplete memory copy.
       if (typeof uni.getStorageSync === 'function') {
-        const value = uni.getStorageSync(key);
+        const value = requirePersistent(() => readStorageStrict(uni, key));
         return value === '' || value === undefined || value === null ? defaultValue : value;
       }
-      const value = readLocal(key);
+      const value = requirePersistent(() => readLocal(key));
       if (value !== undefined) return value;
       return typeof localStorage === 'undefined' && memoryStore.has(key) ? memoryStore.get(key) : defaultValue;
     },
@@ -203,6 +210,7 @@ class OfflineQueue {
       if (!this._storageLoaded) return false;
     }
     try {
+      queueStorage.get(STORAGE_KEY, []); // Do not write over an unread persistent queue.
       // 只保存可序列化的数据
       const serializable = this.queue.map((item) => ({
         id: item.id,
@@ -482,7 +490,14 @@ class OfflineQueue {
 
           // 执行请求
           assertSession(item.session);
-          await requestFn({ session: item.session });
+          const response = await requestFn({ session: item.session });
+          if (isSessionUnavailable(response)) break;
+          if (
+            response?.success === false ||
+            response?.ok === false ||
+            (response?.code !== undefined && ![0, 200].includes(response.code))
+          )
+            throw new Error('请求未确认成功');
           assertSession(item.session);
 
           // 成功，移除队列

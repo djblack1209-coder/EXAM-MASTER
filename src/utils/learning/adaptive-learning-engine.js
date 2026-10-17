@@ -610,19 +610,11 @@ class AdaptiveLearningEngine {
   // ==================== 数据加载/保存 ====================
 
   _loadMistakeBook() {
-    try {
-      this.mistakeBook = storageService.get(STORAGE_KEYS.MISTAKE_BOOK, []);
-    } catch (_e) {
-      this.mistakeBook = [];
-    }
+    this.mistakeBook = storageService.get(STORAGE_KEYS.MISTAKE_BOOK, []);
   }
 
   _loadLearningHistory() {
-    try {
-      this.learningHistory = storageService.get(STORAGE_KEYS.LEARNING_HISTORY, []);
-    } catch (_e) {
-      this.learningHistory = [];
-    }
+    this.learningHistory = storageService.get(STORAGE_KEYS.LEARNING_HISTORY, []);
   }
 
   _saveLearningHistory() {
@@ -638,11 +630,7 @@ class AdaptiveLearningEngine {
   }
 
   _loadKnowledgeMap() {
-    try {
-      this.knowledgeMap = storageService.get(STORAGE_KEYS.KNOWLEDGE_MAP, {});
-    } catch (_e) {
-      this.knowledgeMap = {};
-    }
+    this.knowledgeMap = storageService.get(STORAGE_KEYS.KNOWLEDGE_MAP, {});
   }
 
   _saveKnowledgeMap() {
@@ -654,11 +642,7 @@ class AdaptiveLearningEngine {
   }
 
   _loadReviewSchedule() {
-    try {
-      this.reviewSchedule = storageService.get(STORAGE_KEYS.REVIEW_SCHEDULE, []);
-    } catch (_e) {
-      this.reviewSchedule = [];
-    }
+    this.reviewSchedule = storageService.get(STORAGE_KEYS.REVIEW_SCHEDULE, []);
   }
 
   _saveReviewSchedule() {

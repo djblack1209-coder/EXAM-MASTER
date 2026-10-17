@@ -1408,12 +1408,16 @@ describe('网页备份文件与明确恢复', () => {
       const picker = await p.open();
       p.select(picker, new File(['旧账户正文'], 'records.json'));
       const old = reader.onload;
-      storageService.save('EXAM_USER_ID', 'browser-record-file-account');
+      storageService.saveLoginSession({
+        userId: 'browser-record-file-account',
+        token: 'fixture-record-file-token',
+        userInfo: { id: 'browser-record-file-account' }
+      });
       p.store.refresh();
       await flushPromises();
       expect(p.store.state.owner).toBe('browser-record-file-account');
       expect(p.store.state.events).toHaveLength(0);
-      storageService.remove('EXAM_USER_ID');
+      storageService._clearRevokedCredentials();
       p.store.refresh();
       old();
       await flushPromises();

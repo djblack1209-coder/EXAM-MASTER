@@ -282,11 +282,15 @@ class AnalyticsService {
    */
   setUserProperties(properties) {
     if (!this._checkSession()) return;
-    const profile = storageService.get(STORAGE_KEYS.USER_PROFILE, {});
-    const updatedProfile = { ...profile, ...properties, updatedAt: Date.now() };
-    storageService.save(STORAGE_KEYS.USER_PROFILE, updatedProfile, true, this.session);
-
-    this.track('user_profile_update', properties);
+    const patch = JSON.parse(JSON.stringify(properties));
+    const saved = storageService.update(
+      STORAGE_KEYS.USER_PROFILE,
+      {},
+      (profile) => ({ ...profile, ...patch, updatedAt: Date.now() }),
+      this.session
+    );
+    if (saved) this.track('user_profile_update', patch);
+    return saved;
   }
 
   /**
@@ -390,7 +394,15 @@ class AnalyticsService {
     try {
       // 只保存最近的事件
       const eventsToSave = this.eventQueue.slice(-100);
-      storageService.save(STORAGE_KEYS.EVENTS, eventsToSave, true, this.session);
+      return storageService.update(
+        STORAGE_KEYS.EVENTS,
+        [],
+        (stored) => {
+          const ids = new Set(stored.map((item) => item.id));
+          return [...stored, ...eventsToSave.filter((item) => !ids.has(item.id))].slice(-100);
+        },
+        this.session
+      );
     } catch (e) {
       logger.error('[Analytics] 保存事件队列失败:', e);
     }
@@ -405,7 +417,7 @@ class AnalyticsService {
       this.eventQueue = savedEvents;
     } catch (e) {
       logger.error('[Analytics] 恢复事件队列失败:', e);
-      this.eventQueue = [];
+      throw e;
     }
   }
 
@@ -451,15 +463,23 @@ class AnalyticsService {
       // });
 
       // 当前降级方案：保存到本地存储（用于调试和后续分析）
-      const uploadedEvents = storageService.get('analytics_uploaded', []);
-      uploadedEvents.push(...events);
-
-      // 只保留最近1000条已上报事件
-      if (uploadedEvents.length > 1000) {
-        uploadedEvents.splice(0, uploadedEvents.length - 1000);
-      }
-
-      storageService.save('analytics_uploaded', uploadedEvents, true, this.session);
+      const confirmed = storageService.update(
+        'analytics_uploaded',
+        [],
+        (stored) => {
+          const ids = new Set(stored.map((item) => item.id));
+          return [...stored, ...events.filter((item) => !ids.has(item.id))].slice(-1000);
+        },
+        this.session
+      );
+      if (!confirmed) throw new Error('事件保存未确认');
+      const ids = new Set(events.map((item) => item.id));
+      storageService.update(
+        STORAGE_KEYS.EVENTS,
+        [],
+        (stored) => stored.filter((item) => !ids.has(item.id)),
+        this.session
+      );
 
       if (this.config.enableDebug) {
         logger.log('[Analytics] 事件上报成功:', events.length, '条');

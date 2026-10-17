@@ -326,6 +326,7 @@ export async function generateLearningTurnStream(body, options = {}) {
     return {
       success: false,
       code: cancelled ? 499 : 503,
+      errorCode: cancelled ? 'CANCELLED' : timedOut ? 'TIMEOUT' : error.code || 'INCOMPLETE_STREAM',
       error: cancelled
         ? 'CANCELLED'
         : timedOut

@@ -392,15 +392,11 @@ class QuestionTimer {
    * 加载设置
    */
   _loadSettings() {
-    try {
-      if (typeof uni !== 'undefined') {
-        const saved = storageService.get(STORAGE_KEYS.TIMER_SETTINGS, null, { migrateLegacy: false });
-        if (saved) {
-          this.settings = { ...DEFAULT_SETTINGS, ...saved };
-        }
+    if (typeof uni !== 'undefined') {
+      const saved = storageService.get(STORAGE_KEYS.TIMER_SETTINGS, null, { migrateLegacy: false });
+      if (saved) {
+        this.settings = { ...DEFAULT_SETTINGS, ...saved };
       }
-    } catch (e) {
-      logger.warn('[QuestionTimer] 加载设置失败:', e);
     }
   }
 
@@ -421,13 +417,8 @@ class QuestionTimer {
    * 加载时间记录
    */
   _loadTimeRecords() {
-    try {
-      if (typeof uni !== 'undefined') {
-        this.timeRecords = storageService.get(STORAGE_KEYS.TIME_RECORDS, [], { migrateLegacy: false });
-      }
-    } catch (_e) {
-      this.timeRecords = [];
-    }
+    if (typeof uni !== 'undefined')
+      this.timeRecords = storageService.get(STORAGE_KEYS.TIME_RECORDS, [], { migrateLegacy: false });
   }
 }
 

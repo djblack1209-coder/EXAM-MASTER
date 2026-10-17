@@ -81,6 +81,7 @@ export const useReviewStore = defineStore('review', {
       try {
         const res = await getQuestionBankStats();
         assertSession(session);
+        if (isSessionUnavailable(res)) throw res;
         if (isOk(res) && res.data) {
           this.questionBankStats = {
             total: Number(res.data.total || 0),
@@ -109,6 +110,7 @@ export const useReviewStore = defineStore('review', {
       try {
         const res = await apiBrowseQuestions(params);
         assertSession(session);
+        if (isSessionUnavailable(res)) throw res;
         if (isOk(res) && res.data) {
           const data = {
             list: Array.isArray(res.data.list) ? res.data.list : [],
@@ -142,6 +144,7 @@ export const useReviewStore = defineStore('review', {
       try {
         const res = await getQuestionBankRandom(params);
         assertSession(session);
+        if (isSessionUnavailable(res)) throw res;
         if (isOk(res) && Array.isArray(res.data)) {
           return { success: true, data: res.data, source: 'remote' };
         }

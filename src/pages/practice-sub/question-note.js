@@ -443,12 +443,8 @@ class QuestionNoteManager {
   }
 
   _loadNotes() {
-    try {
-      if (typeof uni !== 'undefined') {
-        this.notes = storageService.get(STORAGE_KEYS.NOTES, []);
-      }
-    } catch (_e) {
-      this.notes = [];
+    if (typeof uni !== 'undefined') {
+      this.notes = storageService.get(STORAGE_KEYS.NOTES, []);
     }
   }
 
@@ -467,17 +463,13 @@ class QuestionNoteManager {
   }
 
   _loadTags() {
-    try {
-      if (typeof uni !== 'undefined') {
-        const saved = storageService.get(STORAGE_KEYS.NOTE_TAGS);
-        if (saved && saved.length > 0) {
-          // 合并默认标签和自定义标签
-          const customTags = saved.filter((t) => t.isCustom);
-          this.tags = [...DEFAULT_TAGS, ...customTags];
-        }
+    if (typeof uni !== 'undefined') {
+      const saved = storageService.get(STORAGE_KEYS.NOTE_TAGS);
+      if (saved && saved.length > 0) {
+        // 合并默认标签和自定义标签
+        const customTags = saved.filter((t) => t.isCustom);
+        this.tags = [...DEFAULT_TAGS, ...customTags];
       }
-    } catch (_e) {
-      this.tags = [...DEFAULT_TAGS];
     }
   }
 
