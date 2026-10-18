@@ -1151,7 +1151,8 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
   const now = operation.at ?? Date.now();
   assert(Number.isFinite(now), 'INVALID_INPUT', '时间不合法');
   const data = operation.data || {};
-  let result = {};
+  let result = {},
+    attemptBudget = null;
   const current = () => {
     const session = state.conversations.find((item) => item.id === data.conversationId);
     assert(session, 'NOT_FOUND', '对话不存在');
@@ -1823,6 +1824,16 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
           'PRECONDITION',
           '修正需要原始作答'
         );
+      // 作答只追加一份原答，并可更新对话提示、计划完成标记和规范题目。
+      // 同一隔离批次精确计这几处的变化，避免每份原答都重数全部既有历史。
+      if (budget)
+        attemptBudget = {
+          count: state.attempts.length,
+          sections: ['conversations', 'plans', 'questions'].reduce(
+            (total, key) => total + JSON.stringify(state[key]).length,
+            0
+          )
+        };
       const attempt = {
         id: opId,
         conversationId: session.id,
@@ -2512,6 +2523,16 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
         (state.events.length > 1 ? 1 : 0) +
         String(state.revision).length -
         String(previousRevision).length;
+    } else if (attemptBudget && state.attempts.length === attemptBudget.count + 1) {
+      budget.characters +=
+        JSON.stringify(state.attempts.at(-1)).length +
+        (attemptBudget.count ? 1 : 0) +
+        JSON.stringify(state.events.at(-1)).length +
+        (state.events.length > 1 ? 1 : 0) +
+        String(state.revision).length -
+        String(previousRevision).length +
+        ['conversations', 'plans', 'questions'].reduce((total, key) => total + JSON.stringify(state[key]).length, 0) -
+        attemptBudget.sections;
     } else budget.characters = JSON.stringify(state).length;
   }
   assert(

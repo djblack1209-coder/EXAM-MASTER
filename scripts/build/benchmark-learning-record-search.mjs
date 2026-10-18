@@ -60,7 +60,9 @@ export function benchmarkRecordSearch(state) {
 }
 
 if (resolve(process.argv[1] || '') === fileURLToPath(import.meta.url)) {
+  const setupStarted = performance.now();
   const state = recordSearchFixture();
+  const setupMs = performance.now() - setupStarted;
   const characters = JSON.stringify(state).length;
   if (characters > HISTORY_LIMITS.stateCharacters || state.events.length > HISTORY_LIMITS.operations)
     throw new Error('Fixture exceeds canonical capacity');
@@ -75,6 +77,7 @@ if (resolve(process.argv[1] || '') === fileURLToPath(import.meta.url)) {
       loadAverage: loadavg()
     },
     attempts: state.attempts.length,
+    setupMs,
     characters,
     operations: state.events.length,
     thresholdMs: 100,

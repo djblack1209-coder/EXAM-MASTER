@@ -7,6 +7,25 @@ import {
 import { HISTORY_LIMITS } from '../../laf-backend/functions/_shared/learning-history.js';
 import { parsePastedMaterial } from '@/services/learning/material-intake.js';
 const op = (id, type, data) => ({ id, type, data, at: Date.now() - 1000 });
+const answerFixture = () => {
+  let state = emptyLearningState('fixture-owner', 'America/Los_Angeles');
+  for (const operation of [
+    op('c', 'conversation.start', { goal: '明确交卷后保留原答' }),
+    op('q', 'question.add', {
+      question: {
+        id: 'q',
+        version: 1,
+        prompt: '计算 12 + 8。',
+        scope: 'generated',
+        source: { kind: 'executable' },
+        validation: { type: 'number', answer: '20', authority: 'executable', evidenceId: 'integer-arithmetic-v1' }
+      }
+    }),
+    op('focus', 'question.focus', { conversationId: 'c', questionKey: 'q@1' })
+  ])
+    state = applyLearningOperation(state, operation).state;
+  return state;
+};
 it('同一批次逐操作校验且结果与纯单操作重放一致，原快照和操作不变', () => {
   const operations = [
     op('c', 'conversation.start', { goal: '检验' }),
@@ -169,3 +188,59 @@ it('不同账户及不同批次可使用相同消息标识，各自原文不串�
     expect(state.conversations[0].messages).toHaveLength(0);
   }
 });
+
+it('连续作答的提示清除、计划完成、澄清与消息交错同单步重放一致，重试不重写原答', () => {
+  const original = answerFixture();
+  original.revision = 995;
+  const before = JSON.stringify(original);
+  const operations = [
+    op('other', 'conversation.start', { goal: '另一对话' }),
+    op('other-focus', 'question.focus', { conversationId: 'other', questionKey: 'q@1' }),
+    op('plan', 'plan.set', {
+      tasks: [
+        { id: 'submitted', title: '交卷', questionKey: 'q@1', condition: 'submitted' },
+        { id: 'independent', title: '独立正确', questionKey: 'q@1', condition: 'independent_correct' }
+      ]
+    }),
+    op('hint', 'hint.add', { conversationId: 'other', content: '先看个位。😀\n"\\\uD800' }),
+    op('clarify', 'attempt.submit', { conversationId: 'c', answer: '我不明白' }),
+    op('wrong', 'attempt.submit', { conversationId: 'c', answer: '19', explicit: true }),
+    op('message', 'message.add', { conversationId: 'c', role: 'user', content: '下一次独立作答' }),
+    op('correct', 'attempt.submit', { conversationId: 'c', answer: '20', explicit: true })
+  ];
+  const batch = createLearningOperationBatch(original);
+  let reference = original;
+  for (const operation of operations) {
+    reference = applyLearningOperation(reference, operation).state;
+    expect(batch.apply(operation).state).toEqual(reference);
+  }
+  expect(batch.apply(operations.at(-1)).reused).toBe(true);
+  const result = batch.finish();
+  expect(result).toEqual(reference);
+  expect(result.attempts).toHaveLength(2);
+  expect(result.attempts[0].hints).toHaveLength(1);
+  expect(result.attempts[1].hints).toHaveLength(0);
+  expect(result.plans[0].tasks.map((task) => task.completedBy)).toEqual(['wrong', 'correct']);
+  expect(JSON.stringify(original)).toBe(before);
+});
+
+it.each(['1e309', '9007199254740993', '-0', '"\\u4e2d"', '"\\/"'])(
+  '连续作答在规范化 %s、revision跨位和六百万字符边界逐操作守限',
+  (literal) => {
+    const original = answerFixture();
+    original.revision = 999;
+    original.legacy = { value: JSON.rawJSON(literal), padding: '' };
+    const submission = op('answer', 'attempt.submit', { conversationId: 'c', answer: '20', explicit: true });
+    const expected = applyLearningOperation(original, submission).state;
+    original.legacy.padding = '学'.repeat(HISTORY_LIMITS.stateCharacters - JSON.stringify(expected).length);
+    const batch = createLearningOperationBatch(original);
+    batch.apply(submission);
+    expect(JSON.stringify(batch.finish()).length).toBe(HISTORY_LIMITS.stateCharacters);
+    original.legacy.padding += '学';
+    expect(() => applyLearningOperation(original, submission)).toThrow('上限');
+    const rejected = createLearningOperationBatch(original);
+    expect(() => rejected.apply(submission)).toThrow('上限');
+    expect(() => rejected.finish()).toThrow('失败');
+    expect(original.attempts).toHaveLength(0);
+  }
+);
