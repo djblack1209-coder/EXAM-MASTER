@@ -30,9 +30,8 @@ defineProps({
   flex: none;
   width: var(--avatar-size);
   height: var(--avatar-size);
-  overflow: hidden;
-  background: var(--violet-soft);
-  border-radius: var(--r-pill);
+  overflow: visible;
+  background: transparent;
 }
 .base-bubble--user {
   align-self: flex-end;

@@ -151,18 +151,15 @@ it.each(['throw', 'empty'])('MIGRATE-15-02: failed sync queue %s retains old and
   expect(read(key).map((row) => row.action)).toEqual(['old', 'new', 'third']);
 });
 it.each(['fetchQuestionBankStats', 'browseQuestions', 'fetchQuestionBankRandom'])(
-  'inflight-15-01: fulfilled unavailable %s preserves review projection',
+  'retired %s preserves review projection when session storage is unavailable',
   async (method) => {
     const store = useReviewStore();
     store.questionBankStats = { total: 8, categories: [] };
     store.questionBankList = [{ id: 'original' }];
-    uni.request.mockImplementation((o) => {
-      blocked = '_enc_EXAM_SESSION_EPOCH';
-      o.success({ statusCode: 200, data: { code: 0, data: {} } });
-      blocked = null;
-      return { abort() {} };
-    });
+    blocked = '_enc_EXAM_SESSION_EPOCH';
     const result = await store[method]().catch((e) => e);
+    blocked = null;
+    expect(uni.request).not.toHaveBeenCalled();
     expect(isSessionUnavailable(result)).toBe(true);
     expect(store.questionBankStats.total).toBe(8);
     expect(store.questionBankList).toEqual([{ id: 'original' }]);
@@ -391,7 +388,8 @@ it('review normal remote and offline queue successful receipt remain usable', as
     return { abort() {} };
   });
   const store = useReviewStore();
-  expect(await store.fetchQuestionBankStats()).toMatchObject({ success: true, source: 'remote', data: { total: 3 } });
+  expect(await store.fetchQuestionBankStats()).toMatchObject({ success: false, code: 410 });
+  expect(uni.request).not.toHaveBeenCalled();
   const queue = new OfflineQueue();
   seedLegacyTask(queue, { requestFn: async () => ({ code: 0, success: true }), requestData: { normal: true } });
   const pending = queue.processQueue();

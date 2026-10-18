@@ -605,6 +605,10 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     expect(store.summary.first.denominator).toBe(1);
     expect(store.summary.knowledge['数学 / 整数运算'].status).toBe('需提示');
     await store.send('调整目标：理解函数');
+    expect(store.active.goal).toBe('12 + 8');
+    const draft = store.active.messages.at(-1);
+    expect(draft.proposal.type).toBe('profile.set');
+    store.commit('profile.set', { ...draft.proposal.data, proposalId: draft.id, explicit: true }, `${draft.id}:accept`);
     expect(store.active.goal).toBe('理解函数');
   });
   it('材料、参考答案、手写作答、批注与校对版本分开；不自动公开或判错', () => {

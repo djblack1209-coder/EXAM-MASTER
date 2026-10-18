@@ -1,3 +1,4 @@
+import { normalizeContentBlocks } from '../learning-content-blocks.js';
 import https from 'node:https';
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
@@ -605,7 +606,8 @@ export function parseLearningOutput(raw: string) {
       uncertainties: []
     };
   }
-  return { message: output.message, tools, question, structured: true };
+  const contentBlocks = output.contentBlocks === undefined ? null : normalizeContentBlocks(output.contentBlocks);
+  return { message: output.message, tools, question, structured: true, ...(contentBlocks ? { contentBlocks } : {}) };
 }
 
 // 旧诊断调用缺少任务预算和用户模型选择，保持禁用，等待迁移到 proxy-ai。

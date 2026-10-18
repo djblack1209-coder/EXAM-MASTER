@@ -35,7 +35,7 @@ describe('品牌显示与兼容合同', () => {
     }
     for (const name of ['mark', 'mark-light', 'icon', 'icon-maskable']) {
       const svg = readFileSync(`src/static/brand/${name}.svg`, 'utf8');
-      expect(svg).toContain('viewBox="0 0 84 84"');
+      expect(svg).toMatch(/viewBox="0 0 (?:84 84|512 512)"/);
       expect(svg).not.toMatch(/<script|<foreignObject|@import|<text\b/i);
       expect(svg).toMatch(/href="data:image\/png;base64,[A-Za-z0-9+/=]+"/);
       expect(svg).not.toMatch(/\bhref="(?:https?:|file:|javascript:)/i);

@@ -283,49 +283,51 @@ describe('safe-navigate.js', () => {
     vi.clearAllMocks();
   });
 
-  describe('safeNavigateTo — tabBar 页面', () => {
-    it('tabBar 页面使用 switchTab', () => {
+  describe('safeNavigateTo — 原底栏页面', () => {
+    it('原底栏页面使用 navigateTo', () => {
       safeNavigateTo('/pages/index/index');
-      expect(uni.switchTab).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/index/index' }));
-      expect(uni.navigateTo).not.toHaveBeenCalled();
+      expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/index/index' }));
+      expect(uni.switchTab).not.toHaveBeenCalled();
     });
 
-    it('tabBar 页面带查询参数时去掉参数', () => {
+    it('原底栏页面带查询参数时保留参数', () => {
       safeNavigateTo('/pages/profile/index?tab=settings');
-      expect(uni.switchTab).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/profile/index' }));
+      expect(uni.navigateTo).toHaveBeenCalledWith(
+        expect.objectContaining({ url: '/pages/profile/index?tab=settings' })
+      );
     });
 
     it('不带前导斜杠的 tabBar 路径也能识别', () => {
       safeNavigateTo('pages/practice/index');
-      expect(uni.switchTab).toHaveBeenCalled();
+      expect(uni.navigateTo).toHaveBeenCalled();
     });
 
-    it('switchTab 成功时调用 success 回调', () => {
+    it('navigateTo 成功时调用 success 回调', () => {
       const success = vi.fn();
       safeNavigateTo('/pages/index/index', { success });
       expect(success).toHaveBeenCalled();
     });
 
-    it('switchTab 失败时降级为 reLaunch', () => {
-      // 让 switchTab 调用 fail 回调
-      uni.switchTab.mockImplementationOnce(({ fail }) => {
-        fail?.({ errMsg: 'switchTab:fail' });
+    it('navigateTo 失败时降级为 redirectTo', () => {
+      // 让 navigateTo 调用 fail 回调
+      uni.navigateTo.mockImplementationOnce(({ fail }) => {
+        fail?.({ errMsg: 'navigateTo:fail' });
       });
 
       safeNavigateTo('/pages/index/index');
-      expect(uni.reLaunch).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/index/index' }));
+      expect(uni.redirectTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/index/index' }));
     });
 
-    it('switchTab 失败且有自定义 fail 回调时不降级', () => {
-      uni.switchTab.mockImplementationOnce(({ fail }) => {
-        fail?.({ errMsg: 'switchTab:fail' });
+    it('navigateTo 失败且有自定义 fail 回调时不降级', () => {
+      uni.navigateTo.mockImplementationOnce(({ fail }) => {
+        fail?.({ errMsg: 'navigateTo:fail' });
       });
 
       const customFail = vi.fn();
       safeNavigateTo('/pages/index/index', { fail: customFail });
 
       expect(customFail).toHaveBeenCalled();
-      expect(uni.reLaunch).not.toHaveBeenCalled();
+      expect(uni.redirectTo).not.toHaveBeenCalled();
     });
   });
 
@@ -403,8 +405,8 @@ describe('safe-navigate.js', () => {
 
     it('tabBar 页面交给 safeNavigateTo', () => {
       safeRedirectTo('/pages/practice/index');
-      expect(uni.switchTab).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/practice/index' }));
-      expect(uni.redirectTo).not.toHaveBeenCalled();
+      expect(uni.redirectTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/practice/index' }));
+      expect(uni.switchTab).not.toHaveBeenCalled();
     });
   });
 });

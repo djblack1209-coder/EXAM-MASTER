@@ -1,252 +1,42 @@
 <template>
-  <view class="onboarding-page" :class="themeStore.isDark ? 'theme-dark' : 'theme-light'" :style="$yoziInsets">
-    <BaseCard surface="glass" :class="{ 'onboarding-welcome': !legacyMode }">
-      <view class="onboarding-stack">
-        <YoziMascot pose="wave" play="once" size="large" />
-        <text class="onboarding-title">{{
-          !legacyMode ? t('login.welcome') : t(`login.${['direction', 'subjects', 'daily', 'summary'][step]}`)
-        }}</text>
-        <BaseTag v-if="legacyMode">{{ step + 1 }} / 4</BaseTag>
-        <BaseTag v-if="legacyMode && step === 0">{{ t('login.exam', { year: targetYear }) }}</BaseTag>
-        <view v-if="legacyMode && step === 1" class="onboarding-stack">
-          <view v-for="group in trackGroups" :key="group.subject" class="onboarding-stack"
-            ><text>{{ group.label }}</text
-            ><view class="onboarding-chips"
-              ><BaseChip
-                v-for="option in group.options"
-                :key="option.id"
-                :model-value="isTrackSelected(option.id)"
-                @update:model-value="selectTrack(group.subject, option.id)"
-                >{{ option.label }}</BaseChip
-              ></view
-            ></view
-          >
-        </view>
-        <BaseSegmented
-          v-if="legacyMode && step === 2"
-          v-model="dailyGoal"
-          :label="t('login.daily')"
-          :options="goalOptions"
-        />
-        <view v-if="legacyMode && step === 3" class="onboarding-stack"
-          ><text>{{ selectedTrackLabels.join(' / ') }}</text
-          ><text>{{ t('login.perDay', { count: dailyGoal }) }}</text></view
-        >
-        <BaseButton variant="primary" block @tap="nextOrComplete">{{
-          !legacyMode ? t('login.onboard') : step === 3 ? t('login.save') : t('login.continue')
-        }}</BaseButton>
-        <BaseButton v-if="legacyMode && step > 0" variant="quiet" block @tap="prevStep">{{
-          t('login.previous')
-        }}</BaseButton>
-        <BaseButton v-if="legacyMode" variant="quiet" block @tap="skipOnboarding">{{ t('login.skip') }}</BaseButton>
-      </view>
-    </BaseCard>
-  </view>
+  <LearningLanding welcome @start="completeOnboarding"
+    ><PrivacyPopup />
+    <BaseEmpty v-if="saveError" state="error" :title="saveError" show-button @action="completeOnboarding" />
+  </LearningLanding>
 </template>
 <script setup>
-import { useThemeStore } from '@/stores/modules/theme.js';
-const themeStore = useThemeStore();
-import './messages.js';
-import { t } from '@/i18n/index.js';
-import BaseButton from '@/components/base/base-button/base-button.vue';
-import BaseCard from '@/components/base/base-card/base-card.vue';
-import BaseChip from '@/components/base/base-chip/base-chip.vue';
-import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
-import BaseTag from '@/components/base/base-tag/base-tag.vue';
-import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
-import { computed, ref, onBeforeUnmount } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
+import { ref, onBeforeUnmount } from 'vue';
+import LearningLanding from '@/components/business/learning/learning-landing.vue';
+import PrivacyPopup from '@/components/common/privacy-popup.vue';
+import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import { storageService } from '@/services/storageService.js';
-import { openLearningEntry as openHomeTab } from '@/utils/home-navigation.js';
-
-const step = ref(0);
-const legacyMode = ref(false);
+import { openLearningEntry } from '@/utils/home-navigation.js';
+import { t } from '@/i18n/index.js';
+const saveError = ref('');
 let active = true;
-const navigationTimers = new Set();
+const timers = new Set();
 onBeforeUnmount(() => {
   active = false;
-  for (const timer of navigationTimers) clearTimeout(timer);
-  navigationTimers.clear();
+  for (const timer of timers) clearTimeout(timer);
+  timers.clear();
 });
-function returnHome() {
+function completeOnboarding() {
   if (!active) return;
-  for (const timer of navigationTimers) clearTimeout(timer);
-  navigationTimers.clear();
-  openHomeTab({
+  saveError.value = '';
+  if (storageService.save('onboarding_completed', true) !== true) {
+    saveError.value = t('tutor.welcome.saveError');
+    return;
+  }
+  openLearningEntry({
     isCurrent: () => active,
     schedule(callback, delay) {
       if (!active) return;
       const timer = setTimeout(() => {
-        navigationTimers.delete(timer);
+        timers.delete(timer);
         if (active) callback();
       }, delay);
-      navigationTimers.add(timer);
+      timers.add(timer);
     }
   });
 }
-onLoad((options) => {
-  legacyMode.value = options?.source === 'home';
-});
-const dailyGoal = ref(25);
-const targetYear = new Date().getFullYear() + 1;
-const selectedTracks = ref(['politics', 'english1', 'math1']);
-
-const trackGroups = computed(() => [
-  {
-    subject: 'politics',
-    label: t('login.politics'),
-    options: [{ id: 'politics', label: t('login.politics') }]
-  },
-  {
-    subject: 'english',
-    label: t('login.english1'),
-    options: [
-      { id: 'english1', label: t('login.english1') },
-      { id: 'english2', label: t('login.english2') }
-    ]
-  },
-  {
-    subject: 'math',
-    label: t('login.math1'),
-    options: [
-      { id: 'math1', label: t('login.math1') },
-      { id: 'math2', label: t('login.math2') },
-      { id: 'math3', label: t('login.math3') }
-    ]
-  }
-]);
-
-const goalOptions = computed(() => [15, 25, 40, 60].map((count) => ({ value: count, label: String(count) })));
-
-const selectedTrackLabels = computed(() => {
-  const labels = [];
-  for (const group of trackGroups.value) {
-    for (const option of group.options) {
-      if (selectedTracks.value.includes(option.id)) labels.push(option.label.replace(/\s\d+$/, ''));
-    }
-  }
-  return labels;
-});
-
-function isTrackSelected(id) {
-  return selectedTracks.value.includes(id);
-}
-
-function selectTrack(subject, id) {
-  if (subject === 'politics') {
-    selectedTracks.value = Array.from(new Set([...selectedTracks.value, 'politics']));
-    return;
-  }
-
-  const group = trackGroups.value.find((item) => item.subject === subject);
-  const groupIds = new Set((group?.options || []).map((item) => item.id));
-  selectedTracks.value = selectedTracks.value.filter((trackId) => !groupIds.has(trackId));
-  selectedTracks.value.push(id);
-}
-
-function prevStep() {
-  if (step.value > 0) step.value -= 1;
-}
-
-function nextOrComplete() {
-  if (legacyMode.value && step.value < 3) {
-    step.value += 1;
-    return;
-  }
-  completeOnboarding();
-}
-
-function saveOnboardingData(completed = true) {
-  storageService.save('onboarding_completed', completed);
-  if (!legacyMode.value) return;
-  const profile = {
-    exam: 'kaoyan',
-    targetYear,
-    tracks: selectedTracks.value
-  };
-  storageService.save('exam_type', 'kaoyan');
-  storageService.save('exam_profile', profile);
-  storageService.save('daily_goal', dailyGoal.value);
-}
-
-function completeOnboarding() {
-  saveOnboardingData(true);
-  returnHome();
-}
-
-function skipOnboarding() {
-  storageService.save('onboarding_completed', true);
-  returnHome();
-}
 </script>
-<style scoped>
-.onboarding-page {
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 100vh;
-  padding: var(--s-8) var(--s-5);
-  margin: 0 auto;
-  display: grid;
-  align-items: center;
-  color: var(--ink);
-  background: var(--canvas);
-  font-family: var(--font-ui);
-}
-.onboarding-page > .base-card {
-  max-width: calc(var(--dialog-width) + var(--s-14) * 3);
-  margin-inline: auto;
-}
-.onboarding-stack {
-  display: grid;
-  gap: var(--s-5);
-}
-.onboarding-title {
-  font: var(--weight-ui-emphasis) var(--size-title-2)/var(--leading-title-2) var(--font-ui);
-}
-.onboarding-chips,
-.onboarding-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-3);
-  justify-content: space-between;
-}
-</style>
-
-<style scoped>
-/* #ifdef MP-WEIXIN */
-.onboarding-page {
-  padding-top: calc(var(--yozi-nav-top, 0px) + var(--s-8));
-}
-/* #endif */
-</style>
-
-<style scoped>
-.onboarding-welcome {
-  width: 100%;
-  background: transparent;
-  box-shadow: none;
-  border: 0;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-.onboarding-welcome .onboarding-stack {
-  justify-items: center;
-  text-align: center;
-  gap: var(--s-8);
-}
-.onboarding-welcome .onboarding-title {
-  font-size: var(--size-title-1);
-  line-height: var(--leading-title-1);
-  text-wrap: balance;
-}
-.onboarding-welcome :deep(.base-button) {
-  width: auto;
-  min-width: 220px;
-}
-@media (max-width: 767px) {
-  .onboarding-welcome :deep(.yozi-mascot) {
-    width: 200px;
-    height: 200px;
-  }
-}
-</style>

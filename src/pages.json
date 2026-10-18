@@ -69,17 +69,6 @@
             "backgroundColor": "@pageBackground",
             "backgroundTextStyle": "@backgroundText"
           }
-        },
-        {
-          "path": "question-bank",
-          "style": {
-            "navigationBarTitleText": "%pages.bank%",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "@navBackground",
-            "navigationBarTextStyle": "@navText",
-            "backgroundColor": "@pageBackground",
-            "backgroundTextStyle": "@backgroundText"
-          }
         }
       ]
     },
@@ -227,14 +216,24 @@
           }
         }
       ]
+    },
+    {
+      "root": "pages/archive",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationStyle": "custom",
+            "navigationBarTitleText": "%pages.archive%",
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
+          }
+        }
+      ]
     }
   ],
-  "preloadRule": {
-    "pages/practice/index": {
-      "network": "all",
-      "packages": ["pages/practice-sub"]
-    }
-  },
   "globalStyle": {
     "navigationBarTextStyle": "@navText",
     "navigationBarTitleText": "%pages.home%",
@@ -243,31 +242,5 @@
     "backgroundTextStyle": "@backgroundText",
     "enablePullDownRefresh": false
   },
-  "uniIdRouter": {},
-  "tabBar": {
-    "custom": true,
-    "color": "@tabText",
-    "selectedColor": "@tabSelected",
-    "backgroundColor": "@tabBackground",
-    "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "%nav.home%",
-        "iconPath": "static/tabbar/home.png",
-        "selectedIconPath": "static/tabbar/home-active.png"
-      },
-      {
-        "pagePath": "pages/practice/index",
-        "text": "%nav.practice%",
-        "iconPath": "static/tabbar/practice.png",
-        "selectedIconPath": "static/tabbar/practice-active.png"
-      },
-      {
-        "pagePath": "pages/profile/index",
-        "text": "%nav.profile%",
-        "iconPath": "static/tabbar/profile.png",
-        "selectedIconPath": "static/tabbar/profile-active.png"
-      }
-    ]
-  }
+  "uniIdRouter": {}
 }

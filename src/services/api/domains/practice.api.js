@@ -1,3 +1,4 @@
+import { retiredBankResponse } from '@/services/retired-question-bank.js';
 import { captureSession } from '../../auth-storage.js';
 /**
  * 题库与练习 API
@@ -14,95 +15,19 @@ import { request, normalizeError } from './_request-core.js';
 // submitAnswer, addFavorite, getFavorites, removeFavorite
 // [AUDIT R432] 补删 getQuestionBank（R275 遗漏）
 
-// ==================== 题库 ====================
-
-/**
- * 从后端随机获取题目
- * @param {Object} [params] - 查询参数
- * @param {number} [params.count=20] - 题目数量
- * @param {string} [params.category] - 分类筛选
- * @param {string} [params.difficulty] - 难度筛选
- * @returns {Promise} 返回随机题目数组
- */
-export async function getRandomQuestions(params = {}) {
-  const session = captureSession();
-  try {
-    const response = await request(
-      '/question-bank',
-      {
-        action: 'random',
-        data: {
-          count: params.count || 20,
-          category: params.category,
-          difficulty: params.difficulty
-        }
-      },
-      { session }
-    );
-    return response;
-  } catch (error) {
-    logger.warn('[LafService] 随机获取题目失败:', error);
-    return normalizeError(error, '随机获取题目');
-  }
+// Compatibility exports return a retirement result without making network requests.
+export { retiredBankResponse } from '@/services/retired-question-bank.js';
+export async function getRandomQuestions() {
+  return retiredBankResponse();
 }
-
-/**
- * 获取题库分类统计
- */
 export async function getQuestionBankStats() {
-  const session = captureSession();
-  try {
-    return await request(
-      '/question-bank',
-      {
-        action: 'get_stats'
-      },
-      { session }
-    );
-  } catch (error) {
-    logger.warn('[LafService] 获取题库统计失败:', error);
-    return normalizeError(error, '获取题库统计');
-  }
+  return retiredBankResponse();
 }
-
-/**
- * 浏览题库（分页+筛选）
- */
-export async function browseQuestions(params = {}) {
-  const session = captureSession();
-  try {
-    return await request(
-      '/question-bank',
-      {
-        action: 'get',
-        data: params
-      },
-      { session }
-    );
-  } catch (error) {
-    logger.warn('[LafService] 浏览题库失败:', error);
-    return normalizeError(error, '浏览题库');
-  }
+export async function browseQuestions() {
+  return retiredBankResponse();
 }
-
-/**
- * 从题库随机抽题开始练习
- */
-export async function getQuestionBankRandom(params = {}) {
-  const session = captureSession();
-  try {
-    return await request(
-      '/question-bank',
-      {
-        action: 'random',
-        data: params
-      },
-      { session }
-    );
-  } catch (error) {
-    logger.warn('[LafService] 随机抽题失败:', error);
-    return normalizeError(error, '随机抽题');
-  }
+export async function getQuestionBankRandom() {
+  return retiredBankResponse();
 }
 
 // ==================== FSRS 间隔重复优化 ====================
@@ -206,9 +131,9 @@ export async function getFSRSReviewStats() {
 
 /**
  * 导出 Anki 牌组
- * @param {string} [deckName='我的考研题库'] - 牌组名称
+ * @param {string} [deckName='我的学习资料'] - 牌组名称
  */
-export async function exportAnki(deckName = '我的考研题库') {
+export async function exportAnki(deckName = '我的学习资料') {
   const session = captureSession();
   try {
     return await request('/anki-export', { deckName }, { session });

@@ -1,8 +1,14 @@
 <template>
   <view class="glass-card mistake-card">
     <view class="card-tag">{{ item.category || item.subject || t('mistake.copy48') }}</view>
-    <text class="question-text">{{ item.question ?? item.question_content ?? t('mistake.copy49') }}</text>
-    <BaseOptions :label="t('mistake.copy50')" :options="options.map((label, value) => ({ label, value }))" disabled />
+    <text class="question-text">{{ saved.prompt || t('tutor.archive.retired') }}</text>
+    <text v-if="!saved.available" class="time-text">{{ t('tutor.archive.original') }}: {{ originalAnswer }}</text>
+    <BaseOptions
+      v-if="saved.available"
+      :label="t('mistake.copy50')"
+      :options="options.map((label, value) => ({ label, value }))"
+      disabled
+    />
     <view v-if="mode === 'recite' || localShowAnalysis" class="analysis-box">
       <view class="correct-ans">{{ t('mistake.copy51', { v0: reference ?? t('mistake.copy52') }) }}</view>
       <view v-if="originalAnswer !== undefined && originalAnswer !== null" class="analysis-content">
@@ -38,6 +44,8 @@
 
 <script setup>
 import '@/pages/mistake/messages.js';
+import '@/i18n/tutor.js';
+import { legacyQuestionView } from '@/services/retired-question-bank.js';
 import { publicError, t } from '@/i18n/index.js';
 import BaseOptions from '@/components/base/base-options/base-options.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
@@ -46,7 +54,7 @@ import '@/styles/yozi-pages.scss';
 import { ref, computed, watch } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
-import { normalizeLegacyReviewQuestion, legacyReviewQuestionIdentity } from '@/services/quiz-session-contract.js';
+import { legacyReviewQuestionIdentity } from '@/services/quiz-session-contract.js';
 import { toast } from '@/utils/toast.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 const props = defineProps({
@@ -63,7 +71,8 @@ const localShowAnalysis = ref(false),
 const options = computed(() => (Array.isArray(props.item.options) ? props.item.options : []));
 const reference = computed(() => props.item.answer ?? props.item.correct_answer ?? props.item.correctAnswer);
 const originalAnswer = computed(() => props.item.user_answer ?? props.item.userAnswer ?? props.item.userChoice);
-const reviewable = computed(() => !!normalizeLegacyReviewQuestion(props.item));
+const saved = computed(() => legacyQuestionView(props.item));
+const reviewable = computed(() => saved.value.reviewable);
 watch(
   () => [legacyReviewQuestionIdentity(props.item), props.expectedOwnerId],
   () => {

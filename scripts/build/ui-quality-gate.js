@@ -22,6 +22,10 @@ import { gunzipSync, brotliDecompressSync } from 'node:zlib';
 // Framework properties (placeholder/debug) and educational tests are not UI copy.
 export const PUBLIC_BUILD_RULES = [
   [
+    'retired-bank',
+    /(?:config\/flashcard-banks|static\/question-bank\/|bank-data-(?:table|loader|codec)|COMPRESSED_BANK_DATA_BY_ID)/
+  ],
+  [
     'development-route',
     /platforms\/h5\/components|component-preview|(?:pages|platforms)\/(?:[^"'\s/]+\/)*(?:visual-qa|future-reference|dev-preview)/i
   ],
@@ -58,6 +62,7 @@ export function scanPublicBuild(directory) {
         visit(file);
         continue;
       }
+      if (/(?:^|\/)question-bank\//.test(relative)) result.findings.push({ category: 'retired-bank', file: relative });
       if (!/\.(?:js|mjs|html|css|json|wxml|wxss|wxs|map)(?:\.(?:gz|br))?$/.test(entry.name)) continue;
       let bytes = fs.readFileSync(file);
       try {

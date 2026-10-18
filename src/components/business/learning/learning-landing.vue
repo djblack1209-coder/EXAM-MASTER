@@ -1,7 +1,7 @@
 <template>
   <view>
-    <FutureLanding v-if="theme.visualStyle === 'future'" @open="open" />
-    <PlayfulLanding v-else @open="open" />
+    <FutureLanding v-if="theme.visualStyle === 'future'" :welcome="welcome" @open="open" />
+    <PlayfulLanding v-else :welcome="welcome" @open="open" />
     <slot></slot>
   </view>
 </template>
@@ -11,11 +11,16 @@ import PlayfulLanding from './playful-landing.vue';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { safeNavigateTo, requestProfilePanel } from '@/utils/safe-navigate.js';
-defineEmits(['legacy']);
+const props = defineProps({ welcome: Boolean });
+const emit = defineEmits(['start']);
 const theme = useThemeStore();
 const learning = useConversationLearningStore();
 function open(target) {
   if (target === 'start') {
+    if (props.welcome) {
+      emit('start');
+      return;
+    }
     learning.selectedConversationId = null;
     safeNavigateTo('/pages/learning/index');
     return;

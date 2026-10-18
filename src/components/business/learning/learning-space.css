@@ -364,15 +364,14 @@
 }
 .learning-space .space-header .mobile-menu,
 .learning-space .brand-row .sidebar-close,
-.mobile-dock,
 .sidebar-scrim {
   display: none;
 }
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .learning-space {
     padding: var(--s-4);
     padding-top: calc(var(--s-4) + var(--space-status-top, 0px));
-    padding-bottom: calc(var(--s-14) + var(--s-6) + env(safe-area-inset-bottom));
+    padding-bottom: calc(var(--s-4) + env(safe-area-inset-bottom));
   }
   .space-frame {
     display: block;
@@ -422,32 +421,6 @@
   .sidebar-leaving {
     display: none;
   }
-  .mobile-dock {
-    display: flex;
-    justify-content: space-around;
-    position: fixed;
-    bottom: var(--s-3);
-    left: var(--s-4);
-    right: var(--s-4);
-    z-index: 3;
-    padding: var(--s-2);
-  }
-  .mobile-dock .base-button {
-    flex-direction: column;
-    flex: 1;
-    gap: var(--s-1);
-  }
-  .mobile-dock .base-button__content {
-    flex-direction: column;
-    gap: var(--s-1);
-  }
-  .mobile-dock .base-button__content text {
-    white-space: nowrap;
-    font: var(--weight-ui-emphasis) var(--size-caption)/var(--leading-caption) var(--font-ui);
-  }
-  .mobile-dock .selected {
-    color: var(--violet-ink);
-  }
   .composer {
     bottom: var(--tabbar-reserve);
   }
@@ -480,11 +453,6 @@
   min-width: 0;
   width: 100%;
 }
-.mobile-dock > .base-card__body {
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-}
 
 .space-sidebar .base-button__content {
   width: 100%;
@@ -512,14 +480,7 @@
 .message-content {
   min-width: 0;
 }
-@media (max-width: 767px) {
-  .mobile-dock {
-    bottom: calc(var(--tabbar-gap) + env(safe-area-inset-bottom));
-  }
-  .mobile-dock .base-button {
-    padding: var(--s-1) var(--s-2);
-    min-width: 0;
-  }
+@media (max-width: 1023px) {
 }
 
 .material-heading {
@@ -536,7 +497,7 @@
   outline-offset: var(--focus-offset);
 }
 
-/* One app frame: desktop sidebar, compact tablet sidebar, mobile drawer + dock. */
+/* One app frame: desktop sidebar, drawer for narrow screens. */
 .space-sidebar .desktop-navigation .base-button {
   min-height: var(--touch-min);
 }
@@ -562,44 +523,7 @@
 .learning-space .yozi-tabbar-space {
   display: none;
 }
-@media (min-width: 768px) and (max-width: 1023px) {
-  .learning-space {
-    --sidebar-width: 88px;
-    padding: var(--s-4);
-  }
-  .space-frame {
-    gap: var(--s-5);
-  }
-  .space-sidebar {
-    padding: var(--s-3);
-    top: var(--s-4);
-  }
-  .space-sidebar .brand-copy,
-  .space-sidebar .sidebar-label,
-  .space-sidebar .library-search,
-  .space-sidebar .record-filters,
-  .space-sidebar .recent-list,
-  .space-sidebar .nav-count,
-  .space-sidebar .library-materials,
-  .space-sidebar .new-session text {
-    display: none;
-  }
-  .space-sidebar .brand-link {
-    padding: 0;
-  }
-  .space-sidebar .base-button {
-    justify-content: center;
-    padding-inline: 0;
-  }
-  .space-sidebar .base-button__content {
-    width: auto;
-    flex: none;
-  }
-  .space-sidebar .desktop-navigation .base-button__content > text {
-    display: none;
-  }
-}
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .learning-space .space-header {
     padding-top: 0;
   }
@@ -613,4 +537,12 @@
 }
 .learning-space.yozi-page :where(.section-head, .section-header) {
   padding-inline: 0;
+}
+.learning-space {
+  --tabbar-reserve: 0px;
+}
+@media (max-width: 1023px) {
+  .learning-space .composer {
+    bottom: env(safe-area-inset-bottom);
+  }
 }

@@ -53,7 +53,7 @@ export const LEARNING_TOOLS = Object.freeze({
   hint: { version: '1.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 },
   method: { version: '1.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 },
   assess: { version: '1.2', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 },
-  plan: { version: '1.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 },
+  plan: { version: '2.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 },
   stop: { version: '1.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 }
 });
 export function executeLearningTool(repository, call, context) {
@@ -109,6 +109,7 @@ export function executeLearningTool(repository, call, context) {
   let result;
   let operationReused = false;
   let legacyAssessmentReplay = false;
+  let legacyPlanReplay = false;
   try {
     if (call.name === 'plan') {
       const state = repository.read();
@@ -142,9 +143,13 @@ export function executeLearningTool(repository, call, context) {
         hint: 'hint.add',
         method: 'strategy.set',
         assess: 'assessment.assist',
-        plan: 'plan.set',
+        plan: 'message.add',
         stop: 'task.stop'
       }[call.name];
+      legacyPlanReplay =
+        call.name === 'plan' &&
+        repository.read().events.some((event) => event.id === call.id && event.type === 'plan.set');
+      if (legacyPlanReplay) type = 'plan.set';
       // 模型不能替用户提交答案。submit 只由明确的用户作答触发。
       assert(call.name !== 'submit' || context.origin === 'user', 'FORBIDDEN', '模型不能代替用户作答');
       if (call.name === 'submit') {
@@ -170,15 +175,23 @@ export function executeLearningTool(repository, call, context) {
       const outcome = repository.commit({
         id: call.id,
         type,
-        data: {
-          ...call.arguments,
-          conversationId: context.conversationId,
-          ...(call.name === 'submit' && type === ORIGINAL_ANSWER_OPERATION ? { explicit: true } : {}),
-          ...(call.name === 'method' ? { deliveryManaged: true } : {}),
-          ...(call.name === 'method' ? { source: 'model' } : {}),
-          ...(call.name === 'assess' ? { model: context.model || 'model' } : {}),
-          ...(rubricContract ? { rubricContract } : {})
-        }
+        data:
+          call.name === 'plan' && !legacyPlanReplay
+            ? {
+                conversationId: context.conversationId,
+                role: 'assistant',
+                content: '计划建议已准备，请确认后采用。',
+                proposal: { type: 'plan.set', data: call.arguments }
+              }
+            : {
+                ...call.arguments,
+                conversationId: context.conversationId,
+                ...(call.name === 'submit' && type === ORIGINAL_ANSWER_OPERATION ? { explicit: true } : {}),
+                ...(call.name === 'method' ? { deliveryManaged: true } : {}),
+                ...(call.name === 'method' ? { source: 'model' } : {}),
+                ...(call.name === 'assess' ? { model: context.model || 'model' } : {}),
+                ...(rubricContract ? { rubricContract } : {})
+              }
       });
       result = outcome.result;
       operationReused = outcome.reused;
@@ -191,7 +204,8 @@ export function executeLearningTool(repository, call, context) {
         priorReceipt.type === 'execution.record' &&
           priorReceipt.data.tool === call.name &&
           (priorReceipt.data.version === tool.version ||
-            (legacyAssessmentReplay && ['1.0', '1.1'].includes(priorReceipt.data.version))) &&
+            (legacyAssessmentReplay && ['1.0', '1.1'].includes(priorReceipt.data.version)) ||
+            (legacyPlanReplay && priorReceipt.data.version === '1.0')) &&
           priorReceipt.data.status === 'success',
         'IDEMPOTENCY_CONFLICT',
         '原工具收据与重试任务不一致'

@@ -399,7 +399,7 @@ class QuestionFavoriteManager {
     if (!this.init() || expectedOwner !== this.ownerId) return failed('账户已变化，请重新选择', 'CONTEXT_CHANGED');
     const matches = this.favorites.filter((f) => f.id === id);
     if (matches.length !== 1 || !matches[0].quizOriginal)
-      return failed('原题资料不完整，请返回题库重新选择', 'ORIGINAL_UNAVAILABLE');
+      return failed('原题已随旧题库下线，原记录保留', 'ORIGINAL_UNAVAILABLE');
     const original = matches[0].quizOriginal;
     const question = prepareQuizQuestion({ ...original.fields, id: original.id, quizOriginal: original });
     const row = matches[0];

@@ -22,7 +22,7 @@ export const MOBILE_SMOKE_ROUTES = [
   '/pages/index/index',
   '/pages/learning/index',
   '/pages/practice/index',
-  '/pages/practice-sub/question-bank',
+  '/pages/archive/index',
   '/pages/practice-sub/do-quiz',
   '/pages/mistake/index',
   '/pages/profile/index'
@@ -46,12 +46,12 @@ export function findBlockingToastText(pageText = '') {
 // 全新资料域的启动页应自动进入引导页；其余入口应停留在所请求页面。
 export const MOBILE_ROUTE_READY_SELECTORS = {
   '/pages/splash/index': '.splash-container .brand-name',
-  '/pages/login/onboarding': '.onboarding-page .base-button--primary',
+  '/pages/login/onboarding': '.base-button--primary',
   '/pages/index/index': '.playful-nav .base-button, .future-nav .nav-link',
   '/pages/learning/index':
     '.learning-page .goal-panel textarea, .learning-page #learning-composer textarea, .learning-page #learning-composer input',
-  '/pages/practice/index': '.practice-command.primary',
-  '/pages/practice-sub/question-bank': '.learning-space .paper-hero .hero-title',
+  '/pages/practice/index': '.learning-overview',
+  '/pages/archive/index': '.archive-content',
   '/pages/practice-sub/do-quiz': '#e2e-quiz-progress, .custom-modal-container .base-state',
   '/pages/mistake/index': '.learning-overview .overview-title, .learning-overview .overview-empty',
   '/pages/profile/index': '.profile-command-card .user-name'

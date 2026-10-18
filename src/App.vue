@@ -129,6 +129,7 @@ export default {
         '/pages/splash/index',
         '/pages/index/index',
         '/pages/learning/index',
+        '/pages/archive/index',
         '/pages/mistake/index',
         '/pages/plan/index',
         '/pages/study-detail/index',
@@ -139,7 +140,6 @@ export default {
         '/pages/settings/terms',
         '/pages/practice/index',
         '/pages/practice-sub/do-quiz',
-        '/pages/practice-sub/question-bank',
         '/pages/profile/index'
       ];
 

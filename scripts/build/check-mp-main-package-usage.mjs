@@ -1,3 +1,4 @@
+import { auditRetiredBank } from './retired-bank-gate.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -152,43 +153,11 @@ export function assertNoFlashcardBanksInMainPackage(rootDir = buildRoot) {
 }
 
 export function assertPracticeSubpackageBankDataRuntime(rootDir = buildRoot) {
-  const practiceRoot = path.join(rootDir, 'pages', 'practice-sub');
-  const loaderPath = path.join(practiceRoot, 'bank-data-loader.js');
-  if (!fs.existsSync(loaderPath)) {
-    console.log('[main-usage-check] practice-sub 未包含题库加载器，跳过题库运行模块检查');
-    return;
-  }
-
-  const loaderSource = fs.readFileSync(loaderPath, 'utf8');
-  const missingModules = [];
-  const requireMatches = loaderSource.matchAll(/require\(["']\.\/flashcard-banks\/([^"']+)["']\)/g);
-  for (const match of requireMatches) {
-    const relativePath = `pages/practice-sub/flashcard-banks/${match[1]}`;
-    if (!fs.existsSync(path.join(rootDir, relativePath))) {
-      missingModules.push(relativePath);
-    }
-  }
-
-  const tablePath = path.join(practiceRoot, 'bank-data-table.js');
-  const codecPath = path.join(practiceRoot, 'bank-data-codec.js');
-  const hasGeneratedTable =
-    fs.existsSync(tablePath) &&
-    fs.readFileSync(tablePath, 'utf8').includes('COMPRESSED_BANK_DATA_BY_ID') &&
-    fs.existsSync(codecPath);
-
-  if (missingModules.length > 0 && !hasGeneratedTable) {
+  const report = auditRetiredBank(projectRoot, [rootDir]);
+  if (!report.ok)
     throw new Error(
-      `[main-usage-check] 题库运行模块缺失: ${missingModules
-        .slice(0, 5)
-        .join(', ')}；请确认压缩题库数据已进入 practice-sub 分包产物`
+      '[main-usage-check] 退役题库不得进入任何分包: ' + report.findings.map((item) => item.path).join(', ')
     );
-  }
-
-  if (!hasGeneratedTable && !fs.existsSync(path.join(practiceRoot, 'flashcard-banks'))) {
-    throw new Error('[main-usage-check] 题库运行模块缺失: practice-sub 未包含压缩题库数据表或题库模块目录');
-  }
-
-  console.log('[main-usage-check] practice-sub 题库运行模块检查通过');
 }
 
 function assertModuleUsedByMainPackage(modulePath) {

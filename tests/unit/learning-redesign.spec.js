@@ -486,8 +486,8 @@ describe('learning i18n', () => {
     const wrapper = render();
     setLanguage('en');
     await flushPromises();
-    expect(wrapper.get('.message.notice').text()).toBe('Correct.');
-    expect(wrapper.findAll('.message.assistant').at(-1).text()).toBe('答对了。');
+    expect(wrapper.get('.message.notice .learning-message-content').text()).toBe('Correct.');
+    expect(wrapper.findAll('.message.assistant .learning-message-content').at(-1).text()).toBe('答对了。');
     await wrapper.get('.connection-pill').trigger('tap');
     await flushPromises();
     const profile = wrapper.findAllComponents(BaseButton).find((button) => button.text() === 'Goals and plans');

@@ -90,14 +90,16 @@ describe('landing language, entry and mascot behavior', () => {
     }
   );
   it.each([PlayfulLanding, FutureLanding])(
-    'waves once, settles to idle, pauses for reduced motion',
+    'uses approved front pose or greeting, settles to idle, and respects reduced motion',
     async (component) => {
       render(component);
       await nextTick();
       const mascot = wrapper.get('.yozi-mascot');
-      expect(mascot.attributes('data-pose')).toBe('wave');
-      expect(mascot.attributes('data-moving')).toBe('true');
-      await mascot.get('.yozi-mascot__alt').trigger('animationend', { animationName: 'yozi-wave' });
+      if (component === PlayfulLanding) {
+        expect(mascot.attributes('data-pose')).toBe('wave');
+        expect(mascot.attributes('data-moving')).toBe('true');
+        await mascot.get('.yozi-mascot__alt').trigger('animationend', { animationName: 'yozi-wave' });
+      }
       expect(mascot.attributes('data-pose')).toBe('idle');
       setMascotReducedMotion(true, { persist: false });
       await nextTick();

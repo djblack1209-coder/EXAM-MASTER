@@ -207,57 +207,19 @@ it.each([0, 2])(
     expect(request).toHaveBeenCalledTimes(2);
   }
 );
-it.each([
-  ['fetchQuestionBankStats', 'getQuestionBankStats', { total: 3, categories: [] }],
-  ['browseQuestions', 'browseQuestions', { list: [{ id: 'q1' }], total: 1 }],
-  ['fetchQuestionBankRandom', 'getQuestionBankRandom', [{ id: 'q1' }]]
-])('inflight-02: %s always settles its own loading and works after recovery', async (method, api, data) => {
-  const store = useReviewStore();
-  let finish;
-  practiceApi[api].mockImplementationOnce(
-    () =>
-      new Promise((r) => {
-        finish = r;
-      })
-  );
-  const before = JSON.stringify(store.questionBankStats);
-  const pending = store[method]();
-  expect(store.loading).toBe(true);
-  blocked = true;
-  finish({ code: 0, data });
-  await expect(pending).rejects.toMatchObject({ code: 'SESSION_UNAVAILABLE' });
-  expect(store.loading).toBe(false);
-  expect(JSON.stringify(store.questionBankStats)).toBe(before);
-  blocked = false;
-  practiceApi[api].mockResolvedValue({ code: 0, data });
-  expect((await store[method]()).success).toBe(true);
-  expect(store.loading).toBe(false);
-});
-it('inflight-02: older finally leaves overlapping new review request busy', async () => {
-  const store = useReviewStore();
-  let a, b;
-  practiceApi.getQuestionBankStats
-    .mockImplementationOnce(
-      () =>
-        new Promise((r) => {
-          a = r;
-        })
-    )
-    .mockImplementationOnce(
-      () =>
-        new Promise((r) => {
-          b = r;
-        })
-    );
-  const first = store.fetchQuestionBankStats(),
-    second = store.fetchQuestionBankStats();
-  a({ code: 0, data: { total: 1 } });
-  await first;
-  expect(store.loading).toBe(true);
-  b({ code: 0, data: { total: 2 } });
-  await second;
-  expect(store.loading).toBe(false);
-});
+it.each(['fetchQuestionBankStats', 'browseQuestions', 'fetchQuestionBankRandom'])(
+  'retired %s never revives local/remote banks and preserves the session guard',
+  async (method) => {
+    const store = useReviewStore(),
+      before = JSON.stringify(store.$state);
+    expect(await store[method]()).toMatchObject({ success: false, code: 410 });
+    expect(JSON.stringify(store.$state)).toBe(before);
+    blocked = true;
+    await expect(store[method]()).rejects.toMatchObject({ code: 'SESSION_UNAVAILABLE' });
+    blocked = false;
+    expect(JSON.stringify(store.$state)).toBe(before);
+  }
+);
 it.each([false, true])(
   'regress-01/order-02: renewed token allows profile, practice, plan, review (locks=%s)',
   async (locks) => {
@@ -272,7 +234,7 @@ it.each([false, true])(
     expect((await startPracticeMode('TIME_LIMITED')).questionCount).toBe(1);
     const plan = plans.createMultiDimensionPlan(planOptions);
     expect(plans.adjustPlan(plan.id, 50)?.progress).toBe(50);
-    expect((await useReviewStore().fetchQuestionBankStats()).success).toBe(true);
+    expect(await useReviewStore().fetchQuestionBankStats()).toMatchObject({ success: false, code: 410 });
   }
 );
 it('regress-02: async legacy upgrade restores complete profile and login after commit', async () => {
@@ -363,13 +325,13 @@ it('regress-03: readonly notification controller can initialize while unavailabl
     observer.dispose();
   }
 });
-it('inflight-02: typed temporary response preserves review cache without a storage fault', async () => {
+it('retired bank response preserves review cache without calling an unavailable remote', async () => {
   const store = useReviewStore();
   store.questionBankStats = { total: 8, categories: [] };
   practiceApi.getQuestionBankStats.mockRejectedValue(
     Object.assign(new Error('fixture'), { code: 'SESSION_UNAVAILABLE' })
   );
-  await expect(store.fetchQuestionBankStats()).rejects.toMatchObject({ code: 'SESSION_UNAVAILABLE' });
+  await expect(store.fetchQuestionBankStats()).resolves.toMatchObject({ success: false, code: 410 });
   expect(store.questionBankStats.total).toBe(8);
   expect(store.loading).toBe(false);
 });
