@@ -28,9 +28,50 @@
 
 2026-10-18阶段12A已将源码 `86ae5ba7` 同源交付到唯一日常入口 `/Users/blackdj/Applications/Yozi AI.app` 与 `dist/build/h5`。Mac版本仍为2.2.0、标识 `cn.wangshiliang.wenli.localqa93d5ef76c442`，原UUID及同身份ad-hoc签名保持，严格核验通过；只原子替换可执行文件，其余8项内容与全部9项元数据不变。实际打开及正常退出后，19个私人学习键逐字同，27目标/32原答/3资料/444事件的摘要均保持，无学习资料迁移；程序保持未运行。
 
-网页新入口为 `static/js/index-9D3k5lSA.js`（桌面嵌入前端 `index-BFmg2y-n.js`）。4212由launchd任务 `cn.yozi.local-web.4212` 托管，PID10463、启动时间 `Sun Oct 18 02:31:06 2026`、父PID1，仅绑定 `127.0.0.1`；首页HTTP200且字节对应新index。启动命令及停止所需PID/启动时间在 `tmp/p12a-evidence/receipt.json#webInstall`；停止前先核对该记录，使用 `launchctl remove cn.yozi.local-web.4212` 安全卸载对应本机任务。服务保留供试用，旧4212页关闭后重开，必要时Command-Shift-R；本轮没有操作客户Chrome及其数据。下文日期更早的候选、路径和PID仅表示历史。
+网页新入口为 `static/js/index-9D3k5lSA.js`（桌面嵌入前端 `index-BFmg2y-n.js`）。4212由launchd任务 `cn.yozi.local-web.4212` 托管，PID10463、启动时间 `Sun Oct 18 02:31:06 2026`、父PID1，仅绑定 `127.0.0.1`；首页HTTP200且字节对应新index。启动参数及PID/启动时间在本机回执 `tmp/p12a-evidence/receipt.json` 的 `webInstall`，停止与重启后的恢复步骤见下文。服务保留供试用，旧4212页关闭后重开，必要时Command-Shift-R；本轮没有操作客户Chrome及其数据。下文日期更早的候选、路径和PID仅表示历史。
 
 当前日常程序归档为 `tmp/p12a-evidence/daily-current.app.zip`，上一版回退为同目录 `daily-before.app.zip`，核验身份为 `native-qa.app.zip`；均完整读回、实际试还原及严格签名通过，元数据在回执中。旧回执指向的日常归档/镜像/缓存路径已不存在，旧日常可执行文件仍与local-progress回执吻合，因此本轮先补建旧版归档。实际旧网页入口 `index-CfMEG627.js` 与历史回执不同，原子替换后按原样保留在 `dist/build/h5-before-20261018`。私人学习键及逻辑状态只读保存在本轮 `private/`（目录0700/文件0600），只记录计数及摘要。合成网页和Mac的打开、目标/记录、明确交卷、停止与普通重开通过；临时4215、核验App均已退出，临时App精确注销后只留归档。
+
+### 4212 会话恢复与访问日志（阶段12C）
+
+只读执行 `launchctl print gui/$(id -u)/cn.yozi.local-web.4212` 确认：这是 `launchctl submit` 提交的会话级任务，类型为 `Submitted`、属性含 `keepalive`，没有写进 `~/Library/LaunchAgents`。进程意外退出时会自动拉起；电脑重启或注销后不会自动运行，需要在重新登录后手动恢复。停止前先核对回执和当前任务，执行 `launchctl remove cn.yozi.local-web.4212`；只按PID执行kill会被keepalive拉起。
+
+当前program为 `/opt/homebrew/opt/python@3.14/bin/python3.14`；arguments、stdout/stderr路径与下列命令逐项一致，两路日志均指向 `tmp/p12a-evidence/web4212.log`。任务没有显式working directory配置，`lsof -a -p 10463 -d cwd -Fn` 实测工作目录为 `/`。环境沿当前GUI launchd继承，无自定义任务环境：`no_proxy`/`NO_PROXY` 为 `127.0.0.1,localhost,::1`，另含 `PATH`、`OPENCODE_DISABLE_EXTERNAL_SKILLS=1` 和当前会话的 `SSH_AUTH_SOCK`；launchd提供默认PATH并注入 `OSLogRateLimit=64` / `XPC_SERVICE_NAME=cn.yozi.local-web.4212`。完整只读快照在回执 `webInstall.launchctlSnapshot`；恢复仍继承当时GUI环境，不把注销后会变化的socket路径固定进命令。
+
+仅在重启/注销后恢复或主动移除任务后执行以下整段命令；第一步绑定检查4212端口空闲，占用时直接失败，不触碰现有任务。第二步按现有参数提交，最后等待就绪并验证首页HTTP200、与当前磁盘首页逐字一致且引用本批入口。恢复后的PID和启动时间会变化，操作前重新核对，不沿用历史PID。
+
+```bash
+(
+  cd / || exit 1
+  python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1",4212)); s.close(); print("4212 端口空闲")' || exit 1
+  launchctl submit -l cn.yozi.local-web.4212 -o '/Users/blackdj/Desktop/Yozi AI/tmp/p12a-evidence/web4212.log' -e '/Users/blackdj/Desktop/Yozi AI/tmp/p12a-evidence/web4212.log' -- /opt/homebrew/opt/python@3.14/bin/python3.14 -u -c 'from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler;from functools import partial;import sys;ThreadingHTTPServer.request_queue_size=128;s=ThreadingHTTPServer(("127.0.0.1",int(sys.argv[1])),partial(SimpleHTTPRequestHandler,directory=sys.argv[2]));s.serve_forever()' 4212 '/Users/blackdj/Desktop/Yozi AI/dist/build/h5' || exit 1
+  python3 - <<'PY'
+from pathlib import Path
+from urllib.error import URLError
+from urllib.request import ProxyHandler, build_opener
+import time
+
+opener = build_opener(ProxyHandler({}))
+for attempt in range(50):
+    try:
+        with opener.open("http://127.0.0.1:4212/", timeout=2) as response:
+            status, body = response.status, response.read()
+        break
+    except (URLError, TimeoutError):
+        if attempt == 49:
+            raise
+        time.sleep(0.1)
+expected = Path("/Users/blackdj/Desktop/Yozi AI/dist/build/h5/index.html").read_bytes()
+assert status == 200 and body == expected, "首页与当前磁盘文件不一致"
+assert b"/static/js/index-9D3k5lSA.js" in body, "首页未引用本批入口"
+print("HTTP 200；首页逐字一致，入口 index-9D3k5lSA.js")
+PY
+)
+```
+
+访问日志只读核对的格式为“客户端IP - - [时间] 请求方法/路径/HTTP版本 状态码 长度”，不记录请求或响应正文；404等错误可能另加“code 状态码, message …”诊断行。本次采样请求行约59–102字节，单次首页GET增加1行/60字节，通常每请求约一行、每千次请求约几十至上百KB；错误和路径长度会影响增长，当前没有自动轮转。日常无需处理；需要清理时先 `launchctl remove cn.yozi.local-web.4212` 并确认任务退出、端口空闲，再删除或归档 `tmp/p12a-evidence/web4212.log`，最后运行上面的恢复命令。下次交付也按此顺序处理日志；本阶段仅补说明，未停止、重启或重新提交任务，也未清理正在写入的日志。
+
+### 既有阶段资源记录
 
 2026-10-16阶段4/C科学聊天候选保留在`tmp/stage4-20261016/{h5,mp-weixin,app}`，为同一最终源码的隔离构建；共享参数`YOZI_ISOLATED_BUILD=1`、显式`UNI_OUTPUT_DIR`，没有加载日常私有环境或重写题库压缩表。资源/命令/退出码在同目录`inventory.json`，宽屏功动能与390px速度图实际路径分别在`energy-ui.json`/`graph-ui.json`及截图。自有临时Chrome资料域与回环服务用完关闭；4212、日常App和原生恢复链未更新，本批不构成原生/设备或公开发布验收。
 
