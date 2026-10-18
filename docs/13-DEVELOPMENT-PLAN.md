@@ -239,6 +239,8 @@ Dependabot #3 的两份 workflow 已按原 PR 的版本引用落地，未合并�
 
 **回滚与收尾**：改动前在 `PIP_NO_INDEX=1` 下冻结清单，将四个包目录、dist-info 及 python-dotenv 的 `bin/dotenv` 复制到 `tmp/p11d-evidence/rollback/`，共 **15896515 文件字节 / 348 文件**；`rollback/manifest.json` 登记相对路径、大小、权限、SHA-256 与恢复条件，本批已实际离线还原验证。恢复时仅移除这四包的当前目录及 dist-info，再按清单复制回原 `.venv-baidu` 路径，并核对哈希、冻结清单及 `pip check`；依赖当前 Python 3.12 / arm64 解释器和其余包保持。安装验收后已删除 wheels 的 5065119 字节，连同已合并进小报告的临时驱动、合成输入、重复日志/查询结果，共回收 **6747800 文件字节**；该数字不代表实时磁盘可用空间增量。仅保留 downloads.json、report.json 与已验回滚材料，全部本批子进程已回收；既有客户端/服务、日常 App、用户资料与 `tmp/p1-*` 保留，11A/11B 历史段落不改。
 
+补充验收（2026-10-18，Claude）：不经 `sandbox-exec`，在更新后的 `.venv-baidu` 中以 accurate 模式（百度修复脚本调用 `ocrmac.OCR` 时的默认级别）识别 Pillow 合成的英文图片两次：首次 55.4 秒（一次性神经引擎模型编译），第二次 0.2 秒，两次均正确识别全文。准确模式验收通过；上文 120 秒超时推测与沙箱限制或首次编译耗时有关，未再单独复现。
+
 ### 阶段10A：恢复 Trivy 安全扫描（2026-10-17，本地 main）
 
 事实：以 `aa44be83` 为干净本地 main 基线。旧忽略文件由 `git show 943b352a^:.trivyignore` 核对，非注释条目均是路径，两个 GHSA 仅在注释内，引用的 deploy 文件现已不在跟踪树。[v0.70.0 忽略解析器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/result/ignore.go) 跳过注释、把首字段作为 ID，故这些路径不是路径排除规则。决定删除 Action 的 trivyignores 输入，不新建忽略文件，不预先豁免任何发现。
