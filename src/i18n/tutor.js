@@ -1,6 +1,7 @@
 import { registerMessages } from './index.js';
 registerMessages('tutor', {
   'zh-CN': {
+    'tutor.insights.allGoals': '全部学习 · {count} 个目标',
     'tutor.insights.independent': '可独立完成',
     'tutor.insights.hinted': '需提示',
     'tutor.insights.retest': '待复测',
@@ -84,6 +85,7 @@ registerMessages('tutor', {
     'tutor.archive.empty': '开始学习后，记录会保存在这里。'
   },
   en: {
+    'tutor.insights.allGoals': 'All learning · {count} goals',
     'tutor.insights.independent': 'Can complete independently',
     'tutor.insights.hinted': 'Needs a hint',
     'tutor.insights.retest': 'Retest needed',

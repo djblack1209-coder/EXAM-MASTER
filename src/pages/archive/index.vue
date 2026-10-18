@@ -2,7 +2,7 @@
   <LearningShell active="archive" :title="t('tutor.archive.title')">
     <view class="archive-content">
       <BaseSegmented v-model="view" :label="t('tutor.archive.title')" :options="tabs" />
-      <LearningInsights v-if="view === 'all'" />
+      <LearningInsights v-if="view === 'all'" all />
       <LearningOverview :key="view" :view="view" :initial-expanded="true" :show-navigation="false" />
       <view class="archive-legacy">
         <BaseButton variant="quiet" @tap="safeNavigateTo('/pages/mistake/index?legacy=1')">{{

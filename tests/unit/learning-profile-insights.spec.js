@@ -112,3 +112,12 @@ it('keeps profile choices as a draft; skipping and closing never confirms facts'
     wrapper.unmount();
   }
 });
+
+it('does not mix self-reported profile fields across goals in the global archive', () => {
+  const state = emptyLearningState('insights', 'UTC');
+  state.profile.push(
+    { field: 'goal', scope: 'A', value: 'A', source: 'self_report' },
+    { field: 'foundation', scope: 'B', value: 'Beginner', source: 'self_report' }
+  );
+  expect(learningInsights(state).profile).toEqual({});
+});
