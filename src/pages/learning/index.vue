@@ -12,16 +12,28 @@
       <BaseButton
         variant="quiet"
         icon="user"
+        icon-only
+        :label="t('tutor.intake.title')"
+        :title="t('tutor.intake.title')"
         :aria-expanded="showIntake"
         :disabled="!learning.active || learning.busy"
         @tap="showIntake = !showIntake"
         >{{ t('tutor.intake.title') }}</BaseButton
       >
-      <BaseButton variant="quiet" icon="chart" :aria-expanded="showInsights" @tap="showInsights = !showInsights">{{
-        t('tutor.archive.title')
-      }}</BaseButton>
+      <BaseButton
+        variant="quiet"
+        icon="chart"
+        icon-only
+        :label="t('tutor.archive.title')"
+        :title="t('tutor.archive.title')"
+        :aria-expanded="showInsights"
+        @tap="showInsights = !showInsights"
+        >{{ t('tutor.archive.title') }}</BaseButton
+      >
       <BaseButton
         class="connection-pill"
+        :label="learningText(connectionLabel)"
+        :title="learningText(connectionLabel)"
         :aria-expanded="showConnections"
         variant="quiet"
         @tap="showConnections = !showConnections"
@@ -4402,5 +4414,24 @@ onUnmounted(() => {
 .material-reading-card {
   display: grid;
   gap: var(--s-3);
+}
+</style>
+
+<style scoped>
+@media (max-width: 767px) {
+  .connection-pill {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+  }
+  .connection-pill :deep(.base-tag) {
+    display: none;
+  }
+  .connection-pill :deep(.base-button__content) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 </style>

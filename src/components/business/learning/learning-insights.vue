@@ -5,7 +5,9 @@
         ><BaseIcon name="target" /><text>{{ t('tutor.insights.goal') }}</text></view
       >
       <text class="goal-copy">{{
-        data.profile.goal?.value || learning.active?.goal || t('tutor.insights.noGoal')
+        all
+          ? t('tutor.insights.allGoals', { count: learning.state.conversations.length })
+          : data.profile.goal?.value || learning.active?.goal || t('tutor.insights.noGoal')
       }}</text>
       <view v-for="field in ['foundation', 'minutes', 'preference']" :key="field" class="profile-line">
         <template v-if="data.profile[field]"
@@ -74,10 +76,12 @@ import { learningInsights } from '@/services/learning/learning-insights.js';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
-defineProps({ compact: Boolean });
+const props = defineProps({ compact: Boolean, all: Boolean });
 const learning = useConversationLearningStore(),
   calendar = learning.observeCalendar();
-const data = computed(() => learningInsights(learning.state, learning.calendarTime, learning.selectedConversationId));
+const data = computed(() =>
+  learningInsights(learning.state, learning.calendarTime, props.all ? null : learning.selectedConversationId)
+);
 onMounted(() => calendar.show());
 onShow(() => calendar.show());
 onHide(() => calendar.hide());

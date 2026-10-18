@@ -60,7 +60,7 @@ export function learningInsights(state, now = Date.now(), conversationId = null)
   const scope = session?.goal;
   const profile = {};
   for (const entry of state.profile) {
-    if (entry.source === 'self_report' && (!scope || entry.scope === scope)) profile[entry.field] = entry;
+    if (session && entry.source === 'self_report' && entry.scope === scope) profile[entry.field] = entry;
   }
   const today = dayKey(now, state.timezone);
   const deadline = profile.deadline?.value || null;
