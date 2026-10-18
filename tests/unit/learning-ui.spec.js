@@ -1639,6 +1639,43 @@ describe('模型读取的页内状态与离开保护', () => {
     for (const load of loadHooks.callbacks) load({ panel: 'connections' });
     return { requests, transport, store, wrapper };
   }
+  it('未读取后端也可选正确端点，切换预设清除旧密钥、能力与保存同意；选择只改草稿', async () => {
+    const { requests, transport, store, wrapper } = page();
+    const button = (text) => wrapper.findAll('button').find((item) => item.text().trim() === text);
+    try {
+      await flushPromises();
+      await button(t('learning.k9r')).trigger('tap');
+      const before = store.exportData();
+      await button('智谱 · glm-4.7-flash').trigger('tap');
+      const endpoint = wrapper.get(`input[aria-label="${t('learning.kk4')}"]`);
+      expect(endpoint.element.value).toBe('https://open.bigmodel.cn/api/paas/v4/chat/completions');
+      const key = wrapper.get(`input[aria-label="${t('learning.kba')}"]`);
+      await key.setValue('synthetic-key-for-first-provider');
+      const checkbox = (label) =>
+        wrapper
+          .findAll('[role="checkbox"]')
+          .find((item) => item.text().replace(/\s+/g, ' ').trim() === label.replace(/\s+/g, ' ').trim());
+      for (const label of ['learning.keh', 'learning.kke', 'learning.k32']) {
+        await checkbox(t(label)).trigger('tap');
+        expect(checkbox(t(label)).attributes('aria-checked')).toBe('true');
+      }
+      await button('Groq · openai/gpt-oss-20b').trigger('tap');
+      expect(key.element.value).toBe('');
+      for (const label of ['learning.keh', 'learning.kke', 'learning.k32']) {
+        expect(checkbox(t(label)).attributes('aria-checked')).toBe('false');
+      }
+      expect(endpoint.element.value).toBe('https://api.groq.com/openai/v1/chat/completions');
+      await endpoint.setValue('https://api.groq.com/openai/v1/');
+      await endpoint.trigger('blur');
+      expect(endpoint.element.value).toBe('https://api.groq.com/openai/v1/chat/completions');
+      expect(store.exportData()).toBe(before);
+      expect(requests).toEqual([]);
+    } finally {
+      wrapper.unmount();
+      store.$dispose();
+      transport.mockRestore();
+    }
+  });
   it('真实请求期间禁用重复读取，可取消；错误、明确重试与空列表在操作旁显示', async () => {
     const { requests, transport, store, wrapper } = page();
     const view = () => wrapper.findAll('button').find((button) => button.text().trim() === '查看云模型');

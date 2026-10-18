@@ -1,46 +1,7 @@
 import crypto from 'node:crypto';
+import { MODEL_CONNECTION_PRESETS } from './model-endpoints.js';
 // 只保存公开接入事实；密钥来自用户保险库，目录存在不代表账户额度可用。
-export const FREE_MODEL_PRESETS = [
-  {
-    id: 'zhipu-glm-flash',
-    provider: '智谱',
-    model: 'glm-4.7-flash',
-    endpoint: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-    structured: true,
-    pricing: 'official_free_model',
-    priceVersion: 'zhipu-glm-4.7-flash-free-2026-09-30',
-    verifiedAt: '2026-09-30',
-    expiresAt: '2026-10-30',
-    terms: '官方免费型号，仍受账户限流；不调用搜索等收费工具，不切换FlashX。',
-    privacy: '当前目标、最近消息与题目经本项目后端发送至智谱；资料不默认整份上传。',
-    docs: 'https://open.bigmodel.cn/pricing'
-  },
-  {
-    id: 'zai-glm-flash',
-    provider: 'Z.ai',
-    model: 'glm-4.7-flash',
-    endpoint: 'https://api.z.ai/api/paas/v4/chat/completions',
-    structured: true,
-    pricing: 'official_free_model',
-    priceVersion: 'zai-glm-4.7-flash-free-2026-09-30',
-    verifiedAt: '2026-09-30',
-    expiresAt: '2026-10-30',
-    terms: '官方免费型号，仍受账户限流；不调用搜索等收费工具，不切换FlashX。',
-    privacy: '当前目标、最近消息与题目经本项目后端发送至Z.ai；资料不默认整份上传。',
-    docs: 'https://docs.z.ai/guides/overview/pricing'
-  },
-  {
-    id: 'gemini-flash-lite',
-    provider: 'Google Gemini',
-    model: 'gemini-2.5-flash-lite',
-    endpoint: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
-    structured: true,
-    pricing: 'account_free_tier_required',
-    terms: '仅账户Free tier时免费；未确认账户套餐时费用待结算。达到限额停止，不切换付费型号。',
-    privacy: '免费层数据可能用于供应商改进产品；只共享已授权的当前学习上下文。',
-    docs: 'https://ai.google.dev/gemini-api/docs/pricing'
-  }
-] as const;
+export const FREE_MODEL_PRESETS = MODEL_CONNECTION_PRESETS;
 
 export function freeModelPricing(model: { model: string; endpoint: string }, now = Date.now()) {
   const preset = FREE_MODEL_PRESETS.find(

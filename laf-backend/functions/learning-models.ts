@@ -4,6 +4,7 @@ import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import { checkRateLimitDistributed } from './_shared/api-response.js';
 import proxyAI, { configuredModels } from './proxy-ai.js';
 import { FREE_MODEL_PRESETS, modelConnectionState } from './_shared/ai-providers/free-model-presets.js';
+import { completeModelEndpoint } from './_shared/ai-providers/model-endpoints.js';
 import {
   mutateAccount,
   encryptModelKey,
@@ -172,15 +173,16 @@ export default async function (ctx: any) {
       ) {
         return { code: 400, success: false, message: '模型配置不合法或未确认服务端保存密钥' };
       }
-      validateCloudEndpoint(p.endpoint, (process.env.LEARNING_ALLOWED_ORIGINS || '').split(',').filter(Boolean));
-      const preset = FREE_MODEL_PRESETS.find((item) => item.model === p.model && item.endpoint === p.endpoint);
+      const endpoint = completeModelEndpoint(p.endpoint);
+      validateCloudEndpoint(endpoint, (process.env.LEARNING_ALLOWED_ORIGINS || '').split(',').filter(Boolean));
+      const preset = FREE_MODEL_PRESETS.find((item) => item.model === p.model && item.endpoint === endpoint);
       const keyRef = `model_key_${crypto.randomUUID()}`;
       const vault = encryptModelKey(p.apiKey, auth.userId, p.id, process.env.LEARNING_VAULT_KEY || '');
       const profile = {
         id: p.id,
         provider: String(p.provider || 'custom').slice(0, 80),
         model: p.model,
-        endpoint: p.endpoint,
+        endpoint,
         source: 'byok',
         maxOutput: 1000,
         // 默认能力保守，协议兼容不等于视觉或原生工具可用。
