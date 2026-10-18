@@ -26,6 +26,12 @@
 
 ## 当前候选与本机资源
 
+2026-10-18阶段12A已将源码 `86ae5ba7` 同源交付到唯一日常入口 `/Users/blackdj/Applications/Yozi AI.app` 与 `dist/build/h5`。Mac版本仍为2.2.0、标识 `cn.wangshiliang.wenli.localqa93d5ef76c442`，原UUID及同身份ad-hoc签名保持，严格核验通过；只原子替换可执行文件，其余8项内容与全部9项元数据不变。实际打开及正常退出后，19个私人学习键逐字同，27目标/32原答/3资料/444事件的摘要均保持，无学习资料迁移；程序保持未运行。
+
+网页新入口为 `static/js/index-9D3k5lSA.js`（桌面嵌入前端 `index-BFmg2y-n.js`）。4212由launchd任务 `cn.yozi.local-web.4212` 托管，PID10463、启动时间 `Sun Oct 18 02:31:06 2026`、父PID1，仅绑定 `127.0.0.1`；首页HTTP200且字节对应新index。启动命令及停止所需PID/启动时间在 `tmp/p12a-evidence/receipt.json#webInstall`；停止前先核对该记录，使用 `launchctl remove cn.yozi.local-web.4212` 安全卸载对应本机任务。服务保留供试用，旧4212页关闭后重开，必要时Command-Shift-R；本轮没有操作客户Chrome及其数据。下文日期更早的候选、路径和PID仅表示历史。
+
+当前日常程序归档为 `tmp/p12a-evidence/daily-current.app.zip`，上一版回退为同目录 `daily-before.app.zip`，核验身份为 `native-qa.app.zip`；均完整读回、实际试还原及严格签名通过，元数据在回执中。旧回执指向的日常归档/镜像/缓存路径已不存在，旧日常可执行文件仍与local-progress回执吻合，因此本轮先补建旧版归档。实际旧网页入口 `index-CfMEG627.js` 与历史回执不同，原子替换后按原样保留在 `dist/build/h5-before-20261018`。私人学习键及逻辑状态只读保存在本轮 `private/`（目录0700/文件0600），只记录计数及摘要。合成网页和Mac的打开、目标/记录、明确交卷、停止与普通重开通过；临时4215、核验App均已退出，临时App精确注销后只留归档。
+
 2026-10-16阶段4/C科学聊天候选保留在`tmp/stage4-20261016/{h5,mp-weixin,app}`，为同一最终源码的隔离构建；共享参数`YOZI_ISOLATED_BUILD=1`、显式`UNI_OUTPUT_DIR`，没有加载日常私有环境或重写题库压缩表。资源/命令/退出码在同目录`inventory.json`，宽屏功动能与390px速度图实际路径分别在`energy-ui.json`/`graph-ui.json`及截图。自有临时Chrome资料域与回环服务用完关闭；4212、日常App和原生恢复链未更新，本批不构成原生/设备或公开发布验收。
 
 2026-10-16阶段3清理使用 `tmp/prune-20261016/inventory.json` 记录候选消费者、删除清单、字节数、分支前态与自有进程。游客演示注入模块及专用开关已随退役入口移除；旧演示缓存继续保留并由真实练习/续答合同拒绝采用。仅删除不执行产品模块的旧自测、退役演示测试与无消费者辅助脚本；授权、隐私、判分、题库、发布、幂等及正式产物守卫继续保留。`test:baidu:pipeline` 移除一次重复的同模块调用。UI验收的before/after2/review图和原生归档保留，中间构建与旧日志按明确清单回收；历史正式候选、程序/资料回滚链及大编译缓存不在本轮删除范围。
@@ -156,7 +162,7 @@ CI 干净检出核验使用独立安装的依赖，不链接日常环境：根�
 
 2026-10-17阶段6C：根及standalone锁文件下载源统一为`registry.npmjs.org`，主机归一不得改变包版本或integrity。proxy-addr使用缓存元数据升至2.0.8；离线独立安装因54个tarball缺缓存（首个报告`whatwg-url@14.2.0`）未通过，不联网补齐。隔离依赖副本的构建/测试不替代CI在线`npm ci`，根critical审计留给Security Scan；具体信任边界与剩余风险见[依赖安全](13-DEVELOPMENT-PLAN.md#阶段6c离线修复2026-10-17)。
 
-Mac日常原生候选当前沿 `tmp/stage1-mobile-20261011/build-source`（Rust主入口与仓库只差既定 `data_store_identifier`）、`native-config.json`、原 `CARGO_TARGET_DIR=desktop-material-prerequisite-target` 和 `--no-bundle --no-sign -- --offline --locked --jobs 1`，只生成程序、不生成新的可见 `.app`。构建前精确核对该一行适配及其余Cargo/业务组件摘要，不能只传相同identifier却从仓库根构建。QA身份仍采用独立资料UUID。更新唯一入口前：先归档当前程序与配对学习记录并试还原（逐文件、模式、链接、扩展属性一致），确认程序无消费者后只原子替换可执行文件，标识、资料、图标和元数据保持。
+后续Mac日常原生构建继续采用临时源码镜像和既定 `data_store_identifier` 适配，不能只传相同identifier便从未适配的仓库根构建。阶段12A从固定提交复制原生源码，差异仅为日常UUID适配，证据为 `tmp/p12a-evidence/native-identity-adapter.diff`；QA分支继续原独立UUID。原旧镜像/缓存已不在原路径，本批复用 `CARGO_TARGET_DIR=src-tauri/target`，命令为 `--no-bundle --no-sign --ci -- --offline --locked --jobs 1`。后续须先按目标源码重建桌面前端，再更新保留配置 `native-{daily,qa}-config.json` 的绝对frontendDist；本批临时镜像及桌面前端用完回收，不作为后续现成输入。更新唯一入口前，仍先归档当前程序和配对学习记录并实际试还原；确认无消费者后原子更新程序，核验身份/资料/元数据与严格签名。
 
 前序日常界面更新沿`desktop-fields-v3-config.json`及原资料UUID，desktop/API备用地址均为空、不加载私有环境文件。已试还原的完整程序归档与learning-records.before.json保持；wenli-desktop.pre-ui-update.rollback是APFS增量副本，依赖完整归档的其余元数据，不能单独恢复整包。程序暂存严格核对后同目录原子更新，模式/xattrs/mtime保持。随后首次通知申请在许可前拒绝，客户明确批准同身份本机签名修复；先保存完整APFS回滚daily-before-signing.rollback.noindex及revision438公开备份，再在未注册暂存包执行`codesign --force --sign - --identifier cn.wangshiliang.wenli.localqa93d5ef76c442 --timestamp=none <暂存App路径>`。只安装签名程序和Contents/\_CodeSignature，既有内容/元数据与资料保持；暂存及唯一入口的`codesign --verify --strict --verbose=2 <App路径>`均通过。当前为ad-hoc、无TeamIdentifier，不代表正式签名/公证或自动赋予后续重签权限。
 
