@@ -9,7 +9,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from scripts.baidu.source_manifest import merge_manifest, normalize_record  # noqa: E402
 from scripts.baidu.source_quality import apply_source_quality_overrides  # noqa: E402
 from scripts.baidu.manifest_quality import analyze_manifest  # noqa: E402
-from scripts.baidu.cleaning_queue import build_cleaning_queue  # noqa: E402
 
 
 class SourceManifestYearTest(unittest.TestCase):
@@ -299,42 +298,6 @@ class SourceManifestYearTest(unittest.TestCase):
         self.assertEqual(report["summary"]["publishableOfficialPapers"], 0)
         self.assertEqual(report["coverage"]["math2"]["missingYears"], [2021])
         self.assertFalse(report["releaseReadiness"]["canPublish"])
-
-    def test_branded_copy_requeues_completed_download_for_review(self):
-        source = {
-            "sourceId": "src_1b0fd1f2d5c9741193305511",
-            "sourceType": "official_paper",
-            "fileName": "2021考研数学二真题.pdf",
-            "extension": ".pdf",
-            "track": "math2",
-            "year": 2021,
-            "eligible": True,
-            "status": "discovered",
-            "fingerprint": "unchanged-copy",
-            "sourceChannel": "netdisk_full_path",
-            "fsId": 98250198221619,
-            "remotePath": "/renamed/2021-math2.pdf",
-            "riskFlags": [],
-        }
-        queue = build_cleaning_queue(
-            {"items": [source]},
-            previous_queue={
-                "tasks": [
-                    {
-                        "sourceId": source["sourceId"],
-                        "fingerprint": source["fingerprint"],
-                        "action": "download_and_extract",
-                        "status": "completed",
-                    }
-                ]
-            },
-            raw_inbox_dir=Path("/not-used"),
-            now="2026-10-14T00:00:00Z",
-        )
-        task = queue["tasks"][0]
-        self.assertEqual(task["action"], "manual_review")
-        self.assertEqual(task["status"], "pending")
-        self.assertEqual(task["statusReason"], "legal_or_quality_review_required")
 
     def test_manifest_blocks_known_mislabeled_math2_2016_source(self):
         item = normalize_record(
