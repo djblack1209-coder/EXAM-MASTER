@@ -2,7 +2,7 @@
 
 ## 阶段13：当前构建与题库退役（2026-10-18）
 
-当前交付以本节[阶段13K搜索同源交付](#阶段13k搜索同源交付)为准；下段保留13C–13J的成功基线与恢复条件。
+当前交付以本节[阶段13L档案同源交付](#阶段13l档案同源交付)为准；其余阶段保留各自当时的成功基线与恢复条件。
 
 13C–13J本机交付固定源码 `7c5e6dda`，唯一Mac入口 `/Users/blackdj/Applications/Yozi AI.app`，版本2.2.0、标识 cn.wangshiliang.wenli.localqa93d5ef76c442 与原资料UUID保持；同身份ad-hoc严格签名通过，不代表签名公证。该版网页入口 `/static/js/index-CLawqI_3.js`，4212原PID10463保持、HTTP逐字核对通过。此前12D交付文档已推送；本批源码与交付记录在本机验收后正常同步仓库，不代表生产部署。
 
@@ -14,7 +14,23 @@
 
 候选构建使用 `YOZI_ISOLATED_BUILD=1` 与 `UNI_OUTPUT_DIR=tmp/p13-candidate/<目标>`；保持4212和日常App，直至隔离核验后原子交付。后端编译至同一候选目录，未部署。`verify-learning-live.mjs --tasks album` 单独使用合成百分数资料验证知识/例题卡、精确核对、明确采用计划、订正和独立变式；最多一次请求，后端免费配置与平台付费关闭，不自动重试。客户已在当前会话授权持续使用现有免费配置与合成资料；每次仍记录账本与接收状态。当前首次请求因系统DNS返回198.18保留段被SSRF拒绝，账本not_called，不作为实际教学通过。
 
+### 阶段13L档案同源交付
+
+当前本机同源源码77879572，Mac唯一入口 `/Users/blackdj/Applications/Yozi AI.app`，版本2.2.0、标识 cn.wangshiliang.wenli.localqa93d5ef76c442 与资料UUID 93d5ef76-c442-4705-81c9-5c9ad92f1dfe 保持。4212仍由原launchd/PID10463提供，H5入口index-BA1tqrGG.js，桌面前端index-wMVPPNpv.js；HTTP与实际产物逐字匹配，托管浏览器已启用新版单动作欢迎页，没有当前控制台错误。客户Chrome及其数据未操作。
+
+新日常程序归档 `tmp/p13-candidate/daily-archive-candidate.app.zip`，核验归档 `qa-archive-candidate.app.zip`。两份均ZIP完整读回、实际解包、核对9项内容/模式/扩展属性并恢复纳秒时间、严格签名通过。恢复元数据沿 `tmp/p13-candidate/verification.json` 的 `activeContinuation.archiveContinuation.nativeCandidates.daily.metadata` / `qa.metadata`，必须用能保持整数精度的工具读写mtimeNs；ZIP本身不承诺纳秒时间。原CFBundleExecutable兼容名wenli-desktop保持，源码编译输出yozi-ai-desktop按既定兼容名装入归档；不改用户目录与登录身份。
+
+当前恢复指针为同一回执的 `activeContinuation.archiveContinuation`，dailyDelivery / webDelivery 记录原子交换和实际打开。上一成功ad3f2777程序仍为daily-search-candidate.app.zip，元数据沿原activeContinuation.nativeCandidates.daily.metadata；配对旧网页为 `dist/build/h5-before-archive`。7c5e6dda程序daily-current.app.zip、网页h5-before-search，以及12A等指定正式基线保持；回退程序前先另存当时最新资料，不能用本轮前态覆盖日后新增记录。私人日常学习前态为private/daily-learning.archive-before.json（0700目录/0600文件），19键已完成SQLite隔离回读；两次真实打开及正常退出后逐字不变，27目标/32原答/3资料/444事件保持。
+
+QA实际完成月历、日期依据/待核对、未来复习禁用、专项原题、明确交卷、停止与普通重开。旧44份原答/549事件为完整前缀，最终21目标/45原答/1资料/557事件；停止后与普通重开/退出后的14键逐字相同。粘贴冲突和SCK -3812期间未盲交；恢复后确认空输入，再通过受支持的可访问输入接口填写并核对5/6。原错误根因没有独立证明，未更改系统权限或共用网络。
+
+四端前端/产物门禁、既有后端及UI路径成立；当前前端候选为desktop-next / mp-weixin-next / app-next，后端沿backend且没有部署。微信主包1863261字节、媒体175891字节。最终本机全量5441通过/2项20秒历史用例计时失败/6跳过；二项原阈值单跑通过不替代全量。独立CI39143509750在77879572通过主套件5415项、移动28项和三时区各222项，两个部署任务跳过；根npm的21项既有HIGH传播继续沿braces有期限例外，不宣称零依赖风险。全部事实、资源与清理沿现有回执和13，不增加另一套台账。核验程序已正常退出并精确注销、只保留归档；旧未注册日常暂存和源码镜像等94202779文件字节已清理，4215临时PID19486已退出，当前候选和4212保持。
+
+官网重试仍HTTP200/TLS通过，默认DNS为198.18.2.94，现有guard在模型请求前拒绝，本轮实际新增模型调用0。持续免费合成调用授权保持，真实教学未通过；不更改DNS、代理、SSRF、TLS或预算。Mac与网页构建和本机交付不替代其他设备、生产、签名公证或真实教学验收。
+
 ### 阶段13K搜索同源交付
+
+以下保留13K当时事实；当前交付请以上方13L为准。
 
 当前本机同源源码ad3f2777，唯一Mac入口 `/Users/blackdj/Applications/Yozi AI.app`，网页 `dist/build/h5`、入口index-BCcHOdR6.js，4212原PID10463保持。搜索准备修复通过本机全量5421项、隔离网页5000原答导入/搜索/重开/重复预览/撤销恢复、Mac原答搜索与普通重开及后端HTTP13项；源码正常推送后的远端检查39135866619通过，部署跳过。桌面前端index-Pv3VoV4A.js；微信、App、桌面前端和未部署后端仍沿 `tmp/p13-candidate/`，H5候选已移到正式本机目录。
 
