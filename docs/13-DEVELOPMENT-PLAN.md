@@ -204,6 +204,18 @@ Dependabot #3 的两份 workflow 已按原 PR 的版本引用落地，未合并�
 
 证据集中 `tmp/p11a-evidence/`：冻结清单、Requires-Python/元数据摘要、Git 历史、GitHub 源码与发布记录、查询目标及全部命中、验证和进程回收报告。仅保留小型报告/源码摘取/日志，不建新环境、不留构建副本、不触碰 `tmp/p1-*`；复查触发及 2027-01-15 前的 Docling/braces 合并复查按上表执行。
 
+### 阶段11B：17 号 Tauri 补丁更新（2026-10-17）
+
+本轮以 main `05387c5b` 为基线，重放 Dependabot #17 的两文件差异，不合并分支。`@tauri-apps/api` 2.12.2→2.12.3，`@tauri-apps/cli` 2.12.1→2.12.2；锁中的 11 个平台包及 CLI 对它们的版本引用同步为 2.12.2。PR 基线 `9b88dabe` 落后于本地 main，但补丁可干净应用；安装前后锁文件字节一致，最终两文件差异与 #17 逐字一致。Rust tauri 保留 2.12.1，全部 Tauri JS 包与其主次版本同为 2.12，`Cargo.toml` / `Cargo.lock` 未改。
+
+客户本批仅授权从 registry.npmjs.org 下载 API 2.12.3（139468 字节）、CLI 2.12.2（100623 字节）、cli-darwin-arm64 2.12.2（8082365 字节），合计 **8322456 字节**；逐包核对锁文件 SHA-512 integrity，没有清单外下载，也没有另取版本元数据。根 lifecycle 只有 `prepare: husky`，三个发布包没有 preinstall/install/postinstall 钩子；发布包自带 JS 与本机二进制。先将这三个压缩包离线写入现有 npm 缓存，再用 `NPM_CONFIG_UPDATE_NOTIFIER=false npm install --offline --prefer-offline --no-audit --no-fund --ignore-scripts` 增量安装，恰好更换 3 包；额外网络限制拒绝外网连接。`npm ls` 与本机平台包均为目标版本，`node_modules/.bin/tauri --version` 为 2.12.2。
+
+桌面前端通过 `src/services/desktop/{oauth,learning-files}.js` 引入 API core；隔离运行现有 `npm run build:desktop:web`（53.63 秒）及其公开产物检查通过，生成 JS 中检出 `window.__TAURI_INTERNALS__.invoke`。只使用公开测试配置，输出到本批目录；登记文件树及 API 所在 chunk 的 SHA-256 后回收 317697671 文件字节，未复制构建作为证据。`npm run test:desktop:native -- --offline --locked --jobs 1` 通过 10/10（2.23 秒），复用 Rust 缓存，未新增或改写 target 文件。全平台 `cargo metadata --offline --locked` 因缺 Android 缓存拒绝请求；限定本机 `aarch64-apple-darwin` 后离线解析通过，再运行原生测试。桌面启动/打包入口仅核对接线与语法，不运行 `tauri info` / `tauri build`，不替换日常 App。
+
+全量 `TZ=UTC YOZI_ISOLATED_BUILD=1 npm test -- --maxWorkers=1` 运行 674.18 秒（Vitest 672.26 秒），289 文件通过、1 搜索文件失败、1 原 Mongo 文件跳过；5526 项通过、7 项跳过，整体退出 1。唯一失败为 `learning-record-search-performance.spec.js` 的 beforeAll 超过原 60000ms，准备实际 73129.58ms；搜索测试与基准脚本相对本轮基线逐字未改，与阶段7C/8A已记录的失败同类，不能把负载断言为唯一原因。未放宽阈值，也不以专项通过替代全量门禁。四组桌面测试共 71 项及工具链兼容 43 项均通过；未启用隔离 Mongo 实库验收。
+
+下载记录与最终小报告分别为 `tmp/p11b-evidence/downloads.json`、`report.json`；收尾仅保留这两份。三个下载临时包在增量安装验收后回收，现有 npm/Rust 依赖缓存保留；11A 历史、`tmp/p1-*`、既有服务、日常 App 和恢复材料保持。本轮只在本地 main 按路径提交，不推送、合并、评论或关闭 #17；云端 CI、Windows 与设备验收未覆盖。
+
 ### 阶段10A：恢复 Trivy 安全扫描（2026-10-17，本地 main）
 
 事实：以 `aa44be83` 为干净本地 main 基线。旧忽略文件由 `git show 943b352a^:.trivyignore` 核对，非注释条目均是路径，两个 GHSA 仅在注释内，引用的 deploy 文件现已不在跟踪树。[v0.70.0 忽略解析器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/result/ignore.go) 跳过注释、把首字段作为 ID，故这些路径不是路径排除规则。决定删除 Action 的 trivyignores 输入，不新建忽略文件，不预先豁免任何发现。
@@ -689,7 +701,7 @@ npm 的 21 是 `braces` 加 20 个受影响包的元漏洞传播计数：`chokid
 
 客户于 2026-10-02 明确“采用并继续”，已采用 Tauri 2 的 macOS/Windows 宿主，复用现有 Vue/uni-app H5 产物与学习事实，默认 Future 外观；文件、凭据与连接器沿既有逐次授权及受保护接口，不给网页任意文件/命令权限，不加载远程页面到特权窗口。macOS arm64 App/DMG 已完成本机隔离安装；Windows 继续独立构建/安装验收。开发者签名、公证、商店、收费及生产发布另按原授权门禁。
 
-收益是沿现有前端实现、使用系统 WebView，减少另维护一套页面；成本是引入 Rust/Tauri 依赖和两端原生打包维护，Windows 需要 C++ Build Tools 与 WebView2，本机 Rust 1.93.1 已就绪。依据为 [Tauri 架构](https://v2.tauri.app/start/)与[官方构建前提](https://v2.tauri.app/start/prerequisites/)。CLI/API 锁定 2.12.1，Rust 依赖保留 Cargo.lock；四个脚本已接入 package.json，操作说明见[08C](08C-SCRIPTS-REFERENCE.md)。当前日常包为本机 arm64 构建，经明确授权补齐同身份ad-hoc签名并严格核验，未开发者签名/公证。
+收益是沿现有前端实现、使用系统 WebView，减少另维护一套页面；成本是引入 Rust/Tauri 依赖和两端原生打包维护，Windows 需要 C++ Build Tools 与 WebView2，本机 Rust 1.93.1 已就绪。依据为 [Tauri 架构](https://v2.tauri.app/start/)与[官方构建前提](https://v2.tauri.app/start/prerequisites/)。API 锁定 2.12.3、CLI 锁定 2.12.2，Rust tauri 保留 Cargo.lock 中的 2.12.1，主次版本同为 2.12；四个脚本已接入 package.json，操作说明见[08C](08C-SCRIPTS-REFERENCE.md)。当前日常包为本机 arm64 构建，经明确授权补齐同身份ad-hoc签名并严格核验，未开发者签名/公证。
 
 ### 开源调研与采用判断
 

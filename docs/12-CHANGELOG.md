@@ -1,5 +1,15 @@
 # 重要变更
 
+## 2026-10-17 Tauri JS 补丁更新（阶段11B）
+
+在本地 main 重放 Dependabot #17：API 2.12.3、CLI 及其 11 个平台包 2.12.2；Rust tauri 2.12.1 保持，主次版本均为 2.12。PR 补丁可干净应用，离线增量安装只更换 3 包，锁文件字节未变，两文件最终差异与 #17 逐字一致。同步现行桌面说明，11A 及其他历史记录不改。
+
+只从 registry.npmjs.org 下载客户本批授权的 API、CLI、darwin-arm64 三包，合计 8322456 字节，SHA-512 integrity 全部匹配，没有清单外下载；根 prepare 为 husky，发布包没有安装钩子，使用 ignore-scripts 不漏包内必需步骤。完整 URL、大小、integrity 在 `tmp/p11b-evidence/downloads.json`。
+
+隔离桌面前端构建与公开产物检查通过（53.63 秒），生成包检出 API core；本机原生测试以 `--offline --locked --jobs 1` 通过 10/10（2.23 秒），现有 Rust target 未新增或改写。全平台离线元数据因缺 Android 缓存拒绝请求，本机 arm64 离线元数据通过。桌面构建登记哈希后立即回收 317697671 文件字节，三个下载临时包回收 8322456 文件字节；仅留下载清单及小报告，npm/Rust 缓存、日常 App、恢复材料与 `tmp/p1-*` 保留。未运行 tauri info/build、替换日常应用、推送或操作 #17；Windows、设备与云端 CI 未验收。完整记录见 [阶段11B](13-DEVELOPMENT-PLAN.md#阶段11b17-号-tauri-补丁更新2026-10-17)。
+
+全量 `TZ=UTC YOZI_ISOLATED_BUILD=1 npm test -- --maxWorkers=1` 运行 674.18 秒（Vitest 672.26 秒），289 文件通过、1 搜索文件失败、1 原 Mongo 文件跳过；5526 项通过、7 项跳过，整体退出 1。唯一失败为 `learning-record-search-performance.spec.js` 的 beforeAll 超过原 60000ms，准备实际 73129.58ms；搜索测试与基准脚本相对本轮基线逐字未改，与阶段7C/8A已记录的失败同类，不能把负载断言为唯一原因。未放宽阈值，也不以专项通过替代全量门禁。四组桌面测试共 71 项及工具链兼容 43 项均通过；未启用隔离 Mongo 实库验收。
+
 ## 2026-10-17 扫描覆盖补齐（阶段11A）
 
 百度 5 个直接依赖改为精确版本，保留 ocrmac 的 macOS 条件；本机 METADATA、版本下限历史和 python-dotenv 1.2.4 发布记录确认兼容 CI Python 3.12。按实际 Trivy v0.70.0 源码核对可解析 5 包，传递依赖的持续扫描仍未补齐。只读 GitHub 通告查询经阳性对照验证，覆盖 reviewed/unreviewed/malware：固定 5 包、Docling 81 项（80 wheel + 1 源码包）及 nodemailer 10.0.13/10.1.0 均 0 命中；本机 35 包命中 15 条独立通告（1 CRITICAL、9 HIGH、5 MEDIUM），逐条登记影响与修复建议，不改只读环境。
