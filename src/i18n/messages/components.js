@@ -39,6 +39,7 @@ export default {
     'ui.rateLimited': '操作太频繁，请稍后重试。',
     'ui.reviewUnconfirmed': '复习安排更新未确认，请核对当前记录。',
     'ui.serviceUnavailable': '服务连接不可用，学习记录已保存。',
+    'ui.modelAddressBlocked': '模型地址未通过网络安全检查。请稍后重试，也可以继续本机学习；输入和记录保留。',
     'ui.invalidBackup': '备份格式无效，请重新选择 JSON 文件。',
     'ui.operationFailed': '操作未完成，请重试。',
     'ui.contextChanged': '学习内容或共享授权已变化，请重新操作。',
@@ -137,6 +138,8 @@ export default {
     'ui.rateLimited': 'Too many attempts. Please try again later.',
     'ui.reviewUnconfirmed': 'Review updates are unconfirmed. Check your current records.',
     'ui.serviceUnavailable': 'The service is unavailable. Your learning records are saved.',
+    'ui.modelAddressBlocked':
+      'The model address did not pass the network safety check. Retry later or continue learning locally. Your input and records are kept.',
     'ui.invalidBackup': 'Invalid backup format. Choose a JSON backup again.',
     'ui.operationFailed': 'This did not finish. Please try again.',
     'ui.contextChanged': 'The learning context or sharing permission changed. Please try again.',

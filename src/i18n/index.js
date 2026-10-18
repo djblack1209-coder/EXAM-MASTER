@@ -86,6 +86,7 @@ export function publicError(error, fallback = t('ui.operationFailed')) {
     CONTEXT_CHANGED: 'ui.contextChanged',
     USER_PREFERENCE: 'ui.methodLocked',
     FORBIDDEN: 'ui.actionForbidden',
+    SSRF_BLOCKED: 'ui.modelAddressBlocked',
     401: 'ui.signInRequired',
     429: 'ui.rateLimited'
   })[error?.code];
