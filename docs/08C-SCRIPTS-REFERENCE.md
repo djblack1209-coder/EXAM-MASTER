@@ -2,7 +2,7 @@
 
 ## 阶段13：当前构建与题库退役（2026-10-18）
 
-当前交付以本节[阶段13L档案同源交付](#阶段13l档案同源交付)为准；其余阶段保留各自当时的成功基线与恢复条件。
+当前交付以本节[阶段13M模型端点同源交付](#阶段13m模型端点同源交付)为准；其余阶段保留各自当时的成功基线与恢复条件。
 
 13C–13J本机交付固定源码 `7c5e6dda`，唯一Mac入口 `/Users/blackdj/Applications/Yozi AI.app`，版本2.2.0、标识 cn.wangshiliang.wenli.localqa93d5ef76c442 与原资料UUID保持；同身份ad-hoc严格签名通过，不代表签名公证。该版网页入口 `/static/js/index-CLawqI_3.js`，4212原PID10463保持、HTTP逐字核对通过。此前12D交付文档已推送；本批源码与交付记录在本机验收后正常同步仓库，不代表生产部署。
 
@@ -13,6 +13,22 @@
 现行 `audit:question-bank:report/release` 检查源码及指定正式产物不得残留退役题库，旧清洗/压缩/覆盖命令已撤下；下文此前题库清洗和构建说明仅为历史证据，不再执行。通用私人资料解析、OCR、上传恢复、判分和FSRS保留。test:baidu:pipeline 同时保留来源/原件同步与私人解析检查，旧清洗队列及固定考研目录扫描别名撤下。正式发布仍经过公开产物、来源/答案、隐私、安全与外部设备门禁；不运行真实云端发布或付费操作。
 
 候选构建使用 `YOZI_ISOLATED_BUILD=1` 与 `UNI_OUTPUT_DIR=tmp/p13-candidate/<目标>`；保持4212和日常App，直至隔离核验后原子交付。后端编译至同一候选目录，未部署。`verify-learning-live.mjs --tasks album` 单独使用合成百分数资料验证知识/例题卡、精确核对、明确采用计划、订正和独立变式；最多一次请求，后端免费配置与平台付费关闭，不自动重试。客户已在当前会话授权持续使用现有免费配置与合成资料；每次仍记录账本与接收状态。当前首次请求因系统DNS返回198.18保留段被SSRF拒绝，账本not_called，不作为实际教学通过。
+
+### 阶段13M模型端点同源交付
+
+当前本机同源源码384028bd，唯一Mac入口、版本2.2.0、兼容可执行名wenli-desktop、原标识和资料UUID保持。H5入口index-CRYNVEiJ.js、桌面前端index-DHj9UFXN.js；4212原launchd/PID10463保持，实际HTTP与磁盘逐字一致，托管PWA正常关闭重开启用新入口、单一开始动作及0个学习键保持。客户Chrome未操作。
+
+两端均包含12个模型连接草稿及正确完整端点；网页实际验证智谱/Groq填入、基础地址补齐、切换清除密钥/能力/保存同意，Mac验证端点填入与基础路径补齐。网页390/768/1280/1440无横向溢出，已有合成学习键摘要不变；QA Mac原停止断点可读、正常退出后14键与前态逐字同。日常两次实际打开/正常退出，19键与复用的已核验私人备份逐字同，27目标/32原答/3资料/444事件保持；不保存新的账户连接或调用模型。
+
+当前回执指针为`tmp/p13-candidate/verification.json`的`activeContinuation.freeApiConfiguration`。程序归档daily-api-candidate.app.zip / qa-api-candidate.app.zip，均实际解包、核对9项内容/模式/xattrs/恢复纳秒时间及严格签名。对应nativeCandidates.daily.metadata / qa.metadata为恢复依据；mtimeNs使用字符串并用保持精度的工具读写，ZIP不保证纳秒时间。先恢复程序与元数据、核验标识和签名，再打开；程序回退不能覆盖日后新增资料。
+
+上一成功77879572沿daily-archive-candidate.app.zip、元数据activeContinuation.archiveContinuation.nativeCandidates.daily.metadata及配对网页`dist/build/h5-before-api`；更早ad3f2777与7c5e6dda/12A指定基线保留。日常私人备份继续复用private/daily-learning.archive-before.json，QA复用private/qa-learning.archive-after.json，本次替换前已重新比对新鲜只读SQLite；本轮无学习格式变更和资料迁移。原生源码镜像仍只加既定日常UUID适配，差异写入当前回执，根Rust源码未改。
+
+260项相关检查、增强后的预设密钥/能力/同意单项、后端类型检查、四端构建、公开产物/退役无残留检查通过。微信主包1868901字节，媒体175891字节。独立CI39149775278在384028bd通过Lint/Test及既有安全扫描政策，两个部署任务均跳过；现有依赖例外未因本批配置修正而消失，不宣称零依赖风险。编译后的backend复用既有目录，没有部署或启动生产服务。
+
+私有提取清单private/free-api-connections.json含20组/19服务商/386型号记录、去重384组服务商/型号及完整请求端点，不含密钥，0600，不进入Git；桌面源文件未修改。智谱原完整端点本来正确；使用正确端点重检四个既有供应商仍SSRF_BLOCKED、上游调用0，共用网络与安全/费用配置保持。
+
+核验App已正常退出并精确注销，日常入口正常注册；临时4215/PID69388按启动时间核对后正常终止并回收。确认无活跃引用后回收两份App暂存及源码镜像共63057445文件字节；磁盘可用空间63419973632→63481573376字节单列，不当作RAM释放。保留4212、当前候选/完整型号清单、最近两份已验历史备份与指定恢复基线、原资料和大编译缓存。
 
 ### 阶段13L档案同源交付
 
