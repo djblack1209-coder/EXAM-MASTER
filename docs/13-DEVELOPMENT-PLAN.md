@@ -218,6 +218,27 @@ Dependabot #3 的两份 workflow 已按原 PR 的版本引用落地，未合并�
 
 推送后验收（2026-10-18）：`5dbe8d27`、`05387c5b`、`995340b2` 快进推送后，CI run 39107283413 全绿，两个部署作业 skipped。Trivy 语言清单由 5 个增至 6 个，新增目标 `requirements-baidu.txt`，提示为 notice「没有 CRITICAL/HIGH；目标=6」；npm audit 仍为 CRITICAL=0、HIGH=21，均为同一 braces 通告，忽略项不变。Dependabot #17 于 2026-10-18 07:22 UTC 自动关闭。本机 `.venv-baidu` 的 1 CRITICAL/9 HIGH 仍待客户另批下载许可后修复。
 
+### 阶段11D：本机百度工具环境更新（2026-10-18）
+
+以本地 main `602a9b6c` 为基线，复用 `.venv-baidu` 的 Python 3.12.12 / macOS arm64 环境；客户单独授权本批约 5 MB 下载。只替换以下四个包，完整冻结清单仍为 35 包，其余 31 包版本不变；python-dotenv 与现有 requirements-baidu.txt 的 1.2.4 对齐，未改该清单、workflow、package.json 或锁文件。虚拟环境与本机证据均被 Git 忽略，提交只包含本节及变更日志，不推送或部署。
+
+| 包            | 原版本 → 当前版本 | 官方 wheel                                        | 文件字节 |
+| ------------- | ----------------- | ------------------------------------------------- | -------: |
+| anyio         | 4.13.0 → 4.14.2   | `anyio-4.14.2-py3-none-any.whl`                   |   125813 |
+| pillow        | 12.2.0 → 12.3.0   | `pillow-12.3.0-cp312-cp312-macosx_11_0_arm64.whl` |  4780323 |
+| urllib3       | 2.7.0 → 2.8.0     | `urllib3-2.8.0-py3-none-any.whl`                  |   135717 |
+| python-dotenv | 1.2.2 → 1.2.4     | `python_dotenv-1.2.4-py3-none-any.whl`            |    23266 |
+
+**下载与离线安装**：所有 pip 命令均使用 `.venv-baidu/bin/python -m pip`。下载显式指定 `--index-url https://pypi.org/simple --no-deps --only-binary=:all: --disable-pip-version-check`，禁用本机 pip 配置及缓存，并用 `--use-deprecated=legacy-resolver` 避免额外获取 metadata sidecar。实际只有四个官方索引 GET 和四个 files.pythonhosted.org wheel GET，wheel 合计 **5065119 字节**，没有清单外下载；文件名、字节、SHA-256、完整来源 URL 和请求清单在 `tmp/p11d-evidence/downloads.json`。四包的解释器平台标签、ZIP CRC 及包内 RECORD 摘要均通过；安装前再次核对 SHA-256。随后设 `PIP_NO_INDEX=1`，使用 `--no-index --find-links tmp/p11d-evidence/wheels --no-deps --only-binary=:all: --disable-pip-version-check --no-cache-dir --no-compile` 离线安装，未补装依赖。
+
+**离线验收与限制**：安装及导入/功能/离线测试进程受 `sandbox-exec` 的 `deny network*` 约束，没有监听端口；Python 审计拦截网络与 `.env` 内容读取，并设 `PYTHON_DOTENV_DISABLED=1`，未运行真实百度同步。安装前后 `pip check` 均无冲突；`pip list --format=freeze` 对账只有表中四包变化。requests、openai、fitz/pymupdf、dotenv、anyio、PIL、urllib3、ocrmac 均可导入；Pillow 在内存生成英文图片，ocrmac 快速模式实际识别 `YOZI AI OFFLINE TEST 2026`；PyMuPDF 在内存生成并读回一页 828 字节 PDF；dotenv 正确读取并随即删除合成测试文件。五份 `tests/unit/test_baidu*.py` 以该环境运行 `python -m pytest -q -p no:cacheprovider`，**30 项通过**；source_manifest、manifest_quality、cleaning_queue、flashcard_quality、group_file_index 的 `--self-test` 全部通过。
+
+首次准确模式 OCR 在 Apple Vision → Espresso → AppleNeuralEngine 的模型编译同步调用处等待超过 120 秒，未据此宣称通过。已先正常终止并回收该进程，离线恢复原四包，逐项核对全部备份文件哈希、原冻结清单和 `pip check` 一致；原环境快速模式通过后，再用同一批已下载 wheel 离线安装，完成上述全部验收。准确模式的根因及其在原环境中的表现仍未验证；快速模式通过不能替代准确模式验收，未修改 ocrmac 或应用运行设置。
+
+**通告复查（2026-10-18 07:52 UTC）**：沿用 11A 的 `gh api --method GET /advisories --paginate`、ecosystem / affects 批量查询与包名规范化，覆盖新的完整 35 包冻结清单及 reviewed、unreviewed、malware。去重后 **0 CRITICAL / 0 HIGH / 2 MEDIUM**，后两类均零命中，无撤回通告；阳性对照 requests 2.31.0 为 3 条、nodemailer 6.9.8 为 19 条。剩余 pip 26.1.2：[GHSA-qwm4-qh6w-59xr / CVE-2026-13346](https://github.com/advisories/GHSA-qwm4-qh6w-59xr)，首个修复版 26.2.0；pytest 8.4.2：[GHSA-6w46-j5rx-g56g / CVE-2025-71176](https://github.com/advisories/GHSA-6w46-j5rx-g56g)，首个修复版 9.0.3。两包不在本批许可内，保持原版本。此为只读在线通告查询，不是运行 Trivy 或持续扫描，也不能证明不存在未知风险。
+
+**回滚与收尾**：改动前在 `PIP_NO_INDEX=1` 下冻结清单，将四个包目录、dist-info 及 python-dotenv 的 `bin/dotenv` 复制到 `tmp/p11d-evidence/rollback/`，共 **15896515 文件字节 / 348 文件**；`rollback/manifest.json` 登记相对路径、大小、权限、SHA-256 与恢复条件，本批已实际离线还原验证。恢复时仅移除这四包的当前目录及 dist-info，再按清单复制回原 `.venv-baidu` 路径，并核对哈希、冻结清单及 `pip check`；依赖当前 Python 3.12 / arm64 解释器和其余包保持。安装验收后已删除 wheels 的 5065119 字节，连同已合并进小报告的临时驱动、合成输入、重复日志/查询结果，共回收 **6747800 文件字节**；该数字不代表实时磁盘可用空间增量。仅保留 downloads.json、report.json 与已验回滚材料，全部本批子进程已回收；既有客户端/服务、日常 App、用户资料与 `tmp/p1-*` 保留，11A/11B 历史段落不改。
+
 ### 阶段10A：恢复 Trivy 安全扫描（2026-10-17，本地 main）
 
 事实：以 `aa44be83` 为干净本地 main 基线。旧忽略文件由 `git show 943b352a^:.trivyignore` 核对，非注释条目均是路径，两个 GHSA 仅在注释内，引用的 deploy 文件现已不在跟踪树。[v0.70.0 忽略解析器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/result/ignore.go) 跳过注释、把首字段作为 ID，故这些路径不是路径排除规则。决定删除 Action 的 trivyignores 输入，不新建忽略文件，不预先豁免任何发现。
