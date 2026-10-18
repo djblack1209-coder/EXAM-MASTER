@@ -247,6 +247,8 @@ learning-records.before-signing.json与learning-records.after-signing.json完整
 
 ## 自动依赖更新
 
+阶段11A将 `requirements-baidu.txt` 固定为 requests 2.34.2、python-dotenv 1.2.4、openai 2.40.0、pymupdf 1.27.2.3、ocrmac 1.0.1（保留 darwin 条件），兼容现有 CI Python 3.12。Trivy v0.70.0 源码核对可读出 5 个直接包，环境条件被截去而非求值；Linux pip 实际安装 4 个直接包。Dependabot pip 每周更新精确版本，minor/patch 仍按现有组处理，移除版本上限后的 major 单独提出 PR，不自动合并。固定清单不锁传递依赖；本机只读完整 35 包的一次性通告核查发现 1 CRITICAL、9 HIGH、5 MEDIUM，修复建议与全部发现见 [阶段11A](13-DEVELOPMENT-PLAN.md#阶段11a扫描覆盖补齐2026-10-17)，不是重新安装验收。Docling 保留 80 个 wheel 和 1 个 ANTLR 源码包的 URL/哈希写法，持续扫描缺口未消除；清单变动即复查，最迟与 braces 忽略项一起在 2027-01-15 之前复查。根锁无 nodemailer，standalone 跟踪锁为 10.1.0，本机托管锁 10.0.13 被忽略，后者不代表 CI/线上覆盖；本版本不得部署托管，本阶段不补锁或改安装流程。Dependabot #17 留至 11B。
+
 阶段10A修复 CI 安全扫描：Trivy 不再引用已删除的忽略文件，保持 fs 默认漏洞/密钥组合，单次扫描输出 JSON 至 runner.temp；跳过各层 node_modules，纳入 npm 开发依赖，并通过文件识别模式补齐 requirements*.txt。`node scripts/build/report-security-scan.mjs trivy <JSON路径> <步骤outcome>` 离线渲染；npm 对应调用为 `node scripts/build/report-security-scan.mjs npm <JSON路径> <步骤outcome> <实际退出码>`。三态均写入 GITHUB_STEP_SUMMARY：未完成 error、达阈值发现 warning、无相应发现 notice；两者均不阻断。Trivy 按 CRITICAL/HIGH 和漏洞/密钥分别计数，密钥只列规则/文件/行号/级别；npm 保持 critical 阈值并列 HIGH 供分诊。原始报告渲染后删除、不上传，跟踪文件密钥硬门禁和部署门控保持。JSON零目标保护、语言覆盖限制与后续 CI 验收见 [阶段10A](13-DEVELOPMENT-PLAN.md#阶段10a恢复-trivy-安全扫描2026-10-17本地-main)。
 
 阶段9A已在本地 main 更新 `.github/workflows/ci-cd.yml` 与 `.github/workflows/baidu-group-sync.yml`：checkout v7.0.1、setup-node v7.1.0、setup-python v7、upload-artifact v7.0.2、trivy-action v0.36.0、setup-kubectl v5。Action 使用 Node 24（runner 至少 2.327.1），项目构建仍固定 Node 22.22.3；现有显式 npm 缓存、Python 3.12、归档路径/名称与保留期无需调整。部署门控及百度定时/手动触发保持，当前仓库变量/secrets 为空，不触发部署或实际同步。只做本地静态检查，未推送/运行 workflow；迁移依据与后续 CI 验收见 [阶段9A](13-DEVELOPMENT-PLAN.md#阶段9agithub-actions-升级2026-10-17本地-main)。

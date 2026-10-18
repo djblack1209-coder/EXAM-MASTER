@@ -1,5 +1,11 @@
 # 重要变更
 
+## 2026-10-17 扫描覆盖补齐（阶段11A）
+
+百度 5 个直接依赖改为精确版本，保留 ocrmac 的 macOS 条件；本机 METADATA、版本下限历史和 python-dotenv 1.2.4 发布记录确认兼容 CI Python 3.12。按实际 Trivy v0.70.0 源码核对可解析 5 包，传递依赖的持续扫描仍未补齐。只读 GitHub 通告查询经阳性对照验证，覆盖 reviewed/unreviewed/malware：固定 5 包、Docling 81 项（80 wheel + 1 源码包）及 nodemailer 10.0.13/10.1.0 均 0 命中；本机 35 包命中 15 条独立通告（1 CRITICAL、9 HIGH、5 MEDIUM），逐条登记影响与修复建议，不改只读环境。
+
+Docling 保留 URL/哈希与安装语义，清单变动即复查，最迟与 braces 忽略项一起在 2027-01-15 之前复查；standalone 锁不能代替托管 Laf，本机托管锁被 Git 忽略，本阶段不新增锁。本版本仍不得部署托管；Dependabot #17 留到 11B。完整结论、版本依据和全部通告见 [阶段11A](13-DEVELOPMENT-PLAN.md#阶段11a扫描覆盖补齐2026-10-17)。本轮仅本地提交，不下载、安装、运行扫描器、推送或部署；小型证据在 `tmp/p11a-evidence/`，无构建副本，`tmp/p1-*` 保持。
+
 ## 2026-10-17 首次真实安全扫描分诊（阶段10C）
 
 复核 CI `39075070763`：两检查 success、部署均 skipped，Trivy v0.70.0 实扫 5 个目标，0 CRITICAL / 1 HIGH；npm audit 为 0 critical / 21 high。逐项核对 18 份跟踪清单/包元数据，确认 npm dev 被纳入，登记百度版本范围、Docling wheel URL、托管 Laf 未锁定版本及随库模块的覆盖边界。21 个 npm HIGH 是同一 braces 通告的包级传播，与 Trivy 合并后仅 1 条独立通告；沿现有三端模块守卫日志及未变源码判断 braces 3.0.3 仅用于开发/构建、未进入 H5/微信/App，仍有恶意模式导致构建进程栈耗尽的风险。
