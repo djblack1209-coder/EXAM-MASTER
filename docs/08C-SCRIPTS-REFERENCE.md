@@ -212,7 +212,7 @@ learning-records.before-signing.json与learning-records.after-signing.json完整
 
 ## 桌面构建
 
-客户已采用 Tauri 2；桌面入口复用现有 uni-app 构建，产物与普通 H5 分开，锁定 `@tauri-apps/api` / CLI 2.12.1，并保留 `src-tauri/Cargo.lock`。Node/npm 继续按 package.json，Rust 至少 1.90；本机使用 Rust 1.93.1。macOS 需要 Apple Command Line Tools，Windows 需要 Rust/C++ Build Tools/WebView2；不自动安装系统工具链、签名或发布。Mac 本批构建依赖保留未剥离的 proc-macro，避免当前 dyld 拒绝其 LINKEDIT；不修改系统安全设置。
+客户已采用 Tauri 2；桌面入口复用现有 uni-app 构建，产物与普通 H5 分开，锁定 `@tauri-apps/api` 2.12.3 / CLI 2.12.2，与 `src-tauri/Cargo.lock` 中 tauri 2.12.1 保持 2.12 主次版本对齐。Node/npm 继续按 package.json，Rust 至少 1.90；本机使用 Rust 1.93.1。macOS 需要 Apple Command Line Tools，Windows 需要 Rust/C++ Build Tools/WebView2；不自动安装系统工具链、签名或发布。Mac 本批构建依赖保留未剥离的 proc-macro，避免当前 dyld 拒绝其 LINKEDIT；不修改系统安全设置。
 
 | 命令                  | 当前入口                                          | 副作用与验收范围                                                                          |
 | --------------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------- |
