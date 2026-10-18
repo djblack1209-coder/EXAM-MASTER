@@ -2,9 +2,11 @@
 
 ## 阶段13：当前构建与题库退役（2026-10-18）
 
-当前本机交付固定源码 `7c5e6dda`，唯一Mac入口 `/Users/blackdj/Applications/Yozi AI.app`，版本2.2.0、标识 cn.wangshiliang.wenli.localqa93d5ef76c442 与原资料UUID保持；同身份ad-hoc严格签名通过，不代表签名公证。网页 dist/build/h5 入口 `/static/js/index-CLawqI_3.js`，4212原PID10463保持、HTTP逐字核对通过。此前12D交付文档已推送；本批源码与交付记录在本机验收后正常同步仓库，不代表生产部署。
+当前交付以本节[阶段13K搜索同源交付](#阶段13k搜索同源交付)为准；下段保留13C–13J的成功基线与恢复条件。
 
-当前程序归档为 tmp/p13-candidate/daily-current.app.zip，上一成功程序沿 tmp/p12a-evidence/daily-current.app.zip，旧网页在 dist/build/h5-before-p13，更早指定回退保留。新归档已经实际解包核对内容/模式/扩展属性和签名；ZIP本身不承诺纳秒时间，恢复时依本机 verification.json 的 newDailyArchive.metadata（新程序）或 dailyRollback.metadata（旧程序）恢复模式、xattrsHex及mtimeNs，再核验签名和目标身份。新旧档案与回执须配对保留。私人学习键备份在该回执的 dailyDataBaseline.privateCopy，目录0700/文件0600，19键SQLite隔离还原读回通过；实际更新与打开/退出后逐字不变。以后回退先另存当时最新资料，资料回滚须另获授权，不能覆盖日后新增记录。
+13C–13J本机交付固定源码 `7c5e6dda`，唯一Mac入口 `/Users/blackdj/Applications/Yozi AI.app`，版本2.2.0、标识 cn.wangshiliang.wenli.localqa93d5ef76c442 与原资料UUID保持；同身份ad-hoc严格签名通过，不代表签名公证。该版网页入口 `/static/js/index-CLawqI_3.js`，4212原PID10463保持、HTTP逐字核对通过。此前12D交付文档已推送；本批源码与交付记录在本机验收后正常同步仓库，不代表生产部署。
+
+该阶段程序归档为 tmp/p13-candidate/daily-current.app.zip，上一成功程序沿 tmp/p12a-evidence/daily-current.app.zip，旧网页在 dist/build/h5-before-p13，更早指定回退保留。新归档已经实际解包核对内容/模式/扩展属性和签名；ZIP本身不承诺纳秒时间，恢复时依本机 verification.json 的 newDailyArchive.metadata（7c5e6dda程序）或 dailyRollback.metadata（12A旧程序）恢复模式、xattrsHex及mtimeNs，再核验签名和目标身份。新旧档案与回执须配对保留。私人学习键备份在该回执的 dailyDataBaseline.privateCopy，目录0700/文件0600，19键SQLite隔离还原读回通过；实际更新与打开/退出后逐字不变。以后回退先另存当时最新资料，资料回滚须另获授权，不能覆盖日后新增记录。
 
 固定入口采用原子目录交换；本批更新了程序、Logo图标与签名，不沿用下文历史12A“只替换可执行文件”的范围。临时核验App已注销且只保留 tmp/p13-candidate/native-qa.app.zip；测试数据库/凭据、旧暂存/解包App和临时源码镜像已回收。后续原生构建仍须按既定UUID适配重新生成镜像并复用现有Cargo缓存；不从未适配的根目录直接构建日常身份。
 
@@ -12,13 +14,15 @@
 
 候选构建使用 `YOZI_ISOLATED_BUILD=1` 与 `UNI_OUTPUT_DIR=tmp/p13-candidate/<目标>`；保持4212和日常App，直至隔离核验后原子交付。后端编译至同一候选目录，未部署。`verify-learning-live.mjs --tasks album` 单独使用合成百分数资料验证知识/例题卡、精确核对、明确采用计划、订正和独立变式；最多一次请求，后端免费配置与平台付费关闭，不自动重试。客户已在当前会话授权持续使用现有免费配置与合成资料；每次仍记录账本与接收状态。当前首次请求因系统DNS返回198.18保留段被SSRF拒绝，账本not_called，不作为实际教学通过。
 
-### 阶段13K搜索候选（未交付）
+### 阶段13K搜索同源交付
 
-源码ad3f2777的搜索准备修复已通过本机全量5421项、实际隔离网页5000原答导入/搜索/重开/重复预览/撤销恢复及后端HTTP13项。H5、桌面前端、微信、App和后端隔离产物沿 `tmp/p13-candidate/`，H5入口index-BCcHOdR6.js、桌面前端index-Pv3VoV4A.js。没有更新日常Mac或4212，当前可用入口仍对应上文7c5e6dda。
+当前本机同源源码ad3f2777，唯一Mac入口 `/Users/blackdj/Applications/Yozi AI.app`，网页 `dist/build/h5`、入口index-BCcHOdR6.js，4212原PID10463保持。搜索准备修复通过本机全量5421项、隔离网页5000原答导入/搜索/重开/重复预览/撤销恢复、Mac原答搜索与普通重开及后端HTTP13项；源码正常推送后的远端检查39135866619通过，部署跳过。桌面前端index-Pv3VoV4A.js；微信、App、桌面前端和未部署后端仍沿 `tmp/p13-candidate/`，H5候选已移到正式本机目录。
 
-新核验归档为 `tmp/p13-candidate/native-qa.search.app.zip`，新日常候选为 `tmp/p13-candidate/daily-search-candidate.app.zip`。两者均已完整读回、实际解包、核对全部内容/模式/扩展属性、按回执恢复纳秒时间并通过严格签名；这只证明归档可恢复。镜像沿既定12A UUID适配，根Rust源码不改身份；后续恢复元数据使用 `verification.json` 的 `activeContinuation.nativeCandidates.qa.metadata` 或 `daily.metadata`，以能保持整数精度的工具读写mtimeNs。原7c5e6dda归档、12A成功回退和最新私人学习备份继续配对保留；以后更新先重新读取最新资料，不能用本轮前态覆盖未来记录。
+新核验归档为 `tmp/p13-candidate/native-qa.search.app.zip`，当前日常程序归档为 `tmp/p13-candidate/daily-search-candidate.app.zip`。两者均已完整读回、实际解包、核对全部内容/模式/扩展属性、按回执恢复纳秒时间并通过严格签名。镜像沿既定12A UUID适配，根Rust源码不改身份；后续恢复元数据使用 `verification.json` 的 `activeContinuation.nativeCandidates.qa.metadata` 或 `daily.metadata`，以能保持整数精度的工具读写mtimeNs。上一成功7c5e6dda程序归档仍为 `tmp/p13-candidate/daily-current.app.zip`，配对网页为 `dist/build/h5-before-search`；其元数据沿原newDailyArchive.metadata，12A指定回退继续保留。以后恢复先重新读取最新资料，不用本轮前态覆盖未来记录。
 
-新旧核验程序的窗口读取均遇ScreenCaptureKit -3811，工具重置后仍失败；没有将编译或签名通过当作原生界面验收。日常19个学习键、核验12个学习键只读核对保持。客户明确保持现有Shadowrocket网络配置，真实模型尚未新增调用；安全网络与原生可观察条件恢复后，接续真实教学和同源交付，不重建已通过的候选或重复全量检查。
+最初新旧核验程序的窗口读取均遇ScreenCaptureKit -3811，后续自动续接时恢复，根因未证明。Mac候选实际完成原答搜索/阅读、空结果与停止重开；44份原答/1份资料/548条旧事件保持，明确取回旧题只追加1条定位事件，普通重开后12个存储值与取回后状态相同。日常程序两次实际打开及正常退出，19个学习键与新鲜前态逐字同，27目标/32原答/3资料/444事件保持，无迁移。当前安装、进程、备份及HTTP映射沿 `activeContinuation.resumedDelivery`；日常程序保持未运行，核验程序正常退出并精确注销，重复暂存已回收。
+
+旧PWA会显示新版就绪，完成当前任务后关闭所有Yozi页面再打开；托管测试浏览器按此流程实际加载新入口，未清空存储或操作客户Chrome资料。客户明确保持现有Shadowrocket网络配置，真实模型尚未新增调用；接续仅剩安全网络下的真实教学，不重建已通过产物或重复全量检查。
 
 微信DevTools旧题库冒烟路径已撤销，现脚本仅检查对话/档案导航且明确保留完整设备验收阻塞；不重置用户存储，导航通过不能解除发布门禁。
 
@@ -56,6 +60,8 @@
 
 ### 4212 会话恢复与访问日志（阶段12C）
 
+本节保留12C服务参数与恢复流程；以下现行恢复命令的入口断言已随13K更新，12C当次验收事实及旧入口仍保留于上文历史与Git。
+
 只读执行 `launchctl print gui/$(id -u)/cn.yozi.local-web.4212` 确认：这是 `launchctl submit` 提交的会话级任务，类型为 `Submitted`、属性含 `keepalive`，没有写进 `~/Library/LaunchAgents`。进程意外退出时会自动拉起；电脑重启或注销后不会自动运行，需要在重新登录后手动恢复。停止前先核对回执和当前任务，执行 `launchctl remove cn.yozi.local-web.4212`；只按PID执行kill会被keepalive拉起。
 
 当前program为 `/opt/homebrew/opt/python@3.14/bin/python3.14`；arguments、stdout/stderr路径与下列命令逐项一致，两路日志均指向 `tmp/p12a-evidence/web4212.log`。任务没有显式working directory配置，`lsof -a -p 10463 -d cwd -Fn` 实测工作目录为 `/`。环境沿当前GUI launchd继承，无自定义任务环境：`no_proxy`/`NO_PROXY` 为 `127.0.0.1,localhost,::1`，另含 `PATH`、`OPENCODE_DISABLE_EXTERNAL_SKILLS=1` 和当前会话的 `SSH_AUTH_SOCK`；launchd提供默认PATH并注入 `OSLogRateLimit=64` / `XPC_SERVICE_NAME=cn.yozi.local-web.4212`。完整只读快照在回执 `webInstall.launchctlSnapshot`；恢复仍继承当时GUI环境，不把注销后会变化的socket路径固定进命令。
@@ -85,8 +91,8 @@ for attempt in range(50):
         time.sleep(0.1)
 expected = Path("/Users/blackdj/Desktop/Yozi AI/dist/build/h5/index.html").read_bytes()
 assert status == 200 and body == expected, "首页与当前磁盘文件不一致"
-assert b"/static/js/index-9D3k5lSA.js" in body, "首页未引用本批入口"
-print("HTTP 200；首页逐字一致，入口 index-9D3k5lSA.js")
+assert b"/static/js/index-BCcHOdR6.js" in body, "首页未引用当前13K入口"
+print("HTTP 200；首页逐字一致，入口 index-BCcHOdR6.js")
 PY
 )
 ```
