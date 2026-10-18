@@ -2,6 +2,12 @@
 
 ## 阶段13：当前构建与题库退役（2026-10-18）
 
+当前本机交付固定源码 `7c5e6dda`，唯一Mac入口 `/Users/blackdj/Applications/Yozi AI.app`，版本2.2.0、标识 cn.wangshiliang.wenli.localqa93d5ef76c442 与原资料UUID保持；同身份ad-hoc严格签名通过，不代表签名公证。网页 dist/build/h5 入口 `/static/js/index-CLawqI_3.js`，4212原PID10463保持、HTTP逐字核对通过。新代码本地提交；此前12D交付文档已推送，不代表本批生产部署。
+
+当前程序归档为 tmp/p13-candidate/daily-current.app.zip，上一成功程序沿 tmp/p12a-evidence/daily-current.app.zip，旧网页在 dist/build/h5-before-p13，更早指定回退保留。新归档已经实际解包核对内容/模式/扩展属性和签名；ZIP本身不承诺纳秒时间，恢复时依本机 verification.json 的 newDailyArchive.metadata（新程序）或 dailyRollback.metadata（旧程序）恢复模式、xattrsHex及mtimeNs，再核验签名和目标身份。新旧档案与回执须配对保留。私人学习键备份在该回执的 dailyDataBaseline.privateCopy，目录0700/文件0600，19键SQLite隔离还原读回通过；实际更新与打开/退出后逐字不变。以后回退先另存当时最新资料，资料回滚须另获授权，不能覆盖日后新增记录。
+
+固定入口采用原子目录交换；本批更新了程序、Logo图标与签名，不沿用下文历史12A“只替换可执行文件”的范围。临时核验App已注销且只保留 tmp/p13-candidate/native-qa.app.zip；测试数据库/凭据、旧暂存/解包App和临时源码镜像已回收。后续原生构建仍须按既定UUID适配重新生成镜像并复用现有Cargo缓存；不从未适配的根目录直接构建日常身份。
+
 现行 `audit:question-bank:report/release` 检查源码及指定正式产物不得残留退役题库，旧清洗/压缩/覆盖命令已撤下；下文此前题库清洗和构建说明仅为历史证据，不再执行。通用私人资料解析、OCR、上传恢复、判分和FSRS保留。正式发布仍经过公开产物、来源/答案、隐私、安全与外部设备门禁；不运行真实云端发布或付费操作。
 
 候选构建使用 `YOZI_ISOLATED_BUILD=1` 与 `UNI_OUTPUT_DIR=tmp/p13-candidate/<目标>`；保持4212和日常App，直至隔离核验后原子交付。后端编译至同一候选目录，未部署。`verify-learning-live.mjs --tasks album` 单独使用合成百分数资料验证知识/例题卡、精确核对、明确采用计划、订正和独立变式；最多一次请求，后端免费配置与平台付费关闭，不自动重试。客户已在当前会话授权持续使用现有免费配置与合成资料；每次仍记录账本与接收状态。当前首次请求因系统DNS返回198.18保留段被SSRF拒绝，账本not_called，不作为实际教学通过。
