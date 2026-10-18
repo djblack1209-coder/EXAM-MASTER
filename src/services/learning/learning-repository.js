@@ -215,6 +215,7 @@ export function createLearningRepository(
       assert(
         operations.every((op) =>
           [
+            'conversation.start',
             'question.add',
             'question.focus',
             'attempt.submit',

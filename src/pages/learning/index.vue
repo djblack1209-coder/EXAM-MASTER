@@ -4386,13 +4386,13 @@ onUnmounted(() => {
 @media (min-width: 1280px) {
   .learning-page.with-insights {
     position: relative;
-    padding-right: 324px;
+    padding-right: 372px;
   }
   .chat-insights {
     position: absolute;
     right: 0;
     top: var(--s-4);
-    width: 300px;
+    width: 348px;
     max-height: calc(100vh - 180px);
     overflow-y: auto;
   }

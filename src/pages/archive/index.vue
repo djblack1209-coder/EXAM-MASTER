@@ -45,4 +45,9 @@ const tabs = computed(() => [
   flex-wrap: wrap;
   gap: var(--s-3);
 }
+@media (max-width: 600px) {
+  .archive-content {
+    padding: var(--s-4) 0;
+  }
+}
 </style>

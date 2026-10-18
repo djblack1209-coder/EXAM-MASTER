@@ -186,6 +186,8 @@ export const CONVERSATION_ACTION_EFFECTS = Object.freeze({
   reloadRecords: 'read',
   searchRecords: 'read',
   openRecord: 'read',
+  startFocusedStudy: 'write',
+  openInsightReview: 'write',
   dismissLocatedRecord: 'read',
   locateConversation: 'read',
   scopedSummary: 'read',
@@ -612,6 +614,78 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   }
   function dismissLocatedRecord() {
     recordLocation.value = null;
+  }
+  function startFocusedStudy(scope, context) {
+    idleRecords();
+    refresh();
+    assert(context && context === recordContext(), 'CONTEXT_CHANGED', '学习记录已变化，请重新查看');
+    const questions = new Map(state.value.questions.map((q) => [questionKey(q), q]));
+    const sessions = new Set(state.value.conversations.map((c) => c.id));
+    const original = state.value.attempts
+      .filter(
+        (a) =>
+          sessions.has(a.conversationId) &&
+          questions.has(a.questionKey) &&
+          knowledgeScope(questions.get(a.questionKey)) === scope
+      )
+      .sort((a, b) => b.at - a.at)[0];
+    const question = original && questions.get(original.questionKey);
+    assert(question, 'NOT_FOUND', '学习依据不存在');
+    // Specialized tasks retain their owning conversation and due-time gates.
+    if (
+      question.writingExercise ||
+      question.scienceExercise ||
+      question.sentenceExercise ||
+      question.vocabularyExercise ||
+      question.vocabularyReview ||
+      question.oatutorExercise
+    ) {
+      focus(original.questionKey, original.conversationId);
+      selectedTrainingId.value = 'question-only';
+      return active.value;
+    }
+    // A new conversation and its original question are saved atomically. A
+    // repeated original is a redo, never a fresh independent first answer.
+    const id = learningId('focused'),
+      at = Date.now();
+    commitJourneyBatch([
+      {
+        id,
+        type: 'conversation.start',
+        at,
+        data: { goal: [question.subject, question.knowledgePoint].filter(Boolean).join(' · ').slice(0, 200) }
+      },
+      {
+        id: `${id}:focus`,
+        type: 'question.focus',
+        at,
+        data: { conversationId: id, questionKey: original.questionKey, kind: 'redo' }
+      }
+    ]);
+    selectedConversationId.value = id;
+    selectedTrainingId.value = 'question-only';
+    return active.value;
+  }
+  function openInsightReview(reviewId, context) {
+    idleRecords();
+    refresh();
+    assert(context && context === recordContext(), 'CONTEXT_CHANGED', '学习记录已变化，请重新查看');
+    const review = state.value.reviews.find(
+      (r) => r.id === reviewId && !r.cancelled && !r.completedBy && !r.resolvedBy
+    );
+    const original =
+      review && state.value.attempts.find((a) => a.id === review.attemptId && a.questionKey === review.questionKey);
+    assert(original && effectiveGrade(original)?.status === 'reliable', 'NOT_FOUND', '复习依据不存在');
+    assert(review.due <= Date.now(), 'NOT_DUE', '此题尚未到复习时间');
+    assert(
+      state.value.conversations.some((c) => c.id === original.conversationId) &&
+        state.value.questions.some((q) => questionKey(q) === review.questionKey),
+      'NOT_FOUND',
+      '复习原题不存在'
+    );
+    focus(review.questionKey, original.conversationId, 'review');
+    selectedTrainingId.value = 'question-only';
+    locateConversation(original.conversationId);
   }
   const timeline = computed(() => conversationTimeline(state.value, selectedConversationId.value, { dayKey }));
   watch(
@@ -4203,6 +4277,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     searchRecords,
     recordFilters: RECORD_SEARCH_FILTERS,
     openRecord,
+    startFocusedStudy,
+    openInsightReview,
     locatedRecord,
     dismissLocatedRecord,
     state,

@@ -14,6 +14,7 @@ import {
 } from '@/i18n/index.js';
 import { formatDate, formatTime, formatNumber } from '@/i18n/format.js';
 import shell, { PAGE_TITLE_KEYS } from '@/i18n/messages/shell.js';
+import learningShell from '@/i18n/messages/learning-shell.js';
 
 beforeEach(() => {
   vi.stubGlobal('uni', {
@@ -30,6 +31,15 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('lightweight i18n', () => {
+  it('has shared record-search labels before a learning page registers its feature dictionary', () => {
+    for (const language of ['zh-CN', 'en']) {
+      setLanguage(language);
+      for (const key of Object.keys(learningShell[language]).filter((key) => key.startsWith('learning.records.'))) {
+        expect(t(key)).toBe(learningShell[language][key]);
+        expect(t(key)).not.toBe(key);
+      }
+    }
+  });
   it.each([
     ['en_US', 'en'],
     ['en-GB', 'en'],
