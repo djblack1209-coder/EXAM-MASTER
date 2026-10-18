@@ -157,6 +157,53 @@ Dependabot #3 的两份 workflow 已按原 PR 的版本引用落地，未合并�
 
 推送后状态（2026-10-17，`5202c969`）：GitHub CI 运行 39068768717 全部通过，Node 24 版 Action 正常执行，npm 缓存命中，h5-build 产物上传成功（278140763 字节），两个部署作业按门控跳过；Dependabot 于 20:57:51Z 自动关闭 #3。9B 复核与该次 CI 日志共同确认一个既有缺口：`.trivyignore` 在 2026-04-25 大扫除（`943b352a`）中被删除后，Trivy 步骤在扫描前即报 `cannot find ignorefile '.trivyignore'` 失败，`continue-on-error` 使安全扫描作业仍显示成功，随后的告警注释误称“发现 CRITICAL/HIGH 级别漏洞”；自那以后文件系统漏洞扫描实际未执行。该缺口非本批引入，留待“恢复安全扫描并分诊结果”批次处理。Dependabot 新开 #17（@tauri-apps/api 2.12.3、@tauri-apps/cli 2.12.2），#15 仍待客户决定。
 
+### 阶段11A：扫描覆盖补齐（2026-10-17）
+
+本轮在 main 以 `1ff0da41` 为基线，只固定百度直接依赖并补做 GitHub Advisory Database 一次性核查；Dependabot **#17（Tauri）留到 11B**。不改 package.json、锁文件、workflow 或 Dependabot 配置，不下载或安装包，不运行 Trivy/npm audit，不推送或部署。以下是当前结论，阶段10C的历史扫描记录保持原样。
+
+| 对象                                                    | 处理                                                                                                       | 扫描覆盖                                                                                                             | 复查触发                                                                 |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `requirements-baidu.txt`                                | 固定 requests 2.34.2、python-dotenv 1.2.4、openai 2.40.0、pymupdf 1.27.2.3、ocrmac 1.0.1；保留 darwin 条件 | Trivy v0.70.0 源码推演可解析 5 个直接包；一次性通告查询 0 命中。传递依赖没有因此获得持续扫描覆盖，下一次真实 CI 待验 | 清单/解释器/扫描器变动，或下一次 CI 验收                                 |
+| `.venv-baidu`                                           | 只读冻结完整 35 包，不修环境                                                                               | 一次性查询 15 条独立通告：1 CRITICAL、9 HIGH、5 MEDIUM；不等于新安装后的依赖图                                       | 使用前评估下列修复建议；环境或依赖变动后复查                             |
+| `scripts/pipeline/requirements-docling-macos-arm64.txt` | 保持 81 项 URL/哈希：**80 个 wheel + 1 个 ANTLR 源码包**，更正“81 个 wheel”的前提                          | 文件名解析并规范化 81 个唯一包/版本，一次性通告查询 0 命中；Trivy 持续扫描缺口仍在                                   | 清单变动即复查；最迟与 braces 忽略项一起在 2027-01-15 之前复查           |
+| 根及 Laf 的 nodemailer                                  | 根锁无此包；standalone 跟踪锁为 10.1.0；本机被忽略的 Laf 锁为 10.0.13，二者均满足 `^10.0.13`               | 两版本一次性查询均 0 命中；standalone 已有 CI 锁扫描，不能代替托管运行时                                             | 任一清单/锁/运行时变动；恢复托管前先补可复现版本依据、扫描及可信入口验收 |
+
+**百度版本依据与后续更新**：只读 `PIP_NO_INDEX=1 .venv-baidu/bin/python -m pip --disable-pip-version-check list --format=freeze` 得到本机 Python 3.12.12 与完整清单；除 python-dotenv 本机为 **1.2.2** 外，其余四项与固定版本相同。历史 `3b7f83dd` 引入五个范围，`12af71ba` 将 requests/python-dotenv 下限提升为 2.34.2/1.2.4，后者不能被本机旧版本降回去；历史只能证明下限来源，另读 [python-dotenv v1.2.4 release](https://github.com/theskumar/python-dotenv/releases/tag/v1.2.4) 确认 2026-10-01 已发布。其 [pyproject.toml](https://github.com/theskumar/python-dotenv/blob/v1.2.4/pyproject.toml) 要求 Python >=3.10；本机 METADATA 中 requests/pymupdf 要求 >=3.10，openai/ocrmac 要求 >=3.9，本机 dotenv 1.2.2 要求 >=3.10。两项百度 CI 作业均固定 Python 3.12，兼容上述要求；作业因缺密钥跳过，没有可用的安装日志，也没有验证固定清单的重新安装。
+
+现有脚本 `scripts/baidu/incremental_sync.py` 仅引用 `pip install -r` 安装提示，两项 workflow 也按文件安装，无硬编码范围或测试需要调整。Dependabot pip 仍每周一检查、7 日冷却、最多 3 个版本更新 PR，固定 `==` 仍能被更新为新的精确版本；minor/patch 沿 `material-tools` 分组。去掉原 `<3`/`<2` 上限后，未被分组匹配的 major 将作为单独 PR 出现，需兼容性审查，不自动安装或合并；配置保持不变。
+
+**Trivy 可读性**：只读核对实际 Action v0.36.0 的 [默认版本 v0.70.0](https://github.com/aquasecurity/trivy-action/blob/v0.36.0/action.yaml#L98-L101)、[pip 分析器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/fanal/analyzer/language/python/pip/pip.go) 与 [解析器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/dependency/parser/python/pip/parse.go)。默认路径只取 `==`；先去空格/续行符，再截去 `#` 注释、`;` 环境条件和 `--` 哈希参数，包名允许字母/数字/点/下划线/连字符，并校验 PEP 440 版本。现有 `TRIVY_FILE_PATTERNS` 已识别此文件，五行均可解析；解析器不求值平台条件，故扫描含 ocrmac 共 5 包，而 Linux pip 只安装 4 个直接包、macOS 为 5 个。此结论是源码核对和静态清单检查，不冒充真实 Trivy 运行。
+
+**一次性通告核查（2026-10-17 UTC）**：仅通过 `gh api --method GET /advisories`，按 ecosystem 与 `affects=包名@版本,...` 批量查询并 `--paginate`；覆盖 reviewed、unreviewed、malware 三类，后两类均 0 命中。阳性对照 requests 2.31.0 命中 3 条、nodemailer 6.9.8 命中 19 条，确认查询有效。按 wheel/sdist 文件名解析，名称按 `[-_.]+` 统一为 `-` 并转小写，81 个有效清单行与 80 wheel/1 sdist 一一对应。百度固定 5 包为 0，完整本机 35 包为 15，Docling 81 包为 0，nodemailer 10.0.13/10.1.0 各为 0；全部命中如下，均来自本机环境、无撤回通告。零命中仅表示当时数据库未返回已知通告，不等于安全或完整持续扫描。
+
+| 本机包 / 版本 | 通告 / 级别                                                                                          | 影响与建议（只建议，未改环境）                                                                                                                       |
+| ------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| anyio 4.13.0  | [GHSA-82r6-8w77-94w6](https://github.com/advisories/GHSA-82r6-8w77-94w6) / CVE-2026-63374 / CRITICAL | 国际化域名使用 IDNA 2003 编码，在连接被劫持并重定向时可能接受攻击者证书。建议优先评估升至 4.14.2；此前由 IDNA 库预编码域名并核对实际外连路径。       |
+| pillow 12.2.0 | [GHSA-9hw9-ch79-4vh6](https://github.com/advisories/GHSA-9hw9-ch79-4vh6) / CVE-2026-59205 / HIGH     | ImageCms 变换传入不匹配模式的输出图像可造成原生堆越界写。建议升至 12.3.0，核验输入/输出模式并避免不可信参数直达该 API。                              |
+| pillow 12.2.0 | [GHSA-vjc4-5qp5-m44j](https://github.com/advisories/GHSA-vjc4-5qp5-m44j) / CVE-2026-59204 / HIGH     | 恶意分块 JPEG2000 解码可累积缓冲区并耗尽内存。建议升至 12.3.0，限制不可信图像格式及解析进程内存。                                                    |
+| pillow 12.2.0 | [GHSA-phj9-mv4w-65pm](https://github.com/advisories/GHSA-phj9-mv4w-65pm) / CVE-2026-55380 / HIGH     | 直接调用 GdImageFile.open 绕过像素炸弹检查，可触发巨量分配。建议升至 12.3.0，限制此专用入口及图像尺寸。                                              |
+| pillow 12.2.0 | [GHSA-45hq-cxwh-f6vc](https://github.com/advisories/GHSA-45hq-cxwh-f6vc) / CVE-2026-55379 / HIGH     | 恶意 BDF 字体的字形尺寸绕过像素检查，可持续占用大量内存。建议升至 12.3.0，避免加载不可信 BDF 字体。                                                  |
+| pillow 12.2.0 | [GHSA-5x94-69rx-g8h2](https://github.com/advisories/GHSA-5x94-69rx-g8h2) / CVE-2026-54060 / HIGH     | FontFile.compile 合并字形时缺少总像素检查，可耗尽内存。建议升至 12.3.0，限制字体合成总尺寸。                                                         |
+| pillow 12.2.0 | [GHSA-8v84-f9pq-wr9x](https://github.com/advisories/GHSA-8v84-f9pq-wr9x) / CVE-2026-54059 / HIGH     | PCF 字体位图尺寸可绕过像素检查，在报错前也可能先大量分配。建议升至 12.3.0，避免加载不可信 PCF 字体。                                                 |
+| pillow 12.2.0 | [GHSA-62p4-gmf7-7g93](https://github.com/advisories/GHSA-62p4-gmf7-7g93) / CVE-2026-54058 / HIGH     | 从文件名打开的 McIdas AREA 经 mmap 行步长校验缺失可越界读，泄露内存或崩溃。建议升至 12.3.0，限制该格式及不可信文件解析。                             |
+| urllib3 2.7.0 | [GHSA-vxq7-64xx-v4gw](https://github.com/advisories/GHSA-vxq7-64xx-v4gw) / CVE-2026-97689 / HIGH     | 恶意服务端发送无界 chunk-size 行可耗尽流式读取内存，requests 的流式接口也受影响。建议升至 2.8.0，核对流式下载响应大小及资源限制。                    |
+| urllib3 2.7.0 | [GHSA-8988-9cw3-xx77](https://github.com/advisories/GHSA-8988-9cw3-xx77) / CVE-2026-97687 / HIGH     | HTTPS 代理与目标站 TLS 策略可能混用/修改，特定配置下可被冒充代理；转发模式可能暴露请求或目标客户端证书身份。建议升至 2.8.0，独立校验证书与代理配置。 |
+| anyio 4.13.0  | [GHSA-5p39-cfhj-2xmp](https://github.com/advisories/GHSA-5p39-cfhj-2xmp) / CVE-2026-64847 / MEDIUM   | 进程池 stderr 未排空可能导致工作进程永久阻塞；建议评估 4.14.2。                                                                                      |
+| pillow 12.2.0 | [GHSA-pg7v-jwj7-p798](https://github.com/advisories/GHSA-pg7v-jwj7-p798) / CVE-2026-59203 / MEDIUM   | EPS 的负数 BeginBinary 长度可导致死循环；建议评估 12.3.0。                                                                                           |
+| pip 26.1.2    | [GHSA-qwm4-qh6w-59xr](https://github.com/advisories/GHSA-qwm4-qh6w-59xr) / CVE-2026-13346 / MEDIUM   | 索引中的双重编码包 URL 处理有误；建议评估 26.2.0。                                                                                                   |
+| pytest 8.4.2  | [GHSA-6w46-j5rx-g56g](https://github.com/advisories/GHSA-6w46-j5rx-g56g) / CVE-2025-71176 / MEDIUM   | tmpdir 处理存在风险；建议评估 9.0.3，并单独审查跨大版本测试兼容性。                                                                                  |
+| urllib3 2.7.0 | [GHSA-gh4c-6fx4-qh6g](https://github.com/advisories/GHSA-gh4c-6fx4-qh6g) / CVE-2026-97688 / MEDIUM   | 分块 Deflate 流可进入死循环；建议评估 2.8.0。                                                                                                        |
+
+本机版本命中不等于已证实产品调用可被利用；本轮未运行恶意样本或核验全部调用可达性。上述补丁版本来自通告的 first_patched_version；更新及安装验收须另获该批次联网许可，不能把 11B 的 Tauri 范围当作 Python 环境下载许可。
+
+**Docling 写法评估**：`name==version --hash=sha256:...` 有利于 Trivy 与人工识别，但从固定 URL 改为按名字解析会改变索引查找、平台 wheel 选择和候选发现行为。保留 `--require-hashes --no-deps` 与每个原始摘要，可继续拒绝不同文件字节；仅固定版本而丢弃摘要不可接受。ANTLR 当前是源码包，须保留预装 setuptools 84.0.0、PYTHONPATH 和 `--no-build-isolation` 的构建顺序；若改成预构建 wheel，其摘要必须另验。现有远程 URL 清单本身不提供完整离线安装；名字写法配合完整本地 wheelhouse、`--no-index --find-links` 可支持离线，但必须先备齐对应平台的 80 个 wheel 与源码/构建前提，不能仅改文本就宣称可离线。任何改写均须获下载许可后联网核验实际安装、哈希及现有 worker/解析回归，本阶段不改清单。
+
+**Laf 后端判断**：根 `package-lock.json` 不含 nodemailer；`laf-backend/standalone/package-lock.json` 的 10.1.0 满足托管声明 `^10.0.13`，但它锁定的是另一部署入口，**不能代替托管锁或证明托管实装版本**。本机 `laf-backend/package-lock.json` 确有 10.0.13，但被 `laf-backend/.gitignore` 明确忽略，不在跟踪树，也不能作为 CI 或线上依据。仓库的托管部署仅保留条件冷恢复入口，实际线上是否仍在用未核验；按 [现有合同](14-MODEL-PRIVACY-COST.md#客户端-ip-最小化阶段7a)，本版本不得部署到 Laf 托管。本阶段没有新增托管锁的必要，也不联网生成；未来拟恢复托管时，应先确定该入口可消费的跟踪锁文件或等效平台锁定清单，获得安装依据并补扫描、可信客户端 IP 适配与真实验收，之后才讨论部署授权。
+
+验证：本地 `prettier --check`、`git diff --check` 和现有仓库审计的严格判定通过；调用 `repository-health.mjs` 的 `scanRepository`/`hasRepositoryErrors` 并将报告放入本阶段目录，避免覆盖并行任务的 `tmp/maintenance` 输出。无坏链接、缺失脚本或语法错误；既有 `tests/unit/client-ip-http.spec.ts` 的 fixture 字符串仍按原规则登记为测试引用，不算严格错误。版本/Requires-Python、81 项文件名和查询覆盖、nodemailer semver 范围、历史段落仅插入未改写及只读环境元数据保持均通过静态核对；未增加测试、重装或构建。
+
+证据集中 `tmp/p11a-evidence/`：冻结清单、Requires-Python/元数据摘要、Git 历史、GitHub 源码与发布记录、查询目标及全部命中、验证和进程回收报告。仅保留小型报告/源码摘取/日志，不建新环境、不留构建副本、不触碰 `tmp/p1-*`；复查触发及 2027-01-15 前的 Docling/braces 合并复查按上表执行。
+
 ### 阶段10A：恢复 Trivy 安全扫描（2026-10-17，本地 main）
 
 事实：以 `aa44be83` 为干净本地 main 基线。旧忽略文件由 `git show 943b352a^:.trivyignore` 核对，非注释条目均是路径，两个 GHSA 仅在注释内，引用的 deploy 文件现已不在跟踪树。[v0.70.0 忽略解析器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/result/ignore.go) 跳过注释、把首字段作为 ID，故这些路径不是路径排除规则。决定删除 Action 的 trivyignores 输入，不新建忽略文件，不预先豁免任何发现。
