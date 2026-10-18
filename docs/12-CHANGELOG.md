@@ -10,6 +10,8 @@
 
 全量 `TZ=UTC YOZI_ISOLATED_BUILD=1 npm test -- --maxWorkers=1` 运行 674.18 秒（Vitest 672.26 秒），289 文件通过、1 搜索文件失败、1 原 Mongo 文件跳过；5526 项通过、7 项跳过，整体退出 1。唯一失败为 `learning-record-search-performance.spec.js` 的 beforeAll 超过原 60000ms，准备实际 73129.58ms；搜索测试与基准脚本相对本轮基线逐字未改，与阶段7C/8A已记录的失败同类，不能把负载断言为唯一原因。未放宽阈值，也不以专项通过替代全量门禁。四组桌面测试共 71 项及工具链兼容 43 项均通过；未启用隔离 Mongo 实库验收。
 
+推送后验收（2026-10-18）：CI run 39107283413 全绿，Trivy 目标 5→6（新增 `requirements-baidu.txt`），没有 CRITICAL/HIGH；Dependabot #17 已自动关闭。详见 [阶段11B](13-DEVELOPMENT-PLAN.md#阶段11b17-号-tauri-补丁更新2026-10-17)。
+
 ## 2026-10-17 扫描覆盖补齐（阶段11A）
 
 百度 5 个直接依赖改为精确版本，保留 ocrmac 的 macOS 条件；本机 METADATA、版本下限历史和 python-dotenv 1.2.4 发布记录确认兼容 CI Python 3.12。按实际 Trivy v0.70.0 源码核对可解析 5 包，传递依赖的持续扫描仍未补齐。只读 GitHub 通告查询经阳性对照验证，覆盖 reviewed/unreviewed/malware：固定 5 包、Docling 81 项（80 wheel + 1 源码包）及 nodemailer 10.0.13/10.1.0 均 0 命中；本机 35 包命中 15 条独立通告（1 CRITICAL、9 HIGH、5 MEDIUM），逐条登记影响与修复建议，不改只读环境。

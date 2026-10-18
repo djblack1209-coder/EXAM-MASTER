@@ -216,6 +216,8 @@ Dependabot #3 的两份 workflow 已按原 PR 的版本引用落地，未合并�
 
 下载记录与最终小报告分别为 `tmp/p11b-evidence/downloads.json`、`report.json`；收尾仅保留这两份。三个下载临时包在增量安装验收后回收，现有 npm/Rust 依赖缓存保留；11A 历史、`tmp/p1-*`、既有服务、日常 App 和恢复材料保持。本轮只在本地 main 按路径提交，不推送、合并、评论或关闭 #17；云端 CI、Windows 与设备验收未覆盖。
 
+推送后验收（2026-10-18）：`5dbe8d27`、`05387c5b`、`995340b2` 快进推送后，CI run 39107283413 全绿，两个部署作业 skipped。Trivy 语言清单由 5 个增至 6 个，新增目标 `requirements-baidu.txt`，提示为 notice「没有 CRITICAL/HIGH；目标=6」；npm audit 仍为 CRITICAL=0、HIGH=21，均为同一 braces 通告，忽略项不变。Dependabot #17 于 2026-10-18 07:22 UTC 自动关闭。本机 `.venv-baidu` 的 1 CRITICAL/9 HIGH 仍待客户另批下载许可后修复。
+
 ### 阶段10A：恢复 Trivy 安全扫描（2026-10-17，本地 main）
 
 事实：以 `aa44be83` 为干净本地 main 基线。旧忽略文件由 `git show 943b352a^:.trivyignore` 核对，非注释条目均是路径，两个 GHSA 仅在注释内，引用的 deploy 文件现已不在跟踪树。[v0.70.0 忽略解析器](https://github.com/aquasecurity/trivy/blob/v0.70.0/pkg/result/ignore.go) 跳过注释、把首字段作为 ID，故这些路径不是路径排除规则。决定删除 Action 的 trivyignores 输入，不新建忽略文件，不预先豁免任何发现。
