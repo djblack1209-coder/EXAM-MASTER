@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { auditRetiredBank } from './retired-bank-gate.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -1594,6 +1595,8 @@ function sourceManifestHumanRegistrationQueueSummary(queue) {
 export function buildReleaseBlockerBacklog({
   questionAudit = null,
   flashcardQuality = null,
+  contentMode = 'legacy-bank',
+  retirementAudit = null,
   externalAudit = null,
   wechatSmoke = null,
   professionalIndex = null,
@@ -1602,19 +1605,44 @@ export function buildReleaseBlockerBacklog({
 } = {}) {
   const localSourceAuditLookup = buildLocalSourceAuditLookup(localSourceAudit);
   const localSourceAuditScopedYears = localSourceAuditYears(localSourceAudit);
-  const items = sortBacklogItems([
-    ...buildInputReportItems({ questionAudit, flashcardQuality, externalAudit }),
-    ...buildBankFileInventoryItems(questionAudit),
-    ...buildEnabledBankEvidenceItems(questionAudit),
-    ...buildExternalItems(externalAudit, wechatSmoke),
-    ...buildWechatDevtoolsSmokeItems(wechatSmoke),
-    ...buildCoverageItems(questionAudit, localSourceAuditLookup, localSourceAuditScopedYears),
-    ...buildSourceEvidenceItems(questionAudit, localSourceAuditLookup, localSourceAuditScopedYears),
-    ...buildFlashcardQualityItems(flashcardQuality)
-  ]);
-  const professionalWorkstream = buildProfessionalWorkstream(professionalIndex);
-  const questionCanPublish = questionAudit?.releaseReadiness?.canPublish === true;
-  const flashcardCanPromote = flashcardQuality?.releaseReadiness?.canPromoteToPublic === true;
+  const retired = contentMode === 'conversation';
+  const inputItems = buildInputReportItems({ questionAudit, flashcardQuality, externalAudit });
+  const items = sortBacklogItems(
+    retired
+      ? [
+          ...inputItems.filter((item) => item.id === 'input_report:external_audit'),
+          ...buildExternalItems(externalAudit, wechatSmoke),
+          ...buildWechatDevtoolsSmokeItems(wechatSmoke),
+          ...(retirementAudit?.contract === 'public-bank-retirement-v1' && retirementAudit.ok === true
+            ? []
+            : [
+                {
+                  id: 'public_bank_retirement',
+                  priority: 'P0',
+                  workstream: 'content_retirement',
+                  blockerCode: 'retired_bank_residue_or_audit_missing',
+                  title: '题库退役尚未通过',
+                  count: 1,
+                  nextAction: 'npm run audit:question-bank:release'
+                }
+              ])
+        ]
+      : [
+          ...buildInputReportItems({ questionAudit, flashcardQuality, externalAudit }),
+          ...buildBankFileInventoryItems(questionAudit),
+          ...buildEnabledBankEvidenceItems(questionAudit),
+          ...buildExternalItems(externalAudit, wechatSmoke),
+          ...buildWechatDevtoolsSmokeItems(wechatSmoke),
+          ...buildCoverageItems(questionAudit, localSourceAuditLookup, localSourceAuditScopedYears),
+          ...buildSourceEvidenceItems(questionAudit, localSourceAuditLookup, localSourceAuditScopedYears),
+          ...buildFlashcardQualityItems(flashcardQuality)
+        ]
+  );
+  const professionalWorkstream = retired ? null : buildProfessionalWorkstream(professionalIndex);
+  const questionCanPublish = retired
+    ? retirementAudit?.ok === true
+    : questionAudit?.releaseReadiness?.canPublish === true;
+  const flashcardCanPromote = retired || flashcardQuality?.releaseReadiness?.canPromoteToPublic === true;
   const externalCanPublish = externalAudit?.releaseReadiness?.canPublish === true;
   const publicCourseBlockerItemCount = publicCourseBlockerItems(items).length;
   const publicCourseBlockedSlotCount = countUniquePublicCourseBlockedSlots(items);
@@ -1624,6 +1652,7 @@ export function buildReleaseBlockerBacklog({
 
   return {
     version: 1,
+    contentMode,
     generatedAt,
     verdict:
       items.length === 0 && questionCanPublish && flashcardCanPromote && externalCanPublish ? 'passed' : 'blocked',
@@ -1878,13 +1907,17 @@ export async function run(argv = process.argv.slice(2)) {
     return 0;
   }
 
+  // Explicit legacy report inputs remain available for historical analysis only.
+  const legacy = argv.some((arg) => arg === '--question-audit' || arg.startsWith('--question-audit='));
   const backlog = buildReleaseBlockerBacklog({
-    questionAudit: readJson(options.questionAudit),
-    flashcardQuality: readJson(options.flashcardQuality),
+    contentMode: legacy ? 'legacy-bank' : 'conversation',
+    retirementAudit: auditRetiredBank(),
+    questionAudit: legacy ? readJson(options.questionAudit) : null,
+    flashcardQuality: legacy ? readJson(options.flashcardQuality) : null,
     externalAudit: readJson(options.externalAudit),
     wechatSmoke: readJson(options.wechatSmoke),
-    professionalIndex: readJson(options.professionalIndex),
-    localSourceAudit: readLocalSourceAudits(options.localSourceAudits)
+    professionalIndex: legacy ? readJson(options.professionalIndex) : null,
+    localSourceAudit: legacy ? readLocalSourceAudits(options.localSourceAudits) : null
   });
 
   writeText(options.output, `${JSON.stringify(backlog, null, 2)}\n`);

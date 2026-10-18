@@ -73,33 +73,6 @@
         >
           <text>{{ t('learning.k8t') }}</text>
         </BaseButton>
-        <view class="desktop-navigation" :aria-label="t('nav.learningViews')">
-          <BaseButton
-            v-for="item in navigation"
-            :key="item.id"
-            class="space-nav-item"
-            align="start"
-            :label="learningText(item.label)"
-            :title="learningText(item.label)"
-            :selected="active === item.id"
-            :class="{ selected: active === item.id }"
-            :aria-current="active === item.id ? 'page' : undefined"
-            variant="quiet"
-            @tap="openView(item.id)"
-          >
-            <BaseIcon
-              :name="item.icon"
-              :label="learningText(item.label)"
-              :title="learningText(item.label)"
-              :selected="active === item.id"
-              :tone="active === item.id ? 'violet-ink' : 'ink-3'"
-            />
-            <text class="sidebar-label">{{ learningText(item.label) }}</text>
-            <text v-if="item.id === 'mistake' && learning.summary.mistakes.length" class="nav-count">
-              {{ learning.summary.mistakes.length }}
-            </text>
-          </BaseButton>
-        </view>
         <view class="library-search">
           <BaseInput
             ref="searchInput"
@@ -231,16 +204,33 @@
             </view>
           </view>
         </view>
-        <BaseButton class="library-materials" align="start" variant="quiet" @tap="openMaterials">
-          <BaseIcon name="folder" tone="ink-3" />
-          <view class="material-copy">
-            <text class="sidebar-label">{{ t('learning.k5u') }}</text>
-            <text v-if="learning.state.materials.length" class="sidebar-caption"
-              >{{ learning.state.materials.length }}{{ t('learning.kkd') }}</text
-            >
-          </view>
-          <BaseIcon name="arrow-right" tone="ink-3" />
-        </BaseButton>
+        <view class="desktop-navigation" :aria-label="t('nav.learningViews')">
+          <BaseButton
+            v-for="item in navigation"
+            :key="item.id"
+            class="space-nav-item"
+            align="start"
+            :label="learningText(item.label)"
+            :title="learningText(item.label)"
+            :selected="active === item.id"
+            :class="{ selected: active === item.id }"
+            :aria-current="active === item.id ? 'page' : undefined"
+            variant="quiet"
+            @tap="openView(item.id)"
+          >
+            <BaseIcon
+              :name="item.icon"
+              :label="learningText(item.label)"
+              :title="learningText(item.label)"
+              :selected="active === item.id"
+              :tone="active === item.id ? 'violet-ink' : 'ink-3'"
+            />
+            <text class="sidebar-label">{{ learningText(item.label) }}</text>
+            <text v-if="item.id === 'mistake' && learning.summary.mistakes.length" class="nav-count">
+              {{ learning.summary.mistakes.length }}
+            </text>
+          </BaseButton>
+        </view>
         <view class="sidebar-footer">
           <BaseButton
             :label="theme.isDark ? t('learning.kfr') : t('learning.kev')"
@@ -268,7 +258,6 @@
               @tap="menuOpen = !menuOpen"
             />
             <text class="space-title">{{ title || t('pages.learning') }}</text>
-            <BaseTag tone="neutral">{{ dateLabel }}</BaseTag>
           </view>
           <view v-if="learning.recordReadState === 'ready'" class="space-header-actions"
             ><slot name="controls"></slot
@@ -286,33 +275,11 @@
         </view>
       </view>
     </view>
-    <BaseCard
-      surface="glass"
-      padding="none"
-      class="mobile-dock"
-      :aria-label="t('nav.learningViews')"
-      :inert="menuOpen || undefined"
-    >
-      <BaseButton
-        v-for="item in mobileNavigation"
-        :key="item.id"
-        :class="{ selected: active === item.id }"
-        :aria-current="active === item.id ? 'page' : undefined"
-        variant="quiet"
-        @tap="openView(item.id)"
-      >
-        <BaseIcon
-          :name="item.icon"
-          :selected="active === item.id"
-          :tone="active === item.id ? 'violet-ink' : 'ink-3'"
-        />
-        <text>{{ learningText(item.label) }}</text>
-      </BaseButton>
-    </BaseCard>
     <BaseEmpty v-if="error" state="error" :title="learningText(error)" />
   </view>
 </template>
 <script setup>
+import '@/i18n/tutor.js';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import { learningText } from '@/i18n/learning.js';
@@ -328,8 +295,6 @@ import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
 import { BRAND } from '@/config/brand.js';
 import { publicError, t } from '@/i18n/index.js';
-import { formatDate } from '@/i18n/format.js';
-import BaseTag from '@/components/base/base-tag/base-tag.vue';
 const props = defineProps({
   active: { type: String, default: 'learning' },
   title: { type: String, default: '' }
@@ -407,21 +372,11 @@ try {
 // #endif
 const error = ref('');
 const navigation = computed(() => [
-  { id: 'learning', label: t('nav.learning'), icon: 'chat' },
-  { id: 'mistake', label: t('nav.mistake'), icon: 'book-open' },
-  { id: 'plan', label: t('nav.plan'), icon: 'calendar' },
-  { id: 'study-detail', label: t('nav.stats'), icon: 'chart-bar' },
-  { id: 'practice', label: t('pages.practice'), icon: 'pen' },
-  { id: 'question-bank', label: t('pages.bank'), icon: 'books' },
-  { id: 'favorite', label: t('pages.favorite'), icon: 'star' },
-  { id: 'profile', label: t('pages.profile'), icon: 'user' },
+  { id: 'archive', label: t('tutor.archive.title'), icon: 'chart-bar' },
+  { id: 'materials', label: t('learning.k5u'), icon: 'folder' },
   { id: 'settings', label: t('nav.settings'), icon: 'settings' }
 ]);
-const mobileNavigation = computed(() =>
-  navigation.value.filter((item) => ['learning', 'practice', 'mistake', 'profile'].includes(item.id))
-);
 const recent = computed(() => [...learning.state.conversations].reverse().slice(0, 8));
-const dateLabel = computed(() => formatDate(learning.summary.day + 'T12:00:00'));
 let unbind = () => undefined;
 let releaseMotion = () => undefined;
 let menuExitTimer = null;
@@ -476,19 +431,18 @@ function escapeMenu(event) {
 function openView(view) {
   menuOpen.value = false;
   const route = getCurrentPages().at(-1)?.route;
+  if (view === 'materials') {
+    openMaterials();
+    return;
+  }
   if (['settings', 'profile'].includes(view)) {
     requestProfilePanel(view);
     if (route === 'pages/profile/index') uni.$emit('profilePanel');
     else safeNavigateTo('/pages/profile/index');
     return;
   }
-  const target =
-    view === 'question-bank'
-      ? '/pages/practice-sub/question-bank'
-      : view === 'settings'
-        ? '/pages/profile/index?panel=settings'
-        : `/pages/${view}/index`;
-  if (view === 'settings' || route !== target.slice(1)) safeNavigateTo(target);
+  const target = view === 'archive' ? '/pages/archive/index' : `/pages/${view}/index`;
+  if (route !== target.slice(1)) safeNavigateTo(target);
 }
 function newSession() {
   if (learning.busy) return;

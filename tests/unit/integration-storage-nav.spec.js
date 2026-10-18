@@ -205,16 +205,16 @@ describe('全链路: 存储服务 & 导航 & 安全', () => {
   });
 
   describe('Phase 5: 安全导航', () => {
-    it('tabBar 页面自动使用 switchTab', async () => {
+    it('工作区首页使用普通导航', async () => {
       const { safeNavigateTo } = await import('@/utils/safe-navigate.js');
 
       safeNavigateTo('/pages/index/index');
-      expect(uni.switchTab).toHaveBeenCalledWith(
+      expect(uni.navigateTo).toHaveBeenCalledWith(
         expect.objectContaining({
           url: '/pages/index/index'
         })
       );
-      expect(uni.navigateTo).not.toHaveBeenCalled();
+      expect(uni.switchTab).not.toHaveBeenCalled();
     });
 
     it('普通页面使用 navigateTo', async () => {
@@ -228,13 +228,13 @@ describe('全链路: 存储服务 & 导航 & 安全', () => {
       );
     });
 
-    it('tabBar 页面去掉查询参数', async () => {
+    it('旧兼容路由保留查询参数', async () => {
       const { safeNavigateTo } = await import('@/utils/safe-navigate.js');
 
       safeNavigateTo('/pages/practice/index?from=home');
-      expect(uni.switchTab).toHaveBeenCalledWith(
+      expect(uni.navigateTo).toHaveBeenCalledWith(
         expect.objectContaining({
-          url: '/pages/practice/index'
+          url: '/pages/practice/index?from=home'
         })
       );
     });
@@ -256,16 +256,16 @@ describe('全链路: 存储服务 & 导航 & 安全', () => {
       );
     });
 
-    it('switchTab 失败降级到 reLaunch', async () => {
+    it('普通导航失败降级到 redirectTo', async () => {
       const { safeNavigateTo } = await import('@/utils/safe-navigate.js');
 
-      uni.switchTab.mockImplementationOnce(({ fail }) => {
+      uni.navigateTo.mockImplementationOnce(({ fail }) => {
         fail?.({ errMsg: 'switchTab:fail' });
       });
 
       safeNavigateTo('/pages/index/index');
 
-      expect(uni.reLaunch).toHaveBeenCalledWith(
+      expect(uni.redirectTo).toHaveBeenCalledWith(
         expect.objectContaining({
           url: '/pages/index/index'
         })
@@ -286,7 +286,7 @@ describe('全链路: 存储服务 & 导航 & 安全', () => {
       expect(uni.redirectTo).not.toHaveBeenCalled();
     });
 
-    it('所有 tabBar 页面路径都能识别', async () => {
+    it('原 tabBar 页面已改成普通页面', async () => {
       const { safeNavigateTo } = await import('@/utils/safe-navigate.js');
 
       const tabPages = ['/pages/index/index', '/pages/practice/index', '/pages/profile/index'];
@@ -294,7 +294,8 @@ describe('全链路: 存储服务 & 导航 & 安全', () => {
       for (const page of tabPages) {
         vi.clearAllMocks();
         safeNavigateTo(page);
-        expect(uni.switchTab).toHaveBeenCalled();
+        expect(uni.navigateTo).toHaveBeenCalled();
+        expect(uni.switchTab).not.toHaveBeenCalled();
       }
     });
   });

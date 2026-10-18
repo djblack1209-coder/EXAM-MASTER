@@ -253,6 +253,7 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
 import MistakeCard from './MistakeCard.vue';
 import MistakeReport from './MistakeReport.vue';
+import { legacyQuestionView } from '@/services/retired-question-bank.js';
 import { normalizeMistakes as normalizeFields } from '@/utils/field-normalizer.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import { captureSession, checkSession, getUserId } from '@/services/auth-storage.js';
@@ -310,7 +311,7 @@ watch(
 
 // 待复习错题数量（错误次数>=2的题目）
 const pendingReviewCount = computed(() => {
-  return mistakes.value.filter((item) => (item.wrong_count || 1) >= 2).length;
+  return mistakes.value.filter((item) => legacyQuestionView(item).reviewable && (item.wrong_count || 1) >= 2).length;
 });
 
 // ✅ 1.7: 根据筛选条件过滤错题（兼容 camelCase 和 snake_case 字段名）
@@ -542,7 +543,9 @@ function goBack() {
 
 // ✅ P1 + 1.7: 开始顺序重练（使用筛选后的错题列表）
 function startSequentialReview() {
-  const source = isReviewMode.value ? filteredReviewMistakes.value : mistakes.value;
+  const source = (isReviewMode.value ? filteredReviewMistakes.value : mistakes.value).filter(
+    (item) => legacyQuestionView(item).reviewable
+  );
   if (source.length === 0) {
     toast.info(t('mistake.copy27'));
     return;

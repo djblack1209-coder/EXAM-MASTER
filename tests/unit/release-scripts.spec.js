@@ -58,11 +58,12 @@ describe('release scripts', () => {
     expect(packageJson.scripts['baidu:sources:merge']).toContain('verified-source-export.json');
   });
 
-  it('blocks release promotion while cleaned flashcards are missing answer evidence', () => {
-    expect(packageJson.scripts['baidu:flashcards:quality']).toContain('scripts/baidu/flashcard_quality.py');
-    expect(packageJson.scripts['baidu:flashcards:quality:release']).toContain('--fail-on-blockers');
-    expect(packageJson.scripts['release:gate:report']).toContain('npm run baidu:flashcards:quality');
-    expect(packageJson.scripts['release:gate']).toContain('npm run baidu:flashcards:quality:release');
+  it('keeps explicit retirement, public-build and external release checks', () => {
+    expect(packageJson.scripts['audit:question-bank:release']).toContain('retired-bank-gate.mjs');
+    expect(packageJson.scripts['release:gate']).toContain('audit:question-bank:release');
+    expect(packageJson.scripts['release:gate']).toContain('audit:public-build');
+    expect(packageJson.scripts['release:gate']).toContain('audit:release:external');
+    expect(packageJson.scripts['release:gate']).not.toContain('baidu:flashcards:quality');
   });
 
   it('exposes a reproducible Baidu Python pipeline test entrypoint', () => {
@@ -72,7 +73,8 @@ describe('release scripts', () => {
     expect(pipelineScript).toContain('.venv-baidu/bin/python -m unittest');
     expect(pipelineScript).toContain('tests.unit.test_private_material_parser');
     expect(pipelineScript).not.toContain('tests.unit.test_baidu_cleaning_runner');
-    expect(pipelineScript).toContain('tests.unit.test_flashcard_quality');
+    expect(pipelineScript).not.toContain('tests.unit.test_flashcard_quality');
+    expect(pipelineScript).toContain('tests.unit.test_material_upload_recovery');
   });
 
   it('generates a release blocker backlog in report and blocking gate modes', () => {

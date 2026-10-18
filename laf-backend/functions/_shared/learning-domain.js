@@ -1,3 +1,5 @@
+import { normalizeLearningProposal, assertLearningProposalAcceptance } from './learning-proposals.js';
+import { normalizeContentBlocks } from './learning-content-blocks.js';
 import {
   normalizeRubric,
   assessWithRubric,
@@ -1155,6 +1157,10 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
     assert(session, 'NOT_FOUND', '对话不存在');
     return session;
   };
+  if (data.proposalId !== undefined) {
+    assert(['profile.set', 'plan.set'].includes(operation.type), 'FORBIDDEN', '建议不能执行其他操作');
+    assertLearningProposalAcceptance(state, operation.type, data, { assert, fingerprint: operationFingerprint });
+  }
   switch (operation.type) {
     case 'reminder.set':
     case 'reminder.receipt': {
@@ -1195,6 +1201,17 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
         id: opId,
         role: data.role,
         content: text(data.content),
+        ...(data.proposal
+          ? {
+              proposal: normalizeLearningProposal(state, data.proposal, session.id, now, {
+                assert,
+                dayKey,
+                preview: (type, proposalData) =>
+                  reduceLearningOperation(state, { id: `${opId}:preview`, type, data: proposalData, at: now })
+              })
+            }
+          : {}),
+        ...(data.contentBlocks ? { contentBlocks: normalizeContentBlocks(data.contentBlocks) } : {}),
         at: now,
         questionKey: data.questionKey || session.activeQuestionKey,
         attemptId: data.attemptId || null,
@@ -1664,6 +1681,7 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
         id: opId,
         role: data.origin === 'model_reply' ? 'assistant' : 'tool',
         content,
+        ...(data.contentBlocks ? { contentBlocks: normalizeContentBlocks(data.contentBlocks) } : {}),
         at: now,
         questionKey: data.questionKey,
         method: data.method,
@@ -2084,10 +2102,19 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
     case 'profile.set': {
       assert(['self_report', 'observed', 'inferred'].includes(data.source), 'INVALID_INPUT', '画像依据类型不合法');
       assert(
-        ['goal', 'foundation', 'difficulty', 'minutes', 'preference'].includes(data.field),
+        ['goal', 'foundation', 'difficulty', 'minutes', 'preference', 'deadline'].includes(data.field),
         'INVALID_INPUT',
         '画像字段不合法'
       );
+      if (data.field === 'deadline')
+        assert(
+          typeof data.value === 'string' &&
+            /^\d{4}-\d{2}-\d{2}$/.test(data.value) &&
+            Number.isFinite(Date.parse(data.value + 'T00:00:00Z')) &&
+            new Date(data.value + 'T00:00:00Z').toISOString().slice(0, 10) === data.value,
+          'INVALID_INPUT',
+          '目标日期不合法'
+        );
       const entry = {
         id: opId,
         field: data.field,

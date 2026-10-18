@@ -3,7 +3,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { readFileSync } from 'node:fs';
 import { storageService } from '@/services/storageService.js';
-import { captureSession, checkSession, getUserId, getToken, isSessionUnavailable } from '@/services/auth-storage.js';
+import { captureSession, checkSession, getUserId, isSessionUnavailable } from '@/services/auth-storage.js';
 import { useProfileStore } from '@/stores/modules/profile.js';
 import { useStatsStore } from '@/stores/modules/stats.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -345,22 +345,6 @@ it.each(['normal', 'renew', 'relogin'])(
   }
 );
 
-it('WRITES-01: question bank page binding survives renewal and rejects relogin', async () => {
-  const source = readFileSync('src/pages/practice-sub/question-bank.vue', 'utf8');
-  const body = source.slice(source.indexOf('const pageOwner ='), source.indexOf('const _themeHandler'));
-  const current = new Function(
-    'captureSession',
-    'checkSession',
-    'getUserId',
-    'getToken',
-    body + ';return ownerMatches;'
-  )(captureSession, checkSession, getUserId, getToken);
-  expect(current()).toBe(true);
-  await renew();
-  expect(current()).toBe(true);
-  login();
-  expect(current()).toBe(false);
-});
 it.each(['renew', 'relogin'])('WRITES-02: profile logout confirmation uses origin (%s)', async (mode) => {
   const { default: Page } = await import('@/pages/profile/index.vue');
   const context = { dialog: {}, showDialog: false, userStore: { logout: vi.fn() } };

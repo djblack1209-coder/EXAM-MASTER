@@ -220,6 +220,7 @@ export function createLearningRepository(
             'attempt.submit',
             'attempt.submit-original-v1',
             'plan.set',
+            'profile.set',
             'training.open',
             'training.complete',
             'review.schedule',

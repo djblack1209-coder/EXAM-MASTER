@@ -10,7 +10,8 @@ import {
   applyLearningOperation,
   normalizePrivateSyncOperation,
   operationFingerprint,
-  samePrivacyRedaction
+  samePrivacyRedaction,
+  enforceMaterialDeletions
 } from './learning-domain.js';
 
 function checkedRemote(result, owner) {
@@ -61,6 +62,22 @@ function checkSharedEvents(repository, local, remote, assertCurrent) {
   return known;
 }
 
+function assertRichMessagesPreserved(local, remote) {
+  for (const session of local.conversations || []) {
+    const target = remote.conversations.find((item) => item.id === session.id);
+    for (const message of session.messages) {
+      if (!message.contentBlocks && !message.proposal) continue;
+      const saved = target?.messages.find((item) => item.id === message.id);
+      assert(
+        saved &&
+          operationFingerprint(saved.contentBlocks || null) === operationFingerprint(message.contentBlocks || null) &&
+          operationFingerprint(saved.proposal || null) === operationFingerprint(message.proposal || null),
+        'SYNC_UPGRADE_REQUIRED',
+        '服务尚未完整保留教学卡或建议，本机记录保留，请先更新学习服务'
+      );
+    }
+  }
+}
 function checkedPush(repository, result, operations, owner, assertCurrent) {
   if (result?.data?.snapshotRequired || result?.data?.history) {
     assert(
@@ -295,6 +312,7 @@ export async function synchronizeLearning(
   for (const event of current.events.filter((e) => !remoteIds.has(e.id)))
     remote = applyLearningOperation(remote, { id: event.id, type: event.type, data: event.data, at: event.at }).state;
   assertContext();
+  assertRichMessagesPreserved(enforceMaterialDeletions(current, remote), remote);
   return repository.replaceSynchronized(remote);
 }
 export async function adoptRemoteConflict(

@@ -1,3 +1,4 @@
+import { mapContentBlocks } from '../../../laf-backend/functions/_shared/learning-content-blocks.js';
 import { publicError, currentLanguage, t } from '@/i18n/index.js';
 import { defineStore } from 'pinia';
 import {
@@ -227,6 +228,7 @@ export const CONVERSATION_ACTION_EFFECTS = Object.freeze({
   scienceCanSubmit: 'read',
   writingCanSubmit: 'read',
   observeCalendar: 'read',
+  confirmProfile: 'write',
   scheduleScienceRetest: 'write',
   scheduleWritingRetest: 'write',
   requestWritingFeedback: 'send',
@@ -1271,6 +1273,49 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     uni.$emit('conversationLearningUpdated');
     return result.result;
   }
+  function confirmProfile(expectedContext, conversationId, fields, suggestion, id = learningId('profile')) {
+    ensureSessionCurrent();
+    assert(
+      recordContext() === expectedContext &&
+        selectedConversationId.value === conversationId &&
+        active.value &&
+        !active.value.stopped,
+      'CONTEXT_CHANGED',
+      '当前学习已变化，请重新确认'
+    );
+    const keys = ['goal', 'foundation', 'minutes', 'deadline', 'preference'];
+    assert(fields && Object.keys(fields).every((key) => keys.includes(key)), 'INVALID_INPUT', '档案字段不合法');
+    const scope = String(fields.goal || active.value.goal).trim();
+    const at = Date.now();
+    const operations = keys
+      .filter((key) => String(fields[key] || '').trim())
+      .map((field) => ({
+        id: `${id}:${field}`,
+        type: 'profile.set',
+        at,
+        data: { field, value: String(fields[field]).trim(), source: 'self_report', scope, conversationId }
+      }));
+    assert(operations.length, 'INVALID_INPUT', '请至少填写一项');
+    if (fields.minutes)
+      assert(
+        /^\d{1,3}$/.test(fields.minutes) && Number(fields.minutes) >= 1 && Number(fields.minutes) <= 480,
+        'INVALID_INPUT',
+        '每日时间应为1到480分钟'
+      );
+    if (suggestion)
+      operations.push({
+        id: `${id}:plan-proposal`,
+        type: 'message.add',
+        at,
+        data: {
+          conversationId,
+          role: 'assistant',
+          content: suggestion.reason,
+          proposal: { type: 'plan.set', data: suggestion }
+        }
+      });
+    return commitJourneyBatch(operations);
+  }
   function notice(content, id = learningId('notice'), extras = {}) {
     return commit(
       'message.add',
@@ -1286,6 +1331,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         questionKey: questionKey(activeQuestion.value),
         method: segment.method,
         content: segment.content,
+        ...(segment.contentBlocks ? { contentBlocks: segment.contentBlocks } : {}),
         origin,
         helped: segment.helped,
         ...(segment.visualReading ? { visualReading: segment.visualReading } : {}),
@@ -2418,6 +2464,20 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         ? localChatOpening(raw)
         : null;
     const directive = options.visual ? null : userDirective(raw, state.value, selectedConversationId.value);
+    if (directive && ['profile.set', 'plan.set'].includes(directive.type)) {
+      const { source: _source, conversationId: _conversationId, ...proposalData } = directive.data;
+      commit(
+        'message.add',
+        {
+          conversationId: selectedConversationId.value,
+          role: 'assistant',
+          content: '请确认这份建议，确认后才会保存。',
+          proposal: { type: directive.type, data: proposalData }
+        },
+        `${id}:proposal`
+      );
+      return { proposal: true };
+    }
     if (directive) {
       commit(directive.type, directive.data, `${id}:directive`);
       notice(
@@ -2763,6 +2823,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   function applyModelResult(data, request, signal) {
     const assertSession = () => ensureSessionCurrent(request.session, signal);
     assertSession();
+    if (data.contentBlocks !== undefined)
+      data = { ...data, contentBlocks: mapContentBlocks(data.contentBlocks, safeLearningMessage) };
     const { id, conversationId, questionKey: requestedQuestionKey } = request;
     assert(
       typeof data.message === 'string' &&
@@ -2851,6 +2913,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         {
           method: activeStrategy.value.method,
           content: safeMessage,
+          ...(data.contentBlocks ? { contentBlocks: data.contentBlocks } : {}),
           helped: true,
           level: 1,
           ...(reading ? { visualReading: reading } : {})
@@ -2858,7 +2921,17 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         `${id}:reply`,
         'model_reply'
       );
-    } else commit('message.add', { conversationId, role: 'assistant', content: safeMessage }, `${id}:reply`);
+    } else
+      commit(
+        'message.add',
+        {
+          conversationId,
+          role: 'assistant',
+          content: safeMessage,
+          ...(data.contentBlocks ? { contentBlocks: data.contentBlocks } : {})
+        },
+        `${id}:reply`
+      );
     if (
       data.question &&
       (!requestedQuestionKey || ['variant', 'challenge'].includes(request.lockedMethod || activeStrategy.value.method))
@@ -4194,6 +4267,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     scienceCanSubmit,
     writingCanSubmit,
     observeCalendar,
+    calendarTime,
+    confirmProfile,
     scienceRetest,
     scheduleScienceRetest,
     writingRetest,

@@ -24,5 +24,6 @@
   "pages.learning": "Learning chat",
   "pages.plan": "Study plan",
   "pages.stats": "Learning statistics",
-  "nav.settings": "Settings"
+  "nav.settings": "Settings",
+  "pages.archive": "Learning profile"
 }

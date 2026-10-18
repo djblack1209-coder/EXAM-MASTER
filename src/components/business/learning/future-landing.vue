@@ -45,12 +45,12 @@
     <view class="intro">
       <text class="name brand-wordmark" role="heading" aria-level="1">{{ BRAND.english }}</text>
       <view class="future-mascot"
-        ><YoziMascot pose="wave" size="medium" play="auto" :reduced-motion="!interactive"
+        ><YoziMascot pose="idle" size="medium" play="auto" :reduced-motion="!interactive"
       /></view>
     </view>
     <BaseCard class="future-nav" surface="glass" padding="small" :aria-label="landingPresentation.navigation">
       <view class="future-nav-items"
-        ><BaseButton class="nav-link home" variant="quiet" align="start" @tap="open('web')">{{
+        ><BaseButton v-if="!welcome" class="nav-link home" variant="quiet" align="start" @tap="open('web')">{{
           landingPresentation.home
         }}</BaseButton>
         <BaseButton
@@ -61,13 +61,13 @@
           @tap="open('start')"
           >{{ landingPresentation.start }}</BaseButton
         >
-        <BaseButton class="nav-link n2" variant="quiet" align="start" @tap="open('materials')">{{
+        <BaseButton v-if="!welcome" class="nav-link n2" variant="quiet" align="start" @tap="open('materials')">{{
           landingPresentation.materials
         }}</BaseButton>
-        <BaseButton class="nav-link n3" variant="quiet" align="start" @tap="open('plan')">{{
+        <BaseButton v-if="!welcome" class="nav-link n3" variant="quiet" align="start" @tap="open('plan')">{{
           landingPresentation.plan
         }}</BaseButton>
-        <view class="mode"
+        <view v-if="!welcome" class="mode"
           ><BaseChip v-model="interactive" :disabled="mascotReducedMotion">{{
             landingPresentation.motion
           }}</BaseChip></view
@@ -77,6 +77,7 @@
   </view>
 </template>
 <script setup>
+defineProps({ welcome: Boolean });
 import { nextTick, onMounted, onUnmounted, ref, watch, computed } from 'vue';
 import { BRAND } from '@/config/brand.js';
 import { FUTURE_ASSETS, bindFutureSky, runFutureEntrance } from '@/design/future-motion.js';

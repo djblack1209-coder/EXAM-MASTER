@@ -25,11 +25,9 @@ const requiredFiles = [
   'app.json',
   'project.config.json',
   'pages/index/index.json',
-  'custom-tab-bar/index.json',
-  'components/layout/custom-tabbar/custom-tabbar.json',
-  'components/layout/custom-tabbar/custom-tabbar.js',
-  'components/layout/custom-tabbar/custom-tabbar.wxml',
-  'components/layout/custom-tabbar/custom-tabbar.wxss'
+  'pages/learning/index.json',
+  'pages/archive/index.json',
+  'components/business/learning/learning-shell.json'
 ];
 
 for (const file of requiredFiles) {
@@ -40,7 +38,6 @@ for (const file of requiredFiles) {
 }
 
 const appJsonPath = resolve(outputRoot, 'app.json');
-const indexJsonPath = resolve(outputRoot, 'pages/index/index.json');
 
 const appJson = readJson(appJsonPath);
 if (!Array.isArray(appJson.pages) || appJson.pages.length === 0) {
@@ -55,18 +52,10 @@ if (routes.includes(previewRoute) || existsSync(resolve(outputRoot, `${previewRo
   fail('H5 component review page is reachable in the WeChat artifact.');
 }
 
-const pageIndexJson = readJson(indexJsonPath);
-const usingComponents = pageIndexJson.usingComponents || {};
-const customTabbarPath = usingComponents['custom-tabbar'];
-
-if (!customTabbarPath) {
-  fail('pages/index/index.json missing usingComponents.custom-tabbar');
-}
-
-const customTabbarJsonPath = resolve(outputRoot, 'pages/index', `${customTabbarPath}.json`);
-if (!existsSync(customTabbarJsonPath)) {
-  fail(`custom-tabbar component target not found: ${customTabbarPath}.json`);
-}
+if (appJson.tabBar) fail('The conversation workspace must use its drawer, not the retired tab bar.');
+if (routes.includes('pages/practice-sub/question-bank')) fail('Retired question-bank route is reachable.');
+const learningJson = readJson(resolve(outputRoot, 'pages/learning/index.json'));
+if (!learningJson.usingComponents?.['learning-shell']) fail('Conversation workspace shell is missing.');
 
 const secretFindings = scanForbiddenClientSecrets(outputRoot);
 if (secretFindings.length > 0) {

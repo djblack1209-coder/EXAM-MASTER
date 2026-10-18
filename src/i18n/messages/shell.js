@@ -9,7 +9,7 @@ export const PAGE_TITLE_KEYS = {
   'pages/practice/index': 'pages.practice',
   'pages/profile/index': 'pages.profile',
   'pages/practice-sub/do-quiz': 'pages.quiz',
-  'pages/practice-sub/question-bank': 'pages.bank',
+  'pages/archive/index': 'pages.archive',
   'pages/login/index': 'pages.login',
   'pages/login/onboarding': 'pages.onboarding',
   'pages/login/wechat-callback': 'pages.wechat',

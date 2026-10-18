@@ -105,13 +105,13 @@ describe('mp-weixin main package usage audit', () => {
         'exports.loadBankData = () => require("./flashcard-banks/english1-2005.js");'
       );
 
-      expect(() => assertPracticeSubpackageBankDataRuntime(buildRoot)).toThrow('题库运行模块缺失');
+      expect(() => assertPracticeSubpackageBankDataRuntime(buildRoot)).toThrow('退役题库不得进入任何分包');
     } finally {
       fs.rmSync(buildRoot, { recursive: true, force: true });
     }
   });
 
-  it('allows a practice subpackage loader backed by a generated compressed bank table', () => {
+  it('blocks even a complete compressed bank after retirement', () => {
     const buildRoot = makeBuildRoot();
     try {
       fs.mkdirSync(path.join(buildRoot, 'pages/practice-sub'), { recursive: true });
@@ -128,19 +128,14 @@ describe('mp-weixin main package usage audit', () => {
         'exports.decodeBankData = () => ({});'
       );
 
-      expect(() => assertPracticeSubpackageBankDataRuntime(buildRoot)).not.toThrow();
+      expect(() => assertPracticeSubpackageBankDataRuntime(buildRoot)).toThrow('退役题库不得进入任何分包');
     } finally {
       fs.rmSync(buildRoot, { recursive: true, force: true });
     }
   });
 
-  it('keeps main-package source modules free of flashcard bank data imports', () => {
-    const registrySource = fs.readFileSync(path.resolve('src/config/bank-registry.js'), 'utf8');
-    const flashcardComposableSource = fs.readFileSync(path.resolve('src/composables/useFlashcardBank.js'), 'utf8');
-
-    expect(registrySource).not.toContain('flashcard-banks');
-    expect(registrySource).not.toMatch(/\bloadBank\b/);
-    expect(registrySource).not.toMatch(/\bloader\s*:/);
-    expect(flashcardComposableSource).not.toMatch(/loadBank|bank-data-loader/);
+  it('removes the old registry and bundled-data loader from source', () => {
+    expect(fs.existsSync(path.resolve('src/config/bank-registry.js'))).toBe(false);
+    expect(fs.existsSync(path.resolve('src/pages/practice-sub/bank-data-table.js'))).toBe(false);
   });
 });

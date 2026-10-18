@@ -13,7 +13,7 @@
       <text class="playful-headline playful-job-title playful-job-title--english" role="heading" aria-level="1">{{
         landingPresentation.headline
       }}</text>
-      <view class="playful-nav" :aria-label="landingPresentation.navigation">
+      <view v-if="!welcome" class="playful-nav" :aria-label="landingPresentation.navigation">
         <BaseButton
           v-for="item in navigation"
           :key="item.id"
@@ -39,7 +39,7 @@
           >{{ landingPresentation.start }}</BaseButton
         >
       </view>
-      <view class="playful-socials">
+      <view v-if="!welcome" class="playful-socials">
         <BaseButton
           v-for="item in actions"
           :key="item.id"
@@ -55,6 +55,7 @@
   </view>
 </template>
 <script setup>
+defineProps({ welcome: Boolean });
 import { useThemeStore } from '@/stores/modules/theme.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 const theme = useThemeStore();

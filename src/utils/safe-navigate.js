@@ -19,7 +19,7 @@ import { toast } from '@/utils/toast.js';
 import { getCurrentRoute, isHomeRoute, openHomeTab } from '@/utils/home-navigation.js';
 
 // tabBar 页面路径列表（与 pages.json 中 tabBar.list 保持一致）
-const TAB_BAR_PAGES = ['/pages/index/index', '/pages/practice/index', '/pages/profile/index'];
+const TAB_BAR_PAGES = []; // Chat workspace uses normal routes and a mobile drawer.
 
 // switchTab drops query parameters, and its success callback can precede onLoad.
 // Keep the requested panel until the receiving page consumes it.

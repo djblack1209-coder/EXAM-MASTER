@@ -10,6 +10,17 @@
     <!-- #endif -->
     <template #controls>
       <BaseButton
+        variant="quiet"
+        icon="user"
+        :aria-expanded="showIntake"
+        :disabled="!learning.active || learning.busy"
+        @tap="showIntake = !showIntake"
+        >{{ t('tutor.intake.title') }}</BaseButton
+      >
+      <BaseButton variant="quiet" icon="chart" :aria-expanded="showInsights" @tap="showInsights = !showInsights">{{
+        t('tutor.archive.title')
+      }}</BaseButton>
+      <BaseButton
         class="connection-pill"
         :aria-expanded="showConnections"
         variant="quiet"
@@ -24,9 +35,18 @@
     <view
       ref="learningRoot"
       class="learning-page"
-      :class="{ 'chat-empty': !learning.active }"
+      :class="{ 'chat-empty': !learning.active, 'with-insights': showInsights }"
       :style="composerHeight ? { '--learning-composer-height': `${composerHeight}px` } : undefined"
     >
+      <LearningInsights v-if="showInsights" compact class="chat-insights" />
+      <LearningProfileDraft
+        v-if="showIntake && learning.active"
+        :key="`${learning.recordContext()}:${learning.selectedConversationId}`"
+        :goal="learning.active.goal"
+        :busy="learning.busy"
+        @cancel="showIntake = false"
+        @confirm="confirmProfileDraft"
+      />
       <!-- #ifdef H5 -->
       <text v-if="!learningWriteProtectionSupported" class="warning">{{ t('learning.k59') }}</text>
       <!-- #endif -->
@@ -35,7 +55,7 @@
         <text class="welcome-title">{{ t('learning.ks3') }}</text>
       </view>
       <BaseCard v-if="showConnections" class="panel" padding="none">
-        <text class="section-title">{{ t('learning.kif') }}</text>
+        <text class="section-title">{{ t('tutor.model.title') }}</text>
         <text class="subtle"
           >{{ t('learning.k3v')
           }}{{
@@ -365,8 +385,16 @@
             <text v-if="sentenceAnswersByFeedback[message.id]" class="message-content sentence-saved-answer" selectable
               >{{ t('learning.kcd') }}{{ sentenceAnswersByFeedback[message.id] }}</text
             >
+            <LearningProposalCard
+              v-if="message.proposal?.data && ['profile.set', 'plan.set'].includes(message.proposal.type)"
+              :proposal="message.proposal"
+              :status="proposalStatus(learning.state, message.id)"
+              :busy="learning.busy || conversationStopped"
+              @resolve="resolveProposal(message, $event)"
+            />
             <LearningMessage
-              v-if="message.role !== 'user'"
+              v-else-if="message.role !== 'user'"
+              :content-blocks="message.contentBlocks"
               :content="message.role === 'notice' ? learningText(message.content) : message.content"
             />
             <text v-else class="message-content" selectable>{{ message.content }}</text>
@@ -420,8 +448,13 @@
           id="active-learning-question"
           tabindex="-1"
           class="question-block"
-          padding="none"
+          surface="paper"
+          padding="large"
         >
+          <view class="lesson-card-heading"
+            ><BaseIcon name="edit" /><text>{{ t('tutor.card.question') }}</text
+            ><YoziMascot pose="think" size="small"
+          /></view>
           <text class="subtle">
             {{
               learning.activeQuestion.source?.kind === 'user_input'
@@ -813,6 +846,8 @@
               <BaseButton variant="quiet" @tap="showRubric = false">{{ t('learning.knr') }}</BaseButton>
             </view>
           </view> </BaseCard
+        ><view v-if="hasConversationAttempts || learning.active?.journey" class="lesson-card-heading"
+          ><BaseIcon name="check" /><text>{{ t('tutor.card.recap') }}</text></view
         ><LearningOverview
           v-if="hasConversationAttempts || learning.active?.journey"
           :show-navigation="false"
@@ -1621,8 +1656,15 @@
               >
             </view>
           </view>
-          <view v-for="material in learning.state.materials" :key="material.id" class="model-row">
-            <text>{{ material.name }} · {{ material.segments.length }}{{ t('learning.kfh') }}</text>
+          <BaseCard
+            v-for="material in learning.state.materials"
+            :key="material.id"
+            class="model-row material-reading-card"
+            padding="large"
+          >
+            <view class="lesson-card-heading"
+              ><BaseIcon name="book-open" /><text>{{ t('tutor.card.material') }}</text></view
+            ><text>{{ material.name }} · {{ material.segments.length }}{{ t('learning.kfh') }}</text>
             <text v-if="material.recognitionEngine === 'apple-vision'" class="subtle">{{ t('learning.klo') }}</text>
             <text v-if="material.recognitionEngine === 'docling'" class="subtle">{{ t('learning.kku') }}</text>
             <BaseButton
@@ -1649,7 +1691,7 @@
               @tap="deleteMaterial(material)"
               >{{ t('learning.kkz') }}</BaseButton
             >
-          </view>
+          </BaseCard>
           <view
             v-for="deletion in (learning.state.materialDeletions || []).filter((d) => d.originalStatus === 'pending')"
             :key="deletion.deletionId"
@@ -1935,6 +1977,10 @@ import { learningRhythms, currentRhythm } from '@/services/learning/learning-rhy
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
 import LearningJourney from '@/components/business/learning/learning-journey.vue';
 import LearningMessage from '@/components/business/learning/learning-message.vue';
+import LearningProfileDraft from '@/components/business/learning/learning-profile-draft.vue';
+import LearningInsights from '@/components/business/learning/learning-insights.vue';
+import LearningProposalCard from '@/components/business/learning/learning-proposal-card.vue';
+import { proposalStatus } from '../../../laf-backend/functions/_shared/learning-proposals.js';
 import LearningLab from '@/components/business/learning/learning-lab.vue';
 import DensityPractice from '@/components/business/learning/density-practice.vue';
 import {
@@ -2357,6 +2403,8 @@ const objectiveFromLabel = computed(() =>
 );
 const objectiveToLabel = computed(() => (objectiveKind.value === 'share_percent' ? '整体数据' : '现期数据'));
 const draft = ref('');
+const showIntake = ref(false),
+  showInsights = ref(false);
 const composer = ref(null);
 const composerHeight = ref(0);
 let composerObserver;
@@ -2957,6 +3005,7 @@ async function runMaterial(action, { connectionCheck = false } = {}) {
 }
 function newConversation() {
   learning.selectedConversationId = null;
+  showIntake.value = false;
   showJourney.value = false;
 }
 let pendingSubmission = null;
@@ -3003,6 +3052,13 @@ async function send() {
     learning.send(input, { id: ticket.id, chatEntry: true, discussionOnly: learning.batchTrainingActive })
   );
   if (!finishSubmission(ticket)) return;
+  if (
+    !feedback.value &&
+    !learning.error &&
+    learning.active &&
+    !learning.state.profile.some((entry) => entry.scope === learning.active.goal && entry.source === 'self_report')
+  )
+    showIntake.value = true;
   // A clarification keeps the draft for explicit submission; failed writes and newer typing stay available.
   if (!feedback.value && !learning.error && !result?.clarification && draft.value.trim() === input) draft.value = '';
   await nextTick();
@@ -3796,6 +3852,64 @@ function structureObjective() {
     nextTick(() => uni.pageScrollTo({ selector: '#active-learning-question', duration: 0 }));
   });
 }
+function confirmProfileDraft(fields) {
+  return run(() => {
+    const context = learning.recordContext(),
+      conversationId = learning.selectedConversationId;
+    const currentTasks = learning.currentPlan?.tasks || [];
+    learning.confirmProfile(
+      context,
+      conversationId,
+      fields,
+      currentTasks.length
+        ? null
+        : {
+            reason: t('tutor.intake.planReason'),
+            tasks: [
+              ...currentTasks,
+              {
+                title: t('tutor.intake.taskLearn', { goal: fields.goal || learning.active.goal }),
+                condition: 'manual'
+              },
+              { title: t('tutor.intake.taskReview'), condition: 'manual' }
+            ]
+              .slice(0, 20)
+              .map(({ id, title, questionKey, condition }) => ({
+                ...(id ? { id } : {}),
+                title,
+                ...(questionKey ? { questionKey } : {}),
+                condition
+              }))
+          }
+    );
+    showIntake.value = false;
+  });
+}
+function resolveProposal(message, action) {
+  const context = learning.recordContext(),
+    conversationId = learning.selectedConversationId;
+  return run(() => {
+    if (
+      learning.recordContext() !== context ||
+      learning.selectedConversationId !== conversationId ||
+      !learning.active?.messages.some((item) => item.id === message.id)
+    )
+      throw Object.assign(new Error('建议已变化'), { code: 'CONTEXT_CHANGED' });
+    if (!['profile.set', 'plan.set'].includes(message.proposal?.type))
+      throw Object.assign(new Error('建议类型不支持'), { code: 'FORBIDDEN' });
+    if (action === 'accept')
+      return learning.commit(
+        message.proposal.type,
+        { ...message.proposal.data, proposalId: message.id, explicit: true },
+        `${message.id}:accept`
+      );
+    return learning.commit(
+      'message.add',
+      { conversationId, role: 'notice', content: t('tutor.proposal.dismissed') },
+      `${message.id}:dismiss`
+    );
+  });
+}
 function saveFoundation() {
   return run(() =>
     learning.commit('profile.set', {
@@ -4248,5 +4362,45 @@ onUnmounted(() => {
   .chat-starters {
     margin-bottom: var(--s-5);
   }
+}
+</style>
+
+<style scoped>
+.chat-insights {
+  max-width: 920px;
+  width: 100%;
+  margin-block: var(--s-4);
+}
+@media (min-width: 1280px) {
+  .learning-page.with-insights {
+    position: relative;
+    padding-right: 324px;
+  }
+  .chat-insights {
+    position: absolute;
+    right: 0;
+    top: var(--s-4);
+    width: 300px;
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+  }
+}
+</style>
+
+<style scoped>
+.lesson-card-heading {
+  display: flex;
+  gap: var(--s-3);
+  align-items: center;
+  font-size: var(--size-title-3);
+  color: var(--ink);
+  margin-bottom: var(--s-4);
+}
+.lesson-card-heading .yozi-mascot {
+  margin-left: auto;
+}
+.material-reading-card {
+  display: grid;
+  gap: var(--s-3);
 }
 </style>

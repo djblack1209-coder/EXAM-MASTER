@@ -292,9 +292,10 @@ it('预览只在临时区域出现，完整终止前无计划/工具/教学事�
   await send;
   await flushPromises();
   expect(store.streamPreview).toBe('');
-  expect(store.state.plans).toHaveLength(1);
+  expect(store.state.plans).toHaveLength(0);
+  expect(store.active.messages.filter((m) => m.proposal?.type === 'plan.set')).toHaveLength(1);
   expect(wrapper.find('.message.notice[aria-live="polite"]').exists()).toBe(false);
-  expect(store.active.messages.filter((m) => m.role === 'assistant')).toHaveLength(1);
+  expect(store.active.messages.filter((m) => m.role === 'assistant' && !m.proposal)).toHaveLength(1);
   expect(store.summary.first.denominator).toBe(0);
   await store.send('请讲解函数', { id: 'stream-task' });
   expect(harness.fetch).toHaveBeenCalledOnce();
@@ -443,8 +444,9 @@ it('App Store只在原生EOF和完整收据后执行一次学习计划，预览�
     expect(JSON.stringify(before)).not.toContain('SYNTHETIC_APP_STREAM_TOKEN');
     harness.complete();
     await send;
-    expect(store.state.plans).toHaveLength(1);
-    expect(store.active.messages.filter((m) => m.role === 'assistant')).toHaveLength(1);
+    expect(store.state.plans).toHaveLength(0);
+    expect(store.active.messages.filter((m) => m.proposal?.type === 'plan.set')).toHaveLength(1);
+    expect(store.active.messages.filter((m) => m.role === 'assistant' && !m.proposal)).toHaveLength(1);
     expect(store.streamPreview).toBe('');
     expect(store.summary.first.denominator).toBe(0);
     await store.send('请讲解写作观点与依据', { id: 'synthetic-app-stream-task' });

@@ -188,7 +188,11 @@
               <text>{{ learningText(knowledgeLabel(key)) }}</text>
               <text class="subtle">{{ t('learning.kpw') }}{{ entry.evidenceIds.length }}{{ t('learning.kbt') }}</text>
             </view>
-            <text class="knowledge-state">{{ learningText(entry.status) }}</text>
+            <text class="knowledge-state">{{
+              ['可独立完成', '需提示', '待复测'].includes(entry.status)
+                ? t(`tutor.insights.${{ 可独立完成: 'independent', 需提示: 'hinted', 待复测: 'retest' }[entry.status]}`)
+                : learningText(entry.status)
+            }}</text>
           </view>
           <template v-if="learning.teachingProgress.rows.length">
             <text class="learning-label detail-heading">{{ t('learning.k6g') }}</text>

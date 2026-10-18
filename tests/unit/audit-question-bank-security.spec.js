@@ -104,144 +104,37 @@ vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
 
 import questionBankHandler from '../../laf-backend/functions/question-bank';
 
-describe('[安全审计] question-bank 安全防护', () => {
+describe('retired public bank security', () => {
   beforeEach(() => {
     mocked.resetScenario();
     mocked.setJwtPayload({ userId: 'token_user' });
   });
-
-  it('get 应过滤答案字段并限制分页参数', async () => {
-    mocked.scenario.getResult = {
-      data: [
-        {
-          _id: 'q1',
-          question: '1+1=?',
-          answer: '2',
-          correct_answer: '2',
-          analysis: 'basic math'
-        }
-      ]
-    };
-    mocked.scenario.countResult = { total: 205 };
-
-    const result = /** @type {any} */ (
-      await questionBankHandler({
-        body: {
-          action: 'get',
-          data: {
-            category: { $ne: null },
-            difficulty: 'easy',
-            keyword: 'math',
-            page: -5,
-            pageSize: 999
-          }
-        },
-        socket: { remoteAddress: '192.0.2.1' },
-        headers: {}
-      })
-    );
-
-    expect(result.code).toBe(0);
-    expect(result.data.page).toBe(1);
-    expect(result.data.pageSize).toBe(100);
-    expect(result.data.hasMore).toBe(true);
-    expect(result.data.list[0].answer).toBeUndefined();
-    expect(result.data.list[0].correct_answer).toBeUndefined();
-
-    const whereCall = mocked.scenario.whereCalls.find((item) => item.name === 'questions');
-    expect(whereCall).toBeTruthy();
-    expect(whereCall.query.is_active).toBe(true);
-    expect(whereCall.query.review_status).toBe('approved');
-    expect(whereCall.query.difficulty).toBe('easy');
-    expect(whereCall.query.category).toBeUndefined();
+  const context = (action, headers = {}, data = {}) => ({
+    body: { action, data },
+    socket: { remoteAddress: '192.0.2.1' },
+    headers
   });
-
-  it('getByIds 应拒绝非法 ID 列表', async () => {
-    const result = /** @type {any} */ (
-      await questionBankHandler({
-        body: {
-          action: 'getByIds',
-          data: {
-            ids: [1, { $gt: '' }, null]
-          }
-        },
-        socket: { remoteAddress: '192.0.2.1' },
-        headers: {}
-      })
-    );
-
-    expect(result.code).toBe(400);
-    expect(result.success).toBe(false);
-    expect(result.message).toContain('不合法');
+  it.each(['get', 'getByIds', 'random'])('returns 410 without querying or exposing answers for %s', async (action) => {
+    const result = await questionBankHandler(context(action, {}, { ids: [1, { $gt: '' }, null], pageSize: 999 }));
+    expect(result).toMatchObject({ success: false, code: 410, error: 'QUESTION_BANK_RETIRED' });
+    expect(result.data).toBeUndefined();
+    expect(mocked.scenario.whereCalls).toEqual([]);
   });
-
-  it('getByIds 应仅使用安全字符串 ID 并过滤答案字段', async () => {
-    mocked.scenario.getResult = {
-      data: [
-        {
-          _id: 'id_1',
-          question: 'test',
-          answer: 'A',
-          correct_answer: 'A',
-          difficulty: 'medium'
-        }
-      ]
-    };
-
-    const result = /** @type {any} */ (
-      await questionBankHandler({
-        body: {
-          action: 'getByIds',
-          data: {
-            ids: ['id_1', '', 'id_2', 123]
-          }
-        },
-        socket: { remoteAddress: '192.0.2.1' },
-        headers: {}
-      })
-    );
-
-    expect(result.code).toBe(0);
-    expect(result.data[0].answer).toBeUndefined();
-    expect(result.data[0].correct_answer).toBeUndefined();
-
-    const whereCall = mocked.scenario.whereCalls.find((item) => item.name === 'questions');
-    expect(whereCall.query._id.$in).toEqual(['id_1', 'id_2']);
+  it('preserves authentication on non-public actions', async () => {
+    expect(await questionBankHandler(context('admin_sync'))).toMatchObject({ success: false, code: 401 });
   });
-
-  it('非公开 action 缺少 token 时应返回 401', async () => {
-    const result = /** @type {any} */ (
-      await questionBankHandler({
-        body: {
-          action: 'admin_sync',
-          data: {}
-        },
-        socket: { remoteAddress: '192.0.2.1' },
-        headers: {}
-      })
-    );
-
-    expect(result.code).toBe(401);
-    expect(result.success).toBe(false);
-  });
-
-  it('公开 action 即使 token 无效也应正常执行（random 在 publicActions 中）', async () => {
+  it('retired public access with an invalid token still returns no content', async () => {
     mocked.setJwtPayload(null);
-
-    const result = /** @type {any} */ (
-      await questionBankHandler({
-        body: {
-          action: 'random',
-          data: { count: 1 }
-        },
-        socket: { remoteAddress: '192.0.2.1' },
-        headers: {
-          authorization: 'Bearer invalid_token'
-        }
-      })
-    );
-
-    // random 是 publicAction，即使 token 无效也应正常执行（code=0），不返回 401
-    expect(result.code).toBe(0);
+    expect(await questionBankHandler(context('random', { authorization: 'Bearer invalid_token' }))).toMatchObject({
+      success: false,
+      code: 410
+    });
+    expect(mocked.scenario.whereCalls).toEqual([]);
+  });
+  it('rejects an authenticated caller claiming another owner before retirement handling', async () => {
+    const ctx = context('get', { authorization: 'Bearer test' });
+    ctx.body.userId = 'another_owner';
+    expect(await questionBankHandler(ctx)).toMatchObject({ success: false, code: 403 });
+    expect(mocked.scenario.whereCalls).toEqual([]);
   });
 });

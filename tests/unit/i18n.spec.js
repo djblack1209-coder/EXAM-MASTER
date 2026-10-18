@@ -106,7 +106,7 @@ describe('lightweight i18n', () => {
       expect(page.style.navigationBarTitleText).toBe(`%${PAGE_TITLE_KEYS[page.path]}%`);
       for (const pack of Object.values(shell)) expect(pack[PAGE_TITLE_KEYS[page.path]]).toBeTruthy();
     }
-    expect(pages.tabBar.list.map((item) => item.text)).toEqual(['%nav.home%', '%nav.practice%', '%nav.profile%']);
+    expect(pages.tabBar).toBeUndefined();
   });
   it('installs the translator and navigation lifecycle bridge', () => {
     const app = { config: { globalProperties: {} }, mixin: vi.fn() };

@@ -1,48 +1,66 @@
 <template>
-  <view class="learning-message-content">
-    <template v-for="(block, index) in blocks" :key="index">
-      <view v-if="block.kind === 'table'" class="learning-text-table" role="table" :aria-label="t('learning.kos')">
+  <LearningContentCards v-if="validatedBlocks" :content="validatedBlocks" />
+  <BaseCard v-else class="reading-card" padding="large">
+    <view class="reading-eyebrow"
+      ><BaseIcon name="note" tone="ink-3" /><text>{{ t('tutor.card.note') }}</text></view
+    >
+    <view class="learning-message-content">
+      <template v-for="(block, index) in blocks" :key="index">
+        <view v-if="block.kind === 'table'" class="learning-text-table" role="table" :aria-label="t('learning.kos')">
+          <view
+            v-for="(row, rowIndex) in block.rows"
+            :key="rowIndex"
+            class="learning-text-row"
+            role="row"
+            :style="{ gridTemplateColumns: `repeat(${block.columns}, minmax(0, 1fr))` }"
+          >
+            <text
+              v-for="(cell, cellIndex) in row"
+              :key="cellIndex"
+              :role="rowIndex ? 'cell' : 'columnheader'"
+              :class="{ 'table-heading': rowIndex === 0 }"
+              selectable
+              >{{ cell }}</text
+            >
+          </view>
+        </view>
         <view
-          v-for="(row, rowIndex) in block.rows"
-          :key="rowIndex"
-          class="learning-text-row"
-          role="row"
-          :style="{ gridTemplateColumns: `repeat(${block.columns}, minmax(0, 1fr))` }"
+          v-else
+          :class="['learning-text-block', `block-${block.kind}`]"
+          :role="block.kind === 'heading' ? 'heading' : undefined"
+          :aria-level="block.kind === 'heading' ? block.level : undefined"
         >
-          <text
-            v-for="(cell, cellIndex) in row"
-            :key="cellIndex"
-            :role="rowIndex ? 'cell' : 'columnheader'"
-            :class="{ 'table-heading': rowIndex === 0 }"
-            selectable
-            >{{ cell }}</text
+          <text v-if="block.kind === 'item'" class="list-marker" aria-hidden="true">•</text>
+          <text selectable
+            ><text
+              v-for="(part, partIndex) in inline(block.text)"
+              :key="partIndex"
+              :class="{ 'text-emphasis': part.strong }"
+              >{{ part.text }}</text
+            ></text
           >
         </view>
-      </view>
-      <view
-        v-else
-        :class="['learning-text-block', `block-${block.kind}`]"
-        :role="block.kind === 'heading' ? 'heading' : undefined"
-        :aria-level="block.kind === 'heading' ? block.level : undefined"
-      >
-        <text v-if="block.kind === 'item'" class="list-marker" aria-hidden="true">•</text>
-        <text selectable
-          ><text
-            v-for="(part, partIndex) in inline(block.text)"
-            :key="partIndex"
-            :class="{ 'text-emphasis': part.strong }"
-            >{{ part.text }}</text
-          ></text
-        >
-      </view>
-    </template>
-  </view>
+      </template>
+    </view>
+  </BaseCard>
 </template>
 <script setup>
+import '@/i18n/tutor.js';
+import BaseCard from '@/components/base/base-card/base-card.vue';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import LearningContentCards from './learning-content-cards.vue';
+import { normalizeContentBlocks } from '../../../../laf-backend/functions/_shared/learning-content-blocks.js';
 import { t } from '@/i18n/index.js';
 
 import { computed } from 'vue';
-const props = defineProps({ content: { type: String, default: '' } });
+const props = defineProps({ content: { type: String, default: '' }, contentBlocks: { type: Object, default: null } });
+const validatedBlocks = computed(() => {
+  try {
+    return props.contentBlocks ? normalizeContentBlocks(props.contentBlocks) : null;
+  } catch {
+    return null;
+  }
+});
 function inline(text) {
   return text
     .split(/(\*\*[^*\n]+\*\*)/u)
@@ -113,6 +131,18 @@ const blocks = computed(() => {
 });
 </script>
 <style scoped>
+.reading-card {
+  width: 100%;
+  max-width: 680px;
+}
+.reading-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--ink-3);
+  font-size: var(--size-caption);
+  margin-bottom: var(--s-3);
+}
 .learning-message-content {
   font-size: var(--size-body);
   line-height: 1.75;

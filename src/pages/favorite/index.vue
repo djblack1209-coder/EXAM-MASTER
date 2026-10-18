@@ -113,7 +113,7 @@
           </view>
 
           <text class="question-text">
-            {{ item.questionContent }}
+            {{ item.questionContent || t('tutor.archive.retired') }}
           </text>
           <text v-if="favoriteMaterial(item)" class="material-preview">{{ favoriteMaterial(item) }}</text>
 
@@ -289,6 +289,7 @@
 </template>
 
 <script setup>
+import '@/i18n/tutor.js';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import BaseStat from '@/components/base/base-stat/base-stat.vue';
 const uiText = (value) => translateRegisteredText('favorite', value);

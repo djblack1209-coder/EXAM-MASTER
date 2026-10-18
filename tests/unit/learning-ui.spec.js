@@ -29,7 +29,6 @@ import StudyDetailPage from '@/pages/study-detail/index.vue';
 import OnboardingPage from '@/pages/login/onboarding.vue';
 import LoginPage from '@/pages/login/index.vue';
 import { useAuthStore } from '@/stores/modules/auth.js';
-import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { useStudyStore } from '@/stores/modules/study.js';
 import { storageService } from '@/services/storageService.js';
@@ -2200,81 +2199,20 @@ describe('学习空间的实际入口与目录', () => {
     App.onShow.call(context);
     expect(theme.isDark).toBe(false);
   });
-  it('账户与底部导航在重开和切换时共用当前主题，不依赖旧偏好缓存', async () => {
+  it('账户与抽屉导航在重开和切换时共用当前主题，不依赖旧偏好缓存', async () => {
     const theme = useThemeStore();
     theme.setDarkMode(true);
     const wrapper = mount(ProfilePage, {
-      global: { components: { CustomTabbar }, stubs: { ...stubs, CustomTabbar: false, image: true } }
+      global: { stubs: { ...stubs, image: true } }
     });
     expect(wrapper.get('.learning-space').classes()).toContain('space-dark');
-    expect(wrapper.get('.mobile-dock').element.closest('.space-dark')).toBe(wrapper.get('.learning-space').element);
+    expect(wrapper.get('.space-sidebar').element.closest('.space-dark')).toBe(wrapper.get('.learning-space').element);
+    expect(wrapper.find('.mobile-dock').exists()).toBe(false);
     theme.setDarkMode(false);
     await flushPromises();
     expect(wrapper.get('.learning-space').classes()).toContain('space-light');
-    expect(wrapper.get('.mobile-dock').element.closest('.space-dark')).toBeNull();
+    expect(wrapper.get('.space-sidebar').element.closest('.space-dark')).toBeNull();
     wrapper.unmount();
-  });
-  it('浮动导航说明当前页面，Enter 只发起一次跳转', async () => {
-    const previousWindowInfo = uni.getWindowInfo;
-    uni.getWindowInfo = vi.fn(() => ({ safeAreaInsets: { bottom: 0 } }));
-    const wrapper = mount(CustomTabbar, {
-      attachTo: document.body,
-      props: { activeIndex: 2 },
-      global: {
-        stubs: {
-          ...stubs,
-          image: true
-        }
-      }
-    });
-    try {
-      expect(wrapper.find('[role="navigation"]').attributes('aria-label')).toBe('主要导航');
-      expect(wrapper.find('#e2e-tabbar-profile').attributes('aria-current')).toBe('page');
-      expect(wrapper.findAll('[role="button"]')).toHaveLength(3);
-      // The unit Vue compiler does not provide uni-app's native click -> tap bridge.
-      const item = wrapper.find('#e2e-tabbar-index');
-      item.element.addEventListener('click', () => {
-        item.element.dispatchEvent(new Event('tap', { bubbles: true }));
-      });
-      vi.useFakeTimers();
-      await wrapper.find('#e2e-tabbar-index').trigger('keydown', { key: 'Enter' });
-      await wrapper.find('#e2e-tabbar-index').trigger('keydown', { key: 'Enter', repeat: true });
-      vi.runOnlyPendingTimers();
-      expect(uni.switchTab).toHaveBeenCalledOnce();
-      expect(uni.switchTab).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/index/index' }));
-    } finally {
-      wrapper.unmount();
-      if (previousWindowInfo) uni.getWindowInfo = previousWindowInfo;
-      else delete uni.getWindowInfo;
-      vi.useRealTimers();
-    }
-  });
-  it('缓存页面再次显示时清除未完成跳转的高亮，当前页面提示不提前改变', async () => {
-    const previousWindowInfo = uni.getWindowInfo;
-    uni.getWindowInfo = vi.fn(() => ({ safeAreaInsets: { bottom: 0 } }));
-    uni.switchTab.mockImplementationOnce(() => Promise.resolve());
-    vi.useFakeTimers();
-    const wrapper = mount(CustomTabbar, {
-      props: { activeIndex: 2 },
-      global: { stubs: { ...stubs, image: true } }
-    });
-    try {
-      await wrapper.find('#e2e-tabbar-index').trigger('tap');
-      vi.runOnlyPendingTimers();
-      expect(wrapper.find('#e2e-tabbar-index').classes()).toContain('active');
-      expect(wrapper.find('#e2e-tabbar-index').attributes('aria-current')).toBeUndefined();
-      expect(wrapper.find('#e2e-tabbar-profile').attributes('aria-current')).toBe('page');
-      loadHooks.showCallbacks.forEach((callback) => callback());
-      await flushPromises();
-      expect(wrapper.find('#e2e-tabbar-profile').classes()).toContain('active');
-      expect(wrapper.find('#e2e-tabbar-index').classes()).not.toContain('active');
-      expect(uni.switchTab).toHaveBeenCalledOnce();
-    } finally {
-      wrapper.unmount();
-      if (previousWindowInfo) uni.getWindowInfo = previousWindowInfo;
-      else delete uni.getWindowInfo;
-      vi.useRealTimers();
-    }
   });
   it('账户导航到共享统计后沿原答更新概览，旧题库数据保留独立口径', async () => {
     const store = useConversationLearningStore();
@@ -2290,9 +2228,9 @@ describe('学习空间的实际入口与目录', () => {
     expect(wrapper.find('.stats-card').text()).toContain('7');
     await wrapper
       .findAll('button')
-      .find((button) => button.text().trim() === '统计')
+      .find((button) => button.text().trim() === '学习档案')
       .trigger('tap');
-    expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/study-detail/index' }));
+    expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/archive/index' }));
     const statistics = mount(StudyDetailPage, {
       global: { stubs: { ...stubs, LearningOverview: false, image: true } }
     });
@@ -2432,7 +2370,7 @@ describe('学习空间的实际入口与目录', () => {
       expect(guest.owner).toBe('guest');
       expect(guest.attempts).toHaveLength(0);
       vi.runOnlyPendingTimers();
-      expect(uni.switchTab).toHaveBeenLastCalledWith(expect.objectContaining({ url: '/pages/index/index' }));
+      expect(uni.navigateTo).toHaveBeenLastCalledWith(expect.objectContaining({ url: '/pages/index/index' }));
       uni.switchTab.mockClear();
       storageService.saveLoginSession({
         userId: 'isolated-profile-user',
@@ -2459,7 +2397,6 @@ describe('学习空间的实际入口与目录', () => {
     const wrapper = mount(OnboardingPage, { global: { stubs } });
     expect(wrapper.text()).toContain('开始学习');
     expect(wrapper.text()).not.toContain('2027 考研公共课');
-    loadHooks.callbacks.at(-1)({});
     await flushPromises();
     expect(storageService.get('onboarding_completed')).not.toBe(true);
     await wrapper.find('.base-button--primary').trigger('tap');
@@ -2476,7 +2413,6 @@ describe('学习空间的实际入口与目录', () => {
     globalThis.getCurrentPages = vi.fn(() => [{ route: 'pages/learning/index' }]);
     const wrapper = mount(OnboardingPage, { global: { stubs } });
     try {
-      loadHooks.callbacks.at(-1)({});
       await wrapper.find('.base-button--primary').trigger('tap');
       const navigation = uni.redirectTo.mock.calls.at(-1)[0];
       wrapper.unmount();
@@ -2494,17 +2430,17 @@ describe('学习空间的实际入口与目录', () => {
       vi.useRealTimers();
     }
   });
-  it('历史题库仍可显式进入原备考配置流程', async () => {
+  it('欢迎页只需一个开始动作且不再写入考研预设', async () => {
     const wrapper = mount(OnboardingPage, { global: { stubs } });
-    loadHooks.callbacks.at(-1)({ source: 'home' });
-    await flushPromises();
-    expect(wrapper.text()).toContain('2027 考研公共课');
-    for (let step = 0; step < 4; step += 1) await wrapper.find('.base-button--primary').trigger('tap');
-    expect(storageService.get('exam_profile')).toMatchObject({
-      exam: 'kaoyan',
-      tracks: ['politics', 'english1', 'math1']
-    });
-    wrapper.unmount();
+    try {
+      expect(wrapper.findAll('.base-button--primary')).toHaveLength(1);
+      expect(wrapper.text()).not.toContain('考研公共课');
+      await wrapper.find('.base-button--primary').trigger('tap');
+      expect(storageService.get('onboarding_completed')).toBe(true);
+      expect(storageService.get('exam_profile')).toBeNull();
+    } finally {
+      wrapper.unmount();
+    }
   });
   it('品牌与恢复入口使用共享状态，校验预览不会再次提交作答', async () => {
     const store = useConversationLearningStore();
@@ -2717,26 +2653,16 @@ describe('学习空间的实际入口与目录', () => {
       vi.useRealTimers();
     }
   });
-  it('旧首页保留题源和恢复入口，共享对话存在时隐藏重复进度及真题作答数量', async () => {
+  it('欢迎页不再包含旧题库仪表盘，也不改写已有学习事实', async () => {
     const store = useConversationLearningStore();
-    const wrapper = mount(HomePage, {
-      global: { stubs: { ...stubs, LearningLanding: true, PrivacyPopup: true, CustomTabbar: true } }
-    });
+    store.start('中文叙事写作');
+    store.commit('task.stop', { conversationId: store.selectedConversationId });
+    const before = store.exportData();
+    const wrapper = mount(HomePage, { global: { stubs: { ...stubs, LearningLanding: true, PrivacyPopup: true } } });
     try {
-      await wrapper.setData({ showLegacyDashboard: true, isPageLoading: false });
-      expect(wrapper.find('.progress-card').exists()).toBe(true);
-      expect(wrapper.find('.stats-row').exists()).toBe(true);
-      store.start('中文叙事写作');
-      store.commit('task.stop', { conversationId: store.selectedConversationId });
-      const before = store.exportData();
-      await flushPromises();
-      expect(store.state.attempts).toHaveLength(0);
-      for (const selector of ['.progress-card', '.stats-row', '.today-focus-panel', '.paper-score']) {
+      for (const selector of ['.progress-card', '.stats-row', '.today-focus-panel', '.paper-score'])
         expect(wrapper.find(selector).exists()).toBe(false);
-      }
-      expect(wrapper.findComponent({ name: 'LearningOverview' }).exists()).toBe(true);
-      expect(wrapper.text()).toContain('近年真题整卷进度');
-      expect(wrapper.text()).toContain('返回学习空间');
+      expect(wrapper.text()).not.toContain('真题整卷');
       expect(store.exportData()).toBe(before);
       expect(store.active.stopped).toBe(true);
     } finally {
@@ -2915,7 +2841,10 @@ describe('学习空间的实际入口与目录', () => {
     expect(store.activeQuestion.validation.type).toBe('number');
     expect(store.summary.validAnswers).toBe(0);
     expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/learning/index' }));
-    await wrapper.find('.library-materials').trigger('tap');
+    await wrapper
+      .findAll('.space-nav-item')
+      .find((button) => button.text().trim() === '私人资料')
+      .trigger('tap');
     await flushPromises();
     expect(wrapper.find('#material-intake').exists()).toBe(true);
     wrapper.unmount();

@@ -40,7 +40,7 @@ describe('mobile viewport smoke config', () => {
       '/pages/index/index',
       '/pages/learning/index',
       '/pages/practice/index',
-      '/pages/practice-sub/question-bank',
+      '/pages/archive/index',
       '/pages/practice-sub/do-quiz',
       '/pages/mistake/index',
       '/pages/profile/index'
@@ -122,7 +122,7 @@ describe('mobile entry initialization checks with synthetic pages', ENTRY_TEST_O
   let server;
   let baseUrl;
   const route = '/pages/practice/index';
-  const readyMarkup = '<button class="practice-command primary">开始练习</button>';
+  const readyMarkup = '<button class="learning-overview">开始练习</button>';
 
   beforeAll(async () => {
     root = await mkdtemp(path.join(tmpdir(), 'exam-mobile-entry-'));

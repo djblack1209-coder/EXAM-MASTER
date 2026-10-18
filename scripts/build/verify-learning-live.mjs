@@ -57,6 +57,7 @@ if (selectedTasks) {
   assert.ok(
     selectedTasks.every((task) =>
       [
+        'album',
         'postgraduate',
         'civil',
         'decimal',
@@ -129,7 +130,7 @@ const server = spawn(process.execPath, [backendEntry], {
     LEARNING_ALLOWED_ORIGINS: new URL(approvedBase).origin,
     LEARNING_PLATFORM_CALLS_ENABLED: 'false',
     LEARNING_PAYMENT_SANDBOX_ENABLED: 'false',
-    ...(selectedTasks?.some((task) => ['writing', 'vocabulary-use'].includes(task))
+    ...(selectedTasks?.some((task) => ['album', 'writing', 'vocabulary-use'].includes(task))
       ? { LEARNING_BYOK_CALL_LIMIT: '1' }
       : {})
   },
@@ -546,7 +547,7 @@ async function verifyTaskSuite(selected = ['postgraduate', 'civil', 'ielts', 'to
     },
     {
       track: 'civil',
-      name: 'share',
+      name: selected.includes('album') ? 'album' : 'share',
       text: '部分: 12.5\n整体: 37.5\n过小整体: 8\n下一整体: 50',
       kind: 'share_percent',
       from: '部分',
@@ -602,6 +603,9 @@ async function verifyTaskSuite(selected = ['postgraduate', 'civil', 'ielts', 'to
               (scenario.name
                 ? '本次需要独立核对合成材料的精确计算。JSON的message字符串最后必须单独一行，格式为“计算核对：<本题精确百分数>”；替换占位符，带%，不加Markdown或后续文字。可用整数、精确小数、单一分数或规范带分数；循环小数必须用精确分数，不近似、不四舍五入。此行只核对计算，不改变原答或判分。'
                 : '') +
+              (scenario.name === 'album'
+                ? '本次必须提供contentBlocks: {version:1,items:[知识卡,例题卡]}；每张包含kind（knowledge或example）、title、body或steps。知识卡讲解占比，例题卡按步骤核对12.5/37.5，以100/3%表达精确结果。不要在卡片内加入操作、来源或分数。'
+                : '') +
               '请针对我的原答讲解。严格返回规定JSON，以hint工具记一级提示，以plan工具安排当前已知题目的独立复测。不要新建题，不要替我提交作答，不宣称工具已执行或官方分数。'
           }
         ],
@@ -642,6 +646,7 @@ async function verifyTaskSuite(selected = ['postgraduate', 'civil', 'ielts', 'to
         model: profile.model,
         lockedMethod: 'explain'
       };
+      const planCountBefore = state.plans.length;
       const toolResults = response.data.tools.map((call, index) =>
         executeLearningTool(repository, { ...call, id: `${prefix}_tool_${index}` }, context)
       );
@@ -653,7 +658,27 @@ async function verifyTaskSuite(selected = ['postgraduate', 'civil', 'ielts', 'to
         ),
         'Model tools must actually execute'
       );
-      apply('message.add', { conversationId, role: 'assistant', content: response.data.message });
+      const planDraft = state.conversations
+        .find((item) => item.id === conversationId)
+        .messages.find((item) => item.proposal?.type === 'plan.set');
+      assert.ok(planDraft, 'Model plan must remain a draft');
+      assert.equal(state.plans.length, planCountBefore, 'No model plan may be automatically adopted');
+      apply(
+        'plan.set',
+        { ...planDraft.proposal.data, proposalId: planDraft.id, explicit: true },
+        `${planDraft.id}:accept`
+      );
+      if (scenario.name === 'album') {
+        assert.equal(response.data.contentBlocks?.version, 1);
+        assert.ok(response.data.contentBlocks.items.some((item) => item.kind === 'knowledge'));
+        assert.ok(response.data.contentBlocks.items.some((item) => item.kind === 'example'));
+      }
+      apply('message.add', {
+        conversationId,
+        role: 'assistant',
+        content: response.data.message,
+        ...(response.data.contentBlocks ? { contentBlocks: response.data.contentBlocks } : {})
+      });
       const revision = apply(
         'attempt.submit',
         { conversationId, answer: scenario.answer, explicit: true },
