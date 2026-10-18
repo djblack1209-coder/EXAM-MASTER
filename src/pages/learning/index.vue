@@ -180,12 +180,7 @@
         <BaseButton variant="quiet" @tap="byokForm = !byokForm">{{ t('learning.k9r') }}</BaseButton>
         <view v-if="byokForm" class="form">
           <view class="button-row">
-            <BaseButton
-              v-for="preset in learning.modelPresets"
-              :key="preset.id"
-              variant="quiet"
-              @tap="usePreset(preset)"
-            >
+            <BaseButton v-for="preset in connectionPresets" :key="preset.id" variant="quiet" @tap="usePreset(preset)">
               {{ preset.provider }} · {{ preset.model }}
             </BaseButton>
           </view>
@@ -202,7 +197,12 @@
             maxlength="120"
             :label="t('learning.k52')"
           />
-          <BaseInput v-model="profile.endpoint" :placeholder="t('learning.k82')" :label="t('learning.kk4')" />
+          <BaseInput
+            v-model="profile.endpoint"
+            :placeholder="t('learning.k82')"
+            :label="t('learning.kk4')"
+            @blur="profile.endpoint = completeModelEndpoint(profile.endpoint)"
+          />
           <BaseInput
             v-model="profile.apiKey"
             :placeholder="t('learning.kba')"
@@ -1955,6 +1955,10 @@ import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import { answerFeedback, answerOptionState } from '@/components/business/learning/learning-feedback.js';
 import './messages.js';
 import { learningText } from '@/i18n/learning.js';
+import {
+  MODEL_CONNECTION_PRESETS,
+  completeModelEndpoint
+} from '../../../laf-backend/functions/_shared/ai-providers/model-endpoints.js';
 import { publicError, t } from '@/i18n/index.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseCard from '@/components/base/base-card/base-card.vue';
@@ -2733,6 +2737,10 @@ const connectionLabel = computed(() => {
   return status && status !== 'untested' ? learningText(connectionStatusLabel(status)) : t('learning.notConnected');
 });
 const byokForm = ref(false);
+const connectionPresets = computed(() => [
+  ...MODEL_CONNECTION_PRESETS,
+  ...learning.modelPresets.filter((preset) => !MODEL_CONNECTION_PRESETS.some((item) => item.id === preset.id))
+]);
 const localForm = ref(false);
 const profile = ref({
   id: '',
@@ -3202,8 +3210,11 @@ function usePreset(preset) {
     model: preset.model,
     endpoint: preset.endpoint,
     structured: preset.structured,
-    stream: preset.stream === true
+    stream: preset.stream === true,
+    vision: false,
+    apiKey: ''
   };
+  vaultConsent.value = false;
   feedback.value = `${preset.terms} ${preset.privacy}`;
 }
 async function testModel(id) {
@@ -3214,6 +3225,7 @@ async function loadUsage() {
   await readModelResource(() => learning.loadUsage());
 }
 async function saveModel() {
+  profile.value.endpoint = completeModelEndpoint(profile.value.endpoint);
   const result = await run(() => learning.saveModel({ ...profile.value }, vaultConsent.value));
   profile.value.apiKey = '';
   if (result) feedback.value = result.success ? '连接已保存。' : publicError(result);

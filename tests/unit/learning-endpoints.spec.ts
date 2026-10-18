@@ -114,6 +114,27 @@ it('登录身份与学习上下文不一致时，拒绝向模型发送旧用户�
 });
 afterEach(() => vi.unstubAllEnvs());
 
+it('保存已知基础地址时补齐真实请求路径，继续检查白名单且不发起模型请求', async () => {
+  const profile = {
+    id: 'normalized',
+    model: 'glm-4.7-flash',
+    provider: '智谱',
+    endpoint: 'https://open.bigmodel.cn/api/paas/v4/',
+    apiKey: 'synthetic-profile-key'
+  };
+  expect((await models(context({ action: 'save', profile, shareConsent: true }))).success).toBe(false);
+  expect(mock.rows.size).toBe(0);
+  vi.stubEnv('LEARNING_ALLOWED_ORIGINS', 'https://open.bigmodel.cn');
+  expect((await models(context({ action: 'save', profile, shareConsent: true }))).success).toBe(true);
+  const account = [...mock.rows.values()].find((row: any) => Array.isArray(row.profiles));
+  expect(account.profiles[0]).toMatchObject({
+    endpoint: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+    pricing: 'official_free_model'
+  });
+  expect(account.profiles[0]).not.toHaveProperty('apiKey');
+  expect(callLearningProvider).not.toHaveBeenCalled();
+});
+
 describe('诗词调用接续', () => {
   const body = { action: 'poetry', context: 'independent-practice-correct' };
 

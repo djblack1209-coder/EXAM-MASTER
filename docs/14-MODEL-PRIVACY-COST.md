@@ -1,5 +1,37 @@
 # 模型、隐私与费用合同
 
+## 免费目录提取与请求端点（2026-10-18，阶段13M）
+
+按客户要求读取桌面私有HTML目录，保留20组配置、19家服务商、386条原始型号记录；按服务商/型号去重为384组。两个Gemini项目仍为不同凭据来源，国内智谱和Z.ai国际站不混用密钥。只解析数据字面量，不运行HTML/脚本；不把账户身份、密钥、环境变量或原注释复制到源码。完整型号与各自完整端点见本机受保护的[提取清单](../tmp/p13-candidate/private/free-api-connections.json)，该文件不含密钥，权限0600，不进入Git。
+
+Yozi的连接栏与后端配置使用**完整请求地址**；OpenAI SDK的`baseURL`/`base_url`使用基础地址，SDK会追加`/chat/completions`。前端在离开输入框/明确保存时、后端保存前，只对下表精确的基础路径补齐一次；自定义地址、不安全URL、未知路径不猜测、不替换。补齐不是授权：部署白名单、SSRF/DNS公网检查、TLS、身份、保险库同意、预算与幂等继续生效。
+
+| 服务商                                                                                                     | 完整聊天请求端点                                                                    | 本次目录处理                                                                  |
+| ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [Google Gemini](https://ai.google.dev/gemini-api/docs/openai)                                              | `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`          | 两个项目分别保留；可选Flash-Lite草稿                                          |
+| [Groq](https://console.groq.com/docs/api-reference)                                                        | `https://api.groq.com/openai/v1/chat/completions`                                   | 选GPT-OSS 20B；语音/审核型号不加入聊天预设                                    |
+| [OpenRouter](https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request)               | `https://openrouter.ai/api/v1/chat/completions`                                     | 固定`:free`型号；不使用目录内无免费后缀的音频型号                             |
+| [Aion Labs](https://www.aionlabs.ai/docs/)                                                                 | `https://api.aionlabs.ai/v1/chat/completions`                                       | 账户免费额度须确认                                                            |
+| [LLM7](https://docs.llm7.io/)                                                                              | `https://api.llm7.io/v1/chat/completions`                                           | 第三方服务；套餐、密钥期限须确认                                              |
+| [Z.ai](https://docs.z.ai/api-reference/llm/chat-completion)                                                | `https://api.z.ai/api/paas/v4/chat/completions`                                     | 国际站GLM-4.7-Flash                                                           |
+| [Ollama Cloud](https://docs.ollama.com/api/openai-compatibility)                                           | `https://ollama.com/v1/chat/completions`                                            | 云端ID`gpt-oss:20b`，不附加本地`:cloud`后缀                                   |
+| [Mistral](https://docs.mistral.ai/api/endpoint/chat)                                                       | `https://api.mistral.ai/v1/chat/completions`                                        | Codestral草稿；目录中受限和非聊天型号不启用                                   |
+| [NVIDIA NIM](https://docs.api.nvidia.com/nim/reference/llm-apis)                                           | `https://integrate.api.nvidia.com/v1/chat/completions`                              | 目录实际包含GPT-OSS 20B；不填入未收录的120B                                   |
+| [OVHcloud](https://www.ovhcloud.com/en/public-cloud/ai-endpoints/catalog/)                                 | `https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/chat/completions`                 | 匿名接口；当前保险库接口要求密钥，不以假密钥绕过                              |
+| [Cohere](https://docs.cohere.com/docs/compatibility-api)                                                   | `https://api.cohere.ai/compatibility/v1/chat/completions`                           | 仅历史鉴权通过；套餐未核实，不启用免费预设                                    |
+| [Hugging Face](https://huggingface.co/docs/inference-providers/tasks/chat-completion)                      | `https://router.huggingface.co/v1/chat/completions`                                 | 账户试用额度与实际推理服务商单独确认                                          |
+| [SiliconFlow](https://docs.siliconflow.cn/docs/api/chat-completions-post)                                  | `https://api.siliconflow.cn/v1/chat/completions`                                    | 目录记录余额不足且无活动密钥，保持不启用                                      |
+| [Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/configuration/open-ai-compatibility/) | `https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1/chat/completions` | 私有清单保留原账户路径；公开源码只留占位符，不产生不可用预设                  |
+| [Kilo Gateway](https://kilo.ai/docs/gateway/models-and-providers)                                          | `https://api.kilo.ai/api/gateway/chat/completions`                                  | 沿当前Gateway指南；其他官方页面有旧主机口径，目录403仍不启用                  |
+| [ModelScope](https://modelscope.cn/docs/model-service/API-Inference/intro)                                 | `https://api-inference.modelscope.cn/v1/chat/completions`                           | 型号沿目录；当前积分/可用性须确认，官网文档无可提取正文，未据此证明新调用通过 |
+| [智谱](https://docs.bigmodel.cn/cn/api/introduction)                                                       | `https://open.bigmodel.cn/api/paas/v4/chat/completions`                             | 国内站GLM-4.7-Flash；原学习配置的完整端点本来正确                             |
+| [Cerebras](https://inference-docs.cerebras.ai/resources/openai)                                            | `https://api.cerebras.ai/v1/chat/completions`                                       | 仅历史鉴权通过；不启用免费预设                                                |
+| [SambaNova](https://docs.sambanova.ai/docs/en/integrations/vscode)                                         | `https://api.sambanova.ai/v1/chat/completions`                                      | 仅历史鉴权通过；不启用免费预设                                                |
+
+工作区提供12个聊天连接草稿，首次未读取后端也可选择；选择只填模型/端点，不保存密钥、不创建账户连接、不自动生成。切换预设清空旧密钥、视觉/流式声明及保险库保存同意；新加入的目录模板不预设JSON/视觉能力、不添零价格。现有GLM精确型号/端点的价格有效期合同保持；免费层、试用额度、列出型号和实时连接成功分别成立。
+
+使用补齐后的智谱、Z.ai、Gemini和Groq完整端点再次执行原生产地址保护，四者仍在上游请求前被`SSRF_BLOCKED`拒绝，本批供应商请求0。正确地址不等于DNS已兼容；不把目录旧`verified`状态当成本批真实成功，不修改共用网络、白名单部署或生产服务。
+
 ## 客户端 IP 最小化（阶段7A）
 
 业务只使用入口按受信代理白名单解析并规范化的连接地址；禁止直接采用客户端转发头。登录分布式和本地回退限流继续使用现有密钥的 HMAC，不新增原始 IP 记录；邮件既有 client_ip 字段/小时统计改为可信地址，不回写历史记录。首页限流日志移除地址值，其余既有限流持久化格式保持。无有效来源返回503，不记录未知/随机 IP，不建立全站共用桶。IP 来源归一会导致部分既有桶/小时统计分段，旧记录自然到期，不能通过清空计数上线。[定义](04-API-DOCUMENTATION.md#可信客户端-ip阶段7a)与[授权上线/回滚](09A-LAF-BACKEND-DEPLOYMENT.md#可信代理与客户端-ip本地修复待授权上线阶段7a)。
