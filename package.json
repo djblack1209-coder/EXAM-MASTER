@@ -101,7 +101,7 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^20.4.1",
-    "@csstools/postcss-color-mix-function": "^3.0.12",
+    "@csstools/postcss-color-mix-function": "^4.0.15",
     "@dcloudio/types": "^3.4.32",
     "@dcloudio/uni-app": "3.0.0-alpha-5030120260930001",
     "@dcloudio/uni-cli-shared": "3.0.0-alpha-5030120260930001",
