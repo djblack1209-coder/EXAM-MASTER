@@ -89,13 +89,21 @@
             ><text>{{ item.text }}</text
             ><text class="coach-muted">下次复习：{{ dateLabel(item.due) }}</text></view
           >
-          <BaseButton v-if="!coach.diagnostic" variant="primary" @tap="request('diagnostic')">开始摸底</BaseButton>
+          <BaseButton
+            v-if="!coach.diagnostic"
+            variant="primary"
+            :disabled="fileBusy || learning.busy"
+            @tap="request('diagnostic')"
+            >开始摸底</BaseButton
+          >
         </BaseCard>
 
         <BaseCard v-if="showMaterials || !coach.diagnostic" data-test="coach-materials">
           <text class="coach-title">围绕你的资料练习</text>
           <BaseInput v-model="materialText" label="粘贴资料（选填）" multiline maxlength="50000" />
-          <BaseButton :disabled="!materialText.trim() || learning.busy" @tap="pasteMaterial">保存文字</BaseButton>
+          <BaseButton :disabled="!materialText.trim() || learning.busy || fileBusy" @tap="pasteMaterial"
+            >保存文字</BaseButton
+          >
           <!-- #ifdef H5 -->
           <label class="coach-file"
             >选择 txt、md 或文字型 PDF<component
@@ -347,6 +355,7 @@ import { useConversationLearningStore, learningId } from '@/stores/modules/conve
 import { dayKey } from '@/services/learning/learning-domain.js';
 import { getToken } from '@/services/auth-storage.js';
 import { readWritingMaterial } from '@/services/learning/writing-material.js';
+import { resolveSkippedProfile } from '@/services/learning/coach-profile.js';
 import {
   WRITING_METHOD,
   writingCoachDashboard
@@ -458,7 +467,7 @@ function saveProfile(skip) {
   act(() =>
     learning.coachSave('profile', {
       profile: skip
-        ? { exam: 'english1', deadline: `${new Date().getFullYear()}-12-22`, minutes: 25, foundation: null }
+        ? resolveSkippedProfile(profile)
         : { ...profile, minutes: Number(profile.minutes) }
     })
   );
@@ -483,6 +492,11 @@ function requestLabel(phase, target = phase, label = '开始摸底') {
     : label;
 }
 function request(phase, target = phase) {
+  // 提取未完成时并发开始模型请求，会让刚写入的资料无法绑定，因此两个方向都拦住。
+  if (fileBusy.value) {
+    message.value = '正在提取资料，请稍候再开始';
+    return;
+  }
   return act(() => learning.requestCoach(phase, target));
 }
 function submitCard(card, diagnostic) {
@@ -511,14 +525,13 @@ function review(rating) {
   });
 }
 function bindMaterial(material) {
-  const saved = learning.commit('material.add', { material });
-  learning.coachSave('material', { materialId: saved.id || material.id });
+  // 保存与绑定由 store 一次完成：忙碌时整笔不写，不会留下未绑定的资料。
+  learning.attachMaterial(material);
   showMaterials.value = true;
 }
 function pasteMaterial() {
   act(() => {
-    const saved = learning.importText(materialText.value);
-    learning.coachSave('material', { materialId: saved.id });
+    learning.attachText(materialText.value);
     materialText.value = '';
   });
 }
@@ -532,6 +545,7 @@ async function pickFile(event) {
     const material = await readWritingMaterial(file, learningId('material'));
     if (context !== learning.recordContext() || id !== learning.active?.id)
       throw new Error('当前目标已变化，请重新选择资料');
+    if (learning.busy) throw new Error('提取已完成，但正在生成反馈；请稍后重新选择该文件');
     bindMaterial(material);
     message.value = '资料已保存到当前目标，提取文字未离开设备';
   });
