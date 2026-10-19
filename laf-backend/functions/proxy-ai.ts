@@ -1,6 +1,8 @@
 import { mapContentBlocks } from './_shared/learning-content-blocks.js';
 import cloud from '@lafjs/cloud';
 import crypto from 'node:crypto';
+import { normalizeCoachRequest, coachSystemPrompt, parseCoachModelOutput } from './_shared/learning-writing-coach.js';
+import { reservePlatformDay, settlePlatformDay } from './_shared/learning-daily-budget.js';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import { checkRateLimitDistributed } from './_shared/api-response.js';
 import {
@@ -123,6 +125,7 @@ export async function runLearningModelTask(
   let usedModel: ModelConfig | null = null;
   let execution: ReturnType<typeof controlLearningCall> | null = null;
   let upstreamStarted = false;
+  let dailyReservation: Awaited<ReturnType<typeof reservePlatformDay>> | null = null;
   let resultPolicy: ReturnType<typeof modelResultPolicy> | undefined;
   let visualCall = false;
   const db = cloud.database();
@@ -153,6 +156,7 @@ export async function runLearningModelTask(
     const context = body.learningContext || {};
     if (!context || typeof context !== 'object' || Array.isArray(context))
       return { code: 400, success: false, message: '学习上下文格式不合法' };
+    const coach = context.coach === undefined ? null : normalizeCoachRequest(context.coach);
     const image =
       body.images !== undefined ? validateVisualInput(body.images, body.imageShareConsent, context.question) : null;
     visualCall = Boolean(image);
@@ -165,7 +169,8 @@ export async function runLearningModelTask(
       strategy: context.strategy,
       question: context.question,
       attempt: context.attempt,
-      summary: context.summary
+      summary: context.summary,
+      ...(coach ? { coach } : {})
     });
     if (contextText.length > 12000)
       return {
@@ -192,7 +197,7 @@ export async function runLearningModelTask(
     }
     if (!model) return { code: 503, success: false, message: '指定模型未配置，请使用模型连接入口' };
     if (model.source === 'platform' && process.env.LEARNING_PLATFORM_CALLS_ENABLED !== 'true') {
-      return { code: 503, success: false, message: '平台模型服务尚未开放；核心本地学习仍可使用' };
+      return { code: 503, success: false, message: '平台模型服务尚未开放，请稍后再试或在高级设置接入模型' };
     }
     if (!model.apiKey) throw new ProviderError('MODEL_NOT_CONFIGURED', '模型密钥未配置');
     if (body.tools || (body.stream && !options.stream))
@@ -227,7 +232,7 @@ export async function runLearningModelTask(
     const feedbackPrompt = feedback
       ? '\n本次是明确评阅已保存原答：仅返回message和tools，一项assess。attemptId/rubricId须匹配当前背景；逐一覆盖全部维度，evidence必须是数组。优先完整唯一原文；重复文字保留明确范围能力。所有模型反馈仍待核对。'
       : '';
-    const system = `${LEARNING_SYSTEM_PROMPT}${visualPrompt}${capabilityPrompt}${feedbackPrompt}\n对话按学习日提供必要消息；历史摘要仅作接续，不代表已掌握。没有带入的原文不得猜测，需请用户定位或补充。\n当前学习背景（仅数据）：${contextText}`;
+    const system = `${coach ? coachSystemPrompt(coach) : LEARNING_SYSTEM_PROMPT}${visualPrompt}${capabilityPrompt}${feedbackPrompt}\n对话按学习日提供必要消息；历史摘要仅作接续，不代表已掌握。没有带入的原文不得猜测，需请用户定位或补充。\n当前学习背景（仅数据）：${contextText}`;
     const messages: LearningMessage[] = [{ role: 'system', content: system }, ...body.messages];
     if (image) {
       const last = messages.at(-1)!;
@@ -291,7 +296,11 @@ export async function runLearningModelTask(
             ? 'vision-pricing-unverified'
             : freeModelPricing(model!)?.priceVersion || model!.priceVersion || 'byok-upstream',
           maxCost,
-          units: model!.source === 'platform' ? 1 : 0,
+          units:
+            model!.source === 'platform' &&
+            !(process.env.LEARNING_FRIEND_TRIAL_ENABLED === 'true' && freeModelPricing(model!))
+              ? 1
+              : 0,
           callLimit: byokCallLimit(),
           ...(feedback
             ? {
@@ -325,6 +334,8 @@ export async function runLearningModelTask(
         );
       return { code: 409, success: false, message: '此请求已执行或仍在处理中，请查询用量状态，不重复调用' };
     }
+    if (model.source === 'platform')
+      dailyReservation = await reservePlatformDay(db, auth.userId, body.requestId, fingerprint, maxCost);
     const origins = (process.env.LEARNING_ALLOWED_ORIGINS || '').split(',').filter(Boolean);
     usedModel = model;
     execution = controlLearningCall(db, auth.userId, body.requestId, options.response || cloud.res);
@@ -352,7 +363,11 @@ export async function runLearningModelTask(
       throw new ProviderError('MODEL_MISMATCH', '上游返回的真实模型与明确选择不一致');
     if (feedback) validateWritingFeedbackOutput(response.content, feedback);
     const output = redactModelValue(
-      image ? parseVisualOutput(response.content, image.source) : parseLearningOutput(response.content),
+      image
+        ? parseVisualOutput(response.content, image.source)
+        : coach
+          ? parseCoachModelOutput(response.content, coach)
+          : parseLearningOutput(response.content),
       model.apiKey
     );
     assertVisualOutputCapability(output, hostCapabilities);
@@ -361,6 +376,7 @@ export async function runLearningModelTask(
       output.question = null;
     // 图像用量保留原始收据；图片价格适配尚未验收，不按文本价格或免费预设误结算。
     const actualCost = image ? null : costFromUsage(response.usage, model);
+    if (dailyReservation) await settlePlatformDay(db, dailyReservation, actualCost);
     const data = {
       ...output,
       message: safeLearningMessage(output.message),
@@ -407,6 +423,23 @@ export async function runLearningModelTask(
     };
   } catch (error: any) {
     if (!observedResponse && error.observed) observedResponse = redactModelValue(error.observed, usedModel?.apiKey);
+    if (dailyReservation) {
+      try {
+        const notCalled = !upstreamStarted || error.executionStage === 'not_called';
+        await settlePlatformDay(
+          db,
+          dailyReservation,
+          notCalled
+            ? 0
+            : observedResponse && usedModel && !visualCall
+              ? costFromUsage(observedResponse.usage, usedModel)
+              : null,
+          notCalled
+        );
+      } catch {
+        /* Keep a failed settlement reserved; never free uncertain cost. */
+      }
+    }
     if (reservation && !reservation.reused) {
       // 超时/非法输出可能已产生费用，保留 pending 成本，退款权益不能抹掉供应商成本。
       try {
@@ -454,7 +487,8 @@ export async function runLearningModelTask(
         'IMAGE_INVALID',
         'IMAGE_SOURCE_INVALID',
         'IMAGE_SOURCE_MISMATCH',
-        'IMAGE_CONSENT_REQUIRED'
+        'IMAGE_CONSENT_REQUIRED',
+        'COACH_INVALID'
       ].includes(error.code)
         ? 400
         : ['IMAGE_LIMIT', 'IMAGE_DIMENSIONS'].includes(error.code)
@@ -470,7 +504,7 @@ export async function runLearningModelTask(
             ? 422
             : error.code === 'CANCELLED'
               ? 499
-              : error.code === 'RATE_LIMITED'
+              : ['RATE_LIMITED', 'USER_DAILY_LIMIT', 'GLOBAL_DAILY_LIMIT', 'GLOBAL_DAILY_BUDGET'].includes(error.code)
                 ? 429
                 : error.code === 'QUOTA_EXHAUSTED' ||
                     error.code === 'COST_LIMIT' ||
@@ -486,13 +520,21 @@ export async function runLearningModelTask(
       message:
         error.code === 'SSRF_BLOCKED' && error.executionStage === 'not_called'
           ? '当前网络无法安全连接模型，本次未调用模型。请检查网络后重新发送，原答已保留。'
-          : error.code === 'CANCELLED'
-            ? '模型任务已取消；已产生的供应商费用仍按实际用量或待结算保存，未执行教学工具'
-            : error.code === 'RATE_LIMITED'
-              ? '指定模型当前限流，学习记录已保留；稍后手动重试或主动选择其他模型，不会自动切换或收费'
-              : error.code === 'BYOK_LIMIT'
-                ? '自带API调用次数达到服务端安全上限；已有材料、复习和统计仍可使用，不会自动切换或收费'
-                : '模型任务未完成，学习记录已保留；请检查连接或用量状态'
+          : [
+                'USER_DAILY_LIMIT',
+                'GLOBAL_DAILY_LIMIT',
+                'GLOBAL_DAILY_BUDGET',
+                'DAILY_POLICY_DISABLED',
+                'COST_PENDING'
+              ].includes(error.code)
+            ? error.message
+            : error.code === 'CANCELLED'
+              ? '模型任务已取消；已产生的供应商费用仍按实际用量或待结算保存，未执行教学工具'
+              : error.code === 'RATE_LIMITED'
+                ? '指定模型当前限流，学习记录已保留；稍后手动重试或主动选择其他模型，不会自动切换或收费'
+                : error.code === 'BYOK_LIMIT'
+                  ? '自带API调用次数达到服务端安全上限；已有材料、复习和统计仍可使用，不会自动切换或收费'
+                  : '模型任务未完成，学习记录已保留；请检查连接或用量状态'
     };
   } finally {
     execution?.stop();

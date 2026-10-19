@@ -49,7 +49,7 @@ export const MOBILE_ROUTE_READY_SELECTORS = {
   '/pages/login/onboarding': '.base-button--primary',
   '/pages/index/index': '.playful-nav .base-button, .future-nav .nav-link',
   '/pages/learning/index':
-    '.learning-page .goal-panel textarea, .learning-page #learning-composer textarea, .learning-page #learning-composer input',
+    '.coach-workspace textarea, .coach-workspace [data-test="coach-materials"], .learning-page .goal-panel textarea, .learning-page #learning-composer textarea, .learning-page #learning-composer input',
   '/pages/practice/index': '.learning-overview',
   '/pages/archive/index': '.archive-content',
   '/pages/practice-sub/do-quiz': '#e2e-quiz-progress, .custom-modal-container .base-state',

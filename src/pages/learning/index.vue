@@ -1,5 +1,7 @@
 <template>
+  <WritingCoach v-if="writingCoachActive" @advanced="showConnections = true" />
   <LearningShell
+    v-else
     active="learning"
     :title="$t('pages.learning')"
     @materials="showMaterial = true"
@@ -79,7 +81,9 @@
           }}
         </text>
         <view class="button-row">
-          <BaseButton variant="quiet" @tap="setMode('offline')">{{ t('learning.k1e') }}</BaseButton>
+          <BaseButton v-if="legacyLearningEnabled" variant="quiet" @tap="setMode('offline')">{{
+            t('learning.k1e')
+          }}</BaseButton>
           <BaseButton
             data-test="model-list-read"
             :disabled="learning.modelListState.phase === 'loading'"
@@ -96,7 +100,9 @@
             >{{ t('learning.klz') }}</BaseButton
           >
           <!-- #ifdef H5 || MP-WEIXIN || APP-PLUS -->
-          <BaseButton variant="quiet" @tap="localForm = !localForm">{{ t('learning.kl4') }}</BaseButton>
+          <BaseButton v-if="legacyLearningEnabled" variant="quiet" @tap="localForm = !localForm">{{
+            t('learning.kl4')
+          }}</BaseButton>
           <!-- #endif -->
         </view>
         <view
@@ -220,7 +226,7 @@
           <BaseCheckbox v-model="vaultConsent">{{ t('learning.k32') }}</BaseCheckbox>
           <BaseButton variant="quiet" @tap="saveModel">{{ t('learning.kh2') }}</BaseButton>
         </view>
-        <view v-if="localForm" class="form">
+        <view v-if="legacyLearningEnabled && localForm" class="form">
           <BaseInput v-model="localEndpoint" :placeholder="t('learning.kat')" :label="t('learning.kat')" />
           <BaseInput v-model="localModel" :placeholder="t('learning.kpl')" :label="t('learning.kpl')" />
           <BaseInput v-model="localToken" :placeholder="t('learning.k4v')" :label="t('learning.k4v')" type="password" />
@@ -1076,9 +1082,13 @@
           <text class="subtle">{{ t('learning.kq9') }}</text>
           <view class="button-row">
             <BaseButton variant="quiet" @tap="exportRecords">{{ t('learning.k3a') }}</BaseButton>
-            <BaseButton :aria-expanded="showRestore" variant="quiet" @tap="showRestore = !showRestore">{{
-              t('learning.k61')
-            }}</BaseButton>
+            <BaseButton
+              v-if="legacyLearningEnabled"
+              :aria-expanded="showRestore"
+              variant="quiet"
+              @tap="showRestore = !showRestore"
+              >{{ t('learning.k61') }}</BaseButton
+            >
             <BaseButton
               :disabled="recordActionsBusy"
               :aria-disabled="recordActionsBusy"
@@ -1235,7 +1245,7 @@
               >
             </view>
           </view>
-          <view v-if="showRestore" class="form">
+          <view v-if="legacyLearningEnabled && showRestore" class="form">
             <!-- #ifdef H5 -->
             <view class="button-row">
               <BaseButton
@@ -1345,12 +1355,13 @@
           >
           <!-- #ifdef H5 || MP-WEIXIN || APP-PLUS -->
           <BaseButton
+            v-if="legacyLearningEnabled"
             :aria-expanded="showMaterialSettings"
             variant="quiet"
             @tap="showMaterialSettings = !showMaterialSettings"
             >{{ t('learning.krw') }}</BaseButton
           >
-          <view v-if="showMaterialSettings">
+          <view v-if="legacyLearningEnabled && showMaterialSettings">
             <BaseInput
               v-model="materialEndpoint"
               :disabled="materialActionBusy"
@@ -1984,6 +1995,7 @@ import { HISTORY_LIMITS } from '../../../laf-backend/functions/_shared/learning-
 import { ref, shallowRef, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { onShow, onHide, onLoad, onBackPress } from '@dcloudio/uni-app';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
+import WritingCoach from '@/components/business/learning/writing-coach.vue';
 import CustomModal from '@/components/common/CustomModal.vue';
 import { createLearningDialog } from '@/services/learning/learning-dialog.js';
 // #ifdef MP-WEIXIN
@@ -2546,6 +2558,13 @@ onBackPress(() => {
   return true;
 });
 const showConnections = ref(false);
+const legacyLearningEnabled = import.meta.env.VITE_ENABLE_LEGACY_LEARNING === 'true';
+const writingCoachActive = computed(
+  () =>
+    import.meta.env.VITE_ENABLE_WRITING_COACH !== 'false' &&
+    !showConnections.value &&
+    (!learning.active || learning.active.coach)
+);
 const showMaterial = ref(false);
 const showProfile = ref(false);
 const showData = ref(false);

@@ -1,9 +1,7 @@
 export const FUTURE_ASSETS = Object.freeze({
-  video:
-    'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260912_111243_26a0a351-0bff-4c24-9872-14c77a2726f6.mp4',
-  still:
-    'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b85a9c31-6e42-483c-b333-be20054ad692.jpg',
-  scene: 'https://soft-zoom-63098134.figma.site/_assets/v11/83aecec75c5d8511dbb24e3a6369d7380e3f2278.png'
+  video: '/visual/playful/footer-background.mp4',
+  still: '/static/brand/learning-projector.webp',
+  scene: '/static/brand/learning-projector.webp'
 });
 
 export function bindFutureSky(video) {

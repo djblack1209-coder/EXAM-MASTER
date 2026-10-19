@@ -1015,6 +1015,9 @@ describe('选择项与明确保存', () => {
   });
 });
 beforeEach(() => {
+  // 此文件继续验收保留的历史学习与恢复界面；当前带练首屏另走真实浏览器路径。
+  vi.stubEnv('VITE_ENABLE_WRITING_COACH', 'false');
+  vi.stubEnv('VITE_ENABLE_LEGACY_LEARNING', 'true');
   uni.clearStorageSync();
   setActivePinia(createPinia());
   vi.clearAllMocks();

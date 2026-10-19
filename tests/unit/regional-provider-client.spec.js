@@ -1,6 +1,8 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { requestProviderToken } from '@/pages/login/provider-utils.js';
+beforeEach(() => vi.stubEnv('VITE_ENABLE_US_LOGIN', 'true'));
 afterEach(() => {
+  vi.unstubAllEnvs();
   vi.clearAllTimers();
   vi.useRealTimers();
 });
