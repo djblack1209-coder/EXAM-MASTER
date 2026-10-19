@@ -4,7 +4,7 @@
 
 学习路线与整批训练：[共享路线/复盘/两日证据](../laf-backend/functions/_shared/learning-journey.js)、[提醒日期与资格](../laf-backend/functions/_shared/learning-reminders.js)、[受限题目工厂适配](../src/services/learning/journey-training.js)，沿原reducer、Store和repository保存。界面为[路线](../src/components/business/learning/learning-journey.vue)、[题组](../src/components/business/learning/training-group.vue)、[复盘与巩固](../src/components/business/learning/journey-review.vue)、[提醒](../src/components/business/learning/journey-reminders.vue)和[安全消息排版](../src/components/business/learning/learning-message.vue)。
 
-物理路线扩展沿上述模块和[既有科学规则](../laf-backend/functions/_shared/learning-science.js)；跨目标绑定在共享路线校验，普通重开题目/题组选择在[对话Store](../src/stores/modules/conversation-learning.js)。没有增加服务、判分体系或运行依赖；实际原答、恢复及隔离后端证据见[12](12-CHANGELOG.md#2026-10-12物理整批路线归属与重开接续)。
+物理路线扩展沿上述模块和[既有科学规则](../laf-backend/functions/_shared/learning-science.js)；跨目标绑定在共享路线校验，普通重开题目/题组选择在[对话Store](../src/stores/modules/conversation-learning.js)。没有增加服务、判分体系或运行依赖；实际原答、恢复及隔离后端证据见[12](archive/12-CHANGELOG-until-2026-10-18.md#2026-10-12物理整批路线归属与重开接续)。
 
 通知运行时：[全局控制器](../src/services/learning/learning-notifications.js)由App生命周期初始化；[Rust受限命令](../src-tauri/src/notifications.rs)与[macOS系统代理](../src-tauri/src/notifications.m)保留冷启动点击，等待初始路由/启动页完成后再重验原任务资格。回归见[提醒](../tests/unit/learning-reminders.spec.js)、[原子训练](../tests/unit/learning-training.spec.js)、[路线](../tests/unit/learning-journey.spec.js)、[界面](../tests/unit/learning-journey-ui.spec.js)。
 
