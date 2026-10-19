@@ -1,6 +1,0 @@
-name: ai-diagnosis
-desc: AI诊断引擎 - 刷题后生成个性化诊断报告+复习计划
-methods:
-  - POST
-tags:
-  - ai-classroom

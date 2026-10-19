@@ -20,10 +20,6 @@ import {
   modelResultPolicy,
   modelResultUnavailable
 } from './_shared/learning-model-resources.js';
-import { createPoetryLookup, POETRY_CONTEXT } from './_shared/learning-poetry.js';
-
-// This source-only seam remains disabled until the upstream positive path is separately qualified.
-const lookupPoetry = createPoetryLookup();
 
 export default async function (ctx: any) {
   const auth = requireAuth(ctx);
@@ -33,11 +29,6 @@ export default async function (ctx: any) {
   const db = cloud.database();
   const body = ctx.body || {};
   try {
-    if (body.action === 'poetry') {
-      if (body.context !== POETRY_CONTEXT || Object.keys(body).some((key) => !['action', 'context'].includes(key)))
-        return { code: 400, success: false, message: '诗词情境不合法' };
-      return { code: 0, success: true, data: { reference: await lookupPoetry(POETRY_CONTEXT) } };
-    }
     if (body.action === 'test') {
       if (typeof body.modelId !== 'string' || body.shareConsent !== true)
         return { code: 400, success: false, message: '连接测试会真实调用指定模型，需明确确认' };
@@ -149,7 +140,6 @@ export default async function (ctx: any) {
           models: [...configuredModels(), ...account.profiles].map(redact),
           platformEnabled: process.env.LEARNING_PLATFORM_CALLS_ENABLED === 'true',
           coreLearningFree: true,
-          poetryReferenceEnabled: false,
           keyStorage: 'server_aes_gcm',
           whoCanDecrypt: 'deployment_operator_with_vault_key',
           commercialEnabled: false,

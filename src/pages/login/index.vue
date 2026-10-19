@@ -4,6 +4,7 @@
     <view class="login-top">
       <BaseButton variant="quiet" icon="arrow-left" icon-only :label="t('login.back')" @tap="back" />
       <BaseSegmented
+        v-if="US_LOGIN_ENABLED"
         :model-value="region"
         :options="regions"
         :label="t('login.region')"
@@ -168,7 +169,7 @@ import { useUserStore } from '@/stores/modules/user';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { storageService } from '@/services/storageService.js';
 import { getToken } from '@/services/auth-storage.js';
-import { readLoginRegion, chooseLoginRegion } from '@/services/auth-region.js';
+import { readLoginRegion, chooseLoginRegion, US_LOGIN_ENABLED } from '@/services/auth-region.js';
 import { availableLoginMethods, isAgeEligible, getAgeSession, loginErrorText } from './regional-utils.js';
 import { normalizeEmailAddress } from './email-auth-utils.js';
 import { beginWebOAuth, loginNativeWechat } from './oauth-utils.js';

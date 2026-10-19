@@ -787,7 +787,7 @@ describe('选择项与明确保存', () => {
       p.wrapper.unmount();
     }
   });
-  it('默认页从小步引导到贴题、原答订正和独立变式，明确提交同样获得一次可靠诗词', async () => {
+  it('默认页从小步引导到贴题、原答订正和独立变式，明确提交保留可靠判分且不再追加诗词', async () => {
     const p = page();
     try {
       await p.button('这道题我不会，带我一步步理解').trigger('tap');
@@ -818,7 +818,7 @@ describe('选择项与明确保存', () => {
       await p.button('提交作答').trigger('tap');
       await flushPromises();
       expect(p.store.state.attempts[2]).toMatchObject({ kind: 'variant', hints: [], grade: { outcome: 'correct' } });
-      expect(p.store.active.messages.filter((message) => message.content.startsWith('妙哉妙哉'))).toHaveLength(1);
+      expect(p.store.active.messages.filter((message) => message.content.startsWith('妙哉妙哉'))).toHaveLength(0);
       await p.button('停止当前任务').trigger('tap');
       expect(p.store.active).toMatchObject({ id: conversationId, stopped: true });
       expect(p.store.state.reviews.length).toBeGreaterThan(0);

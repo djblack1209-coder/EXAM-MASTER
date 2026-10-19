@@ -156,7 +156,6 @@
       <slot></slot>
       <TrainingGroup v-if="learning.batchTrainingActive" ref="training" />
       <JourneyReview />
-      <JourneyReminders />
     </template>
   </BaseCard>
 </template>
@@ -177,7 +176,6 @@ import { JOURNEY_MODULES, TRAINING_MODES } from '../../../../laf-backend/functio
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import TrainingGroup from './training-group.vue';
 import JourneyReview from './journey-review.vue';
-import JourneyReminders from './journey-reminders.vue';
 const learning = useConversationLearningStore();
 defineProps({ inline: Boolean });
 const root = ref(null),

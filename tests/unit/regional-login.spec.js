@@ -16,6 +16,15 @@ import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
 import { storageService } from '@/services/storageService.js';
 import { getLoginSessionEpoch } from '@/services/auth-storage.js';
+// Exercise the retained US flow only with its feature explicitly enabled.
+vi.mock('@/services/auth-region.js', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    US_LOGIN_ENABLED: true,
+    readLoginRegion: (runtime) => actual.readLoginRegion(runtime, { enabled: true })
+  };
+});
 const mocks = vi.hoisted(() => ({ api: vi.fn(), email: vi.fn(), sendEmail: vi.fn(), show: [], hide: [] }));
 vi.mock('@dcloudio/uni-app', () => ({ onShow: (fn) => mocks.show.push(fn), onHide: (fn) => mocks.hide.push(fn) }));
 vi.mock('@/stores/modules/auth', () => ({

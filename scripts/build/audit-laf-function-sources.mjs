@@ -41,6 +41,8 @@ const tsStems = new Set(files.filter((name) => name.endsWith('.ts')).map((name) 
 const jsStems = new Set(files.filter((name) => name.endsWith('.js')).map((name) => name.slice(0, -3)));
 const jsEntries = files.filter((name) => name.endsWith('.js')).sort();
 
+const orphanYaml = files.filter((name) => name.endsWith('.yaml') && !tsStems.has(name.slice(0, -5)));
+
 const pairedStems = Array.from(tsStems)
   .filter((stem) => jsStems.has(stem))
   .sort();
@@ -106,6 +108,7 @@ if (existsSync(pullFunctionsDir)) {
 }
 
 console.log('Laf function source audit');
+console.log(`- YAML entries without implementation: ${orphanYaml.length}`);
 console.log(`- Root TS entry files: ${tsStems.size}`);
 console.log(`- Root JS entry files: ${jsStems.size}`);
 console.log(`- Recursive TS files: ${localTsAll.length}`);
@@ -171,7 +174,10 @@ const remoteCompareFailed =
     remoteCompare.missingInPull.length > 0 ||
     remoteCompare.contentDiff.length > 0);
 
-if (strictMode && (contentDiffPairs.length > 0 || untrackedTsFiles.length > 0 || remoteCompareFailed)) {
+if (
+  strictMode &&
+  (orphanYaml.length > 0 || contentDiffPairs.length > 0 || untrackedTsFiles.length > 0 || remoteCompareFailed)
+) {
   console.error('\nStrict mode failed: source drift or untracked TS files detected.');
   process.exit(1);
 }

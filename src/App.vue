@@ -75,13 +75,14 @@ export default {
       const result = this.performSilentLogin();
       return result;
     });
-    startup('notifications', () => {
-      notificationRuntime ||= learningNotificationsFor(useConversationLearningStore(this.$pinia));
-      return notificationRuntime.initialize().then(
-        () => true,
-        () => false
-      );
-    });
+    if (import.meta.env.VITE_ENABLE_LEGACY_LEARNING === 'true')
+      startup('notifications', () => {
+        notificationRuntime ||= learningNotificationsFor(useConversationLearningStore(this.$pinia));
+        return notificationRuntime.initialize().then(
+          () => true,
+          () => false
+        );
+      });
     retryStartup();
   },
   onError(error) {

@@ -455,8 +455,6 @@ function _checkNetwork() {
 
 const _rateLimits = {
   '/proxy-ai': config.rateLimit.ai,
-  '/ai-photo-search': config.rateLimit.photoSearch,
-  '/voice-service': config.rateLimit.voice,
   _default: config.rateLimit.default
 };
 const _requestTimestamps = new Map();
@@ -480,7 +478,7 @@ function _checkRateLimit(path) {
 
 /**
  * 通用请求方法（带自动重试、缓存、去重、签名）
- * @param {string} path - API 路径（如 '/rank-center'）
+ * @param {string} path - API 路径（如 '/learning-models'）
  * @param {Object} data - 请求体数据
  * @param {RequestOptions} options - 可选配置
  * @returns {Promise<ApiResponse>} 返回标准化响应
@@ -489,7 +487,7 @@ function _checkRateLimit(path) {
 export async function request(path, data = {}, options = {}) {
   const requestError = (error) => normalizeError(error, `请求 ${path}`, { redact: options.redactErrors });
   const readOnly =
-    (CACHEABLE_ACTIONS.has(data?.action) && !(path === '/achievement-manager' && data?.action === 'check')) ||
+    CACHEABLE_ACTIONS.has(data?.action) ||
     [
       'get',
       'status',

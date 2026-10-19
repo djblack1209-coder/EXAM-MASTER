@@ -1,6 +1,0 @@
-name: ai-friend-memory
-desc: ''
-methods:
-  - GET
-  - POST
-tags: []

@@ -1,11 +1,5 @@
-import { effectiveGrade, questionKey } from './learning-domain.js';
-import {
-  ALGEBRA_LIMITS,
-  createAlgebraQuestion,
-  NAMED_EQUATION_CONTRACT,
-  NAMED_LINEAR_INEQUALITY_CONTRACT
-} from '../../../laf-backend/functions/_shared/learning-algebra.js';
-import { createFractionQuestion, FRACTION_CONTRACT } from '../../../laf-backend/functions/_shared/learning-fraction.js';
+import { ALGEBRA_LIMITS, createAlgebraQuestion } from '../../../laf-backend/functions/_shared/learning-algebra.js';
+import { createFractionQuestion } from '../../../laf-backend/functions/_shared/learning-fraction.js';
 import { createScienceQuestion } from '../../../laf-backend/functions/_shared/learning-science.js';
 import { DENSITY_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-density.js';
 import { PRESSURE_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-pressure.js';
@@ -15,10 +9,8 @@ import {
   EMAIL_WRITING_CONTRACT
 } from '../../../laf-backend/functions/_shared/learning-writing.js';
 import { createSentenceQuestion } from '../../../laf-backend/functions/_shared/learning-sentence.js';
-import cachedPoem from './poetry-cache.json';
 
 export const CHAT_ENTRY_CONTRACT = 'learning-chat-entry-v1';
-const poem = Object.freeze({ ...cachedPoem });
 
 // A school level alone is not a subject. Keep the same explicit math cue for clarification and suggestions.
 export function hasChatMathTopic(raw) {
@@ -215,59 +207,4 @@ export function chatQuestionMessage(question) {
   return question.validation
     ? '先从这道题开始。请发来你的完整答案，也可以说“带我一步步理解”。'
     : '这道题暂不能自动核验。可以保留原题和作答，或先练一道可核验的题。';
-}
-
-// This tiny verified cache is the nonblocking fallback. No model/API call, random choice, or student query.
-export function poetryEncouragement(state, conversationId, attemptId, { available = true } = {}) {
-  if (!available) return null;
-  const conversation = state.conversations.find((item) => item.id === conversationId);
-  const attempt = state.attempts.find((item) => item.id === attemptId && item.conversationId === conversationId);
-  const question = state.questions.find((item) => questionKey(item) === attempt?.questionKey);
-  const grade = attempt && effectiveGrade(attempt);
-  if (
-    !conversation ||
-    conversation.stopped ||
-    !attempt ||
-    conversation.activeQuestionKey !== attempt.questionKey ||
-    attempt.kind !== 'variant' ||
-    !Array.isArray(attempt.hints) ||
-    attempt.hints.length ||
-    grade?.status !== 'reliable' ||
-    grade.outcome !== 'correct' ||
-    grade.authority !== 'executable' ||
-    question?.subject !== '数学' ||
-    !(
-      [NAMED_EQUATION_CONTRACT, NAMED_LINEAR_INEQUALITY_CONTRACT].includes(question.algebra?.contract) ||
-      question.source?.evidenceId === FRACTION_CONTRACT
-    )
-  )
-    return null;
-  const id = `${conversationId}:poetry:${poem.id}`;
-  if (conversation.messages.some((message) => message.id === id) || state.events.some((event) => event.id === id))
-    return null;
-  return {
-    id,
-    content: `妙哉妙哉，这次独立变式答对了。\n「${poem.text}」\n——${poem.author}《${poem.title}》\n出处：${poem.edition}（题下注一作朱斌诗）。\n${poem.sourceUrl}`
-  };
-}
-
-export function validatedPoetryReference(value) {
-  if (
-    !value ||
-    typeof value !== 'object' ||
-    Array.isArray(value) ||
-    Object.keys(value).length !== 4 ||
-    value.referenceId !== poem.id ||
-    value.sourceUrl !== poem.sourceUrl ||
-    value.provider !== 'https://poetry.palemoky.com' ||
-    typeof value.upstreamPoemId !== 'string' ||
-    !/^\d{1,12}$/u.test(value.upstreamPoemId)
-  )
-    return null;
-  return Object.freeze({
-    referenceId: value.referenceId,
-    sourceUrl: value.sourceUrl,
-    upstreamPoemId: value.upstreamPoemId,
-    provider: value.provider
-  });
 }

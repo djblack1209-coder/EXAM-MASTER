@@ -83,7 +83,7 @@ try {
   await command(generator, [work]);
   checks.push('真实CoreText合成中英文印刷、方向、空白和扫描PDF');
   const log = await command(
-    path.join(root, '.venv-baidu/bin/python'),
+    process.env.YOZI_MATERIAL_PYTHON || '/opt/homebrew/bin/python3',
     ['-m', 'tests.native.apple-vision.test_apple_vision', binary, work],
     180000
   );

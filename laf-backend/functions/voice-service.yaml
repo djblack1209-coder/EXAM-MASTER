@@ -1,6 +1,0 @@
-name: voice-service
-desc: ''
-methods:
-  - GET
-  - POST
-tags: []

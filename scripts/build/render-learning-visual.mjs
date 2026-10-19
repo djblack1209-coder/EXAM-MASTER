@@ -10,7 +10,7 @@ const ROOT = path.resolve(fileURLToPath(import.meta.url), '../../..');
 const TMP = path.join(ROOT, 'tmp');
 const BLENDER = '/Applications/Blender.app/Contents/MacOS/Blender';
 const FFMPEG = '/opt/homebrew/bin/ffmpeg';
-const PYTHON = path.join(ROOT, '.venv-baidu/bin/python');
+const PYTHON = process.env.YOZI_MANIM_PYTHON || '/opt/homebrew/bin/python3';
 export async function safeRenderDirectory(directory) {
   const target = path.resolve(directory);
   if (!target.startsWith(`${TMP}${path.sep}`)) throw new Error('渲染只能写入本仓库 tmp 下的独立目录');

@@ -1,12 +1,9 @@
-import { storageService } from '@/services/storageService.js';
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { learningRepository } from '@/services/learning/learning-repository.js';
 import { emptyLearningState } from '@/services/learning/learning-domain.js';
 import { prepareLearningRestore } from '@/services/learning/learning-backup.js';
-import { poetryEncouragement, validatedPoetryReference } from '@/services/learning/learning-chat.js';
-import poetryCache from '@/services/learning/poetry-cache.json';
 import { learningText } from '@/i18n/learning.js';
 import { setLanguage } from '@/i18n/index.js';
 import '@/pages/learning/messages.js';
@@ -30,147 +27,6 @@ beforeEach(() => {
 afterEach(() => {
   vi.restoreAllMocks();
   setLanguage('zh-CN');
-});
-
-describe('诗词调用接续', () => {
-  let store;
-  const reference = {
-    referenceId: poetryCache.id,
-    sourceUrl: poetryCache.sourceUrl,
-    upstreamPoemId: '253',
-    provider: 'https://poetry.palemoky.com'
-  };
-  const settle = async () => {
-    for (let step = 0; step < 8; step++) await Promise.resolve();
-  };
-  const prepare = () => {
-    uni.setStorageSync('EXAM_USER_ID', 'poetry-fixture-owner');
-    uni.setStorageSync('EXAM_TOKEN', 'poetry-fixture-only-token');
-    store = useConversationLearningStore();
-    store.start('解关于 t 的不等式 t<3');
-    store.submit('t<3', true, 'poetry-original', { chatEntry: true, poetry: false });
-    store.generateVariant();
-  };
-  const enableFixture = async () => {
-    const abort = vi.fn();
-    let pending;
-    const request = vi.spyOn(uni, 'request').mockImplementation((options) => {
-      if (options.data.action === 'list') {
-        void Promise.resolve().then(() =>
-          options.success({ data: { success: true, data: { models: [], poetryReferenceEnabled: true } } })
-        );
-      } else {
-        pending = options;
-      }
-      return { abort };
-    });
-    await store.loadModels();
-    return { request, abort, pending: () => pending };
-  };
-  const completeVariant = () => store.submit('t<2', true, 'poetry-variant', { chatEntry: true });
-  const reply = (operation, value = reference) =>
-    operation.pending().success({ data: { success: true, data: { reference: value } } });
-  afterEach(() => {
-    store?.$dispose();
-    store = null;
-    vi.useRealTimers();
-  });
-
-  it('默认关闭时保留即时本地鼓励，完全不发送辅助请求', () => {
-    prepare();
-    const request = vi.spyOn(uni, 'request');
-    expect(completeVariant().grade.outcome).toBe('correct');
-    expect(store.active.messages.at(-1).content).toContain(poetryCache.text);
-    expect(store.poetryReferenceEnabled).toBe(false);
-    expect(store.poetryReference).toBeNull();
-    expect(request).not.toHaveBeenCalled();
-  });
-
-  it('慢查询不阻塞已存原答与鼓励，仅发送固定公开情境，来源结果不写学习事实', async () => {
-    prepare();
-    const operation = await enableFixture();
-    const attempt = completeVariant();
-    expect(store.busy).toBe(false);
-    expect(store.active.messages.at(-1).content).toContain(poetryCache.text);
-    expect(operation.pending().data).toEqual({ action: 'poetry', context: poetryCache.context });
-    expect(operation.pending().url).toMatch(/\/learning-models$/u);
-    const before = clone(store.state);
-    reply(operation);
-    await settle();
-    expect(store.poetryReference).toEqual({
-      conversationId: store.active.id,
-      questionKey: attempt.questionKey,
-      attemptId: attempt.id,
-      reference
-    });
-    expect(store.state).toEqual(before);
-    expect(learningRepository.read()).toEqual(before);
-    expect(operation.request).toHaveBeenCalledTimes(2);
-  });
-
-  it.each(['cancel', 'conversation', 'question', 'owner', 'records', 'stop', 'dispose', 'disabled', 'mode'])(
-    '%s之后丢弃迟到的来源结果，保留该动作完成后的全部学习事实',
-    async (change) => {
-      prepare();
-      const operation = await enableFixture();
-      completeVariant();
-      if (change === 'cancel') store.cancel();
-      if (change === 'conversation') store.selectedConversationId = null;
-      if (change === 'question') store.generateVariant();
-      if (change === 'owner') {
-        storageService.saveLoginSession({
-          userId: 'poetry-other-fixture-owner',
-          token: 'fixture-peer-token',
-          userInfo: {}
-        });
-        store.refresh();
-      }
-      if (change === 'records') {
-        vi.spyOn(learningRepository, 'lifecycleContext').mockReturnValue(['poetry-fixture-owner', 'replaced-fixture']);
-        store.refresh();
-      }
-      if (change === 'stop') await store.send('停止', { chatEntry: true });
-      if (change === 'dispose') store.$dispose();
-      if (change === 'disabled') store.poetryReferenceEnabled = false;
-      if (change === 'mode') store.selectedMode = 'cloud';
-      const before = clone(store.state);
-      reply(operation);
-      await settle();
-      expect(operation.abort).toHaveBeenCalledOnce();
-      expect(store.poetryReference).toBeNull();
-      expect(store.state).toEqual(before);
-    }
-  );
-
-  it('辅助请求在1200毫秒内取消，底层没有取消回调也能结束且不接受迟到响应', async () => {
-    vi.useFakeTimers();
-    prepare();
-    const operation = await enableFixture();
-    const previousTimers = vi.getTimerCount();
-    completeVariant();
-    const before = clone(store.state);
-    await vi.advanceTimersByTimeAsync(1200);
-    expect(operation.abort).toHaveBeenCalledOnce();
-    expect(vi.getTimerCount()).toBe(previousTimers);
-    reply(operation);
-    await settle();
-    expect(store.poetryReference).toBeNull();
-    expect(store.state).toEqual(before);
-    expect(store.busy).toBe(false);
-  });
-
-  it('只接受已核对原诗的四项来源字段，拒绝替换出处、任意编号或额外内容', () => {
-    expect(validatedPoetryReference(reference)).toEqual(reference);
-    for (const invalid of [
-      { ...reference, referenceId: 'other-poem' },
-      { ...reference, sourceUrl: 'https://untrusted.example/poem' },
-      { ...reference, provider: 'https://untrusted.example' },
-      { ...reference, upstreamPoemId: '../private' },
-      { ...reference, upstreamPoemId: '1'.repeat(13) },
-      { ...reference, content: 'unverified content' }
-    ])
-      expect(validatedPoetryReference(invalid)).toBeNull();
-  });
 });
 
 describe('压强聊天接续', () => {
@@ -887,7 +743,7 @@ it.each([
   expect(request).not.toHaveBeenCalled();
 });
 
-it('目标后在同一聊天选分数、错答订正和独立复测，停止重开及恢复保留原答和一次短诗', async () => {
+it('目标后在同一聊天选分数、错答订正和独立复测，停止重开及恢复保留原答', async () => {
   const store = useConversationLearningStore();
   const request = vi.spyOn(uni, 'request');
   const send = (text, id) => store.send(text, { chatEntry: true, id });
@@ -913,13 +769,12 @@ it('目标后在同一聊天选分数、错答订正和独立复测，停止重�
   expect(store.activeQuestion.prompt).toBe('计算 2/2 + 1/3。');
   await send('4/3', 'fraction-independent');
   expect(store.state.attempts.at(-1)).toMatchObject({ kind: 'variant', hints: [], grade: { outcome: 'correct' } });
-  expect(poems()).toHaveLength(1);
-  expect(poems()[0].content).toContain('御定全唐詩');
+  expect(poems()).toHaveLength(0);
   await send('练习方程', 'fraction-switch');
   await send('t=3', 'fraction-equation-original');
   await send('独立检验原题', 'fraction-equation-variant');
   await send('t=2', 'fraction-equation-independent');
-  expect(poems()).toHaveLength(1);
+  expect(poems()).toHaveLength(0);
   await send('停止', 'fraction-stop');
   const before = clone(store.state);
   setActivePinia(createPinia());
@@ -1258,7 +1113,7 @@ it('邮件的英文澄清和原稿保存提示保持待核对含义', () => {
   expect(learningText('先写一版完整邮件，明确提交后保存原稿；反馈暂待核对。')).toContain('pending verification');
 });
 
-it('同一聊天保存目标、最少澄清、原答、订正、独立变式、一次诗词、停止重开和恢复，零网络', async () => {
+it('同一聊天保存目标、最少澄清、原答、订正、独立变式、停止重开和恢复，零网络', async () => {
   const store = useConversationLearningStore();
   const request = vi.spyOn(uni, 'request');
   const send = (text, id) => store.send(text, { chatEntry: true, id });
@@ -1289,10 +1144,7 @@ it('同一聊天保存目标、最少澄清、原答、订正、独立变式、�
   await send('独立检验原题', 'chat-variant');
   await send('t<2', 'chat-independent');
   expect(store.state.attempts[2]).toMatchObject({ kind: 'variant', hints: [], grade: { outcome: 'correct' } });
-  expect(poems()).toHaveLength(1);
-  expect(poems()[0].content).toContain('欲窮千里目，更上一層樓。');
-  expect(poems()[0].content).toContain('王之渙《登鸛雀樓》');
-  expect(poems()[0].content).toContain('御定全唐詩');
+  expect(poems()).toHaveLength(0);
   expect(store.summary.knowledge['数学 / 一次不等式与解集'].status).toBe('待复测');
   expect(store.state.reviews.length).toBeGreaterThan(0);
   const afterPoem = clone(store.state.events);
@@ -1300,7 +1152,7 @@ it('同一聊天保存目标、最少澄清、原答、订正、独立变式、�
   expect(store.state.events).toEqual(afterPoem);
   await send('独立检验原题', 'chat-variant-again');
   await send('t<1', 'chat-independent-again');
-  expect(poems()).toHaveLength(1);
+  expect(poems()).toHaveLength(0);
   expect(store.state.attempts).toHaveLength(4);
   await send('停止', 'chat-stop');
   const before = clone(store.state);
@@ -1337,51 +1189,6 @@ it('直接题目不当成原答，停止时不能暗中出题，旧入口继续�
   expect(store.active.messages.at(-1).content).toBe('请选择 AI 助手后继续。');
 });
 
-it('诗词不可用或写入失败保留原答与判分，错误/部分/待核对/已帮助不触发独立赞语', async () => {
-  const store = useConversationLearningStore();
-  store.start('解关于 t 的不等式 t<3');
-  await store.send('t<3', { id: 'original-correct' });
-  store.generateVariant();
-  await store.send('t<2', { chatEntry: true, poetry: false, id: 'quiet-variant' });
-  const last = store.state.attempts.at(-1);
-  expect(last.grade.outcome).toBe('correct');
-  expect(poetryEncouragement(store.state, store.active.id, last.id, { available: false })).toBeNull();
-  expect(poetryEncouragement(store.state, store.active.id, last.id)).not.toBeNull();
-  for (const outcome of ['wrong', 'partial', null]) {
-    const state = clone(store.state);
-    state.attempts.at(-1).grade = { ...last.grade, status: outcome ? 'reliable' : 'pending', outcome };
-    expect(poetryEncouragement(state, store.active.id, last.id)).toBeNull();
-  }
-  const helped = clone(store.state);
-  helped.attempts.at(-1).hints = [{ id: 'synthetic-help' }];
-  expect(poetryEncouragement(helped, store.active.id, last.id)).toBeNull();
-  const commit = learningRepository.commit.bind(learningRepository);
-  vi.spyOn(learningRepository, 'commit').mockImplementation((operation) => {
-    if (operation.type === 'message.add' && operation.data.content.startsWith('妙哉妙哉'))
-      throw new Error('synthetic optional write failure');
-    return commit(operation);
-  });
-  store.generateVariant();
-  const result = await store.send('t<1', { chatEntry: true, id: 'optional-failure' });
-  expect(result.grade.outcome).toBe('correct');
-  expect(store.state.attempts.at(-1).answer).toBe('t<1');
-  expect(store.active.messages.some((message) => message.content.startsWith('妙哉妙哉'))).toBe(false);
-});
-
-it('英文界面翻译新反馈前缀，诗句、作者与原本出处保持原文', async () => {
-  const store = useConversationLearningStore();
-  await store.send('一次不等式', { chatEntry: true });
-  await store.send('t<3', { chatEntry: true });
-  await store.send('独立检验原题', { chatEntry: true });
-  await store.send('t<2', { chatEntry: true, poetry: false });
-  const poem = poetryEncouragement(store.state, store.active.id, store.state.attempts.at(-1).id);
-  setLanguage('en');
-  expect(learningText('想先练哪个知识点？比如方程或一次不等式，也可以直接贴题。')).toContain('Which topic');
-  expect(learningText(poem.content)).toContain('You solved this variant independently.');
-  expect(learningText(poem.content)).toContain('欲窮千里目，更上一層樓。');
-  expect(learningText(poem.content)).toContain('王之渙《登鸛雀樓》');
-});
-
 it('聊天入口不绕过已有云端上下文授权', async () => {
   const store = useConversationLearningStore();
   const request = vi.spyOn(uni, 'request');
@@ -1391,7 +1198,7 @@ it('聊天入口不绕过已有云端上下文授权', async () => {
   expect(request).not.toHaveBeenCalled();
 });
 
-it('页面明确提交沿同一诗词边界，展示选项不进入作答事实，英文示例可开始', async () => {
+it('页面明确提交保持原答，展示选项不进入作答事实，英文示例可开始', async () => {
   const store = useConversationLearningStore();
   await store.send('I want to review middle-school math and find what needs practice', { chatEntry: true });
   expect(store.active.messages.at(-1).content).toContain('想先练哪个知识点');
@@ -1402,7 +1209,7 @@ it('页面明确提交沿同一诗词边界，展示选项不进入作答事实�
   expect(store.active.messages.some((message) => message.content.startsWith('妙哉妙哉'))).toBe(false);
   store.generateVariant();
   store.submit('t<2', true, 'explicit-chat-variant', { chatEntry: true });
-  expect(store.active.messages.filter((message) => message.content.startsWith('妙哉妙哉'))).toHaveLength(1);
+  expect(store.active.messages.filter((message) => message.content.startsWith('妙哉妙哉'))).toHaveLength(0);
   const event = store.state.events.find((item) => item.id === 'explicit-chat-variant');
   expect(event.data).not.toHaveProperty('chatEntry');
   expect(event.data).not.toHaveProperty('poetry');
@@ -1467,7 +1274,7 @@ it('按推荐用语请求小步引导后贴题，实际提示、原答、独立�
   await send('独立检验原题', 'paste-variant');
   await send('x=2', 'paste-independent');
   expect(store.state.attempts[1]).toMatchObject({ kind: 'variant', hints: [], grade: { outcome: 'correct' } });
-  expect(store.active.messages.filter((message) => message.content.startsWith('妙哉妙哉'))).toHaveLength(1);
+  expect(store.active.messages.filter((message) => message.content.startsWith('妙哉妙哉'))).toHaveLength(0);
   await send('停止', 'paste-stop');
   const before = clone(store.state);
   setActivePinia(createPinia());

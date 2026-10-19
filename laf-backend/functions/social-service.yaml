@@ -1,6 +1,0 @@
-name: social-service
-desc: ''
-methods:
-  - GET
-  - POST
-tags: []
