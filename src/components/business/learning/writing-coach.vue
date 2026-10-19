@@ -151,7 +151,7 @@
         <template v-else>
           <BaseCard v-if="!coach.diagnostic">
             <text class="coach-title">十分钟摸底</text><text>成分、搭配、翻译、长难句和审题，每项一题。</text>
-            <BaseButton variant="primary" :disabled="learning.busy" @tap="request('diagnostic')">{{
+            <BaseButton variant="primary" :disabled="fileBusy || learning.busy" @tap="request('diagnostic')">{{
               requestLabel('diagnostic')
             }}</BaseButton>
           </BaseCard>
@@ -382,6 +382,16 @@ const profile = reactive({
   foundation: '',
   minutes: '25'
 });
+// 档案草稿是组件级状态，不随 coach 重置；新一轮带练必须从种子重来，
+// 否则上一轮选过的考试类型会压过这一轮目标里写明的类型。
+function resetProfileDraft() {
+  Object.assign(profile, {
+    exam: 'english1',
+    deadline: `${new Date().getFullYear()}-12-22`,
+    foundation: '',
+    minutes: '25'
+  });
+}
 const analysisFields = [
   { key: 'genre', label: '体裁' },
   { key: 'recipient', label: '对象' },
@@ -448,8 +458,11 @@ function begin() {
       emit('general', text);
       return;
     }
+    resetProfileDraft();
     learning.startCoach(text);
+    // 目标里写明的考试类型双向生效，不再只认英语二。
     if (/英语二/.test(text)) profile.exam = 'english2';
+    else if (/英语一/.test(text)) profile.exam = 'english1';
     showMaterials.value = true;
   });
 }
@@ -466,9 +479,7 @@ function pauseLearning() {
 function saveProfile(skip) {
   act(() =>
     learning.coachSave('profile', {
-      profile: skip
-        ? resolveSkippedProfile(profile)
-        : { ...profile, minutes: Number(profile.minutes) }
+      profile: skip ? resolveSkippedProfile(profile) : { ...profile, minutes: Number(profile.minutes) }
     })
   );
 }

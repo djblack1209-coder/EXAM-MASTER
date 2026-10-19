@@ -3504,11 +3504,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const saved = commit('material.add', { material });
     // 同指纹重传时 material.add 只登记别名、不新增资料，必须用它的返回值解析规范 id。
     const materialId = saved.id || material.id;
+    // 不带 day：绑定本身与日期无关，带上反而会在跨本地午夜的瞬间让第二笔被拒，
+    // 在第一笔已经落盘之后制造一个可避免的失败窗口。
     const bound = commit('coach.material', {
       materialId,
       conversationId: active.value.id,
-      explicit: true,
-      day: dayKey(Date.now(), state.value.timezone)
+      explicit: true
     });
     return { ...bound, id: materialId };
   }
