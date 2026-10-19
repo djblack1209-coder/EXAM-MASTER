@@ -2,7 +2,7 @@ import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { storageService } from '@/services/storageService.js';
-import { resolveSkippedProfile, COACH_EXAMS } from '@/services/learning/coach-profile.js';
+import { resolveSkippedProfile, deadlineForBucket, COACH_EXAMS } from '@/services/learning/coach-profile.js';
 import { parsePastedMaterial } from '@/services/learning/material-intake.js';
 
 vi.mock('@dcloudio/uni-app', () => ({
@@ -67,11 +67,19 @@ describe('跳过建档保留已明确的考试类型', () => {
     expect(resolveSkippedProfile({ exam: 'english1' }).exam).toBe('english1');
   });
 
+  it('未选择考试时间时不编造考试日期', () => {
+    expect(resolveSkippedProfile({}).deadline).toBeNull();
+  });
+
+  it.each(['this', 'next'])('跳过时保留已点选的考试时间 %s', (deadlineBucket) => {
+    expect(resolveSkippedProfile({ deadlineBucket }).deadline).toBe(deadlineForBucket(deadlineBucket));
+  });
+
   it('从未选择、从未推断时回落英语一，并补齐其余默认值', () => {
     const profile = resolveSkippedProfile({ exam: '', minutes: '25', foundation: '写了点东西' });
     expect(profile).toEqual({
       exam: 'english1',
-      deadline: `${new Date().getFullYear()}-12-22`,
+      deadline: null,
       minutes: 25,
       foundation: null,
       subjects: [],

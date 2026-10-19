@@ -92,7 +92,8 @@
         <BaseCard v-if="showBoard" data-test="coach-dashboard">
           <text class="coach-title">已保存的学习记录</text>
           <view class="coach-stats"
-            ><text>距考试 {{ board.daysToExam }} 天</text><text>本周学习 {{ board.weekDays }} 天</text
+            ><text v-if="board.daysToExam !== null">距考试 {{ board.daysToExam }} 天</text
+            ><text v-else>考试日期：未设置</text><text>本周学习 {{ board.weekDays }} 天</text
             ><text>完成写作 {{ board.essays }} 篇</text><text>已掌握（自评）{{ board.familiar }}</text
             ><text>学习中 {{ board.learning }}</text></view
           >
@@ -422,7 +423,7 @@ const profile = reactive({
   subject: '',
   exam: 'english1',
   subjects: [],
-  deadline: `${new Date().getFullYear()}-12-22`,
+  deadline: '',
   deadlineBucket: '',
   foundation: '',
   minutes: '25'
@@ -435,7 +436,7 @@ function resetProfileDraft() {
     subject: '',
     exam: 'english1',
     subjects: [],
-    deadline: `${new Date().getFullYear()}-12-22`,
+    deadline: '',
     deadlineBucket: '',
     foundation: '',
     minutes: '25'
@@ -540,7 +541,7 @@ function saveProfile(skip) {
         ? resolveSkippedProfile(profile)
         : {
             exam: profile.exam,
-            deadline: deadlineForBucket(profile.deadlineBucket) || profile.deadline,
+            deadline: deadlineForBucket(profile.deadlineBucket) || profile.deadline || null,
             minutes: Number(profile.minutes),
             foundation: profile.foundation || null,
             subjects: [...profile.subjects, profile.subject].filter(Boolean),
