@@ -11,6 +11,15 @@ export const COACH_SUBJECTS = Object.freeze([
 ]);
 export const COACH_DEFAULT_TRACK = 'kaoyan-english-writing';
 export const WRITING_COACH_CONTRACT = 'kaoyan-writing-coach-v1';
+export const COACH_VIOLATION_CLASS = new Proxy(
+  Object.freeze({
+    成文反馈需覆盖四维: 'shortfall',
+    大作文需三段: 'shortfall'
+  }),
+  {
+    get: (classes, message) => (Object.hasOwn(classes, message) ? classes[message] : 'fabrication')
+  }
+);
 export const WRITING_METHOD = Object.freeze({
   contract: WRITING_COACH_CONTRACT,
   subject: '考研英语写作',
@@ -23,21 +32,21 @@ export const WRITING_METHOD = Object.freeze({
   feedback: ['语法', '搭配', '表达', '任务完成'],
   reliability: 'AI评估，非官方评分；自评复习不升级可靠掌握'
 });
-const fail = (ok, message) => {
-  if (!ok) throw Object.assign(new Error(message), { code: 'COACH_INVALID' });
+const fail = (ok, message, path = '') => {
+  if (!ok) throw Object.assign(new Error(message), { code: 'COACH_INVALID', path });
 };
-const text = (value, max = 2000) => {
-  fail(typeof value === 'string' && value.trim() && value.length <= max, '内容为空或过长');
+const text = (value, max = 2000, path = '') => {
+  fail(typeof value === 'string' && value.trim() && value.length <= max, '内容为空或过长', path);
   return value.trim();
 };
-const strings = (value, max = 6, length = 400) => {
-  fail(Array.isArray(value) && value.length <= max, '内容数量不合法');
-  return value.map((v) => text(v, length));
+const strings = (value, max = 6, length = 400, path = '') => {
+  fail(Array.isArray(value) && value.length <= max, '内容数量不合法', path);
+  return value.map((v, i) => text(v, length, `${path}[${i}]`));
 };
-const date = (value) => {
-  fail(typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value), '日期不合法');
+const date = (value, path = '') => {
+  fail(typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value), '日期不合法', path);
   const time = Date.parse(value + 'T00:00:00Z');
-  fail(Number.isFinite(time) && new Date(time).toISOString().slice(0, 10) === value, '日期不合法');
+  fail(Number.isFinite(time) && new Date(time).toISOString().slice(0, 10) === value, '日期不合法', path);
   return value;
 };
 export function normalizeCoachRequest(value) {
@@ -83,32 +92,48 @@ summary：{kind:"summary",learned:["今天已提交内容的小结"],tomorrow:["
 }
 export function normalizeCoachOutput(value, request) {
   const r = normalizeCoachRequest(request);
-  fail(value && value.kind === r.phase, '模型返回的教学阶段不符');
-  const source = (id) => {
+  fail(value && value.kind === r.phase, '模型返回的教学阶段不符', 'kind');
+  const source = (id, path = '') => {
     if (id == null) return { kind: 'model_generated', verified: false };
     const found = r.sources.find((s) => s.id === id);
-    fail(found, '模型引用了未分享的资料');
+    fail(found, '模型引用了未分享的资料', path);
     return { kind: 'private_material', id: found.id, name: found.name, page: found.page, verified: false };
   };
   if (['diagnostic', 'daily'].includes(r.phase)) {
-    fail(Array.isArray(value.cards), '缺少训练卡片');
-    const cards = value.cards.map((card) => ({
-      id: text(card.id, 80),
-      kind: text(card.kind, 40),
-      title: text(card.title, 100),
-      prompt: text(card.prompt, 1200),
-      example: card.example ? text(card.example, 600) : '',
-      source: source(card.sourceId ?? (card.source?.kind === 'private_material' ? card.source.id : null))
+    fail(Array.isArray(value.cards), '缺少训练卡片', 'cards');
+    const cards = value.cards.map((card, i) => ({
+      id: text(card.id, 80, `cards[${i}].id`),
+      kind: text(card.kind, 40, `cards[${i}].kind`),
+      title: text(card.title, 100, `cards[${i}].title`),
+      prompt: text(card.prompt, 1200, `cards[${i}].prompt`),
+      example: card.example ? text(card.example, 600, `cards[${i}].example`) : '',
+      source: source(
+        card.sourceId ?? (card.source?.kind === 'private_material' ? card.source.id : null),
+        card.sourceId == null && card.source?.kind === 'private_material'
+          ? `cards[${i}].source.id`
+          : `cards[${i}].sourceId`
+      )
     }));
     fail(
       cards.every((c) => /^[a-zA-Z0-9_-]{1,80}$/.test(c.id)),
-      '卡片编号不合法'
+      '卡片编号不合法',
+      `cards[${cards.findIndex((c) => !/^[a-zA-Z0-9_-]{1,80}$/.test(c.id))}].id`
     );
-    fail(new Set(cards.map((c) => c.id)).size === cards.length, '卡片编号重复');
+    fail(
+      new Set(cards.map((c) => c.id)).size === cards.length,
+      '卡片编号重复',
+      `cards[${cards.findIndex((c, i) => cards.findIndex((other) => other.id === c.id) !== i)}].id`
+    );
     if (r.phase === 'diagnostic') {
+      const index = cards.findIndex((c, i) => c.id !== `d${i + 1}` || c.kind !== 'diagnostic');
       fail(
         cards.length === 5 && cards.every((c, i) => c.id === `d${i + 1}` && c.kind === 'diagnostic'),
-        '摸底需依次覆盖五项'
+        '摸底需依次覆盖五项',
+        cards.length !== 5 || index < 0
+          ? 'cards'
+          : cards[index].id !== `d${index + 1}`
+            ? `cards[${index}].id`
+            : `cards[${index}].kind`
       );
       return { kind: r.phase, cards };
     }
@@ -121,48 +146,74 @@ export function normalizeCoachOutput(value, request) {
         count('translate_zh') === 2 &&
         count('translate_en') === 2 &&
         count('long_sentence') === 1,
-      '每日卡片数量或类型不符'
+      '每日卡片数量或类型不符',
+      'cards'
     );
     const rank = { collocation: 0, translate_zh: 1, translate_en: 2, long_sentence: 3 };
     cards.sort((a, b) => rank[a.kind] - rank[b.kind]);
     const w = value.writing;
-    fail(w && Array.isArray(w.patterns) && w.patterns.length >= 2 && w.patterns.length <= 3, '写作结构需二至三段');
-    if (r.essayType === 'large') fail(w.patterns.length === 3, '大作文需三段');
+    fail(
+      w && Array.isArray(w.patterns) && w.patterns.length >= 2 && w.patterns.length <= 3,
+      '写作结构需二至三段',
+      w ? 'writing.patterns' : 'writing'
+    );
+    if (r.essayType === 'large') fail(w.patterns.length === 3, '大作文需三段', 'writing.patterns');
     return {
       kind: r.phase,
       cards,
       writing: {
-        prompt: text(w.prompt, 1500),
-        patterns: w.patterns.map((p) => {
-          fail(Array.isArray(p) && p.length >= 1 && p.length <= 2, '每段需一至两个句式');
-          return strings(p, 2, 240);
+        prompt: text(w.prompt, 1500, 'writing.prompt'),
+        patterns: w.patterns.map((p, i) => {
+          fail(Array.isArray(p) && p.length >= 1 && p.length <= 2, '每段需一至两个句式', `writing.patterns[${i}]`);
+          return strings(p, 2, 240, `writing.patterns[${i}]`);
         }),
-        source: source(w.sourceId ?? (w.source?.kind === 'private_material' ? w.source.id : null)),
+        source: source(
+          w.sourceId ?? (w.source?.kind === 'private_material' ? w.source.id : null),
+          w.sourceId == null && w.source?.kind === 'private_material' ? 'writing.source.id' : 'writing.sourceId'
+        ),
         essayType: r.essayType
       }
     };
   }
   if (r.phase === 'summary')
-    return { kind: r.phase, learned: strings(value.learned, 6), tomorrow: strings(value.tomorrow, 4) };
+    return {
+      kind: r.phase,
+      learned: strings(value.learned, 6, 400, 'learned'),
+      tomorrow: strings(value.tomorrow, 4, 400, 'tomorrow')
+    };
   fail(
     value.target === r.target && Array.isArray(value.lines) && value.lines.length > 0 && value.lines.length <= 6,
-    '反馈与当前原答不符'
+    '反馈与当前原答不符',
+    value.target !== r.target ? 'target' : 'lines'
   );
-  const lines = value.lines.map((line) => {
-    const original = text(line.original, 1200);
-    fail(r.input.includes(original), '反馈没有引用当前原答');
-    return { original, advice: text(line.advice, 600), rewrite: text(line.rewrite, 1000) };
+  const lines = value.lines.map((line, i) => {
+    const original = text(line.original, 1200, `lines[${i}].original`);
+    fail(r.input.includes(original), '反馈没有引用当前原答', `lines[${i}].original`);
+    return {
+      original,
+      advice: text(line.advice, 600, `lines[${i}].advice`),
+      rewrite: text(line.rewrite, 1000, `lines[${i}].rewrite`)
+    };
   });
-  fail(Array.isArray(value.dimensions || []), '写作维度不合法');
-  const dimensions = (value.dimensions || []).map((d) => ({ name: text(d.name, 40), comment: text(d.comment, 500) }));
-  fail(dimensions.length <= 4 && dimensions.every((d) => WRITING_METHOD.feedback.includes(d.name)), '写作维度不合法');
-  if (r.phase === 'essay') fail(new Set(dimensions.map((d) => d.name)).size === 4, '成文反馈需覆盖四维');
+  fail(Array.isArray(value.dimensions || []), '写作维度不合法', 'dimensions');
+  const dimensions = (value.dimensions || []).map((d, i) => ({
+    name: text(d.name, 40, `dimensions[${i}].name`),
+    comment: text(d.comment, 500, `dimensions[${i}].comment`)
+  }));
+  fail(
+    dimensions.length <= 4 && dimensions.every((d) => WRITING_METHOD.feedback.includes(d.name)),
+    '写作维度不合法',
+    dimensions.length > 4
+      ? 'dimensions'
+      : `dimensions[${dimensions.findIndex((d) => !WRITING_METHOD.feedback.includes(d.name))}].name`
+  );
+  if (r.phase === 'essay') fail(new Set(dimensions.map((d) => d.name)).size === 4, '成文反馈需覆盖四维', 'dimensions');
   return {
     kind: r.phase,
     target: r.target,
     lines,
-    weaknesses: strings(value.weaknesses || [], 8, 100),
-    phrases: strings(value.phrases || [], 6, 240),
+    weaknesses: strings(value.weaknesses || [], 8, 100, 'weaknesses'),
+    phrases: strings(value.phrases || [], 6, 240, 'phrases'),
     dimensions,
     reliability: 'ai_assisted'
   };
@@ -172,14 +223,15 @@ export function parseCoachModelOutput(raw, request) {
   try {
     output = JSON.parse(raw.trim().replace(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/i, '$1'));
   } catch {
-    fail(false, '模型未返回完整教学卡片，请保留原答后查看请求状态');
+    fail(false, '模型未返回完整教学卡片，请保留原答后查看请求状态', 'raw');
   }
   fail(
     !output.question && (!output.tools || (Array.isArray(output.tools) && !output.tools.length)),
-    '写作带练不接受模型工具'
+    '写作带练不接受模型工具',
+    output.question ? 'question' : 'tools'
   );
   return {
-    message: text(output.message, 500),
+    message: text(output.message, 500, 'message'),
     coach: normalizeCoachOutput(output.coach, request),
     question: null,
     tools: [],
