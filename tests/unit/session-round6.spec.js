@@ -419,7 +419,7 @@ it('analytics and achievement queues retain unread originals and new tasks', asy
   expect(read(blocked)).toEqual(['old']);
   blocked = null;
   storageService.flushPendingWrites();
-  expect(storageService.get('achievement_retry_v1')).toEqual(['old', 'new']);
+  expect(storageService.get('achievement_retry_v1')).toEqual(['old']);
 });
 it('ordinary failed offline receipt is never recorded as a successful send', async () => {
   const queue = new OfflineQueue();

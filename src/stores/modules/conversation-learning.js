@@ -8,9 +8,7 @@ import {
   localPressureQuestion,
   localEnergyQuestion,
   localVelocityGraphQuestion,
-  chatQuestionMessage,
-  poetryEncouragement,
-  validatedPoetryReference
+  chatQuestionMessage
 } from '@/services/learning/learning-chat.js';
 import { WRITING_FEEDBACK_OUTPUT_CONTRACT } from '../../../laf-backend/functions/_shared/learning-rubric.js';
 import { createOatutorQuestion } from '../../../laf-backend/functions/_shared/learning-oatutor.js';
@@ -154,7 +152,6 @@ import {
   fetchLearningResult,
   requestLearningComputation,
   requestLearningGrammar,
-  requestLearningPoetryReference,
   learningRequest
 } from '@/services/api/domains/learning.api.js';
 import { callLocalConnector, testLocalConnector, learningClientPlatform } from '@/services/learning/local-connector.js';
@@ -337,9 +334,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const busy = ref(false);
   const error = ref('');
   const models = ref([]);
-  const poetryReferenceEnabled = ref(false);
-  const poetryReference = shallowRef(null);
-  let poetryController = null;
   const modelPresets = ref([]);
   const modelId = ref('');
   const usage = ref(null);
@@ -481,8 +475,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     modelActions.clear();
   }
   function resetModelResources() {
-    cancelPoetryReference();
-    poetryReferenceEnabled.value = false;
     cancelModelReads(undefined, 'CONTEXT_CHANGED');
     models.value = [];
     modelPresets.value = [];
@@ -1134,8 +1126,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     };
     cancelModelActions();
     localConnectionController?.abort();
-    cancelPoetryReference();
-    poetryReferenceEnabled.value = false;
     controller?.abort();
     pendingCloudCall = null;
     visualRequest.value = null;
@@ -1325,7 +1315,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   if (typeof window !== 'undefined') window.addEventListener('storage', storageChanged);
   onScopeDispose(() => {
     recordSearch.clear();
-    cancelPoetryReference();
     if (notificationRefreshTimer !== null) clearTimeout(notificationRefreshTimer);
     notificationObserver?.dispose();
     calendar.dispose();
@@ -2224,84 +2213,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       `${attempt.id}:review`
     );
   }
-  function cancelPoetryReference() {
-    poetryController?.abort();
-    poetryController = null;
-    poetryReference.value = null;
-  }
-  watch(
-    [
-      () => state.value.owner,
-      () => selectedConversationId.value,
-      () => active.value?.activeQuestionKey,
-      () => active.value?.stopped,
-      () => selectedMode.value,
-      () => modelId.value,
-      () => poetryReferenceEnabled.value
-    ],
-    cancelPoetryReference,
-    { flush: 'sync' }
-  );
-  function verifyPoetryReference(encouragement, attempt) {
-    ensureSessionCurrent();
-    if (!poetryReferenceEnabled.value) return;
-    const context = recordContext();
-    if (!context) return;
-    cancelPoetryReference();
-    const requestController = new AbortController();
-    poetryController = requestController;
-    const owner = state.value.owner,
-      conversationId = selectedConversationId.value;
-    let resolveCancelled;
-    const aborted = () => resolveCancelled(null);
-    const cancelled = new Promise((resolve) => {
-      resolveCancelled = resolve;
-    });
-    requestController.signal.addEventListener('abort', aborted, { once: true });
-    const timer = setTimeout(() => requestController.abort(), 1200);
-    // The already-published local encouragement is immediate; optional source metadata never writes learning facts.
-    void Promise.race([
-      requestLearningPoetryReference({
-        session: boundSession,
-        expectedOwner: owner,
-        signal: requestController.signal,
-        assertCurrent: () => {
-          ensureSessionCurrent(undefined, requestController.signal);
-          assert(recordContext() === context, 'CONTEXT_CHANGED', '登录会话已变化，旧参考未采用');
-        }
-      }),
-      cancelled
-    ])
-      .then((result) => {
-        if (
-          poetryController !== requestController ||
-          requestController.signal.aborted ||
-          state.value.owner !== owner ||
-          selectedConversationId.value !== conversationId ||
-          active.value?.stopped ||
-          active.value?.activeQuestionKey !== attempt.questionKey ||
-          recordContext() !== context ||
-          !active.value?.messages.some((message) => message.id === encouragement.id)
-        )
-          return;
-        const reference = result?.success && validatedPoetryReference(result.data?.reference);
-        if (reference)
-          poetryReference.value = {
-            conversationId,
-            questionKey: attempt.questionKey,
-            attemptId: attempt.id,
-            reference
-          };
-      })
-      .catch(() => undefined)
-      .finally(() => {
-        clearTimeout(timer);
-        requestController.signal.removeEventListener('abort', aborted);
-        if (poetryController === requestController) poetryController = null;
-      });
-  }
   function submit(answer, explicit = false, id = learningId('answer'), options = {}) {
-    const { chatEntry = false, poetry = true, ...attemptOptions } = options;
+    const { chatEntry: _chatEntry, poetry: _poetry, ...attemptOptions } = options;
     const result = commit(
       explicit === true
         ? attemptSubmissionType(activeQuestion.value, state.value.events.find((event) => event.id === id)?.type)
@@ -2381,17 +2294,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         { conversationId: active.value.id, groupId: training.id, attemptIds: [result.id], explicit: true },
         `${training.id}:complete`
       );
-    if (chatEntry === true && poetry !== false) {
-      try {
-        const encouragement = poetryEncouragement(state.value, selectedConversationId.value, result.id);
-        if (encouragement) {
-          notice(encouragement.content, encouragement.id, { attemptId: result.id });
-          verifyPoetryReference(encouragement, result);
-        }
-      } catch {
-        // Optional decoration cannot turn an already saved answer into a failed submission.
-      }
-    }
     return result;
   }
   async function send(raw, options = {}) {
@@ -3175,7 +3077,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
   }
   function cancel() {
-    cancelPoetryReference();
     visualRequest.value = null;
     const pending = pendingCloudCall;
     pendingCloudCall = null;
@@ -3270,7 +3171,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       ensureSessionCurrent(session, operation.controller.signal);
       if (kind === 'models') {
         models.value = result.success ? result.data.models : [];
-        poetryReferenceEnabled.value = result.success && result.data.poetryReferenceEnabled === true;
         modelPresets.value = result.success ? result.data.presets || [] : [];
       } else usage.value = result.success ? result.data : null;
       status.value = {
@@ -4365,8 +4265,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     busy,
     error,
     models,
-    poetryReferenceEnabled,
-    poetryReference,
     modelListState,
     modelUsageState,
     cancelModelReads,

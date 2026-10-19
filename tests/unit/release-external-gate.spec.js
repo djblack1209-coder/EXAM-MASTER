@@ -63,6 +63,7 @@ function passedMonitoringEvidence() {
 
 function releaseEnv(overrides = {}) {
   return {
+    BAIDU_SYNC_REQUIRED: 'true',
     VITE_WX_APP_ID: 'wx1234567890abcdef',
     VITE_API_BASE_URL: 'https://api.exam-master.app',
     JWT_SECRET: 'x'.repeat(64),
@@ -95,6 +96,7 @@ function runGate(args = [], env = {}) {
     cwd: process.cwd(),
     env: {
       PATH: process.env.PATH,
+      BAIDU_SYNC_REQUIRED: 'true',
       ...env
     },
     encoding: 'utf8'

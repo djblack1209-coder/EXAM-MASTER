@@ -433,6 +433,7 @@ function sourceManifestFromFile(filePath) {
 }
 
 function checkBaiduSync(env, options) {
+  if (env.BAIDU_SYNC_REQUIRED !== 'true') return buildSection([], { required: false, reason: 'retired_pipeline' });
   const blockers = [];
 
   requireEnv(env, 'BAIDU_ACCESS_TOKEN', blockers);

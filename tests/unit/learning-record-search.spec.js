@@ -199,7 +199,6 @@ describe('record location uses canonical facts', () => {
       store.sharingAllowed = true;
       store.streamEnabled = true;
       store.streamPreview = '当前预览';
-      store.poetryReferenceEnabled = true;
       store.error = '保留的提示';
       const fields = [
         'selectedMode',
@@ -212,7 +211,6 @@ describe('record location uses canonical facts', () => {
         'sharingAllowed',
         'streamEnabled',
         'streamPreview',
-        'poetryReferenceEnabled',
         'error'
       ];
       const configuration = () => clone(Object.fromEntries(fields.map((key) => [key, store[key]])));

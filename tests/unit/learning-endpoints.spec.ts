@@ -135,36 +135,6 @@ it('保存已知基础地址时补齐真实请求路径，继续检查白名单�
   expect(callLearningProvider).not.toHaveBeenCalled();
 });
 
-describe('诗词调用接续', () => {
-  const body = { action: 'poetry', context: 'independent-practice-correct' };
-
-  it('沿用身份与限流，默认关闭的查询不读取账户、不写数据、不调用模型', async () => {
-    expect((await models({ headers: {}, body })).code).toBe(401);
-    mock.allowed = false;
-    expect((await models(context(body))).code).toBe(429);
-    mock.allowed = true;
-    expect(await models(context(body))).toEqual({ code: 0, success: true, data: { reference: null } });
-    expect(mock.queries).toEqual([]);
-    expect(mock.rows.size).toBe(0);
-    expect(callLearningProvider).not.toHaveBeenCalled();
-    expect(callStreamingLearningProvider).not.toHaveBeenCalled();
-    const catalog = await models(context({ action: 'list' }));
-    expect(catalog.data.poetryReferenceEnabled).toBe(false);
-  });
-
-  it.each([
-    { action: 'poetry', context: 'other-topic' },
-    { ...body, answer: 'synthetic private answer' },
-    { ...body, conversationId: 'synthetic-private-id' },
-    { ...body, endpoint: 'https://untrusted.example/graphql' },
-    { action: 'poetry', context: { prompt: 'synthetic private prompt' } }
-  ])('拒绝任意情境、私有字段或指定上游：%j', async (invalid) => {
-    expect((await models(context(invalid))).code).toBe(400);
-    expect(mock.queries).toEqual([]);
-    expect(mock.rows.size).toBe(0);
-    expect(callLearningProvider).not.toHaveBeenCalled();
-  });
-});
 it.each([
   ['learning-visual-v2', { template: 'constant_net_force', massKg: 2, netForceN: 4, direction: 'right' }],
   [

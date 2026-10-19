@@ -1,3 +1,4 @@
+export const US_LOGIN_ENABLED = import.meta.env.VITE_ENABLE_US_LOGIN === 'true';
 const KEY = 'yozi_login_region';
 export function inferLoginRegion({ region, locale, timeZone } = {}) {
   if (/^(US|CN)$/i.test(region || '')) return region.toUpperCase();
@@ -22,7 +23,8 @@ export function inferLoginRegion({ region, locale, timeZone } = {}) {
   if (['US', 'CN'].includes(country)) return country;
   return 'CN';
 }
-export function readLoginRegion(runtime) {
+export function readLoginRegion(runtime, { enabled = US_LOGIN_ENABLED } = {}) {
+  if (!enabled) return 'CN';
   try {
     const saved = runtime ? runtime.getStorageSync(KEY) : uni.getStorageSync(KEY);
     if (['US', 'CN'].includes(saved)) return saved;

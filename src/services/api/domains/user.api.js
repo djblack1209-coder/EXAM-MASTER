@@ -205,130 +205,15 @@ export async function recordGoalProgress(type, value, options = { session: captu
   }
 }
 
-// ==================== 成就系统 ====================
-
-/**
- * 检查并同步成就到后端
- * @returns {Promise} 返回新解锁的成就
- */
-export async function checkAchievements(options = { session: captureSession() }) {
-  const session = options.session;
-  try {
-    const userId = getUserId();
-    if (!userId) return { code: -1, success: false, message: '请先登录', data: { newlyUnlocked: [] } };
-
-    // 先重试之前失败的解锁请求
-    try {
-      assertSession(session);
-      const pending = storageService.get('achievement_retry_v1', [], { session, migrateLegacy: false }) || [];
-      if (pending.length > 0) {
-        const remaining = [];
-        for (const aid of pending) {
-          try {
-            const result = await request(
-              '/achievement-manager',
-              { action: 'unlock', userId, data: { achievementId: aid } },
-              { session }
-            );
-            if (result?.success === false || isSessionUnavailable(result)) throw result;
-          } catch (_e) {
-            remaining.push(aid);
-          }
-        }
-        const completed = new Set(pending.filter((aid) => !remaining.includes(aid)));
-        storageService.update(
-          'achievement_retry_v1',
-          [],
-          (latest) => latest.filter((aid) => !completed.has(aid)),
-          session
-        );
-      }
-    } catch (_e) {
-      /* 重试失败不影响主流程 */
-    }
-
-    const response = await request(
-      '/achievement-manager',
-      {
-        action: 'check',
-        userId,
-        data: {}
-      },
-      { session }
-    );
-    return response;
-  } catch (error) {
-    // [AUDIT FIX R268] 统一 normalizeError
-    logger.warn('[LafService] 检查成就失败:', error);
-    return { ...normalizeError(error, '检查成就'), data: { newlyUnlocked: [] } };
-  }
+// 旧成就资料保留本机，只停止已退役的远程服务，不重发待处理队列。
+export async function checkAchievements() {
+  return { success: false, code: 410, message: '成就服务已停用', data: { newlyUnlocked: [] } };
 }
-
-/**
- * 获取所有成就（含解锁状态）
- * @returns {Promise} 返回成就列表
- */
-export async function getAllAchievements(options = { session: captureSession() }) {
-  const session = options.session;
-  try {
-    const userId = getUserId();
-    if (!userId) return { code: -1, success: false, message: '请先登录', data: { achievements: [] } };
-
-    const response = await request(
-      '/achievement-manager',
-      {
-        action: 'getAll',
-        userId,
-        data: {}
-      },
-      { session }
-    );
-    return response;
-  } catch (error) {
-    // [AUDIT FIX R268] 统一 normalizeError
-    logger.warn('[LafService] 获取成就失败:', error);
-    return { ...normalizeError(error, '获取成就'), data: { achievements: [] } };
-  }
+export async function getAllAchievements() {
+  return { success: false, code: 410, message: '成就服务已停用', data: { achievements: [] } };
 }
-
-/**
- * 解锁指定成就
- * ⚠️ 此处直接用 uni.getStorageSync 而非 storageService，避免 storageService 与 API 请求层循环依赖
- * @param {string} achievementId - 成就ID
- * @returns {Promise} 返回解锁结果
- */
-export async function unlockAchievement(achievementId, options = { session: captureSession() }) {
-  const session = options.session;
-  try {
-    const userId = getUserId();
-    if (!userId) return { code: -1, success: false, message: '请先登录' };
-
-    const response = await request(
-      '/achievement-manager',
-      {
-        action: 'unlock',
-        userId,
-        data: { achievementId }
-      },
-      { session }
-    );
-    if (response?.success === false || isSessionUnavailable(response)) throw response;
-    return response;
-  } catch (error) {
-    logger.warn('[LafService] 解锁成就失败，已缓存待重试:', achievementId, error);
-    try {
-      storageService.update(
-        'achievement_retry_v1',
-        [],
-        (pending) => (pending.includes(achievementId) ? pending : [...pending, achievementId]),
-        session
-      );
-    } catch (_e) {
-      /* 存储失败忽略 */
-    }
-    // [AUDIT FIX R268] 统一 normalizeError
-    return { ...normalizeError(error, '解锁成就'), message: '解锁失败，将自动重试' };
-  }
+export async function unlockAchievement() {
+  return { success: false, code: 410, message: '成就服务已停用' };
 }
 
 // ==================== 用户资料更新 ====================

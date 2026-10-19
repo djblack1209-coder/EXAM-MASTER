@@ -1,12 +1,11 @@
 import config from '../../../config/index.js';
 import { captureSession, sessionForRequest } from '../../auth-storage.js';
 import { generateLearningTurnStream } from '../../learning/learning-stream.js';
-import poetryCache from '../../learning/poetry-cache.json';
 
 // 学习模型请求固定到用户选择的后端，不使用跨服务自动故障切换，不记录消息和密钥。
 export function learningRequest(path, body, options = {}) {
   const readOnly =
-    (path === '/learning-models' && ['list', 'usage', 'poetry', 'result'].includes(body?.action)) ||
+    (path === '/learning-models' && ['list', 'usage', 'result'].includes(body?.action)) ||
     (path === '/learning-sync' && ['pull', 'page'].includes(body?.action));
   const session = options.session || (readOnly ? captureSession() : null);
   const failure = (error) => ({
@@ -80,8 +79,6 @@ export function learningRequest(path, body, options = {}) {
 export const fetchLearningModels = (options) => learningRequest('/learning-models', { action: 'list' }, options);
 export const requestLearningComputation = (body, options) => learningRequest('/learning-compute', body, options);
 export const requestLearningGrammar = (body, options) => learningRequest('/learning-grammar', body, options);
-export const requestLearningPoetryReference = (options) =>
-  learningRequest('/learning-models', { action: 'poetry', context: poetryCache.context }, options);
 export const fetchLearningUsage = (options) => learningRequest('/learning-models', { action: 'usage' }, options);
 export const testLearningModel = (modelId, requestId, options) =>
   learningRequest('/learning-models', { action: 'test', modelId, requestId, shareConsent: true }, options);

@@ -8,6 +8,15 @@ import BaseCheckbox from '@/components/base/base-checkbox/base-checkbox.vue';
 import { storageService } from '@/services/storageService.js';
 import { getUserId } from '@/services/auth-storage.js';
 import { setLanguage, t } from '@/i18n/index.js';
+// The retained US flow is exercised behind its explicit feature setting.
+vi.mock('@/services/auth-region.js', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    US_LOGIN_ENABLED: true,
+    readLoginRegion: (runtime) => actual.readLoginRegion(runtime, { enabled: true })
+  };
+});
 const mocks = vi.hoisted(() => ({ api: vi.fn(), provider: vi.fn() }));
 vi.mock('@dcloudio/uni-app', () => ({ onShow: () => {}, onHide: () => {} }));
 vi.mock('@/pages/login/provider-utils.js', () => ({ requestProviderToken: mocks.provider }));
