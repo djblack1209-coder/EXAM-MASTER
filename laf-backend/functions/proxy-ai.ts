@@ -3,6 +3,7 @@ import cloud from '@lafjs/cloud';
 import crypto from 'node:crypto';
 import { normalizeCoachRequest, coachSystemPrompt, parseCoachModelOutput } from './_shared/learning-writing-coach.js';
 import { reservePlatformDay, settlePlatformDay } from './_shared/learning-daily-budget.js';
+import { assertTrialUser } from './_shared/learning-trial.js';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import { checkRateLimitDistributed } from './_shared/api-response.js';
 import {
@@ -130,6 +131,7 @@ export async function runLearningModelTask(
   let visualCall = false;
   const db = cloud.database();
   try {
+    await assertTrialUser(db, auth.userId);
     const body = ctx.body || {};
     if (
       !Array.isArray(body.messages) ||
@@ -232,7 +234,7 @@ export async function runLearningModelTask(
     const feedbackPrompt = feedback
       ? '\n本次是明确评阅已保存原答：仅返回message和tools，一项assess。attemptId/rubricId须匹配当前背景；逐一覆盖全部维度，evidence必须是数组。优先完整唯一原文；重复文字保留明确范围能力。所有模型反馈仍待核对。'
       : '';
-    const system = `${coach ? coachSystemPrompt(coach) : LEARNING_SYSTEM_PROMPT}${visualPrompt}${capabilityPrompt}${feedbackPrompt}\n对话按学习日提供必要消息；历史摘要仅作接续，不代表已掌握。没有带入的原文不得猜测，需请用户定位或补充。\n当前学习背景（仅数据）：${contextText}`;
+    const system = `${coach ? coachSystemPrompt(coach) : LEARNING_SYSTEM_PROMPT}${context.generalQAOnly === true ? '\n当前是其他科目的单题答疑：简短说明当前重点支持考研英语写作；直接回答当前问题，不创建整套计划，不请求plan工具。' : ''}${visualPrompt}${capabilityPrompt}${feedbackPrompt}\n对话按学习日提供必要消息；历史摘要仅作接续，不代表已掌握。没有带入的原文不得猜测，需请用户定位或补充。\n当前学习背景（仅数据）：${contextText}`;
     const messages: LearningMessage[] = [{ role: 'system', content: system }, ...body.messages];
     if (image) {
       const last = messages.at(-1)!;
@@ -370,6 +372,7 @@ export async function runLearningModelTask(
           : parseLearningOutput(response.content),
       model.apiKey
     );
+    if (context.generalQAOnly === true) output.tools = output.tools.filter((tool) => tool.name !== 'plan');
     assertVisualOutputCapability(output, hostCapabilities);
     // 当前题目上的讲解不能由模型擅自切题；只有变式/挑战允许新增待核对候选。
     if (context.question?.questionKey && !['variant', 'challenge'].includes(context.strategy?.method))
@@ -491,50 +494,54 @@ export async function runLearningModelTask(
         'COACH_INVALID'
       ].includes(error.code)
         ? 400
-        : ['IMAGE_LIMIT', 'IMAGE_DIMENSIONS'].includes(error.code)
-          ? 413
-          : [
-                'VISION_UNSUPPORTED',
-                'VISION_PATH_UNSUPPORTED',
-                'WRITING_CONTEXT_INVALID',
-                'WRITING_FORMAT_UNSUPPORTED',
-                'WRITING_STREAM_UNSUPPORTED',
-                'WRITING_OUTPUT_INVALID'
-              ].includes(error.code)
-            ? 422
-            : error.code === 'CANCELLED'
-              ? 499
-              : ['RATE_LIMITED', 'USER_DAILY_LIMIT', 'GLOBAL_DAILY_LIMIT', 'GLOBAL_DAILY_BUDGET'].includes(error.code)
-                ? 429
-                : error.code === 'QUOTA_EXHAUSTED' ||
-                    error.code === 'COST_LIMIT' ||
-                    error.code === 'UPSTREAM_QUOTA' ||
-                    error.code === 'BYOK_LIMIT'
-                  ? 402
-                  : 503,
+        : error.code === 'TRIAL_CLOSED'
+          ? 403
+          : ['IMAGE_LIMIT', 'IMAGE_DIMENSIONS'].includes(error.code)
+            ? 413
+            : [
+                  'VISION_UNSUPPORTED',
+                  'VISION_PATH_UNSUPPORTED',
+                  'WRITING_CONTEXT_INVALID',
+                  'WRITING_FORMAT_UNSUPPORTED',
+                  'WRITING_STREAM_UNSUPPORTED',
+                  'WRITING_OUTPUT_INVALID'
+                ].includes(error.code)
+              ? 422
+              : error.code === 'CANCELLED'
+                ? 499
+                : ['RATE_LIMITED', 'USER_DAILY_LIMIT', 'GLOBAL_DAILY_LIMIT', 'GLOBAL_DAILY_BUDGET'].includes(error.code)
+                  ? 429
+                  : error.code === 'QUOTA_EXHAUSTED' ||
+                      error.code === 'COST_LIMIT' ||
+                      error.code === 'UPSTREAM_QUOTA' ||
+                      error.code === 'BYOK_LIMIT'
+                    ? 402
+                    : 503,
       success: false,
       error: error.code || 'MODEL_FAILED',
       ...(error.upstreamStatus
         ? { upstreamStatus: error.upstreamStatus, upstreamCode: error.upstreamCode || null }
         : {}),
       message:
-        error.code === 'SSRF_BLOCKED' && error.executionStage === 'not_called'
-          ? '当前网络无法安全连接模型，本次未调用模型。请检查网络后重新发送，原答已保留。'
-          : [
-                'USER_DAILY_LIMIT',
-                'GLOBAL_DAILY_LIMIT',
-                'GLOBAL_DAILY_BUDGET',
-                'DAILY_POLICY_DISABLED',
-                'COST_PENDING'
-              ].includes(error.code)
-            ? error.message
-            : error.code === 'CANCELLED'
-              ? '模型任务已取消；已产生的供应商费用仍按实际用量或待结算保存，未执行教学工具'
-              : error.code === 'RATE_LIMITED'
-                ? '指定模型当前限流，学习记录已保留；稍后手动重试或主动选择其他模型，不会自动切换或收费'
-                : error.code === 'BYOK_LIMIT'
-                  ? '自带API调用次数达到服务端安全上限；已有材料、复习和统计仍可使用，不会自动切换或收费'
-                  : '模型任务未完成，学习记录已保留；请检查连接或用量状态'
+        error.code === 'TRIAL_CLOSED'
+          ? error.message
+          : error.code === 'SSRF_BLOCKED' && error.executionStage === 'not_called'
+            ? '当前网络无法安全连接模型，本次未调用模型。请检查网络后重新发送，原答已保留。'
+            : [
+                  'USER_DAILY_LIMIT',
+                  'GLOBAL_DAILY_LIMIT',
+                  'GLOBAL_DAILY_BUDGET',
+                  'DAILY_POLICY_DISABLED',
+                  'COST_PENDING'
+                ].includes(error.code)
+              ? error.message
+              : error.code === 'CANCELLED'
+                ? '模型任务已取消；已产生的供应商费用仍按实际用量或待结算保存，未执行教学工具'
+                : error.code === 'RATE_LIMITED'
+                  ? '指定模型当前限流，学习记录已保留；稍后手动重试或主动选择其他模型，不会自动切换或收费'
+                  : error.code === 'BYOK_LIMIT'
+                    ? '自带API调用次数达到服务端安全上限；已有材料、复习和统计仍可使用，不会自动切换或收费'
+                    : '模型任务未完成，学习记录已保留；请检查连接或用量状态'
     };
   } finally {
     execution?.stop();

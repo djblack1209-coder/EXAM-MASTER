@@ -1586,6 +1586,20 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           );
       assertCurrent();
       if (!result.success) {
+        if (recovering && (['failed', 'cancelled'].includes(result.status) || [404, 410].includes(result.code)))
+          commit('coach.closeRequest', {
+            conversationId,
+            explicit: true,
+            requestId: request.id,
+            outcome:
+              result.status === 'cancelled'
+                ? 'cancelled'
+                : result.code === 404
+                  ? 'not_found'
+                  : result.code === 410
+                    ? 'expired'
+                    : 'failed'
+          });
         error.value = result.message || '请求未完成，原答已保存；可查询原请求结果';
         return result;
       }
@@ -2815,6 +2829,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       learningContext: {
         owner,
         goal: active.value.goal,
+        ...(active.value.messages.some((m) => m.role === 'notice' && m.content.startsWith('当前重点支持考研英语写作；'))
+          ? { generalQAOnly: true }
+          : {}),
         task: active.value.task || normalizeLearningTask(),
         capabilities: { ...taskContext.value, visualization: ENERGY_VISUAL_CONTRACT },
         profile: [

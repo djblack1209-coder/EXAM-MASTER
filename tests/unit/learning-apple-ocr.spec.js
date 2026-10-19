@@ -49,6 +49,9 @@ function response(data, ok = true) {
   return { ok, text: async () => JSON.stringify({ success: ok, data }) };
 }
 beforeEach(() => {
+  // 保留模块在明确开启时仍须通过原安全和恢复合同。
+  vi.stubEnv('VITE_ENABLE_WRITING_COACH', 'false');
+  vi.stubEnv('VITE_ENABLE_LEGACY_LEARNING', 'true');
   uni.clearStorageSync();
   setActivePinia(createPinia());
 });

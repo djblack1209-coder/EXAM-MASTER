@@ -68,6 +68,26 @@ function session() {
   };
 }
 describe('考研写作方法与完整已保存事实路径', () => {
+  it('在途只查询原请求，明确关闭终态后才允许另一次主动请求；第七天反馈只记录一次', () => {
+    const s = session(),
+      request = normalizeCoachRequest({
+        contract: WRITING_COACH_CONTRACT,
+        phase: 'diagnostic',
+        exam: 'english1',
+        day: '2026-10-18',
+        ...coachInputFor(s.coach(), null, 'diagnostic', 'diagnostic')
+      });
+    const data = { request, modelId: 'synthetic', binding: 'synthetic-binding' };
+    s.apply('coach.request', { ...data, requestId: 'pending' });
+    expect(() => s.apply('coach.request', { ...data, requestId: 'duplicate' })).toThrow('已有请求');
+    s.apply('coach.closeRequest', { requestId: 'pending', outcome: 'failed' });
+    expect(s.coach().requests[0].status).toBe('closed');
+    s.generate('diagnostic');
+    expect(() => s.apply('coach.survey', { answer: 'skip' })).toThrow();
+    for (let i = 0; i < 6; i++) s.nextDay();
+    s.apply('coach.survey', { answer: 'skip' });
+    expect(() => s.apply('coach.survey', { answer: 'yes' })).toThrow();
+  });
   it('限定五项摸底和顺序、考试字数，拒绝伪造来源及不合法的动态目标', () => {
     expect(WRITING_METHOD.onboarding).toHaveLength(5);
     expect(WRITING_METHOD.diagnostic).toHaveLength(5);

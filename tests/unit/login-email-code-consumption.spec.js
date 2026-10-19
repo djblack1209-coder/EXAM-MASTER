@@ -142,4 +142,23 @@ describe('邮箱验证码注册安全链路', () => {
     expect(mocked.scenario.codeUpdates).toHaveLength(0);
     expect(mocked.scenario.userAdds).toHaveLength(0);
   });
+  it('朋友试用只允许名单内邮箱验证码，密码或其他登录不能绕过准入', async () => {
+    vi.stubEnv('LEARNING_FRIEND_TRIAL_ENABLED', 'true');
+    vi.stubEnv('LEARNING_TRIAL_USER_LIMIT', '1');
+    vi.stubEnv('LEARNING_TRIAL_EMAILS', 'friend@validmail.com');
+    try {
+      const login = (await import('../../laf-backend/functions/login')).default;
+      for (const body of [
+        { type: 'email', email: 'outside@validmail.com', verifyCode: '123456', region: 'CN' },
+        { type: 'email', email: 'friend@validmail.com', password: 'SecretOnly123', region: 'CN' },
+        { type: 'wechat' }
+      ]) {
+        expect((await login({ body, headers: {}, socket: { remoteAddress: '127.0.0.1' } })).code).toBe(403);
+      }
+      expect(mocked.scenario.codeUpdates).toHaveLength(0);
+      expect(mocked.scenario.userAdds).toHaveLength(0);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
 });

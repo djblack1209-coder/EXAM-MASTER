@@ -56,6 +56,7 @@ export function createAgeSession(runtime, now = Date.now) {
 export function loginErrorText(response) {
   const key = Object.assign(Object.create(null), {
     SMS_DISABLED: 'smsClosed',
+    TRIAL_CLOSED: 'trialClosed',
     PROVIDER_DISABLED: 'providerClosed',
     PROVIDER_UNAVAILABLE: 'providerClosed',
     SMS_UNAVAILABLE: 'retry',

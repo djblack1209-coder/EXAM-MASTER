@@ -117,6 +117,9 @@ afterEach(() => vi.unstubAllEnvs());
 it('平台免费试用仍按服务端每日上限拦截，跨用户共享全局额度，幂等读取不重复调用', async () => {
   vi.stubEnv('LEARNING_PLATFORM_CALLS_ENABLED', 'true');
   vi.stubEnv('LEARNING_FRIEND_TRIAL_ENABLED', 'true');
+  vi.stubEnv('LEARNING_TRIAL_USER_LIMIT', '3');
+  vi.stubEnv('LEARNING_TRIAL_EMAILS', 'u1@example.com,u2@example.com,u3@example.com');
+  for (const id of ['u1', 'u2', 'u3']) mock.rows.set(`users:${id}`, { _id: id, email: `${id}@example.com` });
   vi.stubEnv('LEARNING_USER_DAILY_CALL_LIMIT', '2');
   vi.stubEnv('LEARNING_GLOBAL_DAILY_CALL_LIMIT', '3');
   vi.stubEnv('LEARNING_GLOBAL_DAILY_BUDGET', '0');

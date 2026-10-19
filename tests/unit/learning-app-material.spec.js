@@ -48,6 +48,9 @@ const caps = () => ({
 });
 let bridge, wrapper;
 beforeEach(() => {
+  // 保留模块在明确开启时仍须通过原安全和恢复合同。
+  vi.stubEnv('VITE_ENABLE_WRITING_COACH', 'false');
+  vi.stubEnv('VITE_ENABLE_LEGACY_LEARNING', 'true');
   hooks.show.length = 0;
   hooks.hide.length = 0;
   uni.clearStorageSync();
