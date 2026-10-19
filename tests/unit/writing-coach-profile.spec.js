@@ -8,7 +8,8 @@ vi.mock('@dcloudio/uni-app', () => ({
   onBackPress: () => {}
 }));
 import WritingCoach from '@/components/business/learning/writing-coach.vue';
-import BaseInput from '@/components/base/base-input/base-input.vue';
+import BaseOptions from '@/components/base/base-options/base-options.vue';
+import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { learningWriteLease } from '@/services/learning/learning-write-lease.js';
 import { setLanguage } from '@/i18n/index.js';
@@ -43,12 +44,24 @@ async function profileCard() {
   return { store, card: wrapper };
 }
 
+function byLabel(component, label) {
+  return wrapper.findAllComponents(component).find((item) => item.props('label') === label);
+}
+
 function examPicker() {
-  return wrapper.findAllComponents(BaseInput).find((input) => input.props('label') === '英语一还是英语二？');
+  return byLabel(BaseSegmented, '英语一还是英语二？');
+}
+
+function subjectPicker() {
+  return byLabel(BaseOptions, '你在准备什么？');
 }
 
 function skipButton() {
   return wrapper.findAll('button').find((item) => item.text().includes('跳过，按默认开始'));
+}
+
+function startButton() {
+  return wrapper.findAll('button').find((item) => item.text().includes('开始建档'));
 }
 
 describe('建档「跳过」不覆盖用户已选的考试类型', () => {
@@ -72,36 +85,64 @@ describe('建档「跳过」不覆盖用户已选的考试类型', () => {
       foundation: null
     });
   });
-});
 
-describe('新一轮带练不继承上一轮的考试类型', () => {
-  it('上一轮选英语二，这一轮目标写英语一，保存的是英语一', async () => {
+  it('入口点选的方向会一直带到跳过后保存的档案里', async () => {
     const store = useConversationLearningStore();
-    store.startCoach('考研英语二写作');
     wrapper = mount(WritingCoach, { global: { stubs }, attachTo: document.body });
     await flushPromises();
+    subjectPicker().vm.$emit('update:modelValue', 'kaoyan_english');
+    await flushPromises();
+    startButton().trigger('tap');
+    await flushPromises();
+    skipButton().trigger('tap');
+    await flushPromises();
+    expect(store.active.coach.profile.subjects).toContain('kaoyan_english');
+  });
+});
+
+describe('入口改为点选，不再让用户自己想该说什么', () => {
+  it('没选方向时不能开始建档', async () => {
+    const store = useConversationLearningStore();
+    wrapper = mount(WritingCoach, { global: { stubs }, attachTo: document.body });
+    await flushPromises();
+    expect(subjectPicker()).toBeTruthy();
+    expect(startButton().attributes('disabled')).toBeDefined();
+    expect(store.active).toBeFalsy();
+  });
+
+  it('选了非考研英语方向不会假装开课', async () => {
+    const store = useConversationLearningStore();
+    wrapper = mount(WritingCoach, { global: { stubs }, attachTo: document.body });
+    await flushPromises();
+    subjectPicker().vm.$emit('update:modelValue', 'gongkao_shenlun');
+    await flushPromises();
+    startButton().trigger('tap');
+    await flushPromises();
+    expect(store.active).toBeFalsy();
+    expect(wrapper.emitted('general')).toBeTruthy();
+  });
+});
+
+describe('新一轮带练不继承上一轮的选择', () => {
+  it('上一轮选英语二，这一轮重新建档后保存的是英语一', async () => {
+    const store = await profileCard().then((r) => r.store);
     examPicker().vm.$emit('update:modelValue', 'english2');
     await flushPromises();
     skipButton().trigger('tap');
     await flushPromises();
     expect(store.active.coach.profile.exam).toBe('english2');
 
-    // 新一轮：结束当前会话让建档卡重现，草稿必须回到种子，不能被上一轮压住。
+    // 结束会话让入口卡重现，草稿必须回到种子。
     store.selectedConversationId = null;
     await flushPromises();
-    const goalInput = wrapper
-      .findAllComponents(BaseInput)
-      .find((input) => input.props('label') === '你想怎样准备考研英语写作？');
-    expect(goalInput).toBeTruthy();
-    goalInput.vm.$emit('update:modelValue', '考研英语一写作');
+    expect(subjectPicker()).toBeTruthy();
+    subjectPicker().vm.$emit('update:modelValue', 'kaoyan_english');
     await flushPromises();
-    wrapper
-      .findAll('button')
-      .find((item) => item.text().includes('开始建档'))
-      .trigger('tap');
+    startButton().trigger('tap');
     await flushPromises();
-
     expect(store.active.coach.profile).toBe(null);
+    examPicker().vm.$emit('update:modelValue', 'english1');
+    await flushPromises();
     skipButton().trigger('tap');
     await flushPromises();
     expect(store.active.coach.profile.exam).toBe('english1');

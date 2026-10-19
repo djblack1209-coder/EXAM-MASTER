@@ -20,15 +20,27 @@
     <view class="coach-workspace">
       <BaseCard v-if="!coach" padding="large">
         <text class="coach-title">今天，从写好一段开始</text>
+        <BaseOptions v-model="profile.subject" label="你在准备什么？" :options="TRACK_OPTIONS" />
+        <template v-if="profile.subject === 'kaoyan_english'">
+          <BaseSegmented v-model="profile.exam" label="英语一还是英语二？" :options="EXAM_OPTIONS" />
+          <BaseOptions
+            v-model="profile.subjects"
+            label="还在同时准备哪些？（可多选，可跳过）"
+            :options="subjectOptions"
+            multiple
+          />
+        </template>
+        <text v-if="profile.subject && profile.subject !== 'kaoyan_english'" class="coach-muted"
+          >这个科目还没有带练内容，可以先在通用对话里提问。</text
+        >
         <BaseInput
           v-model="goal"
-          label="你想怎样准备考研英语写作？"
+          label="除此之外，还想让我知道什么？（选填）"
           multiline
           maxlength="400"
-          placeholder="我是大三学生，准备考英语一，写作很差"
+          placeholder="例如：我是大三学生，句子容易写错"
         />
-        <BaseButton variant="primary" @tap="begin">开始建档</BaseButton>
-        <BaseButton variant="quiet" @tap="goal = '考研英语二，练习图表作文'">英语二写作</BaseButton>
+        <BaseButton variant="primary" :disabled="!profile.subject" @tap="begin">开始建档</BaseButton>
       </BaseCard>
 
       <BaseCard v-else-if="learning.active.stopped" padding="large"
@@ -42,34 +54,36 @@
         ></BaseCard
       >
       <BaseCard v-else-if="!coach.profile" padding="large">
-        <text class="coach-title">先认识你，五项都可以跳过</text>
-        <BaseInput
-          v-model="profile.exam"
-          label="英语一还是英语二？"
-          :options="[
-            { value: 'english1', label: '英语一' },
-            { value: 'english2', label: '英语二' }
-          ]"
+        <text class="coach-title">先认识你，能点的都不用打字</text>
+        <BaseSegmented v-model="profile.exam" label="英语一还是英语二？" :options="EXAM_OPTIONS" />
+        <BaseOptions
+          v-model="profile.subjects"
+          label="还在同时准备哪些？（可多选，可跳过）"
+          :options="subjectOptions"
+          multiple
         />
-        <BaseInput v-model="profile.deadline" label="准备哪次考试？" type="date" maxlength="10" />
+        <BaseOptions
+          v-model="profile.deadlineBucket"
+          label="考试大概什么时候？（可跳过）"
+          :options="DEADLINE_OPTIONS"
+        />
+        <BaseInput
+          v-if="profile.deadlineBucket === 'other'"
+          v-model="profile.deadline"
+          label="具体日期"
+          type="date"
+          maxlength="10"
+        />
+        <BaseOptions v-model="profile.minutes" label="每天能学多久？（可跳过）" :options="MINUTE_OPTIONS" />
         <BaseInput
           v-model="profile.foundation"
-          label="你觉得目前写作怎么样？（选填）"
+          label="目前写作哪里最吃力？（选填）"
           placeholder="例如：句子容易写错"
           maxlength="400"
         />
-        <BaseInput
-          v-model="profile.minutes"
-          label="每天能学多久？"
-          :options="[
-            { value: '15', label: '15分钟' },
-            { value: '25', label: '25分钟' },
-            { value: '40', label: '40分钟' }
-          ]"
-        />
         <text>有自己的资料吗？可在建档后上传，也可以跳过。</text>
         <view class="coach-actions"
-          ><BaseButton variant="primary" @tap="saveProfile(false)">保存建档</BaseButton
+          ><BaseButton variant="primary" :disabled="!profile.subject" @tap="saveProfile(false)">保存建档</BaseButton
           ><BaseButton variant="quiet" @tap="saveProfile(true)">跳过，按默认开始</BaseButton></view
         >
       </BaseCard>
@@ -355,7 +369,7 @@ import { useConversationLearningStore, learningId } from '@/stores/modules/conve
 import { dayKey } from '@/services/learning/learning-domain.js';
 import { getToken } from '@/services/auth-storage.js';
 import { readWritingMaterial } from '@/services/learning/writing-material.js';
-import { resolveSkippedProfile } from '@/services/learning/coach-profile.js';
+import { resolveSkippedProfile, deadlineForBucket } from '@/services/learning/coach-profile.js';
 import {
   WRITING_METHOD,
   writingCoachDashboard
@@ -366,6 +380,8 @@ import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import BaseOptions from '@/components/base/base-options/base-options.vue';
+import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
 const emit = defineEmits(['advanced', 'general']);
 const learning = useConversationLearningStore();
 const goal = ref(''),
@@ -376,18 +392,51 @@ const showMaterials = ref(false),
   showBoard = ref(false),
   showHistory = ref(false),
   fileBusy = ref(false);
+// 建档全部改成点选：用户不必先想清楚该告诉我们什么，看见选项点一下即可。
+// 只有「还想让我知道什么」保留为自由文本，因为它是真正无界的。
+const TRACK_OPTIONS = Object.freeze([
+  { value: 'kaoyan_english', label: '考研英语' },
+  { value: 'kaoyan_politics', label: '考研政治' },
+  { value: 'kaoyan_math', label: '考研数学' },
+  { value: 'kaoyan_major', label: '考研专业课' },
+  { value: 'gongkao_shenlun', label: '考公申论' },
+  { value: 'cet', label: '四六级' },
+  { value: 'other', label: '其他' }
+]);
+const EXAM_OPTIONS = Object.freeze([
+  { value: 'english1', label: '英语一' },
+  { value: 'english2', label: '英语二' }
+]);
+const MINUTE_OPTIONS = Object.freeze([
+  { value: '15', label: '15分钟' },
+  { value: '25', label: '25分钟' },
+  { value: '40', label: '40分钟' },
+  { value: '60', label: '60分钟' }
+]);
+const DEADLINE_OPTIONS = Object.freeze([
+  { value: 'this', label: '今年12月' },
+  { value: 'next', label: '明年12月' },
+  { value: 'other', label: '其他日期' }
+]);
 const profile = reactive({
+  subject: '',
   exam: 'english1',
+  subjects: [],
   deadline: `${new Date().getFullYear()}-12-22`,
+  deadlineBucket: '',
   foundation: '',
   minutes: '25'
 });
+const subjectOptions = computed(() => TRACK_OPTIONS.filter((option) => option.value !== profile.subject));
 // 档案草稿是组件级状态，不随 coach 重置；新一轮带练必须从种子重来，
 // 否则上一轮选过的考试类型会压过这一轮目标里写明的类型。
 function resetProfileDraft() {
   Object.assign(profile, {
+    subject: '',
     exam: 'english1',
+    subjects: [],
     deadline: `${new Date().getFullYear()}-12-22`,
+    deadlineBucket: '',
     foundation: '',
     minutes: '25'
   });
@@ -453,19 +502,27 @@ async function act(action) {
 }
 function begin() {
   act(() => {
-    const text = goal.value.trim() || '考研英语写作';
-    if (!/英语[一二]|考研英语|考研.*写作/.test(text)) {
-      emit('general', text);
+    if (!profile.subject) {
+      message.value = '先选一个你在准备的方向';
       return;
     }
-    resetProfileDraft();
-    learning.startCoach(text);
-    // 目标里写明的考试类型双向生效，不再只认英语二。
-    if (/英语二/.test(text)) profile.exam = 'english2';
-    else if (/英语一/.test(text)) profile.exam = 'english1';
+    if (profile.subject !== 'kaoyan_english') {
+      // 其他方向还没有带练内容，交给通用对话，不假装能上课。
+      const label = TRACK_OPTIONS.find((option) => option.value === profile.subject)?.label || '这个方向';
+      emit('general', `${label}，我想先把写作练起来`);
+      return;
+    }
+    learning.startCoach(goal.value.trim() || '考研英语写作');
     showMaterials.value = true;
   });
 }
+// 草稿随会话结束回到种子：新一轮不继承上一轮的选择。
+watch(
+  () => coach.value?.id ?? null,
+  (id) => {
+    if (id === null) resetProfileDraft();
+  }
+);
 function newSession() {
   if (learning.busy) return;
   learning.selectedConversationId = null;
@@ -479,7 +536,16 @@ function pauseLearning() {
 function saveProfile(skip) {
   act(() =>
     learning.coachSave('profile', {
-      profile: skip ? resolveSkippedProfile(profile) : { ...profile, minutes: Number(profile.minutes) }
+      profile: skip
+        ? resolveSkippedProfile(profile)
+        : {
+            exam: profile.exam,
+            deadline: deadlineForBucket(profile.deadlineBucket) || profile.deadline,
+            minutes: Number(profile.minutes),
+            foundation: profile.foundation || null,
+            subjects: [...profile.subjects, profile.subject].filter(Boolean),
+            track: 'kaoyan-english-writing'
+          }
     })
   );
 }

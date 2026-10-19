@@ -184,4 +184,14 @@ describe('考研写作方法与完整已保存事实路径', () => {
     expect(JSON.stringify(s.get())).not.toContain('private synthetic material');
     expect(s.get().conversations[0].coach).toBeUndefined();
   });
+
+  it('旧档案没有准备方向字段时，建档、请求与结果都不受影响', () => {
+    const s = session();
+    // session() 写入的正是旧形状：只有 exam/deadline/minutes，没有 subjects/track。
+    expect(s.coach().profile.subjects).toEqual([]);
+    expect(s.coach().profile.track).toBe('kaoyan-english-writing');
+    s.generate('diagnostic');
+    expect(s.coach().requests).toHaveLength(1);
+    expect(s.coach().requests[0].status).toBe('completed');
+  });
 });

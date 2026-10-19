@@ -1,4 +1,15 @@
 // 教学方法与已保存事实共用现有学习 reducer、备份及同步；模型不授予可靠判分。
+// 用户正在准备的方向；当前只有考研英语写作能真正上课，其余先如实收集意图。
+export const COACH_SUBJECTS = Object.freeze([
+  'kaoyan_english',
+  'kaoyan_politics',
+  'kaoyan_math',
+  'kaoyan_major',
+  'gongkao_shenlun',
+  'cet',
+  'other'
+]);
+export const COACH_DEFAULT_TRACK = 'kaoyan-english-writing';
 export const WRITING_COACH_CONTRACT = 'kaoyan-writing-coach-v1';
 export const WRITING_METHOD = Object.freeze({
   contract: WRITING_COACH_CONTRACT,
@@ -260,11 +271,24 @@ export function applyWritingCoachOperation(state, op, { assert, dayKey }) {
     const deadline = date(p.deadline),
       minutes = Number(p.minutes);
     assert(Number.isInteger(minutes) && minutes >= 10 && minutes <= 90, 'INVALID_INPUT', '每天时间需在10至90分钟');
+    // 多方向意图是可选事实：旧档案没有这两个字段时必须照常通过。
+    const subjects = p.subjects === undefined ? [] : p.subjects;
+    assert(
+      Array.isArray(subjects) &&
+        subjects.length <= COACH_SUBJECTS.length &&
+        subjects.every((subject) => COACH_SUBJECTS.includes(subject)),
+      'INVALID_INPUT',
+      '准备方向不合法'
+    );
+    const track = p.track === undefined ? COACH_DEFAULT_TRACK : p.track;
+    assert(track === COACH_DEFAULT_TRACK, 'INVALID_INPUT', '教学方向不合法');
     coach.profile = {
       exam: p.exam,
       deadline,
       minutes,
       foundation: p.foundation ? text(p.foundation, 400) : null,
+      subjects: [...new Set(subjects)],
+      track,
       source: 'self_report',
       at: op.at
     };
