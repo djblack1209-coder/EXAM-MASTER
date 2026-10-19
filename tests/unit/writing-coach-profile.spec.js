@@ -44,9 +44,7 @@ async function profileCard() {
 }
 
 function examPicker() {
-  return wrapper
-    .findAllComponents(BaseInput)
-    .find((input) => input.props('label') === '英语一还是英语二？');
+  return wrapper.findAllComponents(BaseInput).find((input) => input.props('label') === '英语一还是英语二？');
 }
 
 function skipButton() {
@@ -73,5 +71,39 @@ describe('建档「跳过」不覆盖用户已选的考试类型', () => {
       minutes: 25,
       foundation: null
     });
+  });
+});
+
+describe('新一轮带练不继承上一轮的考试类型', () => {
+  it('上一轮选英语二，这一轮目标写英语一，保存的是英语一', async () => {
+    const store = useConversationLearningStore();
+    store.startCoach('考研英语二写作');
+    wrapper = mount(WritingCoach, { global: { stubs }, attachTo: document.body });
+    await flushPromises();
+    examPicker().vm.$emit('update:modelValue', 'english2');
+    await flushPromises();
+    skipButton().trigger('tap');
+    await flushPromises();
+    expect(store.active.coach.profile.exam).toBe('english2');
+
+    // 新一轮：结束当前会话让建档卡重现，草稿必须回到种子，不能被上一轮压住。
+    store.selectedConversationId = null;
+    await flushPromises();
+    const goalInput = wrapper
+      .findAllComponents(BaseInput)
+      .find((input) => input.props('label') === '你想怎样准备考研英语写作？');
+    expect(goalInput).toBeTruthy();
+    goalInput.vm.$emit('update:modelValue', '考研英语一写作');
+    await flushPromises();
+    wrapper
+      .findAll('button')
+      .find((item) => item.text().includes('开始建档'))
+      .trigger('tap');
+    await flushPromises();
+
+    expect(store.active.coach.profile).toBe(null);
+    skipButton().trigger('tap');
+    await flushPromises();
+    expect(store.active.coach.profile.exam).toBe('english1');
   });
 });

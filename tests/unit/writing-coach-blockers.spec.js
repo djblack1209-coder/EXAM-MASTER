@@ -88,14 +88,14 @@ describe('跳过建档保留已明确的考试类型', () => {
 });
 
 describe('资料保存与绑定是一个整体', () => {
-  it('没有在建档案时拒绝，且不留下任何资料', () => {
+  it('没有在建档案时拒绝，且一个版本都不推进', () => {
     const store = useConversationLearningStore();
-    const before = store.state.materials.length;
-    const commit = vi.spyOn(store, 'commit');
-    expect(() => store.attachMaterial(material('浮力是竖直向上的'))).toThrow();
-    expect(commit).not.toHaveBeenCalled();
-    expect(store.state.materials.length).toBe(before);
-    commit.mockRestore();
+    const materialsBefore = store.state.materials.length;
+    const revisionBefore = store.state.revision;
+    expect(() => store.attachMaterial(material('浮力是竖直向上的'))).toThrow('请回到当前带练');
+    // revision 只在真的写入后才前进，是「一笔都没写」的直接证据。
+    expect(store.state.revision).toBe(revisionBefore);
+    expect(store.state.materials.length).toBe(materialsBefore);
   });
 
   it('正常路径：资料已保存且已绑定到当前带练', () => {
@@ -134,7 +134,14 @@ describe('资料保存与绑定是一个整体', () => {
     });
     store.modelId = 'synthetic-model';
     store.models = [
-      { id: 'synthetic-model', provider: 'synthetic', model: 'synthetic-model', source: 'platform', configured: true, capabilities: {} }
+      {
+        id: 'synthetic-model',
+        provider: 'synthetic',
+        model: 'synthetic-model',
+        source: 'platform',
+        configured: true,
+        capabilities: {}
+      }
     ];
     const pending = store.requestCoach('diagnostic');
     for (let i = 0; i < 12; i++) await Promise.resolve();
@@ -142,10 +149,12 @@ describe('资料保存与绑定是一个整体', () => {
     expect(store.busy).toBe(true);
 
     const materialsBefore = store.state.materials.length;
+    const revisionBefore = store.state.revision;
     const boundBefore = [...store.active.coach.materialIds];
     expect(() => store.attachMaterial(material('需求曲线向右下方倾斜'))).toThrow('请回到当前带练，等待请求结束');
 
-    // 关键：既没有新增资料，也没有产生未绑定的孤儿资料。
+    // 关键：版本未推进、没有新增资料、也没有产生未绑定的孤儿资料。
+    expect(store.state.revision).toBe(revisionBefore);
     expect(store.state.materials.length).toBe(materialsBefore);
     expect(store.active.coach.materialIds).toEqual(boundBefore);
     pending.catch(() => {});
