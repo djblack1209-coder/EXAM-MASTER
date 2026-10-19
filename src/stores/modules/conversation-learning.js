@@ -4573,7 +4573,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     previewGuestMigration,
     migrateGuest
   };
-  // Every callable public action must declare its effect; no implicit write/read fallback.
+  // 未登记的动作按最严格的 write 处理：会话检查只会更严，不会变松。
+  // 完整性由 tests/unit/session-round7.spec.js 在 CI 里断言，不再用运行时抛错来承担。
 
   for (const [name, action] of Object.entries(exposed)) {
     if (
@@ -4583,8 +4584,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     )
       continue;
     const run = (...args) => {
-      const effect = CONVERSATION_ACTION_EFFECTS[name];
-      assert(effect, 'ACTION_UNCLASSIFIED', '学习动作尚未分类');
+      const effect = CONVERSATION_ACTION_EFFECTS[name] || 'write';
       const check = (session) =>
         ensureSessionCurrent(session, undefined, { readOnly: effect === 'read' || name === 'cancel' });
       const session = check();
