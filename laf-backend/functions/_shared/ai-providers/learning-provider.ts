@@ -1,6 +1,6 @@
 import { normalizeContentBlocks } from '../learning-content-blocks.js';
 import https from 'node:https';
-import { lookup } from 'node:dns/promises';
+import { lookup, Resolver } from 'node:dns/promises';
 import { isIP } from 'node:net';
 import crypto from 'node:crypto';
 import {
@@ -85,7 +85,30 @@ export function validateCloudEndpoint(raw: string, allowedOrigins: string[]): UR
   }
   return url;
 }
-export async function resolveCloudEndpoint(raw: string, origins: string[], resolver = lookup) {
+// An explicit backend-only resolver is isolated from macOS/shared DNS settings.
+// Every returned address still passes the same public-address guard and socket pinning.
+export async function learningLookup(host: string, _options: any): Promise<{ address: string; family: number }[]> {
+  const configured = process.env.LEARNING_DNS_SERVERS;
+  if (!configured) return lookup(host, { all: true, verbatim: true });
+  const servers = configured.split(',').map((s) => s.trim());
+  if (!servers.length || servers.length > 3 || servers.some((s) => !isIP(s) || !isPublicAddress(s)))
+    throw new ProviderError('DNS_CONFIG_INVALID', '模型解析器配置不合法');
+  const resolver = new Resolver({ timeout: 2000, tries: 1 });
+  resolver.setServers(servers);
+  try {
+    const families = await Promise.allSettled([resolver.resolve4(host), resolver.resolve6(host)]);
+    const addresses: { address: string; family: number }[] = [];
+    for (const [index, result] of families.entries()) {
+      if (result.status === 'fulfilled')
+        addresses.push(...result.value.map((address) => ({ address, family: index === 0 ? 4 : 6 })));
+      else if (!['ENODATA', 'ENOTFOUND'].includes(result.reason?.code)) throw result.reason;
+    }
+    return addresses;
+  } finally {
+    resolver.cancel();
+  }
+}
+export async function resolveCloudEndpoint(raw: string, origins: string[], resolver = learningLookup) {
   const url = validateCloudEndpoint(raw, origins);
   let timer: ReturnType<typeof setTimeout>;
   const addresses = await Promise.race([

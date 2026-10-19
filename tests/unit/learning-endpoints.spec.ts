@@ -114,6 +114,51 @@ it('登录身份与学习上下文不一致时，拒绝向模型发送旧用户�
 });
 afterEach(() => vi.unstubAllEnvs());
 
+it('平台免费试用仍按服务端每日上限拦截，跨用户共享全局额度，幂等读取不重复调用', async () => {
+  vi.stubEnv('LEARNING_PLATFORM_CALLS_ENABLED', 'true');
+  vi.stubEnv('LEARNING_FRIEND_TRIAL_ENABLED', 'true');
+  vi.stubEnv('LEARNING_USER_DAILY_CALL_LIMIT', '2');
+  vi.stubEnv('LEARNING_GLOBAL_DAILY_CALL_LIMIT', '3');
+  vi.stubEnv('LEARNING_GLOBAL_DAILY_BUDGET', '0');
+  vi.stubEnv('LEARNING_ALLOWED_ORIGINS', 'https://open.bigmodel.cn');
+  vi.stubEnv('SYNTHETIC_PLATFORM_KEY', 'test-only-key');
+  vi.stubEnv(
+    'LEARNING_PLATFORM_MODELS',
+    JSON.stringify([
+      {
+        id: 'trial-glm',
+        provider: 'zhipu',
+        model: 'glm-4.7-flash',
+        endpoint: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+        keyEnv: 'SYNTHETIC_PLATFORM_KEY',
+        maxOutput: 1000,
+        capabilities: { structured: true }
+      }
+    ])
+  );
+  for (let i = 0; i < 3; i++)
+    vi.mocked(callLearningProvider).mockResolvedValueOnce({
+      content: '{"message":"合成回复","tools":[]}',
+      actualModel: 'glm-4.7-flash',
+      usage: { prompt_tokens: 15, completion_tokens: 12 },
+      durationMs: 1
+    });
+  const body = (requestId: string) => ({
+    requestId,
+    modelId: 'trial-glm',
+    shareConsent: true,
+    messages: [{ role: 'user', content: '合成数据' }]
+  });
+  const first = await ai(context(body('day-1')));
+  expect(first.success).toBe(true);
+  expect((await ai(context(body('day-1')))).success).toBe(true);
+  expect((await ai(context(body('day-2')))).success).toBe(true);
+  expect((await ai(context(body('day-user-excess')))).error).toBe('USER_DAILY_LIMIT');
+  expect((await ai(context(body('day-other'), 'u2'))).success).toBe(true);
+  expect((await ai(context(body('day-global-excess'), 'u3'))).error).toBe('GLOBAL_DAILY_LIMIT');
+  expect(callLearningProvider).toHaveBeenCalledTimes(3);
+});
+
 it('保存已知基础地址时补齐真实请求路径，继续检查白名单且不发起模型请求', async () => {
   const profile = {
     id: 'normalized',

@@ -1,5 +1,6 @@
 import { normalizeLearningProposal, assertLearningProposalAcceptance } from './learning-proposals.js';
 import { normalizeContentBlocks } from './learning-content-blocks.js';
+import { applyWritingCoachOperation } from './learning-writing-coach.js';
 import {
   normalizeRubric,
   assessWithRubric,
@@ -413,7 +414,12 @@ export function inspectMaterialDeletion(state, materialId) {
   }
   const conversations = new Set(
     state.conversations
-      .filter((c) => keys.has(c.activeQuestionKey) || c.messages.some((m) => keys.has(m.questionKey)))
+      .filter(
+        (c) =>
+          keys.has(c.activeQuestionKey) ||
+          c.messages.some((m) => keys.has(m.questionKey)) ||
+          c.coach?.materialIds.some((id) => materialIds.has(id))
+      )
       .map((c) => c.id)
   );
   for (const a of state.attempts) if (keys.has(a.questionKey)) conversations.add(a.conversationId);
@@ -430,6 +436,9 @@ export function inspectMaterialDeletion(state, materialId) {
     questions: state.questions.filter((q) => keys.has(questionKey(q))).length,
     attempts: attempts.length,
     conversations: conversations.size,
+    coachingDays: state.conversations
+      .filter((c) => conversations.has(c.id))
+      .reduce((n, c) => n + (c.coach?.days.length || 0), 0),
     messages: state.conversations.filter((c) => conversations.has(c.id)).reduce((n, c) => n + c.messages.length, 0),
     tasks: state.plans.flatMap((p) => p.tasks).filter((t) => keys.has(t.questionKey) || attemptIds.has(t.completedBy))
       .length
@@ -526,6 +535,7 @@ function redactMaterial(state, data, deletionId, at) {
     if (conversations.has(c.id)) {
       c.goal = '关联资料已删除的对话';
       delete c.task;
+      delete c.coach;
       c.messages = [];
       c.activeQuestionKey = null;
       c.pendingHints = [];
@@ -1163,6 +1173,21 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
     assertLearningProposalAcceptance(state, operation.type, data, { assert, fingerprint: operationFingerprint });
   }
   switch (operation.type) {
+    case 'coach.begin':
+    case 'coach.profile':
+    case 'coach.material':
+    case 'coach.request':
+    case 'coach.result':
+    case 'coach.answer':
+    case 'coach.review':
+    case 'coach.analysis':
+    case 'coach.paragraph':
+    case 'coach.adopt':
+    case 'coach.finish':
+    case 'coach.survey': {
+      result = applyWritingCoachOperation(state, { ...operation, id: opId, at: now, data }, { assert, dayKey });
+      break;
+    }
     case 'reminder.set':
     case 'reminder.receipt': {
       result = applyReminderOperation(state, { ...operation, id: opId, at: now, data }, { assert, dayKey });

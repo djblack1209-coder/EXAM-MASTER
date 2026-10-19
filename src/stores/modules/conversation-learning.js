@@ -1,4 +1,11 @@
 import { mapContentBlocks } from '../../../laf-backend/functions/_shared/learning-content-blocks.js';
+import {
+  WRITING_COACH_CONTRACT,
+  coachInputFor,
+  coachEssayType
+} from '../../../laf-backend/functions/_shared/learning-writing-coach.js';
+import { createNewCard, scheduleCard } from '@/services/fsrs-service.js';
+import { captureSession } from '@/services/auth-storage.js';
 import { publicError, currentLanguage, t } from '@/i18n/index.js';
 import { defineStore } from 'pinia';
 import {
@@ -179,6 +186,10 @@ export function learningId(prefix = 'learn') {
 // read: local reads/navigation; write: local facts/authorization; send: external requests (may also write).
 // cancel first aborts locally; its optional remote cancellation has its own session check.
 export const CONVERSATION_ACTION_EFFECTS = Object.freeze({
+  startCoach: 'write',
+  coachSave: 'write',
+  requestCoach: 'send',
+  coachReview: 'write',
   ensureSessionCurrent: 'write',
   reloadRecords: 'read',
   searchRecords: 'read',
@@ -1435,6 +1446,168 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       createArithmeticQuestion(id, goal, activeStrategy.value.difficulty);
     if (question) addQuestion(question);
     return conversation;
+  }
+  function startCoach(goal) {
+    assert(!busy.value, 'BUSY', '请等待当前请求完成');
+    // 新带练使用同一个学习档案与历史事件，旧对话保持可回看。
+    const conversation = commit('conversation.start', { goal: String(goal || '考研英语写作').slice(0, 400) });
+    selectedConversationId.value = conversation.id;
+    commit('coach.begin', { conversationId: conversation.id, explicit: true });
+    selectedMode.value = 'cloud';
+    return conversation;
+  }
+  function coachSave(type, data = {}) {
+    assert(active.value?.coach && !busy.value, 'BUSY', '请回到当前带练，等待请求结束');
+    return commit(`coach.${type}`, {
+      ...data,
+      conversationId: active.value.id,
+      explicit: true,
+      day: dayKey(Date.now(), state.value.timezone)
+    });
+  }
+  function coachReview(itemId, answer, rating) {
+    const item = active.value?.coach?.library.find((v) => v.id === itemId);
+    assert(item, 'NOT_FOUND', '句式已变化');
+    const card = item.schedule
+      ? {
+          ...item.schedule,
+          due: new Date(item.schedule.due),
+          ...(item.schedule.last_review ? { last_review: new Date(item.schedule.last_review) } : {})
+        }
+      : createNewCard();
+    const { card: scheduled } = scheduleCard(card, rating, new Date(), captureSession());
+    return coachSave('review', { itemId, answer, rating, schedule: JSON.parse(JSON.stringify(scheduled)) });
+  }
+  async function requestCoach(phase, target = phase) {
+    refresh();
+    const session = ensureSessionCurrent(),
+      owner = state.value.owner;
+    assert(!busy.value && active.value?.coach && !active.value.stopped, 'BUSY', '请回到当前未停止的带练');
+    assert(getToken(), 'AUTH_REQUIRED', '登录后开始 AI 带练，建档和原答已保留');
+    assert(sharingAllowed.value, 'CONSENT_REQUIRED', '请先确认本次带练所需的资料片段与原答可发送给所选模型');
+    const conversationId = active.value.id,
+      context = recordContext(),
+      today = dayKey(Date.now(), state.value.timezone);
+    const coach = active.value.coach;
+    const day = coach.days.find((v) => v.day === today);
+    const bound = coachInputFor(coach, day, phase, target);
+    let request = coach.requests.find(
+      (v) =>
+        v.status === 'pending' && v.request.day === today && v.request.phase === phase && v.request.target === target
+    );
+    const recovering = Boolean(request);
+    if (!request) {
+      const listed = await loadModels();
+      assert(recordContext() === context && active.value?.id === conversationId, 'CONTEXT_CHANGED', '当前学习已变化');
+      assert(listed.success, 'MODEL_DISABLED', listed.message || '平台模型暂不可用');
+      const model =
+        models.value.find((m) => m.id === modelId.value) ||
+        models.value.find((m) => m.source === 'platform' && m.configured);
+      assert(
+        model && (model.source !== 'platform' || listed.data.platformEnabled),
+        'MODEL_DISABLED',
+        '平台模型服务尚未开放，请稍后再试或在高级设置接入模型'
+      );
+      const materials = state.value.materials.filter((m) => coach.materialIds.includes(m.id));
+      // 优先选择本地资料末页的写作题，页码保留；分享量仍受上下文上限约束。
+      const sources = materials
+        .flatMap((m) =>
+          m.segments.map((part) => ({
+            id: `${m.id}:page:${part.page || 0}`,
+            name: m.name,
+            page: part.page,
+            content: part.content.slice(0, 1100)
+          }))
+        )
+        .slice(-3);
+      const id = learningId('coach'),
+        binding = learningId('binding');
+      const data = {
+        contract: WRITING_COACH_CONTRACT,
+        phase,
+        target,
+        day: today,
+        exam: coach.profile.exam,
+        minutes: coach.profile.minutes,
+        essayType: coachEssayType(coach, today),
+        ...bound,
+        sources,
+        weaknesses: [
+          ...new Set([
+            ...(coach.diagnostic?.feedback?.weaknesses || []),
+            ...coach.days.slice(-2).flatMap((d) => Object.values(d.feedback).flatMap((f) => f.weaknesses))
+          ])
+        ].slice(0, 8)
+      };
+      commit('coach.request', {
+        conversationId,
+        explicit: true,
+        requestId: id,
+        request: data,
+        modelId: model.id,
+        binding
+      });
+      request = active.value.coach.requests.find((v) => v.id === id);
+    } else {
+      assert(request.request.input === bound.input, 'CONTEXT_CHANGED', '原答已变化，旧请求只保留供核对');
+    }
+    const requestController = new AbortController();
+    controller = requestController;
+    const revision = state.value.revision;
+    const assertCurrent = () => {
+      ensureSessionCurrent(session, requestController.signal);
+      assert(
+        recordContext() === context &&
+          active.value?.id === conversationId &&
+          !active.value.stopped &&
+          state.value.revision === revision,
+        'CONTEXT_CHANGED',
+        '当前学习已变化，未采用旧响应'
+      );
+    };
+    busy.value = true;
+    error.value = '';
+    try {
+      assertCurrent();
+      // 已发送的请求只查询原结果；超时、断网和刷新均不会重发。
+      const options = { session: boundSession, expectedOwner: owner, signal: requestController.signal, assertCurrent };
+      const result = recovering
+        ? await fetchLearningResult(request.id, options)
+        : await generateLearningTurn(
+            {
+              modelId: request.modelId,
+              requestId: request.id,
+              requestBinding: request.binding,
+              shareConsent: true,
+              messages: [{ role: 'user', content: request.request.input }],
+              learningContext: { owner, goal: active.value.goal, coach: request.request }
+            },
+            options
+          );
+      assertCurrent();
+      if (!result.success) {
+        error.value = result.message || '请求未完成，原答已保存；可查询原请求结果';
+        return result;
+      }
+      assert(
+        result.data.requestId === request.id &&
+          result.data.requestBinding === request.binding &&
+          result.data.modelId === request.modelId,
+        'CONTEXT_CHANGED',
+        '结果与本次请求不符'
+      );
+      commit(
+        'coach.result',
+        { conversationId, explicit: true, requestId: request.id, output: result.data.coach },
+        `${request.id}:result`
+      );
+      return result;
+    } finally {
+      if (controller === requestController) {
+        controller = null;
+        busy.value = false;
+      }
+    }
   }
   function writingContext() {
     return JSON.stringify([recordContext(), selectedConversationId.value, active.value?.activeQuestionKey]);
@@ -4171,6 +4344,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     };
   }
   const exposed = {
+    startCoach,
+    coachSave,
+    requestCoach,
+    coachReview,
     ensureSessionCurrent,
     recordReadState,
     reloadRecords,

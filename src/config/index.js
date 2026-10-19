@@ -618,17 +618,17 @@ const config = {
     /**
      * DiceBear 头像生成服务
      */
-    dicebearBaseUrl: getEnv('VITE_DICEBEAR_BASE_URL', 'https://api.dicebear.com/7.x'),
+    dicebearBaseUrl: getEnv('VITE_DICEBEAR_BASE_URL', ''),
 
     /**
      * Icons8 图标服务
      */
-    icons8BaseUrl: getEnv('VITE_ICONS8_BASE_URL', 'https://img.icons8.com'),
+    icons8BaseUrl: getEnv('VITE_ICONS8_BASE_URL', ''),
 
     /**
      * QR 码生成服务
      */
-    qrServerBaseUrl: getEnv('VITE_QR_SERVER_BASE_URL', 'https://api.qrserver.com/v1')
+    qrServerBaseUrl: getEnv('VITE_QR_SERVER_BASE_URL', '')
   },
 
   // ==================== UI 常量 ====================

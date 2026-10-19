@@ -1,4 +1,4 @@
-// Public provider SDKs are loaded only after an explicit sign-in action.
+// 美国区被冻结；默认前端不会连接境外身份服务，保留历史适配以便以后单独评审。
 const scripts = new Map();
 function loadScript(provider) {
   const urls = {
@@ -39,6 +39,7 @@ export async function requestProviderToken(
   platform,
   runtime = { login: (params) => uni.login(params), getUserInfo: (params) => uni.getUserInfo(params) }
 ) {
+  if (import.meta.env.VITE_ENABLE_US_LOGIN !== 'true') throw new Error('PROVIDER_UNAVAILABLE');
   if (!['apple', 'google'].includes(provider)) throw new Error('PROVIDER_UNAVAILABLE');
   if (platform === 'app')
     return new Promise((resolve, reject) => {
