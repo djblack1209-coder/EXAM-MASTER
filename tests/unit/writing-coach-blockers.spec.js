@@ -73,8 +73,21 @@ describe('跳过建档保留已明确的考试类型', () => {
       exam: 'english1',
       deadline: `${new Date().getFullYear()}-12-22`,
       minutes: 25,
-      foundation: null
+      foundation: null,
+      subjects: [],
+      track: 'kaoyan-english-writing'
     });
+  });
+
+  it('跳过时保留用户已点选的准备方向', () => {
+    expect(resolveSkippedProfile({ subject: 'gongkao_shenlun', subjects: ['kaoyan_math'] }).subjects).toEqual([
+      'gongkao_shenlun',
+      'kaoyan_math'
+    ]);
+  });
+
+  it('非法准备方向被丢弃，不写进档案', () => {
+    expect(resolveSkippedProfile({ subject: 'made-up', subjects: ['also-made-up'] }).subjects).toEqual([]);
   });
 
   it('非法考试类型回落英语一，不把脏值写进档案', () => {
