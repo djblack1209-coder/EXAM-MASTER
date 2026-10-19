@@ -29,7 +29,7 @@
 
 - journey-reminders编辑绑定原owner/epoch、记录上下文与对话；确认换代或切换对话撤销，同epoch续期、普通revision更新及unavailable保留草稿，保存不能重定向到后继对话。
 - question-note写入以`{ success, code, retryable }`传递回执（失败含code/retryable）；按原账户串行执行读、改、写和回读确认，锁内通过现有storageService重读最新笔记与标签（H5没有全局uni对象也读取），保存非true、异常或回读不一致均不返回成功。支持Web Locks的H5同源且使用本实现的标签页共用Web Lock；App/微信同一JS运行时的各页面与管理器共用账户队列，无异步前序时保留同步存储的同步返回。无Web Locks的独立H5标签、独立原生运行时或旧版/外部写入者没有共同锁，回读只能发现确认时已发生的冲突，不保证之后不被覆盖，也不自动重放。新增在进入账户队列前登记草稿ID，直到该草稿所有排队提交结束才在成功时释放；同一页面、原题与打开中的编辑器代次复用ID，不同页面、切题或重开后的草稿独立。未确认新增按原绑定保留重试ID但释放在途计数，重试重新执行写入与确认，旧绑定失败不清新绑定待写。deleteTag未确认时，非current不回滚；current下严格重读原绑定标签，已删除则重读内存并成功，仍存在才回滚笔记并返回原失败，读取失败不回滚，回滚失败按持久事实重读并失败，不构成多键原子事务。
-- do-quiz保存笔记捕获原页面实例、题目对象、登录会话和草稿generation；仅页面未卸载、仍为原题、原弹窗打开且generation未变时处理页面回执。切题、重开/关闭弹窗、修改正文或标签立即换代，旧成功/失败回执不改新草稿、列表或提示。原对象保存已确认且会话非changed才提示成功、关闭弹窗、清空草稿，刷新不可读仅向原题列表合并result.note；changed提示contextChanged并保留草稿，写入失败保留输入。提交及参考查看在计时停止返回SESSION_UNAVAILABLE时使用retainOnUnavailable保留选择和计时，提示storageBusy；提交入口的身份读取失败仍走拒绝清空流程，此既有缺口见[13](13-DEVELOPMENT-PLAN.md#阶段6d笔记异步回执与后续项)。onShow暂不可读仅恢复本地计时。
+- do-quiz保存笔记捕获原页面实例、题目对象、登录会话和草稿generation；仅页面未卸载、仍为原题、原弹窗打开且generation未变时处理页面回执。切题、重开/关闭弹窗、修改正文或标签立即换代，旧成功/失败回执不改新草稿、列表或提示。原对象保存已确认且会话非changed才提示成功、关闭弹窗、清空草稿，刷新不可读仅向原题列表合并result.note；changed提示contextChanged并保留草稿，写入失败保留输入。提交及参考查看在计时停止返回SESSION_UNAVAILABLE时使用retainOnUnavailable保留选择和计时，提示storageBusy；提交入口的身份读取失败仍走拒绝清空流程，此既有缺口见[13](archive/13-DEVELOPMENT-PLAN-until-2026-10-18.md#阶段6d笔记异步回执与后续项)。onShow暂不可读仅恢复本地计时。
 - question-timer的stop/pause显式token只作用于本次计时，生命周期不带选项时不可读仍本地收尾；stop(token, { retainOnUnavailable: true })暂不可读返回SESSION_UNAVAILABLE及采样用时，保留active、interval和暂停状态。resume显式当前token在active且暂停、身份非changed时允许本地恢复，旧token或changed拒绝；省略token仍要求current，interval回调继续校验会话。
 - checkSession快照不可读时，对epoch/revocation补读同样做generation前后夹读；读取中generation变化保持unavailable；稳定的旧generation记录返回未登录，未提交的未来generation记录暂不可读，仅一致读取确认换代，交错续期不丢待写。
 
@@ -50,7 +50,7 @@
 | 过期、账户隔离、旧格式、不可用与重试             | `session-round10-queue.spec.js`：drain expires own high tasks；`session-round8.spec.js`：unavailable、legacy state migration；`session-round9-queue.spec.js`：late old response；`offline-queue.spec.js`与`offline-queue-legacy.spec.js` |
 | 网络恢复及离线提示条                             | `offline-queue-legacy.spec.js`：queue network recovery、network-monitor recovery；原`offline-indicator.spec.js`全部用例保留                                                                                                              |
 
-测试改用预置遗留持久任务驱动，仅删除入队/去重/重放/容量/闭包专用断言；独立上下文夹具继续覆盖取消和迟到回执。审计关闭清单与仍适用的 `order-20-03` 见[13](13-DEVELOPMENT-PLAN.md#阶段5l审计条目处理)。将来需要离线提交，必须按“跨窗口认领租约 + 服务端按任务 id 幂等”重新设计入队，不恢复本次删除的实现。三端构建及合成回归不构成真实设备、已有用户遗留数据或远端恰好一次验收。
+测试改用预置遗留持久任务驱动，仅删除入队/去重/重放/容量/闭包专用断言；独立上下文夹具继续覆盖取消和迟到回执。审计关闭清单与仍适用的 `order-20-03` 见[13](archive/13-DEVELOPMENT-PLAN-until-2026-10-18.md#阶段5l审计条目处理)。将来需要离线提交，必须按“跨窗口认领租约 + 服务端按任务 id 幂等”重新设计入队，不恢复本次删除的实现。三端构建及合成回归不构成真实设备、已有用户遗留数据或远端恰好一次验收。
 
 ## 第十一轮定点修复：恢复登记与去重重放（阶段5K）
 
@@ -64,9 +64,9 @@
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | fixes-20-01 / order-20-01 | 已修复；`session-round11.spec.js`：`independent H5 recovery continuation rejects logout, successor login and renewal`，双独立VM共享存储/Web Lock，恢复锁回调返回后暂停原Promise续段，真实Auth Store退出、后继登录、实际令牌保存分别交错；另有`single context recovers and registers synchronously in one original intent`、`a successor intent during synchronous recovery cancels the initiating attempt`、`ordinary logout can revoke while the revocation marker is unreadable`、`queued registration retains the initiating guest migration proof`。夹具：`tests/fixtures/session-races/round11.mjs`。 |
 | fixes-20-02 / order-20-02 | 已修复；`session-round11-queue.spec.js`：`replay failed dedupe write before persistence with target pending/sending/confirmed/missing`，`ordered dedupe replays survive repeated writes and failed verification without incrementing twice`，`processQueue retains failed replay until durable confirmation and sends only the new body`，`an active claim forbids replay merging even when durable state still says pending`。                                                                                                                                                                            |
-| order-20-03               | 既有限制，本轮不修；按收到的第20轮审计，两个独立H5上下文共用存储/Web Lock，合成接收worker收到相同taskId两次且分别成功确认；37206056同样复现。证据边界与后续协议见[13](13-DEVELOPMENT-PLAN.md#账户隔离后续批次第-10-轮审计)。                                                                                                                                                                                                                                                                                                                                                                               |
+| order-20-03               | 既有限制，本轮不修；按收到的第20轮审计，两个独立H5上下文共用存储/Web Lock，合成接收worker收到相同taskId两次且分别成功确认；37206056同样复现。证据边界与后续协议见[13](archive/13-DEVELOPMENT-PLAN-until-2026-10-18.md#账户隔离后续批次第-10-轮审计)。                                                                                                                                                                                                                                                                                                                                                      |
 
-修复前在a64e3582运行新回归，修复后保留同一探针；原基线失败与最终验证回执见[12](12-CHANGELOG.md#2026-10-16-恢复登记与去重重放修复阶段5k)。VM、合成存储故障与隔离构建不代替真实账号、浏览器/设备或远端幂等验收。[持久协议](05-DATABASE-SCHEMAS.md#阶段5k恢复回执与有序去重更新)。
+修复前在a64e3582运行新回归，修复后保留同一探针；原基线失败与最终验证回执见[12](archive/12-CHANGELOG-until-2026-10-18.md#2026-10-16-恢复登记与去重重放修复阶段5k)。VM、合成存储故障与隔离构建不代替真实账号、浏览器/设备或远端幂等验收。[持久协议](05-DATABASE-SCHEMAS.md#阶段5k恢复回执与有序去重更新)。
 
 ## 第十轮针对性修复：离线认领与中断身份恢复（阶段5J）
 
@@ -92,7 +92,7 @@
 | 跨上下文回执                                 | 既有 round9 独立双H5夹具及 inflight-18-02：旧成功/失败收尾不覆盖新账户任务；既有离线队列回执失败用例继续只补确认                                                                          |
 | migrate-10-03 正文刷新                       | 事务刷新/恢复重读探针在4780191a及37206056均发送旧闭包；既有问题，本轮不改，列入13后续批次                                                                                                 |
 
-B类归属使用相同实际Store/组件/存储探针在两个独立worktree运行。提醒编辑跨账户、笔记保存失败与页面草稿清空、计时stop/pause、补读跨续期误删待写，以及正文刷新旧闭包均在4780191a复现，故本轮不修；证据与下一批建议见[13](13-DEVELOPMENT-PLAN.md#账户隔离后续批次第-10-轮审计)。探针模拟受控交错，不把独立线程或VM等同于真实浏览器/设备验收。
+B类归属使用相同实际Store/组件/存储探针在两个独立worktree运行。提醒编辑跨账户、笔记保存失败与页面草稿清空、计时stop/pause、补读跨续期误删待写，以及正文刷新旧闭包均在4780191a复现，故本轮不修；证据与下一批建议见[13](archive/13-DEVELOPMENT-PLAN-until-2026-10-18.md#账户隔离后续批次第-10-轮审计)。探针模拟受控交错，不把独立线程或VM等同于真实浏览器/设备验收。
 
 ## 第九轮终审：新操作、身份可见性与按 id 写入（阶段5I）
 
@@ -978,7 +978,7 @@ Python worker及RSS监测命令均只传固定PATH/LANG环境，不继承宿主�
 
 数域、完整解集、分母限制和partial沿精确有理数规则，原答可写t=3或数值集合；声明t却写x=3保持pending，不暗换变量。输入的代数记法仍受256字符及原tokens/深度/次数/分数限额约束；多变量、无理根、高次根、额外条件、用户量表/选项和未确认资料保持原拒绝/待核对合同。旧x题干与旧未支持的“解方程2\*t+3=9”不因新合同变为可靠。同步/备份从原题重算，丢弃伪造解和符号元信息；新执行依据不改旧历史原答或评分版本。
 
-帮助与提交继续明确动作，提示后订正保留帮助历史；新实数变式整体平移当前未知量并独立重算，非实数题改数域后重算，常量恒等式不生成相同题干的伪变式。不增模型/网络/系统执行或费用权限；SymPy仍须原有明确计算帮助及服务开关，只发送既有结构化系数，不发送原答或符号正文。网页路径已验，Mac须沿最新前端重建；其他端构建/设备与原生待验范围见[13](13-DEVELOPMENT-PLAN.md#now--next--later2026-10-13)。
+帮助与提交继续明确动作，提示后订正保留帮助历史；新实数变式整体平移当前未知量并独立重算，非实数题改数域后重算，常量恒等式不生成相同题干的伪变式。不增模型/网络/系统执行或费用权限；SymPy仍须原有明确计算帮助及服务开关，只发送既有结构化系数，不发送原答或符号正文。网页路径已验，Mac须沿最新前端重建；其他端构建/设备与原生待验范围见[13](archive/13-DEVELOPMENT-PLAN-until-2026-10-18.md#now--next--later2026-10-13)。
 
 ### 显式单未知量一次不等式候选合同
 
