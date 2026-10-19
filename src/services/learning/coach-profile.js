@@ -18,7 +18,7 @@ export function resolveSkippedProfile(profile = {}) {
   const primary = COACH_SUBJECTS.includes(profile?.subject) ? profile.subject : null;
   return {
     exam: COACH_EXAMS.includes(profile?.exam) ? profile.exam : 'english1',
-    deadline: deadlineForBucket(profile?.deadlineBucket) || `${new Date().getFullYear()}-12-22`,
+    deadline: deadlineForBucket(profile?.deadlineBucket),
     minutes: 25,
     foundation: null,
     // 跳过不等于清空：已经点过的方向必须留下。

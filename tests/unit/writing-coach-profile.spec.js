@@ -81,9 +81,35 @@ describe('建档「跳过」不覆盖用户已选的考试类型', () => {
     await flushPromises();
     expect(store.active.coach.profile).toMatchObject({
       exam: 'english1',
+      deadline: null,
       minutes: 25,
       foundation: null
     });
+    await wrapper
+      .findAll('button')
+      .find((item) => item.text().includes('学习看板'))
+      .trigger('tap');
+    await flushPromises();
+    const board = wrapper.get('[data-test="coach-dashboard"]').text();
+    expect(board).toContain('考试日期：未设置');
+    expect(board).not.toContain('NaN');
+    expect(board).not.toContain('距考试 0 天');
+  });
+
+  it('保存建档但未选择考试时间时，日期同样为空', async () => {
+    const store = useConversationLearningStore();
+    wrapper = mount(WritingCoach, { global: { stubs }, attachTo: document.body });
+    await flushPromises();
+    subjectPicker().vm.$emit('update:modelValue', 'kaoyan_english');
+    await flushPromises();
+    await startButton().trigger('tap');
+    await flushPromises();
+    await wrapper
+      .findAll('button')
+      .find((item) => item.text().includes('保存建档'))
+      .trigger('tap');
+    await flushPromises();
+    expect(store.active.coach.profile?.deadline).toBeNull();
   });
 
   it('入口点选的方向会一直带到跳过后保存的档案里', async () => {

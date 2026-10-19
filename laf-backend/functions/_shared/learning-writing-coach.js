@@ -268,7 +268,7 @@ export function applyWritingCoachOperation(state, op, { assert, dayKey }) {
   if (op.type === 'coach.profile') {
     const p = d.profile;
     assert(p && ['english1', 'english2'].includes(p.exam), 'INVALID_INPUT', '考试类型不合法');
-    const deadline = date(p.deadline),
+    const deadline = p.deadline == null ? null : date(p.deadline),
       minutes = Number(p.minutes);
     assert(Number.isInteger(minutes) && minutes >= 10 && minutes <= 90, 'INVALID_INPUT', '每天时间需在10至90分钟');
     // 多方向意图是可选事实：旧档案没有这两个字段时必须照常通过。
@@ -573,7 +573,9 @@ export function writingCoachDashboard(coach, today, timezone = coach?.timezone |
     ].filter((day) => Date.parse(day) >= weekStart && day <= today)
   );
   return {
-    daysToExam: Math.max(0, Math.ceil((Date.parse(coach.profile.deadline) - Date.parse(today)) / 86400000)),
+    daysToExam: coach.profile.deadline
+      ? Math.max(0, Math.ceil((Date.parse(coach.profile.deadline) - Date.parse(today)) / 86400000))
+      : null,
     weekDays: studyDays.size,
     essays: coach.days.filter((d) => d.essay && d.rewrites.length === d.pack.writing.patterns.length).length,
     familiar,

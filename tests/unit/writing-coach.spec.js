@@ -18,7 +18,7 @@ import { parsePastedMaterial } from '@/services/learning/material-intake.js';
 // 明确的合成模型输出，仅验证编排和事实边界，不充当真实教学验收。
 import { coachFixture } from '../fixtures/writing-coach.js';
 
-function session() {
+function session(profile = { exam: 'english1', deadline: '2026-12-22', minutes: 25 }) {
   let state = emptyLearningState('synthetic-user', 'Asia/Shanghai'),
     serial = 0,
     now = Date.parse('2026-10-18T03:00:00Z');
@@ -39,7 +39,7 @@ function session() {
     data: { goal: '考研英语一写作' }
   }).state;
   apply('coach.begin');
-  apply('coach.profile', { profile: { exam: 'english1', deadline: '2026-12-22', minutes: 25 } });
+  apply('coach.profile', { profile });
   const coach = () => state.conversations[0].coach;
   const generate = (phase, target = phase) => {
     const c = coach(),
@@ -68,6 +68,21 @@ function session() {
   };
 }
 describe('考研写作方法与完整已保存事实路径', () => {
+  it.each([
+    { exam: 'english1', minutes: 25 },
+    { exam: 'english1', deadline: null, minutes: 25 }
+  ])('未提供考试日期也能保存建档，看板倒计时为空：%j', (profile) => {
+    const s = session(profile);
+    expect(s.coach().profile).toMatchObject({ exam: 'english1', deadline: null, minutes: 25 });
+    expect(writingCoachDashboard(s.coach(), '2026-10-18').daysToExam).toBeNull();
+  });
+
+  it('传入的日期仍须合法，每天学习时间仍必填', () => {
+    expect(() => session({ exam: 'english1', deadline: '2026-02-30', minutes: 25 })).toThrow('日期不合法');
+    expect(() => session({ exam: 'english1', deadline: '', minutes: 25 })).toThrow('日期不合法');
+    expect(() => session({ exam: 'english1' })).toThrow('每天时间需在10至90分钟');
+  });
+
   it('在途只查询原请求，明确关闭终态后才允许另一次主动请求；第七天反馈只记录一次', () => {
     const s = session(),
       request = normalizeCoachRequest({
