@@ -188,6 +188,8 @@ export function learningId(prefix = 'learn') {
 export const CONVERSATION_ACTION_EFFECTS = Object.freeze({
   startCoach: 'write',
   coachSave: 'write',
+  attachMaterial: 'write',
+  attachText: 'write',
   requestCoach: 'send',
   coachReview: 'write',
   ensureSessionCurrent: 'write',
@@ -3491,6 +3493,29 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const material = parsePastedMaterial(input, learningId('material'));
     return commit('material.add', { material });
   }
+  function requireAttach() {
+    assert(active.value?.coach && !busy.value, 'BUSY', '请回到当前带练，等待请求结束');
+    assert(!active.value.stopped, 'STOPPED', '当前学习已停止');
+  }
+  // 前置断言全部通过才写入；两笔 commit 同步执行、之间无 await，事件不会插入，因此不存在
+  // 「资料已保存但未绑定」的半写入。忙碌时一个字都不写。
+  function attachMaterial(material) {
+    requireAttach();
+    const saved = commit('material.add', { material });
+    // 同指纹重传时 material.add 只登记别名、不新增资料，必须用它的返回值解析规范 id。
+    const materialId = saved.id || material.id;
+    const bound = commit('coach.material', {
+      materialId,
+      conversationId: active.value.id,
+      explicit: true,
+      day: dayKey(Date.now(), state.value.timezone)
+    });
+    return { ...bound, id: materialId };
+  }
+  function attachText(input) {
+    requireAttach();
+    return attachMaterial(parsePastedMaterial(input, learningId('material')));
+  }
   async function importFile(input) {
     assert(!materialBusy.value && !materialConnectionBusy.value, 'BUSY', '资料正在处理或检查连接');
     refresh();
@@ -4363,6 +4388,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const exposed = {
     startCoach,
     coachSave,
+    attachMaterial,
+    attachText,
     requestCoach,
     coachReview,
     ensureSessionCurrent,
