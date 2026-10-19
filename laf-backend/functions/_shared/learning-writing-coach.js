@@ -330,6 +330,17 @@ export function applyWritingCoachOperation(state, op, { assert, dayKey }) {
     });
     return { requestId: d.requestId };
   }
+  if (op.type === 'coach.closeRequest') {
+    const req = coach.requests.find((v) => v.id === d.requestId);
+    assert(
+      req?.status === 'pending' && ['failed', 'cancelled', 'not_found', 'expired'].includes(d.outcome),
+      'PRECONDITION',
+      '请先查询原请求的终态'
+    );
+    req.status = 'closed';
+    req.outcome = d.outcome;
+    return { closed: true };
+  }
   if (op.type === 'coach.result') {
     const req = coach.requests.find((v) => v.id === d.requestId);
     assert(req && req.status === 'pending', 'PRECONDITION', '请求已结束或不存在');
@@ -426,8 +437,10 @@ export function applyWritingCoachOperation(state, op, { assert, dayKey }) {
     return { itemId: item.id, due };
   }
   if (op.type === 'coach.survey') {
+    const coaches = state.conversations.map((c) => c.coach).filter(Boolean);
     assert(
-      Date.parse(today) - Date.parse(coach.startedDay) >= 6 * 86400000 && !coach.survey,
+      Date.parse(today) - Math.min(...coaches.map((c) => Date.parse(c.startedDay))) >= 6 * 86400000 &&
+        !coaches.some((c) => c.survey),
       'PRECONDITION',
       '反馈尚未到期或已处理'
     );

@@ -71,6 +71,26 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe('regions and platform capability filtering', () => {
+  it('朋友试用仅显示邮箱验证码，不要求创建密码或出现其他登录方式', async () => {
+    uni.setStorageSync('yozi_login_region', 'CN');
+    mocks.api.mockResolvedValue({ code: 0, data: { friendTrial: true } });
+    const wrapper = open();
+    await flushPromises();
+    await agree(wrapper);
+    await action(wrapper, '使用邮箱登录').vm.$emit('tap');
+    await flushPromises();
+    const fields = wrapper.findAllComponents(BaseInput);
+    expect(fields).toHaveLength(2);
+    await fields[0].vm.$emit('update:modelValue', 'friend@validmail.com');
+    await fields[1].vm.$emit('update:modelValue', '123456');
+    mocks.email.mockResolvedValueOnce({ code: 503, message: '合成未发送' });
+    await action(wrapper, '登录').vm.$emit('tap');
+    await flushPromises();
+    expect(mocks.email).toHaveBeenLastCalledWith(
+      expect.objectContaining({ email: 'friend@validmail.com', verifyCode: '123456', region: 'CN' })
+    );
+    expect(mocks.email.mock.calls.at(-1)[0]).not.toHaveProperty('password');
+  });
   it.each([
     [{ region: 'US' }, 'US'],
     [{ locale: 'en-US' }, 'US'],

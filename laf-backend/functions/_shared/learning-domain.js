@@ -1177,6 +1177,7 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
     case 'coach.profile':
     case 'coach.material':
     case 'coach.request':
+    case 'coach.closeRequest':
     case 'coach.result':
     case 'coach.answer':
     case 'coach.review':

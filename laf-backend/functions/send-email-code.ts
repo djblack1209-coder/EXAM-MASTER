@@ -11,6 +11,7 @@
 import { getClientIp, clientIpUnavailable } from './_shared/client-ip.js';
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
+import { assertTrialEmail, TrialError } from './_shared/learning-trial.js';
 import { createLogger } from './_shared/api-response.js';
 
 const logger = createLogger('[SendEmailCode]');
@@ -63,6 +64,7 @@ export default async function (ctx) {
   try {
     const { email: rawEmail } = ctx.body || {};
     const email = normalizeEmail(rawEmail);
+    assertTrialEmail(email);
 
     // 参数校验
     if (!email) {
@@ -235,6 +237,8 @@ export default async function (ctx) {
     };
   } catch (error) {
     logger.error(`[${requestId}] 发送验证码异常:`, error);
+    if (error instanceof TrialError)
+      return { code: 403, success: false, errorCode: 'TRIAL_CLOSED', message: error.message, requestId };
 
     return {
       code: 500,

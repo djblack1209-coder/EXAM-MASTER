@@ -24,6 +24,9 @@ vi.mock('@dcloudio/uni-app', () => ({ onLoad: () => {}, onShow: () => {}, onHide
 const clone = (value) => JSON.parse(JSON.stringify(value));
 const wrappers = [];
 beforeEach(() => {
+  // 保留模块在明确开启时仍须通过原安全和恢复合同。
+  vi.stubEnv('VITE_ENABLE_WRITING_COACH', 'false');
+  vi.stubEnv('VITE_ENABLE_LEGACY_LEARNING', 'true');
   uni.clearStorageSync();
   setActivePinia(createPinia());
   initI18n();

@@ -1,6 +1,7 @@
 import { getClientIp, clientIpUnavailable } from './_shared/client-ip.js';
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
+import { assertTrialEmail, TrialError } from './_shared/learning-trial.js';
 import {
   LoginError,
   fail,
@@ -465,6 +466,8 @@ export default async function (ctx) {
   logger.info(`[${requestId}] 登录请求开始`);
 
   try {
+    if (process.env.LEARNING_FRIEND_TRIAL_ENABLED === 'true' && !['email', 'capabilities'].includes(loginType))
+      return { code: 403, success: false, message: '朋友试用请使用受邀邮箱验证码登录', requestId };
     if (loginType === 'qq' || ctx.body?.provider === 'qq')
       return { ...fail('UNSUPPORTED_LOGIN'), message: '不支持的登录方式', requestId };
     // 缺少密钥时仅拒绝当前请求，不阻断其他云函数模块加载
@@ -547,6 +550,8 @@ export default async function (ctx) {
     return { ...fail('UNSUPPORTED_LOGIN'), message: '不支持的登录方式', requestId };
   } catch (error) {
     if (error instanceof LoginError) return { ...fail(error.errorCode, error.code), requestId };
+    if (error instanceof TrialError)
+      return { code: 403, success: false, errorCode: 'TRIAL_CLOSED', message: error.message, requestId };
     const duration = Date.now() - startTime;
     endPerf({ error: true });
     // 数据库错误可能包含唯一键中的私人身份；仅保留本次请求定位。
@@ -640,7 +645,14 @@ async function desktopLogin(ctx, requestId: string, startTime: number) {
  * 2. 邮箱 + 密码（用于已设置密码的用户）
  */
 async function handleEmailLogin(ctx, requestId: string, startTime: number) {
-  const { email, verifyCode, password } = ctx.body || {};
+  const { verifyCode, password } = ctx.body || {};
+  const email =
+    process.env.LEARNING_FRIEND_TRIAL_ENABLED === 'true' && typeof ctx.body?.email === 'string'
+      ? ctx.body.email.trim().toLowerCase()
+      : ctx.body?.email;
+  assertTrialEmail(email);
+  if (process.env.LEARNING_FRIEND_TRIAL_ENABLED === 'true' && (!verifyCode || password || ctx.body?.region !== 'CN'))
+    return { code: 403, success: false, message: '请使用受邀邮箱验证码登录', requestId };
 
   // 1. 参数校验
   if (!email) {
@@ -1321,7 +1333,8 @@ async function regionalLogin(ctx: any, requestId: string) {
               : body.wechatMode === 'h5'
                 ? !!(WX_GZH_APPID && WX_GZH_SECRET)
                 : !!(WX_WEB_APPID && WX_WEB_SECRET),
-        sms: false
+        sms: false,
+        friendTrial: process.env.LEARNING_FRIEND_TRIAL_ENABLED === 'true'
       }
     };
   }

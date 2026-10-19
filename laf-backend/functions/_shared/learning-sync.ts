@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { coachingMetricFacts } from './learning-trial-metrics.js';
 import { emptyLearningState, createLearningOperationBatch, normalizePrivateSyncOperation } from './learning-domain.js';
 import { AccountError } from './learning-account.js';
 import { decodeServerHistory, encodeServerHistory, historyWire } from './learning-history-server.js';
@@ -105,7 +106,7 @@ export async function syncLearningOperations(db: any, userId: string, operations
     const persisted = await encodeServerHistory(state, userId);
     const result = await collection
       .where({ _id: id, user_id: userId, revision: stored.revision })
-      .update({ state: persisted, revision: stored.revision + 1 });
+      .update({ state: persisted, trialFacts: coachingMetricFacts(state), revision: stored.revision + 1 });
     if (result.updated === 1) return { state, accepted, revision: stored.revision + 1 };
   }
   throw new AccountError('CONFLICT', '学习同步同时更新，请保留本地操作后重试');

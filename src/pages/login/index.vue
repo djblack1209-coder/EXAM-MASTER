@@ -83,7 +83,7 @@
           <text class="login-title">{{ isRegister ? t('login.create') : t('login.email') }}</text>
           <BaseInput v-model="emailForm.email" :label="t('login.emailAddress')" inputmode="email" :maxlength="254" />
           <BaseInput
-            v-if="isRegister"
+            v-if="isRegister || friendTrial"
             v-model="emailForm.code"
             :label="t('login.code')"
             verification
@@ -94,6 +94,7 @@
             @resend="sendEmail"
           />
           <BaseInput
+            v-if="!friendTrial"
             v-model="emailForm.password"
             :label="isRegister ? t('login.setPassword') : t('login.password')"
             :type="showPassword ? 'text' : 'password'"
@@ -110,7 +111,7 @@
           <BaseButton variant="primary" block :loading="busy" :disabled="busy || !agreedToTerms" @tap="submitEmail">{{
             isRegister ? t('login.register') : t('login.submit')
           }}</BaseButton>
-          <BaseButton variant="quiet" block @tap="toggleRegister">{{
+          <BaseButton v-if="!friendTrial" variant="quiet" block @tap="toggleRegister">{{
             isRegister ? t('login.existing') : t('login.create')
           }}</BaseButton>
           <BaseButton variant="quiet" block @tap="step = 'methods'">{{ t('login.other') }}</BaseButton>
@@ -236,6 +237,7 @@ const regions = computed(() => [
   { value: 'CN', label: t('login.cn') }
 ]);
 const isMethodAvailable = (method) => method !== 'phone' || !!capabilities.value.sms;
+const friendTrial = computed(() => capabilities.value.friendTrial === true);
 const methods = computed(() =>
   availableLoginMethods(region.value, {
     platform,
@@ -243,7 +245,9 @@ const methods = computed(() =>
     providers: providers.value,
     capabilities: capabilities.value,
     desktop
-  }).sort((a, b) => Number(!isMethodAvailable(a)) - Number(!isMethodAvailable(b)))
+  })
+    .filter((method) => !friendTrial.value || method === 'email')
+    .sort((a, b) => Number(!isMethodAvailable(a)) - Number(!isMethodAvailable(b)))
 );
 const current = () => {
   const captured = { version, session: captureSession() };
@@ -483,6 +487,22 @@ async function sendEmail() {
   }
 }
 async function submitEmail() {
+  if (friendTrial.value) {
+    if (!/^\d{6}$/.test(emailForm.value.code) || !isEmailValid.value) {
+      error.value = t('login.invalidCode');
+      return;
+    }
+    await run(
+      () =>
+        authStore.loginByEmail({
+          email: normalizeEmailAddress(emailForm.value.email),
+          verifyCode: emailForm.value.code,
+          ...registration()
+        }),
+      true
+    );
+    return;
+  }
   if (isRegister.value && needsAge()) {
     pendingMethod = 'email';
     step.value = 'age';

@@ -30,6 +30,9 @@ const connection = () => ({
 const input = { name: 'synthetic.pdf', size: 4, contentBase64: 'dGVzdA==' };
 let store;
 beforeEach(() => {
+  // 保留模块在明确开启时仍须通过原安全和恢复合同。
+  vi.stubEnv('VITE_ENABLE_WRITING_COACH', 'false');
+  vi.stubEnv('VITE_ENABLE_LEGACY_LEARNING', 'true');
   uni.clearStorageSync();
   uni.setStorageSync('EXAM_USER_ID', 'synthetic-upload-owner');
   setActivePinia(createPinia());

@@ -1,6 +1,17 @@
 <template>
   <LearningShell active="learning" title="考研英语写作" @new="newSession" @materials="showMaterials = !showMaterials">
+    <!-- #ifdef MP-WEIXIN -->
+    <PrivacyPopup />
+    <!-- #endif -->
     <template #controls>
+      <BaseButton
+        v-if="coach && !learning.active.stopped"
+        variant="quiet"
+        icon="pause"
+        icon-only
+        label="暂停带练"
+        @tap="pauseLearning"
+      />
       <BaseButton variant="quiet" icon="chart" :aria-expanded="showBoard" @tap="showBoard = !showBoard"
         >学习看板</BaseButton
       >
@@ -20,6 +31,16 @@
         <BaseButton variant="quiet" @tap="goal = '考研英语二，练习图表作文'">英语二写作</BaseButton>
       </BaseCard>
 
+      <BaseCard v-else-if="learning.active.stopped" padding="large"
+        ><text class="coach-title">带练已暂停，记录保留</text
+        ><BaseButton
+          variant="primary"
+          @tap="
+            act(() => learning.commit('task.resume', { conversationId: learning.active.id, source: 'self_report' }))
+          "
+          >继续当前带练</BaseButton
+        ></BaseCard
+      >
       <BaseCard v-else-if="!coach.profile" padding="large">
         <text class="coach-title">先认识你，五项都可以跳过</text>
         <BaseInput
@@ -331,11 +352,12 @@ import {
   writingCoachDashboard
 } from '../../../../laf-backend/functions/_shared/learning-writing-coach.js';
 import LearningShell from './learning-shell.vue';
+import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
-defineEmits(['advanced']);
+const emit = defineEmits(['advanced', 'general']);
 const learning = useConversationLearningStore();
 const goal = ref(''),
   answer = ref(''),
@@ -381,12 +403,16 @@ const wordLimit = computed(() =>
     ? WRITING_METHOD.words[coach.value.profile.exam][day.value.pack.writing.essayType]
     : ''
 );
-const trialPrice = Number(import.meta.env.VITE_TRIAL_MONTHLY_PRICE || 19);
+const configuredPrice = Number(import.meta.env.VITE_TRIAL_MONTHLY_PRICE || 19);
+const trialPrice =
+  Number.isFinite(configuredPrice) && configuredPrice >= 0 && configuredPrice <= 10000 ? configuredPrice : 19;
 const surveyDue = computed(
   () =>
     coach.value?.profile &&
-    !coach.value.survey &&
-    Date.parse(today.value) - Date.parse(coach.value.startedDay) >= 6 * 86400000
+    !learning.state.conversations.some((c) => c.coach?.survey) &&
+    Date.parse(today.value) -
+      Math.min(...learning.state.conversations.filter((c) => c.coach).map((c) => Date.parse(c.coach.startedDay))) >=
+      6 * 86400000
 );
 const calendar = learning.observeCalendar();
 calendar.show();
@@ -409,14 +435,8 @@ async function act(action) {
 function begin() {
   act(() => {
     const text = goal.value.trim() || '考研英语写作';
-    if (!/考研|英语[一二]|写作/.test(text)) {
-      learning.start(text);
-      learning.selectedMode = 'cloud';
-      learning.commit('message.add', {
-        conversationId: learning.active.id,
-        role: 'notice',
-        content: '当前重点支持考研英语写作；这个问题可以正常答疑，暂不安排整套计划。'
-      });
+    if (!/英语[一二]|考研英语|考研.*写作/.test(text)) {
+      emit('general', text);
       return;
     }
     learning.startCoach(text);
@@ -427,6 +447,12 @@ function begin() {
 function newSession() {
   if (learning.busy) return;
   learning.selectedConversationId = null;
+}
+function pauseLearning() {
+  act(() => {
+    if (learning.busy) learning.cancel();
+    learning.commit('task.stop', { conversationId: learning.active.id });
+  });
 }
 function saveProfile(skip) {
   act(() =>

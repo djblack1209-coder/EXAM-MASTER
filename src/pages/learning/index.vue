@@ -1,5 +1,5 @@
 <template>
-  <WritingCoach v-if="writingCoachActive" @advanced="showConnections = true" />
+  <WritingCoach v-if="writingCoachActive" @advanced="showConnections = true" @general="beginGeneralQuestion" />
   <LearningShell
     v-else
     active="learning"
@@ -3046,6 +3046,25 @@ function newConversation() {
   learning.selectedConversationId = null;
   showIntake.value = false;
   showJourney.value = false;
+}
+function beginGeneralQuestion(text) {
+  learning.start(text);
+  learning.selectedMode = 'cloud';
+  draft.value = text;
+  learning.commit('message.add', {
+    conversationId: learning.active.id,
+    role: 'notice',
+    content: '当前重点支持考研英语写作；这个问题可以正常答疑，暂不安排整套计划。'
+  });
+  const id = learning.active.id;
+  if (getToken())
+    void learning
+      .loadModels()
+      .then((result) => {
+        if (result.success && learning.active?.id === id && !learning.modelId)
+          learning.modelId = learning.models.find((m) => m.source === 'platform' && m.configured)?.id || null;
+      })
+      .catch(() => undefined);
 }
 let pendingSubmission = null;
 function submissionKey() {
