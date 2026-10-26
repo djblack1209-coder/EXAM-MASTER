@@ -8,11 +8,21 @@ import { readNativeInsets } from '@/design/native-theme.js';
 import { installI18n } from '@/i18n/index.js';
 // #ifdef H5
 import { bindAppBoot } from '@/design/app-boot.js';
+import { WEBSITE_MODE, installWebsiteRouteFallback } from '@/config/website.js';
 // #endif
 
 export function createApp() {
+  // #ifdef H5
+  const releaseWebsiteFallback = WEBSITE_MODE ? installWebsiteRouteFallback(window) : () => undefined;
+  // #endif
   const app = createSSRApp(App);
   // #ifdef H5
+  if (WEBSITE_MODE)
+    app.mixin({
+      beforeUnmount() {
+        if (this === this.$root) releaseWebsiteFallback();
+      }
+    });
   bindAppBoot(app);
   // #endif
   const pinia = createPinia();

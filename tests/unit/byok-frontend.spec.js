@@ -7,10 +7,13 @@ import Feedback from '@/components/business/learning/muse-model-feedback.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseCheckbox from '@/components/base/base-checkbox/base-checkbox.vue';
 import { createRequire } from 'node:module';
+import { mkdtempSync, writeFileSync, chmodSync, symlinkSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 // Load the inert Node CLI with Node's loader rather than Vite's browser asset transform.
-const { assertDevTest, cleanupOptions, requireResult, verifyByokFrontend } = createRequire(import.meta.url)(
-  '../../scripts/build/verify-byok-frontend.mjs'
-);
+const { assertDevTest, cleanupOptions, readPrivateAccount, requireResult, verifyByokFrontend } = createRequire(
+  import.meta.url
+)('../../scripts/build/verify-byok-frontend.mjs');
 const mock = vi.hoisted(() => ({ learning: null }));
 vi.mock('@/stores/modules/conversation-learning.js', () => ({ useConversationLearningStore: () => mock.learning }));
 let wrapper;
@@ -436,5 +439,158 @@ describe('BYOK verification script with an in-memory transport only', () => {
     ]);
     expect(report.blocked).toEqual([]);
     expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+  it('reads only a small private regular account file and rejects exposed or linked credentials', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'yozi-private-account-unit-'));
+    const file = join(directory, 'account.json'),
+      link = join(directory, 'link.json');
+    try {
+      writeFileSync(file, JSON.stringify({ email: 'ui.fixture@example.test', password: 'unit-only-password' }), {
+        mode: 0o600
+      });
+      expect(readPrivateAccount(file).email).toBe('ui.fixture@example.test');
+      chmodSync(file, 0o644);
+      expect(() => readPrivateAccount(file)).toThrow();
+      chmodSync(file, 0o600);
+      symlinkSync(file, link);
+      expect(() => readPrivateAccount(link)).toThrow();
+      writeFileSync(file, 'x'.repeat(16385));
+      expect(() => readPrivateAccount(file)).toThrow();
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  });
+  it.each([
+    ['--cleanup-account-file', 'fixture.json', '--cleanup-orphans'],
+    ['--cleanup-account-file', 'fixture.json', '--orphan-ms-start', '1793033351000'],
+    ['--cleanup-account-file', '']
+  ])('refuses conflicting cleanup modes before any request: %j', async (...args) => {
+    const fetchImpl = vi.fn();
+    await expect(verifyByokFrontend({ env, args, fetchImpl })).rejects.toThrow();
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+  it('cleans only the supplied UI account through password login and normal deletion', async () => {
+    const account = { email: 'ui.fixture@example.test', password: 'unit-only-password' };
+    const readAccount = vi.fn(() => account);
+    const fetchImpl = registrationTransport({ login: () => ({ code: 0, data: credentials }) });
+    const report = await verifyByokFrontend({
+      env,
+      args: ['--cleanup-account-file', 'fixture.json'],
+      readAccount,
+      fetchImpl
+    });
+    expect(report.mode).toBe('cleanup-account-file');
+    expect(report.steps).toEqual({
+      cleanup_ui_account: {
+        status: 'passed',
+        billingRetained: true,
+        receipt: { calls: 0, pendingCosts: 0, actualCost: 0 }
+      }
+    });
+    expect(requests(fetchImpl, 'login')).toHaveLength(1);
+    expect(requests(fetchImpl, 'login')[0].body).toMatchObject({ ...account, existingAccountOnly: true });
+    expect(requests(fetchImpl, 'login')[0].body.verifyCode).toBeUndefined();
+    expect(requests(fetchImpl, 'account-delete')).toHaveLength(1);
+    expect(JSON.stringify(report)).not.toContain(account.password);
+    expect(JSON.stringify(report)).not.toContain(credentials.token);
+    expect(readAccount).toHaveBeenCalledTimes(1);
+  });
+  it('does not create a UI account that has already been deleted', async () => {
+    const fetchImpl = registrationTransport({ login: () => missing });
+    const report = await verifyByokFrontend({
+      env,
+      args: ['--cleanup-account-file', 'fixture.json'],
+      readAccount: () => ({ email: 'ui.fixture@example.test', password: 'unit-only-password' }),
+      fetchImpl
+    });
+    expect(report.steps.cleanup_ui_account).toEqual({ status: 'passed', absent: true });
+    expect(requests(fetchImpl, 'account-delete')).toHaveLength(0);
+    expect(requests(fetchImpl, 'learning-models')).toHaveLength(0);
+  });
+  it('retains a UI account with in-flight requests and its pending-cost receipt', async () => {
+    const fetchImpl = registrationTransport({
+      login: () => ({ code: 0, data: credentials }),
+      'learning-models': () => ({ code: 0, data: { calls: [{ status: 'reserved', actualCost: null }] } })
+    });
+    const report = await verifyByokFrontend({
+      env,
+      args: ['--cleanup-account-file', 'fixture.json'],
+      readAccount: () => ({ email: 'ui.fixture@example.test', password: 'unit-only-password' }),
+      fetchImpl
+    });
+    expect(report.steps.cleanup_ui_account).toMatchObject({
+      status: 'unverified',
+      reason: 'REQUEST_PENDING; account retained',
+      receipt: { pendingCosts: 1, actualCost: null }
+    });
+    expect(requests(fetchImpl, 'account-delete')).toHaveLength(0);
+  });
+  it('preserves the prior fee receipt even when deletion is not confirmed', async () => {
+    const fetchImpl = registrationTransport({
+      login: () => ({ code: 0, data: credentials }),
+      'account-delete': () => ({ code: 503, success: false, error: 'PURGE_FAILED' }),
+      'learning-models': () => ({ code: 0, data: { calls: [{ status: 'failed', actualCost: null }] } })
+    });
+    const report = await verifyByokFrontend({
+      env,
+      args: ['--cleanup-account-file', 'fixture.json'],
+      readAccount: () => ({ email: 'ui.fixture@example.test', password: 'unit-only-password' }),
+      fetchImpl
+    });
+    expect(report.steps.cleanup_ui_account).toMatchObject({
+      status: 'unverified',
+      reason: 'QA_STEP_FAILED:account-delete:request:PURGE_FAILED(code=503)',
+      receipt: { calls: 1, pendingCosts: 1, actualCost: null }
+    });
+  });
+  it('refuses an unsafe account file before the health probe', async () => {
+    const fetchImpl = vi.fn();
+    const report = await verifyByokFrontend({
+      env,
+      args: ['--cleanup-account-file', 'fixture.json'],
+      readAccount: () => {
+        throw Object.assign(new Error(), { code: 'PRIVATE_ACCOUNT_FILE_REQUIRED' });
+      },
+      fetchImpl
+    });
+    expect(report.steps.cleanup_ui_account.reason).toBe('PRIVATE_ACCOUNT_FILE_REQUIRED');
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+  it('accepts two successful alternative seed providers without a Z.ai profile', async () => {
+    const connections = [
+      { id: 'dev-openrouter-byok', providerId: 'openrouter', model: 'fixture-free-a' },
+      { id: 'dev-zhipu-byok', providerId: 'zhipu', model: 'fixture-free-b' }
+    ];
+    let lists = 0;
+    const fetchImpl = registrationTransport({
+      'learning-models': (body) => {
+        if (body.action === 'usage') return emptyUsage;
+        if (body.action === 'list')
+          return {
+            code: 0,
+            data:
+              ++lists === 1
+                ? { needsConnection: true }
+                : { models: connections.map((item) => ({ ...item, source: 'byok', configured: true })) }
+          };
+        return { code: 503, success: false, error: 'DISCOVERY_DISABLED' };
+      }
+    });
+    const seeded = {
+      success: true,
+      connections,
+      selectedModelId: 'dev-zhipu-byok',
+      attempts: [{ providerId: 'zai', classification: 'RATE_LIMITED' }]
+    };
+    const report = await verifyByokFrontend({ env, fetchImpl, seedModels: async () => seeded });
+    expect(report.steps.two_connections.status).toBe('passed');
+    expect(report.steps.discovery_and_switch.reason).toBe(
+      'QA_STEP_FAILED:learning-models:discover:DISCOVERY_DISABLED(code=503)'
+    );
+    expect(report.seed).toEqual(seeded);
+    expect(
+      requests(fetchImpl, 'learning-models').find((entry) => entry.body.action === 'discover').body.profileId
+    ).toBe('dev-openrouter-byok');
+    expect(report.steps.delete_new_account.status).toBe('passed');
   });
 });

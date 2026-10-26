@@ -6,12 +6,68 @@ import { readLearningSnapshot } from '@/services/learning/learning-sync.js';
 import { captureSession } from '@/services/auth-storage.js';
 import { websiteRoutes, WEBSITE_ROUTES } from '../../scripts/build/website-routes.mjs';
 import { websiteLoginText } from '@/pages/login/messages.js';
+import { installWebsiteRouteFallback } from '@/config/website.js';
 
 beforeEach(() => {
   uni.clearStorageSync();
   vi.clearAllMocks();
 });
 describe('public website boundary', () => {
+  function browser(hash) {
+    const listeners = new Map();
+    const location = { pathname: '/preview/', search: '?channel=test', hash };
+    const target = {
+      location,
+      history: {
+        state: { retained: true },
+        replaceState: vi.fn((_state, _title, url) => {
+          location.hash = url.slice(url.indexOf('#'));
+        })
+      },
+      addEventListener: (type, handler) => listeners.set(type, handler),
+      removeEventListener: (type, handler) => {
+        if (listeners.get(type) === handler) listeners.delete(type);
+      }
+    };
+    return { target, listeners };
+  }
+  it.each([
+    '#/pages/profile/index?panel=connectors',
+    '#/pages/learning/index',
+    '#/pages/learning/index?from=external',
+    '#/unknown'
+  ])('normalizes unavailable route %s before router startup', (hash) => {
+    const { target, listeners } = browser(hash);
+    const release = installWebsiteRouteFallback(target);
+    expect(target.location.hash).toBe('#/pages/index/index');
+    expect(target.history.replaceState).toHaveBeenCalledExactlyOnceWith(
+      { retained: true },
+      '',
+      '/preview/?channel=test#/pages/index/index'
+    );
+    listeners.get('hashchange')();
+    expect(target.history.replaceState).toHaveBeenCalledTimes(1);
+    release();
+    expect(listeners.size).toBe(0);
+  });
+  it.each(['', '#/', ...WEBSITE_ROUTES.map((route) => `#/${route}?code=unit-callback`)])(
+    'leaves supported address %s and its query intact',
+    (hash) => {
+      const { target } = browser(hash);
+      const release = installWebsiteRouteFallback(target);
+      expect(target.location.hash).toBe(hash);
+      expect(target.history.replaceState).not.toHaveBeenCalled();
+      release();
+    }
+  );
+  it.each(['hashchange', 'popstate'])('handles a later unsupported address on %s', (event) => {
+    const { target, listeners } = browser('#/pages/login/index');
+    const release = installWebsiteRouteFallback(target);
+    target.location.hash = '#/pages/learning/index';
+    listeners.get(event)();
+    expect(target.location.hash).toBe('#/pages/index/index');
+    release();
+  });
   it('keeps only download, identity and policy routes without mutating app routes', () => {
     const source = JSON.parse(readFileSync('src/pages.json', 'utf8')),
       before = JSON.stringify(source);

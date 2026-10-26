@@ -192,7 +192,7 @@ function subjectPicker() {
 }
 
 function skipButton() {
-  return wrapper.findAll('button').find((item) => item.text().includes('跳过，按默认开始'));
+  return wrapper.findAll('button').find((item) => item.text().includes('跳过，直接开始'));
 }
 
 function startButton() {
@@ -226,14 +226,14 @@ describe('建档「跳过」不覆盖用户已选的考试类型', () => {
     expect(store.active.coach.profile.exam).toBe('english2');
   });
 
-  it('没选也没提英语二，跳过按英语一走默认值', async () => {
+  it('没选择考试或时长，跳过仍保留未知字段为空', async () => {
     const { store } = await profileCard();
     skipButton().trigger('tap');
     await flushPromises();
     expect(store.active.coach.profile).toMatchObject({
-      exam: 'english1',
+      exam: null,
       deadline: null,
-      minutes: 25,
+      minutes: null,
       foundation: null
     });
     expect(wrapper.findAll('button').some((item) => item.attributes('aria-label') === '学习看板')).toBe(false);
@@ -261,7 +261,7 @@ describe('建档「跳过」不覆盖用户已选的考试类型', () => {
     expect(store.active.coach.profile?.deadline).toBeNull();
   });
 
-  it('入口点选的方向会一直带到跳过后保存的档案里', async () => {
+  it('只给出写作方向，跳过后不擅自推断英语一', async () => {
     const store = useConversationLearningStore();
     wrapper = mount(WritingCoach, { global: { stubs }, attachTo: document.body });
     await flushPromises();
@@ -269,7 +269,7 @@ describe('建档「跳过」不覆盖用户已选的考试类型', () => {
     await flushPromises();
     skipButton().trigger('tap');
     await flushPromises();
-    expect(store.active.coach.profile.exam).toBe('english1');
+    expect(store.active.coach.profile.exam).toBeNull();
   });
 });
 

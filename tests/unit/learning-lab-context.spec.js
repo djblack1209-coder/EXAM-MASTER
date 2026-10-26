@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
-import LearningLab from '@/components/business/learning/learning-lab.vue';
+import LearningLab from '@/pages/learning/components/learning-lab.vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { emptyLearningState } from '@/services/learning/learning-domain.js';
 import { createNoticeQuestion, WRITING_GENRES } from '../../laf-backend/functions/_shared/learning-writing.js';

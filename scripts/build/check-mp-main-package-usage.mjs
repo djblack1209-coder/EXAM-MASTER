@@ -121,7 +121,7 @@ function assertWechatMediaBudget() {
   console.log(`[main-usage-check] 图片/音频资源预算通过: ${mediaFiles.length} files / ${totalBytes} bytes`);
 }
 
-export function assertMainPackageSourceBudget(rootDir = buildRoot) {
+export function assertMainPackageSourceBudget(rootDir = buildRoot, minimumHeadroomBytes = 0) {
   // 项目约定的2MB覆盖主包全部文件，不能只计算源码后遗漏媒体。
   const roots = getSubPackageRoots(rootDir);
   const mainFiles = walkFiles(rootDir)
@@ -135,7 +135,12 @@ export function assertMainPackageSourceBudget(rootDir = buildRoot) {
     );
   }
 
+  const headroomBytes = wechatMainPackageSourceBudgetBytes - totalBytes;
+  if (headroomBytes < minimumHeadroomBytes)
+    throw new Error(`[main-usage-check] 主包余量 ${headroomBytes} bytes，低于 ${minimumHeadroomBytes} bytes`);
+
   console.log(`[main-usage-check] 主包源码体积通过: ${mainFiles.length} files / ${totalBytes} bytes`);
+  return { totalBytes, headroomBytes, files: mainFiles.length };
 }
 
 export function assertNoFlashcardBanksInMainPackage(rootDir = buildRoot) {
@@ -185,7 +190,6 @@ function run() {
 
   if (requiredModules.length === 0) {
     console.log('[main-usage-check] 未发现需要检查的主包共享模块，跳过');
-    return;
   }
 
   const report = requiredModules.map((modulePath) => ({
@@ -197,7 +201,7 @@ function run() {
     console.log(`[main-usage-check] ${item.modulePath} -> ${item.usedBy.join(', ')}`);
   }
 
-  assertMainPackageSourceBudget();
+  assertMainPackageSourceBudget(buildRoot, 30 * 1024);
   assertNoFlashcardBanksInMainPackage();
   assertPracticeSubpackageBankDataRuntime();
   assertWechatMediaBudget();

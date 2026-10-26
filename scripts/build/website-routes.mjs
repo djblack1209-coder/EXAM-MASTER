@@ -1,10 +1,5 @@
-export const WEBSITE_ROUTES = Object.freeze([
-  'pages/index/index',
-  'pages/login/index',
-  'pages/login/wechat-callback',
-  'pages/settings/privacy',
-  'pages/settings/terms'
-]);
+import { WEBSITE_ROUTES } from '../../src/config/website.js';
+export { WEBSITE_ROUTES };
 export function websiteRoutes(source) {
   const allowed = new Set(WEBSITE_ROUTES);
   const result = {

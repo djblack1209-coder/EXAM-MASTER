@@ -23,7 +23,7 @@ import {
 import { sourceDiagram, confirmedDiagramRecipe } from '../../laf-backend/functions/_shared/learning-diagram.js';
 import { executeLearningTool } from '@/services/learning/learning-tools.js';
 import { parseLearningOutput } from '../../laf-backend/functions/_shared/ai-providers/learning-provider.ts';
-import LearningLab from '@/components/business/learning/learning-lab.vue';
+import LearningLab from '@/pages/learning/components/learning-lab.vue';
 import DiagramConditions from '@/components/business/learning/diagram-conditions.vue';
 import VelocityTimeGraph from '@/components/business/learning/velocity-time-graph.vue';
 vi.mock('@dcloudio/uni-app', () => ({ onHide: vi.fn() }));

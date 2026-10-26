@@ -14,6 +14,29 @@ function makeBuildRoot() {
 }
 
 describe('mp-weixin main package usage audit', () => {
+  it('reserves at least 30 KiB without changing the 2 MiB hard ceiling', () => {
+    const root = makeBuildRoot();
+    try {
+      const config = JSON.stringify({ pages: [] });
+      fs.writeFileSync(path.join(root, 'app.json'), config);
+      fs.writeFileSync(
+        path.join(root, 'app.js'),
+        Buffer.alloc(2 * 1024 * 1024 - 30 * 1024 - Buffer.byteLength(config))
+      );
+      expect(assertMainPackageSourceBudget(root, 30 * 1024).headroomBytes).toBe(30 * 1024);
+      fs.appendFileSync(path.join(root, 'app.js'), 'x');
+      expect(() => assertMainPackageSourceBudget(root, 30 * 1024)).toThrow('主包余量');
+      expect(() => assertMainPackageSourceBudget(root)).not.toThrow();
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+  it('keeps the optional lab component inside the learning subpackage', () => {
+    const page = fs.readFileSync('src/pages/learning/index.vue', 'utf8');
+    expect(page).toContain("from './components/learning-lab.vue'");
+    expect(fs.existsSync('src/pages/learning/components/learning-lab.vue')).toBe(true);
+    expect(fs.existsSync('src/components/business/learning/learning-lab.vue')).toBe(false);
+  });
   it('blocks a main package larger than the project 2MB budget', () => {
     const buildRoot = makeBuildRoot();
     try {

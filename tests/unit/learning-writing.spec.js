@@ -16,7 +16,7 @@ import {
   NOTICE_TASKS,
   nextNoticeDay
 } from '../../laf-backend/functions/_shared/learning-writing.js';
-import LearningLab from '@/components/business/learning/learning-lab.vue';
+import LearningLab from '@/pages/learning/components/learning-lab.vue';
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
 import { prepareLearningRestore } from '@/services/learning/learning-backup.js';
 import { executeLearningTool, createArithmeticQuestion } from '@/services/learning/learning-tools.js';

@@ -15,7 +15,7 @@ import {
   nextScienceInput,
   scienceRetestReady
 } from '../../laf-backend/functions/_shared/learning-science.js';
-import LearningLab from '@/components/business/learning/learning-lab.vue';
+import LearningLab from '@/pages/learning/components/learning-lab.vue';
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
 vi.mock('@dcloudio/uni-app', () => ({ onHide: vi.fn(), onShow: vi.fn(), onBackPress: vi.fn() }));
 const distance = { template: 'distance_displacement', outward: 6, backward: 4, direction: 'right' };
@@ -216,7 +216,9 @@ describe('原答、计划、复测与停止', () => {
     expect(result.day).toBe('2026-10-06');
     expect(store.scheduleScienceRetest()).toEqual(result);
     expect(store.exportData()).toBe(before);
-    expect(store.state.plans.at(-1).tasks[0].title).toBe('保留任务');
+    expect(
+      store.state.plans.find((plan) => plan.day === result.day).tasks.find((task) => task.id === 'keep').title
+    ).toBe('保留任务');
     expect(store.state.attempts).toHaveLength(1);
     store.focus(result.questionKey, result.conversationId);
     expect(store.activeQuestion.parentQuestionKey).toBe(original);

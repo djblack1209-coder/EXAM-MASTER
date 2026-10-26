@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { readFreeApiCatalog, readFreeApiCredential } from './free-api-catalog.mjs';
 import { DEV_TEST } from '../../tmp/yozi-candidate-build/backend/functions/_shared/build-channel.js';
 import { freeModelPricing } from '../../tmp/yozi-candidate-build/backend/functions/_shared/ai-providers/free-model-presets.js';
+import { FREE_SEED_ORIGINS } from './seed-dev-test-models.mjs';
 
 const database = new URL(process.env.MONGODB_URI || '');
 if (
@@ -55,7 +56,8 @@ process.env.ALLOWED_ORIGINS = [
 process.env.LEARNING_ALLOWED_ORIGINS = [
   ...new Set([
     ...(process.env.LEARNING_ALLOWED_ORIGINS || '').split(',').filter(Boolean),
-    ...(enablePlatform ? ['https://openrouter.ai'] : [])
+    // BYOK free fallback needs the same reviewed providers even while platform models stay disabled.
+    ...FREE_SEED_ORIGINS
   ])
 ].join(',');
 console.info(

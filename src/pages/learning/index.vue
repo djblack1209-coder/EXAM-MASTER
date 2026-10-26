@@ -2011,7 +2011,7 @@ import LearningProfileDraft from '@/components/business/learning/learning-profil
 import LearningInsights from '@/components/business/learning/learning-insights.vue';
 import LearningProposalCard from '@/components/business/learning/learning-proposal-card.vue';
 import { proposalStatus } from '../../../laf-backend/functions/_shared/learning-proposals.js';
-import LearningLab from '@/components/business/learning/learning-lab.vue';
+import LearningLab from './components/learning-lab.vue';
 import DensityPractice from '@/components/business/learning/density-practice.vue';
 import {
   DENSITY_TRANSFER_CONTRACT,

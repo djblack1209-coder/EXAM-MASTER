@@ -19,7 +19,7 @@ import {
 import { parseLearningOutput } from '../../laf-backend/functions/_shared/ai-providers/learning-provider.ts';
 import { blenderVisualSource } from '../../scripts/build/render-learning-visual.mjs';
 import DiagramConditions from '@/components/business/learning/diagram-conditions.vue';
-import LearningLab from '@/components/business/learning/learning-lab.vue';
+import LearningLab from '@/pages/learning/components/learning-lab.vue';
 vi.mock('@dcloudio/uni-app', () => ({ onHide: vi.fn() }));
 const clone = (v) => JSON.parse(JSON.stringify(v));
 const png = (width = 100) => {

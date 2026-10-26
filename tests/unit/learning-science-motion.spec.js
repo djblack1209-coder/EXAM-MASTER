@@ -18,7 +18,7 @@ import {
 } from '@/services/learning/learning-domain.js';
 import { learningRepository } from '@/services/learning/learning-repository.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
-import LearningLab from '@/components/business/learning/learning-lab.vue';
+import LearningLab from '@/pages/learning/components/learning-lab.vue';
 import DiagramConditions from '@/components/business/learning/diagram-conditions.vue';
 import { executeLearningTool } from '@/services/learning/learning-tools.js';
 import {

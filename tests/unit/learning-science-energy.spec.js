@@ -23,7 +23,7 @@ import {
   learningCapabilitiesData
 } from '@/services/learning/learning-domain.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
-import LearningLab from '@/components/business/learning/learning-lab.vue';
+import LearningLab from '@/pages/learning/components/learning-lab.vue';
 vi.mock('@dcloudio/uni-app', () => ({ onHide: vi.fn(), onShow: vi.fn(), onBackPress: vi.fn() }));
 const base = {
   template: ENERGY_TEMPLATE,

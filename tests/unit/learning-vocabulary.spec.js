@@ -21,7 +21,7 @@ import {
   gradeVocabularyReviewAnswer,
   vocabularyRetestReady
 } from '../../laf-backend/functions/_shared/learning-vocabulary.js';
-import LearningLab from '@/components/business/learning/learning-lab.vue';
+import LearningLab from '@/pages/learning/components/learning-lab.vue';
 import { learningEvidenceMap } from '../../laf-backend/functions/_shared/learning-visual.js';
 vi.mock('@dcloudio/uni-app', () => ({ onShow: vi.fn(), onHide: vi.fn(), onLoad: vi.fn(), onBackPress: vi.fn() }));
 const clone = (value) => JSON.parse(JSON.stringify(value));

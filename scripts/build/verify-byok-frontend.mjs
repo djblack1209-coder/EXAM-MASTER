@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import crypto from 'node:crypto';
-import { mkdtempSync, writeFileSync, unlinkSync, rmdirSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, unlinkSync, rmdirSync, lstatSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -29,12 +29,23 @@ export function cleanupOptions(args) {
     args,
     options: {
       'cleanup-orphans': { type: 'boolean' },
+      'cleanup-account-file': { type: 'string' },
       'orphan-ms-start': { type: 'string' },
       'orphan-ms-end': { type: 'string' }
     },
     allowPositionals: false,
     strict: true
   });
+  if (values['cleanup-account-file'] !== undefined) {
+    if (
+      !values['cleanup-account-file'] ||
+      values['cleanup-orphans'] ||
+      values['orphan-ms-start'] !== undefined ||
+      values['orphan-ms-end'] !== undefined
+    )
+      throw Object.assign(new Error('CLEANUP_MODES_CONFLICT'), { code: 'CLEANUP_MODES_CONFLICT' });
+    return { accountFile: resolve(values['cleanup-account-file']) };
+  }
   if (!values['cleanup-orphans']) {
     if (values['orphan-ms-start'] !== undefined || values['orphan-ms-end'] !== undefined)
       throw Object.assign(new Error('ORPHAN_CLEANUP_FLAG_REQUIRED'), { code: 'ORPHAN_CLEANUP_FLAG_REQUIRED' });
@@ -53,6 +64,22 @@ export function cleanupOptions(args) {
   return { start, end };
 }
 
+export function readPrivateAccount(file) {
+  if (!file) throw Object.assign(new Error(), { code: 'PRIVATE_ACCOUNT_FILE_REQUIRED' });
+  const info = lstatSync(file);
+  if (!info.isFile() || info.isSymbolicLink() || info.size > 16384 || (info.mode & 0o077) !== 0)
+    throw Object.assign(new Error(), { code: 'PRIVATE_ACCOUNT_FILE_REQUIRED' });
+  let account;
+  try {
+    account = JSON.parse(readFileSync(file, 'utf8'));
+  } catch {
+    throw Object.assign(new Error(), { code: 'INVALID_ACCOUNT_FILE' });
+  }
+  if (!account || typeof account !== 'object' || Array.isArray(account))
+    throw Object.assign(new Error(), { code: 'INVALID_ACCOUNT_FILE' });
+  return account;
+}
+
 const safeCode = (value) =>
   typeof value === 'number' && Number.isFinite(value)
     ? String(value)
@@ -61,7 +88,7 @@ const safeCode = (value) =>
       : 'INVALID_RESPONSE';
 function stepFailure(endpoint, code, responseCode) {
   const message = `QA_STEP_FAILED:${endpoint}:${safeCode(code)}${responseCode === undefined ? '' : `(code=${safeCode(responseCode)})`}`;
-  return Object.assign(new Error(message), { code: 'QA_STEP_FAILED', endpoint });
+  return Object.assign(new Error(message), { code: 'QA_STEP_FAILED', endpoint, qaCode: safeCode(code) });
 }
 function check(condition, endpoint, code) {
   if (!condition) throw stepFailure(endpoint, code);
@@ -98,7 +125,32 @@ function loginData(result) {
 }
 
 // Importing this module is inert. Unit tests inject an in-memory transport; only the CLI writes a report.
-export async function verifyByokFrontend({ env = process.env, args = [], fetchImpl = globalThis.fetch } = {}) {
+export async function runSeedProcess(accountFile, env) {
+  return new Promise((accept, reject) =>
+    execFile(
+      process.execPath,
+      [resolve(root, 'scripts/build/seed-dev-test-models.mjs'), '--account-file', accountFile],
+      { cwd: root, env, maxBuffer: 65536 },
+      (_error, stdout) => {
+        try {
+          accept(JSON.parse(String(stdout).trim()));
+        } catch {
+          reject(
+            Object.assign(new Error('SEED_FAILED; query original receipts before retrying'), { code: 'SEED_FAILED' })
+          );
+        }
+      }
+    )
+  );
+}
+
+export async function verifyByokFrontend({
+  env = process.env,
+  args = [],
+  fetchImpl = globalThis.fetch,
+  readAccount = readPrivateAccount,
+  seedModels = runSeedProcess
+} = {}) {
   assertDevTest(env);
   const cleanupRange = cleanupOptions(args);
   const steps = Object.fromEntries(
@@ -190,18 +242,29 @@ export async function verifyByokFrontend({ env = process.env, args = [], fetchIm
     };
     if (current.calls.some((call) => call.status === 'reserved'))
       return { status: 'unverified', reason: 'REQUEST_PENDING; account retained', receipt };
-    const result = requireResult(
-      await request('account-delete', { action: 'request' }, credentials),
-      'account-delete:request'
-    );
-    check(result?.deleted === true, 'account-delete:request', 'TEST_ACCOUNT_DELETE_NOT_CONFIRMED');
-    check(result.billingRetained === true, 'account-delete:request', 'BILLING_RETENTION_NOT_CONFIRMED');
-    return { status: 'passed', billingRetained: true, receipt };
+    try {
+      const result = requireResult(
+        await request('account-delete', { action: 'request' }, credentials),
+        'account-delete:request'
+      );
+      check(result?.deleted === true, 'account-delete:request', 'TEST_ACCOUNT_DELETE_NOT_CONFIRMED');
+      check(result.billingRetained === true, 'account-delete:request', 'BILLING_RETENTION_NOT_CONFIRMED');
+      return { status: 'passed', billingRetained: true, receipt };
+    } catch (error) {
+      error.receipt = receipt;
+      throw error;
+    }
   }
-  async function existingAccount(targetEmail) {
+  async function existingAccount(targetEmail, password) {
     const result = await request(
       'login',
-      { type: 'email', region: 'CN', email: targetEmail, verifyCode: '000000', existingAccountOnly: true },
+      {
+        type: 'email',
+        region: 'CN',
+        email: targetEmail,
+        ...(password ? { password } : { verifyCode: '000000' }),
+        existingAccountOnly: true
+      },
       null
     );
     if (result?.success !== true && result?.code === 404 && result?.error === 'ACCOUNT_NOT_FOUND') return null;
@@ -219,6 +282,32 @@ export async function verifyByokFrontend({ env = process.env, args = [], fetchIm
     const reason = failureReason(error);
     if (error.transport) report.blocked.push({ step: 'local_QA_access', endpoint: error.endpoint, reason });
     return reason;
+  }
+  if (cleanupRange?.accountFile) {
+    report.mode = 'cleanup-account-file';
+    for (const name of Object.keys(steps)) delete steps[name];
+    steps.cleanup_ui_account = { status: 'unverified' };
+    try {
+      const account = readAccount(cleanupRange.accountFile);
+      check(
+        typeof account.email === 'string' &&
+          Boolean(account.email) &&
+          typeof account.password === 'string' &&
+          Boolean(account.password),
+        'login',
+        'ACCOUNT_CREDENTIALS_REQUIRED'
+      );
+      await healthCheck();
+      const existing = await existingAccount(account.email, account.password);
+      steps.cleanup_ui_account = existing ? await deleteIdle(existing.token) : { status: 'passed', absent: true };
+    } catch (error) {
+      steps.cleanup_ui_account = {
+        status: 'unverified',
+        reason: recordFailure(error),
+        ...(error.receipt ? { receipt: error.receipt } : {})
+      };
+    }
+    return report;
   }
   if (cleanupRange) {
     report.mode = 'cleanup-orphans';
@@ -246,6 +335,7 @@ export async function verifyByokFrontend({ env = process.env, args = [], fetchIm
       const reason = recordFailure(error);
       const last = report.orphanCleanup.at(-1);
       if (last?.status === 'unverified' && !last.reason) last.reason = reason;
+      if (last && error.receipt) last.receipt = error.receipt;
       steps.cleanup_orphans = { status: 'unverified', reason };
     }
     return report;
@@ -275,33 +365,26 @@ export async function verifyByokFrontend({ env = process.env, args = [], fetchIm
     privateDirectory = mkdtempSync(resolve(tmpdir(), 'yozi-byok-account-'));
     accountFile = resolve(privateDirectory, 'account.json');
     writeFileSync(accountFile, JSON.stringify({ token }), { mode: 0o600 });
-    const seedOutput = await new Promise((accept, reject) =>
-      execFile(
-        process.execPath,
-        [resolve(root, 'scripts/build/seed-dev-test-models.mjs'), '--account-file', accountFile],
-        { cwd: root, env, maxBuffer: 65536 },
-        (error, stdout) =>
-          error
-            ? reject(
-                Object.assign(new Error('SEED_FAILED; query original receipts before retrying'), {
-                  code: 'SEED_FAILED'
-                })
-              )
-            : accept(stdout)
-      )
+    const seeded = await seedModels(accountFile, env);
+    report.seed = seeded;
+    check(
+      seeded.success === true &&
+        seeded.connections?.length === 2 &&
+        new Set(seeded.connections.map((item) => item.providerId)).size === 2,
+      'seed-dev-test-models',
+      'EXPECTED_TWO_FREE_PROVIDERS'
     );
-    const seeded = JSON.parse(String(seedOutput).trim());
-    check(seeded.connections?.length === 2, 'seed-dev-test-models', 'EXPECTED_TWO_CONNECTIONS');
     steps.two_connections = { status: 'passed' };
     stage = 'discovery_and_switch';
     let catalog = await models({ action: 'list' });
-    const chosen = catalog.models.find((model) => model.id === 'dev-zai-byok');
-    check(
-      chosen && catalog.models.some((model) => model.id === 'dev-openrouter-byok'),
-      'learning-models:list',
-      'SEEDED_CONNECTION_MISSING'
+    const selectedConnections = seeded.connections.map((item) =>
+      catalog.models.find(
+        (model) => model.id === item.id && model.model === item.model && model.source === 'byok' && model.configured
+      )
     );
-    for (const model of catalog.models.filter((model) => model.source === 'byok')) {
+    const chosen = selectedConnections.find((model) => model?.id === seeded.selectedModelId);
+    check(chosen && selectedConnections.every(Boolean), 'learning-models:list', 'SEEDED_CONNECTION_MISSING');
+    for (const model of selectedConnections) {
       const discovery = await models({ action: 'discover', profileId: model.id, refresh: true });
       check(
         discovery.models.some((row) => row.modelId === model.model),
@@ -501,7 +584,15 @@ export async function verifyByokFrontend({ env = process.env, args = [], fetchIm
     check(catalog.preferences.selectedModelId === chosen.id, 'learning-models:list', 'SELECTED_MODEL_NOT_RESTORED');
     check(catalog.preferences.sharingAllowed === true, 'learning-models:list', 'SHARING_CONSENT_NOT_RESTORED');
     check(
-      catalog.models.filter((model) => model.source === 'byok').length === 2,
+      seeded.connections.every((connection) =>
+        catalog.models.some(
+          (model) =>
+            model.source === 'byok' &&
+            model.id === connection.id &&
+            model.model === connection.model &&
+            model.configured
+        )
+      ),
       'learning-models:list',
       'CONNECTIONS_NOT_RESTORED'
     );
@@ -549,6 +640,7 @@ export async function verifyByokFrontend({ env = process.env, args = [], fetchIm
         steps.delete_new_account = {
           status: 'unverified',
           reason: recordFailure(error),
+          ...(error.receipt ? { receipt: error.receipt } : {}),
           syntheticAccount: email
         };
       }
@@ -578,7 +670,9 @@ async function main() {
     const reportFile =
       report.mode === 'cleanup-orphans'
         ? 'byok-frontend-20261026-orphan-cleanup.json'
-        : 'byok-frontend-20261026-live.json';
+        : report.mode === 'cleanup-account-file'
+          ? 'byok-frontend-20261026-ui-account-cleanup.json'
+          : 'byok-frontend-20261026-live.json';
     writeFileSync(resolve(root, 'tmp/codex-orders', reportFile), JSON.stringify(report, null, 2) + '\n');
     console.info(JSON.stringify(report));
     if (Object.values(report.steps).some((step) => step.status !== 'passed')) process.exitCode = 1;

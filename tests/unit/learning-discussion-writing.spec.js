@@ -19,7 +19,7 @@ import {
   writingAnswerLimit,
   guidedSentenceFeedback
 } from '../../laf-backend/functions/_shared/learning-writing.js';
-import LearningLab from '@/components/business/learning/learning-lab.vue';
+import LearningLab from '@/pages/learning/components/learning-lab.vue';
 vi.mock('@dcloudio/uni-app', () => ({ onShow: vi.fn(), onHide: vi.fn(), onLoad: vi.fn(), onBackPress: vi.fn() }));
 const button = (w, label) => w.findAll('button').find((b) => b.text() === label);
 const stubs = {

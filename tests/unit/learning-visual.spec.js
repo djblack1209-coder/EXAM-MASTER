@@ -12,7 +12,7 @@ import {
 } from '../../laf-backend/functions/_shared/learning-visual.js';
 import { parseLearningOutput } from '../../laf-backend/functions/_shared/ai-providers/learning-provider.ts';
 import { executeLearningTool } from '@/services/learning/learning-tools.js';
-import LearningLab from '@/components/business/learning/learning-lab.vue';
+import LearningLab from '@/pages/learning/components/learning-lab.vue';
 import { createNoticeQuestion } from '../../laf-backend/functions/_shared/learning-writing.js';
 import { safeRenderDirectory } from '../../scripts/build/render-learning-visual.mjs';
 vi.mock('@dcloudio/uni-app', () => ({ onHide: vi.fn() }));
