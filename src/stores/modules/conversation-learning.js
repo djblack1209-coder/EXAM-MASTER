@@ -1,6 +1,11 @@
+import {
+  MODEL_TOOL_NAMES,
+  compactLearningProgress,
+  phraseReviewRating
+} from '../../../laf-backend/functions/_shared/learning-runtime-policy.js';
 import { modelErrorPresentation } from '../../../laf-backend/functions/_shared/model-errors.js';
 import { DEV_TEST } from '@/config/build-channel.js';
-import { ENTRY_TOOL_NAMES, activeEntryMemories } from '../../../laf-backend/functions/_shared/learning-entries.js';
+import { activeEntryMemories } from '../../../laf-backend/functions/_shared/learning-entries.js';
 import { extractConversationEntries } from '../../../laf-backend/functions/_shared/learning-entry-extractor.js';
 import { mapContentBlocks } from '../../../laf-backend/functions/_shared/learning-content-blocks.js';
 import { normalizeIntakeReply, explicitIntakeFacts } from '../../../laf-backend/functions/_shared/learning-intake.js';
@@ -51,7 +56,6 @@ import { createJourneyQuestions } from '@/services/learning/journey-training.js'
 import { reminderJobs } from '../../../laf-backend/functions/_shared/learning-reminders.js';
 import { createLearningCalendar } from '@/services/learning/learning-calendar.js';
 import { conversationStrategy } from '../../../laf-backend/functions/_shared/learning-strategy.js';
-import { ENERGY_VISUAL_CONTRACT } from '../../../laf-backend/functions/_shared/learning-visual.js';
 import { PRESSURE_TEMPLATE } from '../../../laf-backend/functions/_shared/learning-pressure.js';
 import {
   createScienceQuestion,
@@ -268,6 +272,7 @@ export const CONVERSATION_ACTION_EFFECTS = Object.freeze({
   cancelModelReads: 'read',
   interpretQuestionImage: 'send',
   testModel: 'send',
+  dispatchLearningAction: 'write',
   recoverConnectionTest: 'send',
   selectModel: 'send',
   setSharingAllowed: 'send',
@@ -1647,9 +1652,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       day: dayKey(Date.now(), state.value.timezone)
     });
   }
-  function coachReview(itemId, answer, rating) {
+  function coachReview(itemId, answer) {
     const item = active.value?.coach?.library.find((v) => v.id === itemId);
     assert(item, 'NOT_FOUND', '句式已变化');
+    const rating = phraseReviewRating(item, answer);
     const card = item.schedule
       ? {
           ...item.schedule,
@@ -1658,11 +1664,20 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         }
       : createNewCard();
     const { card: scheduled } = scheduleCard(card, rating, new Date(), captureSession());
-    return coachSave('review', { itemId, answer, rating, schedule: JSON.parse(JSON.stringify(scheduled)) });
+    return coachSave('review', {
+      itemId,
+      answer,
+      rating,
+      ratingSource: 'host-v1',
+      schedule: JSON.parse(JSON.stringify(scheduled))
+    });
   }
-  function coachPractice(itemId, answer, rating) {
+  function coachPractice(itemId, answer) {
+    const item = active.value?.coach?.library.find((entry) => entry.id === itemId);
+    assert(item, 'NOT_FOUND', '句式已变化');
+    const rating = phraseReviewRating(item, answer);
     assert(DEV_TEST, 'FORBIDDEN', '当前渠道不支持主动复习');
-    return coachSave('review', { itemId, answer, rating, practice: true });
+    return coachSave('review', { itemId, answer, rating, practice: true, ratingSource: 'host-v1' });
   }
   async function requestCoach(phase, target = phase, requestId = null) {
     refresh();
@@ -1737,6 +1752,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         ...(DEV_TEST && ['feedback', 'essay'].includes(phase) && coach.profile.exam !== 'cs408'
           ? { feedbackVersion: COACH_FEEDBACK_VERSION }
           : {}),
+        ...(['feedback', 'essay'].includes(phase) && coach.profile.exam !== 'cs408'
+          ? { dimensionContract: 'writing-dimensions-v1' }
+          : {}),
         ...bound,
         sources,
         weaknesses
@@ -1808,7 +1826,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
               requestBinding: request.binding,
               shareConsent: true,
               messages: [{ role: 'user', content: request.request.input }],
-              learningContext: { owner, goal: active.value.goal, coach: request.request }
+              learningContext: {
+                owner,
+                goal: active.value.goal,
+                snapshot: compactLearningProgress(state.value, conversationId),
+                coach: request.request
+              }
             },
             options
           );
@@ -2735,6 +2758,61 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       );
     return result;
   }
+  function dispatchLearningAction(command) {
+    refresh();
+    assert(!busy.value && active.value, 'BUSY', '请等待当前任务结束');
+    assert(
+      command &&
+        [
+          'submit',
+          'adopt_plan',
+          'change_method',
+          'hint_only',
+          'explain',
+          'resume',
+          'read_reference',
+          'independent_check',
+          'prerequisite'
+        ].includes(command.type),
+      'INVALID_INPUT',
+      '未识别此操作，未执行'
+    );
+    if (command.type === 'submit') return submit(command.answer, true);
+    if (command.type === 'resume')
+      return commit('task.resume', { conversationId: active.value.id, source: 'self_report' });
+    if (command.type === 'read_reference') return readChatWritingReference(learningId('reference'));
+    if (command.type === 'independent_check') return generateVariant();
+    if (command.type === 'prerequisite') return diagnosePrerequisite();
+    if (command.type === 'adopt_plan') {
+      const message = active.value.messages.find(
+        (entry) => entry.id === command.messageId && entry.proposal?.type === 'plan.set'
+      );
+      assert(message, 'NOT_FOUND', '没有可采用的计划，未执行');
+      return commit(
+        'plan.set',
+        { ...message.proposal.data, proposalId: message.id, explicit: true },
+        `${message.id}:accept`
+      );
+    }
+    const method =
+      command.type === 'hint_only'
+        ? 'hint'
+        : command.type === 'explain'
+          ? 'explain'
+          : activeStrategy.value.method === 'steps'
+            ? 'example'
+            : 'steps';
+    const result = commit('strategy.set', {
+      conversationId: active.value.id,
+      method,
+      reason: command.type === 'hint_only' ? '用户点击只要提示' : '用户点击换法',
+      evidenceIds: [],
+      source: 'self_report',
+      deliveryManaged: true
+    });
+    notice(command.type === 'hint_only' ? '已切换为只给提示。' : '已更换讲解方法。');
+    return result;
+  }
   async function send(raw, options = {}) {
     ensureSessionCurrent();
     assert(!intakeBusy.value, 'BUSY', '请等待模型建档回复');
@@ -2783,7 +2861,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       );
     }
     if (busy.value) {
-      const requested = userDirective(raw, state.value, selectedConversationId.value);
+      const requested = userDirective(raw, state.value, selectedConversationId.value, {
+        answering: options.answering === true
+      });
       if (requested?.type !== 'task.stop') {
         error.value = '当前模型任务仍在执行，可以先取消请求或停止当前任务';
         return;
@@ -2792,6 +2872,31 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
     error.value = '';
     const id = options.id || learningId('turn');
+    if (
+      options.answering === true &&
+      activeQuestion.value &&
+      !options.discussionOnly &&
+      !options.feedbackAttemptId &&
+      !options.visual
+    )
+      return submit(raw, true, id);
+    if (!activeQuestion.value && raw.trim().length <= 40 && !options.feedbackAttemptId && !options.visual) {
+      const action = { 换法: 'change_method', 只要提示: 'hint_only', 采用计划: 'adopt_plan', 交卷: 'submit' }[
+        raw.trim()
+      ];
+      if (action) {
+        if (action === 'submit') {
+          notice('当前没有待交卷的原答，未执行；请使用作答区的交卷按钮。');
+          return;
+        }
+        return dispatchLearningAction({
+          type: action,
+          messageId: [...(active.value?.messages || [])]
+            .reverse()
+            .find((message) => message.proposal?.type === 'plan.set')?.id
+        });
+      }
+    }
     const startedFromMessage = !active.value;
     if (startedFromMessage) start(raw);
     commit(
@@ -2899,7 +3004,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         return { proposal: true };
       }
     }
-    const directive = options.visual ? null : userDirective(raw, state.value, selectedConversationId.value);
+    const directive = options.visual
+      ? null
+      : userDirective(raw, state.value, selectedConversationId.value, {
+          answering: Boolean(activeQuestion.value && !options.discussionOnly)
+        });
     if (directive && ['profile.set', 'plan.set'].includes(directive.type)) {
       const { source: _source, conversationId: _conversationId, ...proposalData } = directive.data;
       commit(
@@ -2913,6 +3022,15 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         `${id}:proposal`
       );
       return { proposal: true };
+    }
+    if (
+      !directive &&
+      !activeQuestion.value &&
+      raw.trim().length <= 40 &&
+      /^(?:请)?(?:交卷|采用|换(?:法|方法|教法)|只(?:要|给)?提示|切换教法|执行计划)/u.test(raw.trim())
+    ) {
+      notice('未识别此操作，未执行；请使用对应按钮。');
+      return;
     }
     if (directive) {
       commit(directive.type, directive.data, `${id}:directive`);
@@ -3101,6 +3219,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       messages: dailyContext.messages,
       learningContext: {
         owner,
+        snapshot: compactLearningProgress(state.value, conversationId),
         entrySource: { conversationId, messageId: request.messageId, length: raw.length },
         goal: active.value.goal,
         ...(active.value.studyProfile ? { studyProfile: active.value.studyProfile } : {}),
@@ -3108,7 +3227,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           ? { generalQAOnly: true }
           : {}),
         task: active.value.task || normalizeLearningTask(),
-        capabilities: { ...taskContext.value, visualization: ENERGY_VISUAL_CONTRACT },
+        capabilities: { ...taskContext.value, visualization: null },
         profile: [
           ...activeEntryMemories(state.value)
             .filter((e) => !e.conversationId || e.conversationId === conversationId)
@@ -3177,16 +3296,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
               };
             })()
           : null,
-        summary: {
-          continuity: dailyContext.continuity,
-          first: (journeySummary.value || summary.value).first,
-          tasks: (journeySummary.value || summary.value).tasks,
-          teaching: observeTeaching(state.value, {
-            conversationId,
-            scope: activeQuestion.value ? knowledgeScope(activeQuestion.value) : undefined,
-            limit: 3
-          }).rows
-        }
+        summary: compactLearningProgress(state.value, conversationId)
       }
     };
     controller = requestController;
@@ -3315,11 +3425,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     try {
       for (const [index, call] of (data.tools || []).entries()) {
         assertSession();
-        assert(
-          ['progress', 'visualize', 'method', 'hint', 'assess', 'plan', ...ENTRY_TOOL_NAMES].includes(call.name),
-          'FORBIDDEN',
-          '模型工具未获授权'
-        );
+        assert(MODEL_TOOL_NAMES.includes(call.name), 'FORBIDDEN', '模型工具未获授权');
         const outcome = executeLearningTool(learningRepository, { ...call, id: `${id}:tool:${index}` }, context);
         refresh();
         if (call.name === 'visualize')
@@ -3981,7 +4087,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const origin = ensureSessionCurrent();
     const result = await modelAction((options) => saveLearningModel(profile, consent, options));
     ensureSessionCurrent(origin);
-    if (result.success) {
+    if (result.success || result.error) {
       cancelModelReads('discover', 'CONTEXT_CHANGED');
       modelDiscoveryState.value = { phase: 'idle', message: '' };
       await loadModels();
@@ -5069,6 +5175,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     interpretQuestionImage,
     modelPresets,
     testModel,
+    dispatchLearningAction,
     recoverConnectionTest,
     beginModelIntake,
     restartModelIntake,

@@ -1,3 +1,4 @@
+import { phaseCallLimit, LEARNING_BUDGET_PHASES } from './learning-runtime-policy.js';
 import { modelConfigurationVersion } from './ai-providers/free-model-presets.js';
 import crypto from 'node:crypto';
 import { DEV_TEST } from './build-channel.js';
@@ -23,7 +24,7 @@ const requireValue = (condition: any, code: string, message: string) => {
 };
 // Diagnostics keep schema coordinates, never arbitrary model-provided field names or reply text.
 const VALIDATION_FIELDS = new Set(
-  'context turns item profile goal-category-subjects exam-minutes exam minutes deadline foundation reply first json raw option options profile-evidence root turn-limit cards id kind title prompt example sourceId sourceQuote sourcePage source writing patterns learned tomorrow target lines original advice rewrite dimensions name comment weaknesses phrases strengths strengthEvidence weaknessEvidence classification feedbackVersion finish_reason bandResult bandCandidate contract binding submissionId answerHash taskId taskVersion rubricId rubricVersion requestId status nullReason band bandRange scoreEstimate maxScore taskCoverage observations key evidenceSpans start end note integrityFlags label quote coach message tools question'.split(
+  'context turns item profile goal-category-subjects exam-minutes exam minutes deadline foundation reply first json raw option options profile-evidence root turn-limit cards id kind title prompt example sourceId sourceQuote sourcePage source writing patterns learned tomorrow target lines original advice rewrite dimensions dimensionContract name comment score evidence weaknesses phrases strengths strengthEvidence weaknessEvidence classification feedbackVersion finish_reason bandResult bandCandidate contract binding submissionId answerHash taskId taskVersion rubricId rubricVersion requestId status nullReason band bandRange scoreEstimate maxScore taskCoverage observations key evidenceSpans start end note integrityFlags label quote coach message tools question'.split(
     ' '
   )
 );
@@ -266,6 +267,17 @@ export function reserveCall(account: any, input: any, now = Date.now(), policy =
       'POLICY_INVALID',
       '自带API调用预算不合法'
     );
+    if (input.budgetPhase !== undefined) {
+      requireValue(LEARNING_BUDGET_PHASES.includes(input.budgetPhase), 'INPUT_INVALID', '学习阶段不合法');
+      const used = account.calls.filter(
+        (call: any) => call.source === 'byok' && (call.budgetPhase || 'practice') === input.budgetPhase
+      ).length;
+      requireValue(
+        DEV_TEST || used < phaseCallLimit(callLimit, input.budgetPhase),
+        'PHASE_BUDGET_LIMIT',
+        '本阶段调用额度已用完，其他阶段额度保留'
+      );
+    }
     requireValue(
       DEV_TEST || account.calls.filter((c: any) => c.source === 'byok').length < callLimit,
       'BYOK_LIMIT',
@@ -289,7 +301,12 @@ export function reserveCall(account: any, input: any, now = Date.now(), policy =
       'REPAIR_INVALID',
       '修复仅能派生自同连接的校验失败请求'
     );
-    input = { ...input, units: 0, deliveryUnits: parent.units || 0 };
+    input = {
+      ...input,
+      budgetPhase: parent.budgetPhase || input.budgetPhase,
+      units: 0,
+      deliveryUnits: parent.units || 0
+    };
   }
   const result = structuredClone(account);
   if (input.source === 'platform') {

@@ -1,3 +1,8 @@
+import {
+  MODEL_TOOL_NAMES,
+  compactLearningProgress,
+  toolParameterHash
+} from '../../../laf-backend/functions/_shared/learning-runtime-policy.js';
 import { proposalStatus } from '../../../laf-backend/functions/_shared/learning-proposals.js';
 import {
   ENTRY_TOOL_NAMES,
@@ -15,8 +20,7 @@ import {
   ORIGINAL_ANSWER_OPERATION,
   knowledgeScope,
   summarizeLearning,
-  effectiveGrade,
-  learningTaskContext
+  effectiveGrade
 } from './learning-domain.js';
 import { algebraTeaching } from '../../../laf-backend/functions/_shared/learning-algebra.js';
 import { conditionTeaching } from '../../../laf-backend/functions/_shared/learning-condition.js';
@@ -69,72 +73,95 @@ export const LEARNING_TOOLS = Object.freeze({
     ])
   ),
   progress: { version: '1.0', permission: 'read', writes: false, costs: false, timeoutMs: 2000 },
-  visualize: { version: '1.0', permission: 'read', writes: false, costs: false, timeoutMs: 2000 },
+  visualize: { version: '1.1', permission: 'read', writes: false, costs: false, timeoutMs: 60000 },
   focus: { version: '1.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 },
   submit: { version: '1.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 },
-  hint: { version: '1.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 },
+  hint: { version: '1.1', permission: 'learn', writes: true, costs: false, timeoutMs: 30000 },
   method: { version: '1.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 },
-  assess: { version: '1.2', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 },
+  assess: { version: '1.3', permission: 'learn', writes: true, costs: false, timeoutMs: 60000 },
   plan: { version: '2.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 },
   stop: { version: '1.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 }
 });
 export function executeLearningTool(repository, call, context) {
   context.assertCurrent?.();
   const tool = LEARNING_TOOLS[call?.name];
-  assert(tool, 'UNKNOWN_TOOL', '工具不在允许清单中');
-  assert(context.permissions.includes(tool.permission), 'FORBIDDEN', '没有此工具权限');
-  assert(!context.signal?.aborted, 'CANCELLED', '操作已取消');
-  assert(context.calls < context.maxCalls && Date.now() <= context.deadline, 'BUDGET_LIMIT', '任务工具预算已用完');
-  assert(
-    call && call.arguments && typeof call.arguments === 'object' && !Array.isArray(call.arguments),
-    'INVALID_INPUT',
-    '工具参数不合法'
-  );
-  if (ENTRY_TOOL_NAMES.includes(call.name)) validateEntryCall(call.name, call.arguments);
-  const allowed =
-    {
-      progress: [],
-      visualize: [
-        'points',
-        'template',
-        'outward',
-        'backward',
-        'direction',
-        'massKg',
-        'netForceN',
-        'initialVelocityMps',
-        'physicalSeconds',
-        'segments'
-      ],
-      focus: ['questionKey'],
-      submit: ['answer'],
-      hint: ['content', 'level'],
-      method: ['method', 'difficulty', 'reason'],
-      assess: ['attemptId', 'outcome', 'dimensions', 'feedback', 'rubricId'],
-      plan: ['tasks', 'reason'],
-      stop: []
-    }[call.name] || Object.keys(ENTRY_TOOL_SCHEMAS[call.name]?.properties || call.arguments);
-  assert(
-    Object.keys(call.arguments).every((key) => allowed.includes(key)),
-    'FORBIDDEN',
-    '工具参数超出权限'
-  );
-  context.calls += 1;
-  const lockedMethod = context.lockedMethod || requestedTeachingMethod(repository.read(), context.conversationId);
-  if (call.name === 'method' && lockedMethod)
-    assert(call.arguments.method === lockedMethod, 'USER_PREFERENCE', '本轮应遵循用户明确指定的方法');
-  if (call.name === 'visualize' && lockedMethod)
-    assert(lockedMethod === 'diagram', 'USER_PREFERENCE', '用户指定其他教法时不自动切换为互动观察');
-  if (call.name === 'visualize') {
-    const session = repository.read().conversations.find((c) => c.id === context.conversationId);
-    assert(session && !session.stopped, 'STOPPED', '没有当前学习任务或任务已停止，未生成新动画');
-  }
   const started = Date.now();
-  let result;
-  let operationReused = false;
-  let legacyAssessmentReplay = false;
-  let legacyPlanReplay = false;
+  const parameterHash = toolParameterHash(call?.arguments);
+  const receipt = (decision) => ({
+    tool: tool ? call.name : 'unregistered',
+    version: tool?.version || 'unknown',
+    permission: tool?.permission || 'none',
+    decision,
+    parameterHash,
+    remainingBudget: Math.max(0, context.maxCalls - context.calls)
+  });
+  const originalRepository = repository;
+  repository = {
+    read: () => originalRepository.read(),
+    commit: (...args) => {
+      assert(Date.now() - started <= 2000, 'TOOL_TIMEOUT', '工具执行超时，未提交新结果');
+      return originalRepository.commit(...args);
+    }
+  };
   try {
+    assert(tool, 'UNKNOWN_TOOL', '工具不在允许清单中');
+    assert(context.permissions.includes(tool.permission), 'FORBIDDEN', '没有此工具权限');
+    assert(!context.signal?.aborted, 'CANCELLED', '操作已取消');
+    assert(context.calls < context.maxCalls && Date.now() <= context.deadline, 'BUDGET_LIMIT', '任务工具预算已用完');
+    context.calls += 1;
+    assert(context.origin !== 'model' || call.name !== 'submit', 'FORBIDDEN', '模型不能代替用户作答');
+    assert(
+      context.origin !== 'model' || MODEL_TOOL_NAMES.includes(call.name),
+      'FORBIDDEN',
+      '模型不能选择教法或写入学习事实'
+    );
+    assert(
+      call && call.arguments && typeof call.arguments === 'object' && !Array.isArray(call.arguments),
+      'INVALID_INPUT',
+      '工具参数不合法'
+    );
+    if (ENTRY_TOOL_NAMES.includes(call.name)) validateEntryCall(call.name, call.arguments);
+    const allowed =
+      {
+        progress: [],
+        visualize: [
+          'points',
+          'template',
+          'outward',
+          'backward',
+          'direction',
+          'massKg',
+          'netForceN',
+          'initialVelocityMps',
+          'physicalSeconds',
+          'segments'
+        ],
+        focus: ['questionKey'],
+        submit: ['answer'],
+        hint: ['content', 'level'],
+        method: ['method', 'difficulty', 'reason'],
+        assess: ['attemptId', 'outcome', 'dimensions', 'feedback', 'rubricId'],
+        plan: ['tasks', 'reason'],
+        stop: []
+      }[call.name] || Object.keys(ENTRY_TOOL_SCHEMAS[call.name]?.properties || call.arguments);
+    assert(
+      Object.keys(call.arguments).every((key) => allowed.includes(key)),
+      'FORBIDDEN',
+      '工具参数超出权限'
+    );
+    const lockedMethod = context.lockedMethod || requestedTeachingMethod(repository.read(), context.conversationId);
+    if (call.name === 'method' && lockedMethod)
+      assert(call.arguments.method === lockedMethod, 'USER_PREFERENCE', '本轮应遵循用户明确指定的方法');
+    if (call.name === 'visualize' && lockedMethod)
+      assert(lockedMethod === 'diagram', 'USER_PREFERENCE', '用户指定其他教法时不自动切换为互动观察');
+    if (call.name === 'visualize') {
+      const session = repository.read().conversations.find((c) => c.id === context.conversationId);
+      assert(session && !session.stopped, 'STOPPED', '没有当前学习任务或任务已停止，未生成新动画');
+    }
+    let result;
+    let operationReused = false;
+    let legacyAssessmentReplay = false;
+    let legacyPlanReplay = false;
     if (call.name === 'plan') {
       const state = repository.read();
       assert(
@@ -176,11 +203,7 @@ export function executeLearningTool(repository, call, context) {
     } else if (call.name === 'visualize') result = visualRecipe(call.arguments);
     else if (call.name === 'progress') {
       const state = repository.read();
-      result = {
-        ...summarizeLearning(state),
-        task: learningTaskContext(state, context.conversationId),
-        teaching: observeTeaching(state, { conversationId: context.conversationId })
-      };
+      result = compactLearningProgress(state, context.conversationId);
     } else if (call.name === 'method' && lockedMethod)
       result = conversationStrategy(repository.read(), context.conversationId);
     else {
@@ -253,7 +276,7 @@ export function executeLearningTool(repository, call, context) {
           (priorReceipt.data.version === tool.version ||
             (legacyAssessmentReplay && ['1.0', '1.1'].includes(priorReceipt.data.version)) ||
             (legacyPlanReplay && priorReceipt.data.version === '1.0')) &&
-          priorReceipt.data.status === 'success',
+          (priorReceipt.data.status === 'success' || priorReceipt.data.decision === 'allowed'),
         'IDEMPOTENCY_CONFLICT',
         '原工具收据与重试任务不一致'
       );
@@ -262,31 +285,22 @@ export function executeLearningTool(repository, call, context) {
       repository.commit({
         id: `${call.id}:receipt`,
         type: 'execution.record',
-        data: {
-          tool: call.name,
-          version: tool.version,
-          status: 'success',
-          durationMs: Date.now() - started
-        }
+        data: receipt('allowed')
       });
     }
     return { success: true, result, executionId: `${call.id}:receipt` };
   } catch (error) {
     context.assertCurrent?.();
-    repository.commit({
-      id: `${call.id}:failure`,
+    originalRepository.commit({
+      id: `${call?.id || 'unregistered'}:denied:${parameterHash.split(':')[1]}`,
       type: 'execution.record',
-      data: {
-        tool: call.name,
-        version: tool.version,
-        status: 'failed',
-        errorCode: error.code || 'TOOL_FAILED'
-      }
+      data: receipt('denied')
     });
     throw error;
   }
 }
-export function userDirective(raw, state, conversationId) {
+export function userDirective(raw, state, conversationId, { answering = false } = {}) {
+  if (answering || typeof raw !== 'string' || raw.trim().length > 40) return null;
   const value = raw.trim();
   // A saved answer or quoted passage has no authority to operate the learning session.
   if (/^(?:我的答案是|我的答案[：:]|答案是|我认为)/u.test(value)) return null;

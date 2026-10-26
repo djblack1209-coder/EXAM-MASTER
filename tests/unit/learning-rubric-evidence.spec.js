@@ -153,7 +153,9 @@ describe('引用合同与事实兼容、权限及同步重建', () => {
     assess(repo);
     const receipt = clone(repo.read().events.find((e) => e.id === 'score:receipt'));
     const revision = repo.read().revision;
-    expect(receipt.data.durationMs).toBe(7);
+    expect(receipt.data).toMatchObject({ decision: 'allowed', permission: 'learn', remainingBudget: 0 });
+    expect(receipt.data.parameterHash).toMatch(/^fnv1a32:[a-f0-9]{8}$/);
+    expect(receipt.data).not.toHaveProperty('durationMs');
     duration = 99;
     expect(assess(repo).success).toBe(true);
     expect(repo.read().revision).toBe(revision);
@@ -223,7 +225,8 @@ describe('引用合同与事实兼容、权限及同步重建', () => {
         { permissions: ['learn'], calls: 0, maxCalls: 1, deadline: Date.now() + 1000 }
       )
     ).toThrow(expect.objectContaining({ code: 'INVALID_INPUT' }));
-    expect(repo.read().executions).toEqual([]);
+    expect(repo.read().executions).toHaveLength(1);
+    expect(repo.read().executions[0].decision).toBe('denied');
   });
   it('旧v1重复引用与历史缺分规则冻结，备份不擅自升级定位或权威', () => {
     const repo = repository(fixture.cases[0].answer.repeat(2));

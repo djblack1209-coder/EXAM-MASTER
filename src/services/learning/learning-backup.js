@@ -109,7 +109,10 @@ export function prepareLearningRestore(
     let pendingReview = false;
     // 执行收据不能由备份提升为当前已执行的动作。
     if (operation.type === 'execution.record') {
-      operation.data = { ...operation.data, status: 'cancelled', errorCode: 'BACKUP_HISTORY_ONLY' };
+      operation.data =
+        operation.data.decision !== undefined
+          ? { ...operation.data, decision: 'denied' }
+          : { ...operation.data, status: 'cancelled', errorCode: 'BACKUP_HISTORY_ONLY' };
     }
     if (operation.type === 'model.request') operation.data = { ...operation.data, historyOnly: true };
     if (operation.type === 'teaching.deliver') operation.data = { ...operation.data, historyOnly: true };

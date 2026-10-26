@@ -1,3 +1,4 @@
+import { prepareLearningRestore } from '@/services/learning/learning-backup.js';
 import { describe, it, expect, vi } from 'vitest';
 import {
   applyLearningOperation,
@@ -96,21 +97,23 @@ function session(profile = { exam: 'english1', deadline: '2026-12-22', minutes: 
   apply('coach.begin');
   apply('coach.profile', { profile });
   const coach = () => state.conversations[0].coach;
-  const generate = (phase, target = phase) => {
+  const generate = (phase, target = phase, patch = {}, transform = (output) => output) => {
     const c = coach(),
-      day = c.days.find((d) => d.day === '2026-10-18');
+      currentDay = new Date(now).toISOString().slice(0, 10),
+      day = c.days.find((d) => d.day === currentDay);
     const request = normalizeCoachRequest({
       contract: WRITING_COACH_CONTRACT,
       phase,
       target,
       exam: 'english1',
-      day: '2026-10-18',
+      day: currentDay,
       essayType: coachEssayType(c, '2026-10-18'),
-      ...coachInputFor(c, day, phase, target)
+      ...coachInputFor(c, day, phase, target),
+      ...patch
     });
     const requestId = `r${++serial}`;
     apply('coach.request', { requestId, request, modelId: 'synthetic', binding: 'synthetic-binding' });
-    apply('coach.result', { requestId, output: coachFixture(request) });
+    apply('coach.result', { requestId, output: transform(coachFixture(request)) });
   };
   return {
     apply,
@@ -597,4 +600,73 @@ describe('考研写作方法与完整已保存事实路径', () => {
     expect(s.coach().requests).toHaveLength(1);
     expect(s.coach().requests[0].status).toBe('completed');
   });
+});
+
+it('新量表契约贯穿原稿、按维反馈与次日改写，全文不进入FSRS', () => {
+  const s = session();
+  s.generate('diagnostic');
+  for (let index = 1; index <= 5; index++)
+    s.apply('coach.answer', { target: 'diagnostic', cardId: `d${index}`, answer: 'Synthetic diagnostic original.' });
+  s.generate('feedback', 'diagnostic');
+  s.generate('daily');
+  for (let index = 0; index < 8; index++) {
+    s.apply('coach.answer', { cardId: `c${index}`, answer: 'Synthetic practice original.' });
+    s.generate('feedback', `card-c${index}`);
+  }
+  s.apply('coach.analysis', {
+    fields: { genre: 'letter', recipient: 'friend', purpose: 'invite', points: 'event', words: '100' }
+  });
+  s.generate('feedback', 'analysis');
+  for (let index = 0; index < 2; index++) {
+    s.apply('coach.paragraph', { index, text: 'Original student paragraph.' });
+    s.generate('feedback', `paragraph-${index}`);
+    s.apply('coach.paragraph', { index, rewrite: true, text: 'Revised student paragraph.', authorship: 'user_typed' });
+  }
+  s.apply('coach.essaySubmit');
+  s.generate('essay', 'essay', { dimensionContract: 'writing-dimensions-v1' });
+  const original = structuredClone(s.coach().days[0].writingSubmissions);
+  expect(s.coach().days[0].rewritePending).toBe(true);
+  expect(s.coach().rewriteTasks).toHaveLength(1);
+  const task = s.coach().rewriteTasks[0];
+  expect(() => s.apply('coach.rewriteAnswer', { rewriteId: task.id, answer: 'Too early.' })).toThrow();
+  expect(s.get().reviews).toEqual([]);
+  expect(s.coach().library).toEqual([]);
+  s.nextDay();
+  s.apply('coach.rewriteAnswer', { rewriteId: task.id, answer: 'A complete next-day student rewrite.' });
+  s.generate('essay', 'rewrite', { dimensionContract: 'writing-dimensions-v1' }, (output) => ({
+    ...output,
+    dimensions: output.dimensions.map((dimension) => ({ ...dimension, score: 2 }))
+  }));
+  expect(s.coach().days[0].writingSubmissions).toEqual(original);
+  expect(s.coach().rewriteTasks[0].feedback.dimensions.every((dimension) => dimension.score === 2)).toBe(true);
+  expect(s.coach().days[0].rewritePending).toBe(false);
+  expect(s.get().reviews).toEqual([]);
+  expect(s.coach().learningRecords.at(-1)).toMatchObject({
+    source: 'host_validated',
+    target: 'rewrite',
+    evaluation: 'AI评估'
+  });
+  const restored = prepareLearningRestore(
+    emptyLearningState('synthetic-user', 'Asia/Shanghai'),
+    JSON.stringify(s.get())
+  ).state;
+  expect(restored.conversations[0].coach.rewriteTasks).toEqual(s.coach().rewriteTasks);
+});
+
+it.each(['dimension', 'score', 'evidence', 'duplicate'])('新批改合同拒绝越界结果并保留原稿：%s', (violation) => {
+  const request = normalizeCoachRequest({
+    contract: WRITING_COACH_CONTRACT,
+    phase: 'essay',
+    target: 'essay',
+    exam: 'english1',
+    day: '2026-10-26',
+    input: 'The student original sentence.',
+    dimensionContract: 'writing-dimensions-v1'
+  });
+  const output = coachFixture(request);
+  if (violation === 'dimension') output.dimensions[0].name = 'invented_dimension';
+  if (violation === 'score') output.dimensions[0].score = 99;
+  if (violation === 'evidence') output.dimensions[0].evidence = ['This was never written by the student.'];
+  if (violation === 'duplicate') output.dimensions[1].name = output.dimensions[0].name;
+  expect(() => normalizeCoachOutput(output, request)).toThrow(expect.objectContaining({ code: 'COACH_INVALID' }));
 });

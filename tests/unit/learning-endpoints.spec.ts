@@ -5,6 +5,7 @@ const mock = vi.hoisted(() => ({
   rows: new Map(),
   users: new Map(),
   allowed: true,
+  probeMode: 'ok',
   queries: [] as any[],
   response: undefined as any,
   failStateDelete: false
@@ -54,6 +55,28 @@ vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
 vi.mock('../../laf-backend/functions/_shared/ai-providers/learning-provider', async (original) => ({
   ...(await original<any>()),
   callStreamingLearningProvider: vi.fn(),
+  callCapabilityProvider: vi.fn(async (config: any) => {
+    const probe = config.capabilityProbe;
+    return {
+      content: JSON.stringify(
+        probe.stage === 'tool'
+          ? { nonce: probe.nonce }
+          : { nonce: mock.probeMode === 'wrong_nonce' ? 'wrong' : probe.nonce, accepted: true }
+      ),
+      ...(probe.stage === 'tool' && mock.probeMode !== 'missing_tool'
+        ? {
+            capabilityToolCall: {
+              id: 'synthetic_capability_call',
+              type: 'function',
+              function: { name: 'yozi_capability_echo', arguments: JSON.stringify({ nonce: probe.nonce }) }
+            }
+          }
+        : {}),
+      actualModel: config.model,
+      usage: { prompt_tokens: 1, completion_tokens: 1 },
+      durationMs: 1
+    };
+  }),
   callLearningProvider: vi.fn(async () => ({
     content: '{"message":"隔离测试回复","tools":[]}',
     actualModel: 'explicit-test-id',
@@ -61,7 +84,19 @@ vi.mock('../../laf-backend/functions/_shared/ai-providers/learning-provider', as
     durationMs: 1
   }))
 }));
-import models from '../../laf-backend/functions/learning-models';
+import modelsHandler from '../../laf-backend/functions/learning-models';
+// Existing endpoint cases start with a preverified synthetic connection. Keep setup
+// probe receipts out of the per-case inference ledger; dedicated probe cases below
+// call modelsHandler directly and assert every real handler receipt.
+async function models(ctx: any) {
+  const result = await modelsHandler(ctx);
+  if (ctx.body?.action === 'save' && result.success) {
+    for (const [key, account] of mock.rows)
+      if (key.startsWith('learning_accounts:'))
+        account.calls = account.calls.filter((call: any) => !call.id.startsWith('save_'));
+  }
+  return result;
+}
 import { newAccount, reserveCall, decryptModelKey } from '../../laf-backend/functions/_shared/learning-account';
 import { MODEL_API_KEY_MAX_LENGTH } from '../../laf-backend/functions/_shared/ai-providers/model-endpoints.js';
 import ai, { costFromUsage, runLearningModelTask } from '../../laf-backend/functions/proxy-ai';
@@ -72,6 +107,7 @@ import { parsePastedMaterial } from '../../src/services/learning/material-intake
 import { PAGE_PNG, PAGE_SOURCE, PAGE_READING } from '../fixtures/learning-vision.js';
 import {
   callLearningProvider,
+  callCapabilityProvider,
   callStreamingLearningProvider,
   buildLearningRequest,
   ProviderError
@@ -94,6 +130,7 @@ beforeEach(() => {
   for (const id of ['u1', 'u2', 'u3']) mock.users.set(`users:${id}`, { _id: id, status: 'active' });
   mock.queries.length = 0;
   mock.allowed = true;
+  mock.probeMode = 'ok';
   mock.failStateDelete = false;
   vi.clearAllMocks();
   vi.mocked(callLearningProvider)
@@ -668,16 +705,18 @@ it('连接测试调用真实预算链，幂等复用且不进入学习事实；�
       }
     })
   );
+  vi.mocked(callCapabilityProvider).mockClear();
   const body = { action: 'test', modelId: 'test-connection', requestId: 'connection-retry', shareConsent: true };
   expect((await models(context({ ...body, shareConsent: false }))).code).toBe(400);
   expect((await models(context(body))).success).toBe(true);
   expect((await models(context(body))).reused).toBe(true);
-  expect(callLearningProvider).toHaveBeenCalledTimes(1);
+  expect(callLearningProvider).not.toHaveBeenCalled();
+  expect(callCapabilityProvider).toHaveBeenCalledTimes(2);
   const list = await models(context({ action: 'list' }));
   expect(list.data.models[0]).toMatchObject({ connectionStatus: 'connected', configured: true });
   expect(JSON.stringify(list)).not.toContain('test-only-connection-key');
   const usage = await models(context({ action: 'usage' }));
-  expect(usage.data.calls).toHaveLength(1);
+  expect(usage.data.calls).toHaveLength(2);
   expect(usage.data.entitlement.spent).toBe(0);
   expect([...mock.rows.keys()].some((id) => id.startsWith('learning_states:'))).toBe(false);
 });
@@ -1944,4 +1983,74 @@ it('saves a credential-only connection for discovery but blocks selection and in
   expect((await models(context({ action: 'preferences', preferences: { selectedModelId: profile.id } }))).success).toBe(
     true
   );
+});
+
+describe('保存连接的最小工具往返门禁', () => {
+  const profile = {
+    id: 'probe_profile',
+    model: 'probe_model',
+    apiKey: 'synthetic_probe_key',
+    endpoint: 'https://provider.example/chat'
+  };
+  it('保存时完成工具及JSON往返，两个回执均记账且不含学生数据', async () => {
+    const result = await modelsHandler(context({ action: 'save', profile, shareConsent: true }));
+    expect(result).toMatchObject({
+      success: true,
+      data: { connectionStatus: 'connected', capabilities: { tools: true, structured: true } }
+    });
+    const probes = vi.mocked(callCapabilityProvider).mock.calls;
+    expect(probes).toHaveLength(2);
+    expect(probes[0][0].capabilityProbe.stage).toBe('tool');
+    expect(probes[1][0].capabilityProbe.stage).toBe('json');
+    expect(probes[1][1].some((message: any) => message.role === 'tool')).toBe(true);
+    const usage = await modelsHandler(context({ action: 'usage' }));
+    expect(usage.data.calls).toHaveLength(2);
+    const list = await modelsHandler(context({ action: 'list' }));
+    expect(list.data.models[0].capabilityCheck).toMatchObject({ tools: true, structured: true, version: 1 });
+    expect(list.data.models[0].connectionStatus).toBe('connected');
+  });
+  it.each(['missing_tool', 'wrong_nonce'])('不支持工具或未消费工具结果时拒绝教学：%s', async (mode) => {
+    mock.probeMode = mode;
+    const result = await modelsHandler(context({ action: 'save', profile, shareConsent: true }));
+    expect(result.success).toBe(false);
+    const inference = await ai(
+      context({
+        modelId: profile.id,
+        requestId: 'blocked_probe',
+        shareConsent: true,
+        messages: [{ role: 'user', content: 'student private draft' }]
+      })
+    );
+    expect(inference).toMatchObject({ success: false, error: 'TEACHING_CAPABILITY_REQUIRED' });
+    expect(callLearningProvider).not.toHaveBeenCalled();
+  });
+});
+
+it('新版按维批改拒绝非法档位，保留失败收据且等待明确重试，不自动派生调用', async () => {
+  await streamProfile(false);
+  const request = {
+    contract: 'kaoyan-writing-coach-v1',
+    phase: 'essay',
+    target: 'essay',
+    exam: 'english2',
+    day: '2026-10-26',
+    input: 'I invite you to our reading event.',
+    sources: [],
+    dimensionContract: 'writing-dimensions-v1'
+  };
+  const { coachFixture } = await import('../fixtures/writing-coach.js');
+  const invalid = coachFixture(request);
+  invalid.dimensions[0].score = 9;
+  vi.mocked(callLearningProvider).mockResolvedValue({
+    ...streamCompleted,
+    content: JSON.stringify({ message: 'AI 评估', tools: [], question: null, coach: invalid })
+  });
+  const result = await ai(
+    context({ ...streamBody('invalid-dimension-no-retry'), learningContext: { owner: 'u1', coach: request } })
+  );
+  expect(result).toMatchObject({ success: false, error: 'COACH_INVALID', validationPath: 'dimensions[0].score' });
+  expect(callLearningProvider).toHaveBeenCalledOnce();
+  const ledger = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && Array.isArray(row.calls));
+  expect(ledger.calls).toHaveLength(1);
+  expect(ledger.calls[0]).toMatchObject({ status: 'failed', result: null });
 });

@@ -1328,6 +1328,7 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
     case 'coach.analysis':
     case 'coach.paragraph':
     case 'coach.essaySubmit':
+    case 'coach.rewriteAnswer':
     case 'coach.adopt':
     case 'coach.finish':
     case 'coach.survey': {
@@ -2693,6 +2694,25 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       break;
     }
     case 'execution.record': {
+      if (data.decision !== undefined) {
+        assert(
+          Object.keys(data).every((key) =>
+            ['tool', 'version', 'permission', 'decision', 'parameterHash', 'remainingBudget'].includes(key)
+          ) &&
+            ['allowed', 'denied'].includes(data.decision) &&
+            /^[a-z][a-zA-Z0-9._-]{0,60}$/.test(data.tool) &&
+            /^[a-zA-Z0-9._-]{1,30}$/.test(data.version) &&
+            ['read', 'learn', 'none'].includes(data.permission) &&
+            /^fnv1a32:[a-f0-9]{8}$/.test(data.parameterHash) &&
+            Number.isSafeInteger(data.remainingBudget) &&
+            data.remainingBudget >= 0,
+          'INVALID_INPUT',
+          '执行收据只接受有界元信息'
+        );
+        result = { id: opId, ...clone(data), status: data.decision === 'allowed' ? 'success' : 'failed', at: now };
+        state.executions.push(result);
+        break;
+      }
       assert(['success', 'failed', 'cancelled'].includes(data.status), 'INVALID_INPUT', '执行状态不合法');
       result = {
         id: opId,

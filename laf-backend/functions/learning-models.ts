@@ -1,3 +1,4 @@
+import { ProviderError } from './_shared/ai-providers/learning-provider.js';
 import cloud from '@lafjs/cloud';
 import { normalizeIntakeContext, MODEL_INTAKE_CONTRACT } from './_shared/learning-intake.js';
 import crypto from 'node:crypto';
@@ -6,7 +7,7 @@ import { requireActiveUser } from './_shared/active-user.js';
 import { checkRateLimitDistributed } from './_shared/api-response.js';
 import { DEV_TEST } from './_shared/build-channel.js';
 import { createModelDiscovery } from './_shared/ai-providers/model-discovery.js';
-import proxyAI, { configuredModels } from './proxy-ai.js';
+import proxyAI, { configuredModels, runLearningModelTask } from './proxy-ai.js';
 import { readModelCredential } from './_shared/model-connections.js';
 import { modelErrorPresentation } from './_shared/model-errors.js';
 import { FREE_MODEL_PRESETS, modelConnectionState } from './_shared/ai-providers/free-model-presets.js';
@@ -99,6 +100,68 @@ export default async function (ctx: any) {
   const limit = await checkRateLimitDistributed(`learning-models:${auth.userId}`, DEV_TEST ? 1000000 : 30, 60000);
   if (!limit.allowed) return { code: 429, success: false, message: '请求过于频繁' };
   const db = cloud.database();
+  const probeConnection = async (profile: any, requestId: string) => {
+    const nonce = crypto
+      .createHash('sha256')
+      .update(`${auth.userId}:${requestId}:${profile.model}:${profile.endpoint}:${profile.keyRef}`)
+      .digest('hex')
+      .slice(0, 32);
+    const bodyFor = (suffix: string) => ({
+      ...ctx,
+      body: {
+        modelId: profile.id,
+        requestId: `${requestId}:${suffix}`,
+        shareConsent: true,
+        messages: [{ role: 'user', content: '连接能力检查，不含学生内容。' }],
+        learningContext: { owner: auth.userId, purpose: 'connection_test' }
+      }
+    });
+    const first = await runLearningModelTask(bodyFor('tool'), { capabilityProbe: { stage: 'tool', nonce } });
+    const second =
+      first.success && first.data?.capabilityToolCall
+        ? await runLearningModelTask(bodyFor('json'), {
+            capabilityProbe: { stage: 'json', nonce, toolCall: first.data.capabilityToolCall }
+          })
+        : first;
+    const accepted = Boolean(first.success && first.data?.capabilityToolCall && second.success);
+    const checkedAt = Date.now();
+    await mutateAccount(db, auth.userId, (account) => {
+      const saved = account.profiles.find((item: any) => item.id === profile.id);
+      if (
+        !saved ||
+        saved.model !== profile.model ||
+        saved.endpoint !== profile.endpoint ||
+        saved.keyRef !== profile.keyRef
+      )
+        throw new ProviderError('CONTEXT_CHANGED', '连接已变化，未采用旧测试结果');
+      saved.capabilities = {
+        ...saved.capabilities,
+        tools: Boolean(first.success && first.data?.capabilityToolCall),
+        structured: accepted
+      };
+      saved.capabilityCheck = {
+        version: 1,
+        tools: Boolean(first.success && first.data?.capabilityToolCall),
+        structured: accepted,
+        checkedAt
+      };
+      return { account };
+    });
+    return accepted
+      ? {
+          code: 0,
+          success: true,
+          reused: Boolean(first.reused && second.reused),
+          data: { id: profile.id, connectionStatus: 'connected', capabilities: { tools: true, structured: true } },
+          message: '连接能力检查通过'
+        }
+      : {
+          ...second,
+          success: false,
+          error: second.error || 'TEACHING_CAPABILITY_REQUIRED',
+          message: second.message || '连接已保存，但此型号未通过工具与结构化输出往返测试，不能进入教学'
+        };
+  };
   try {
     if (body.action === 'preferences') {
       const patch = body.preferences;
@@ -128,6 +191,12 @@ export default async function (ctx: any) {
       if (typeof body.modelId !== 'string' || body.shareConsent !== true)
         return { code: 400, success: false, message: '连接测试会真实调用指定模型，需明确确认' };
       const intake = body.intake ? normalizeIntakeContext(body.intake) : null;
+      const account = (await mutateAccount(db, auth.userId, (value) => ({ account: value }))).account;
+      const profile = account.profiles.find((item: any) => item.id === body.modelId);
+      if (!profile?.keyRef || profile.requiresModelSelection)
+        return { code: 422, success: false, message: '请先保存密钥并选择型号' };
+      const probe = await probeConnection(profile, body.requestId);
+      if (!probe.success || !intake) return probe;
       return proxyAI({
         ...ctx,
         body: {
@@ -272,7 +341,13 @@ export default async function (ctx: any) {
             ...account.profiles
           ].map(redact),
           preferences: account.modelPreferences || { selectedModelId: null, sharingAllowed: false },
-          needsConnection: !account.profiles.some((profile: any) => profile.keyRef && !profile.requiresModelSelection),
+          needsConnection: !account.profiles.some(
+            (profile: any) =>
+              profile.keyRef &&
+              !profile.requiresModelSelection &&
+              profile.capabilityCheck?.tools &&
+              profile.capabilityCheck?.structured
+          ),
           intakeContract: MODEL_INTAKE_CONTRACT,
           platformEnabled: process.env.LEARNING_PLATFORM_CALLS_ENABLED === 'true',
           coreLearningFree: true,
@@ -364,6 +439,7 @@ export default async function (ctx: any) {
       for (const ref of replacedRefs)
         if (ref && ref !== keyRef)
           await db.collection('learning_model_keys').where({ _id: ref, user_id: auth.userId }).remove();
+      if (keyRef && !profile.requiresModelSelection) return probeConnection(profile, `save_${crypto.randomUUID()}`);
       return {
         code: 0,
         success: true,

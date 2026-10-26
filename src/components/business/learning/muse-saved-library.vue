@@ -123,21 +123,19 @@
               </view>
               <view v-if="DEV_TEST && practiceId === item.id" class="active-practice">
                 <BaseInput v-model="practiceAnswer" label="用这条句式另造一句" multiline />
-                <text>主动复习只保存原答和自评，不改变到期安排。</text>
+                <text>主动练习只保存原答与系统核对结果，不改变到期安排。</text>
                 <view class="active-practice-actions">
                   <BaseButton
-                    v-for="(label, index) in practiceRatings"
-                    :key="label"
                     variant="quiet"
                     :disabled="!practiceAnswer.trim() || learning.busy"
-                    @tap="savePractice(item, index + 1)"
-                    >提交 · {{ label }}</BaseButton
+                    @tap="savePractice(item)"
+                    >提交练习</BaseButton
                   >
                 </view>
                 <text v-if="practiceError" role="alert">{{ practiceError }}</text>
               </view>
               <view v-if="DEV_TEST && practiceRecord(item)" role="status" class="active-practice">
-                <text>主动复习已保存 · 自评：{{ practiceRatings[practiceRecord(item).rating - 1] }}</text>
+                <text>主动练习已保存 · 核对：{{ practiceRatings[practiceRecord(item).rating - 1] }}</text>
                 <text selectable>{{ practiceRecord(item).answer }}</text>
               </view>
             </view></view
@@ -200,11 +198,11 @@ function practiceRecord(item) {
     ?.coach?.library.find((entry) => entry.id === item.id)
     ?.practices?.at(-1);
 }
-function savePractice(item, rating) {
+function savePractice(item) {
   try {
     const answer = practiceAnswer.value;
     learning.locateConversation(item.conversationId);
-    learning.coachPractice(item.id, answer, rating);
+    learning.coachPractice(item.id, answer);
     practiceId.value = '';
     practiceAnswer.value = '';
   } catch (error) {

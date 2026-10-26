@@ -1,3 +1,4 @@
+import { MODEL_TOOL_NAMES } from '../learning-runtime-policy.js';
 import { ENTRY_TOOL_NAMES, validateEntryCall, validateEntrySchema } from '../learning-entries.js';
 import { normalizeContentBlocks } from '../learning-content-blocks.js';
 import https from 'node:https';
@@ -147,6 +148,8 @@ export type ModelConfig = {
   priceVersion?: string;
   maxOutput: number;
   timeoutMs?: number;
+  capabilityProbe?: { stage: 'tool' | 'json'; nonce: string; toolCall?: any };
+  capabilityCheck?: { version: number; tools: boolean; structured: boolean; checkedAt: number };
   plainCoachRequest?: string;
   writingOutput?: {
     contract: string;
@@ -165,6 +168,8 @@ export type ModelConfig = {
 };
 export type LearningMessage = {
   role: string;
+  tool_calls?: any[];
+  tool_call_id?: string;
   content: string | ({ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } })[];
 };
 export function writingFeedbackContext(body: any) {
@@ -332,7 +337,16 @@ export function prepareCoachFeedbackModel(
           phrases: { ...strings, items: { ...string, minLength: 1, maxLength: 240 }, maxItems: 6 },
           dimensions: {
             type: 'array',
-            items: closed({ name: { type: 'string', enum: WRITING_METHOD.feedback }, comment: string })
+            items: closed({
+              name: { type: 'string', enum: WRITING_METHOD.feedback },
+              comment: string,
+              ...(request.dimensionContract
+                ? {
+                    score: { type: ['integer', 'null'], enum: [0, 1, 2, null] },
+                    evidence: { type: 'array', items: string, maxItems: 3 }
+                  }
+                : {})
+            })
           }
         };
   if (request.feedbackVersion === COACH_FEEDBACK_VERSION)
@@ -481,6 +495,42 @@ export function readCoachFunctionResponse(config: ModelConfig, raw: any): string
   return call.function.arguments;
 }
 export function buildLearningRequest(config: ModelConfig, messages: LearningMessage[], stream = false) {
+  if (config.capabilityProbe) {
+    const probe = config.capabilityProbe;
+    return {
+      model: config.model,
+      messages,
+      max_tokens: 256,
+      stream: false,
+      ...(probe.stage === 'tool'
+        ? {
+            tools: [
+              {
+                type: 'function',
+                function: {
+                  name: 'yozi_capability_echo',
+                  description: 'Echo the exact nonce; this only tests transport.',
+                  parameters: closed({ nonce: { type: 'string', enum: [probe.nonce] } })
+                }
+              }
+            ],
+            tool_choice: { type: 'function', function: { name: 'yozi_capability_echo' } }
+          }
+        : {
+            response_format: {
+              type: 'json_schema',
+              json_schema: {
+                name: 'yozi_capability_result',
+                strict: true,
+                schema: closed({
+                  nonce: { type: 'string', enum: [probe.nonce] },
+                  accepted: { type: 'boolean', enum: [true] }
+                })
+              }
+            }
+          })
+    };
+  }
   const endpoint = new URL(config.endpoint);
   const responseFunction = coachResponseFunction(config);
   // 适配只用于核对过的供应商和明确型号；不把任意文本模型当作具有同样能力。
@@ -666,7 +716,7 @@ export async function callLearningProvider(
   )
     delete wire.response_format;
   const body = JSON.stringify(wire);
-  const timeoutMs = DEV_TEST && config.timeoutMs === 110000 ? 110000 : config.timeoutMs === 60000 ? 60000 : 30000;
+  const timeoutMs = config.timeoutMs === 60000 ? 60000 : 30000;
   const traceSafeModel =
     DEV_TEST &&
     ((config.model === 'openai/gpt-oss-120b' && url.origin === 'https://api.groq.com') ||
@@ -919,6 +969,35 @@ export async function callLearningProvider(
       error.observed = redactModelValue({ ...observed, durationMs: Date.now() - started }, config.apiKey);
     throw error;
   });
+  if (config.capabilityProbe?.stage === 'tool') {
+    const calls = raw?.choices?.[0]?.message?.tool_calls;
+    const call = calls?.[0];
+    let argumentsValue;
+    try {
+      argumentsValue = JSON.parse(call?.function?.arguments);
+    } catch {
+      /* fail closed below */
+    }
+    if (
+      !Array.isArray(calls) ||
+      calls.length !== 1 ||
+      call?.type !== 'function' ||
+      call.function?.name !== 'yozi_capability_echo' ||
+      typeof call.id !== 'string' ||
+      !/^[a-zA-Z0-9_-]{1,160}$/.test(call.id) ||
+      argumentsValue?.nonce !== config.capabilityProbe.nonce ||
+      Object.keys(argumentsValue).length !== 1
+    )
+      throw new ProviderError('TOOLS_UNSUPPORTED', '此型号未完成工具调用测试，不能进入教学');
+    return {
+      content: JSON.stringify(argumentsValue),
+      capabilityToolCall: call,
+      usage: raw.usage || null,
+      actualModel: typeof raw.model === 'string' ? raw.model : config.model,
+      finishReason: 'tool_calls',
+      durationMs: Date.now() - started
+    };
+  }
   const functionContent = stream ? null : readCoachFunctionResponse(config, raw);
   const content = stream ? raw.content : (functionContent ?? raw?.choices?.[0]?.message?.content);
   if (typeof content !== 'string' || !content.trim() || content.length > 30000) {
@@ -987,7 +1066,7 @@ export function parseLearningOutput(raw: string) {
     tools.some(
       (call: any) =>
         !call ||
-        !['progress', 'visualize', 'method', 'hint', 'assess', 'plan', ...ENTRY_TOOL_NAMES].includes(call.name) ||
+        !MODEL_TOOL_NAMES.includes(call.name) ||
         !call.arguments ||
         typeof call.arguments !== 'object' ||
         Array.isArray(call.arguments)
@@ -1044,3 +1123,6 @@ export function parseLearningOutput(raw: string) {
 export function getBudgetedLegacyProvider(): { chat: (...args: any[]) => Promise<any> } {
   throw new ProviderError('LEGACY_BUDGET_REQUIRED', '旧 AI 诊断尚未接入授权和成本账，请使用对话学习入口');
 }
+
+// Separate entry point lets capability probes use the same protected transport without teaching payloads.
+export const callCapabilityProvider = callLearningProvider;

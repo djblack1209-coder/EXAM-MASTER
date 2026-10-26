@@ -292,7 +292,7 @@ export async function generateLearningTurnStream(body, options = {}) {
         method: 'POST',
         data: body,
         header: headers,
-        timeout: 45000,
+        timeout: 65000,
         enableChunked: true,
         responseType: 'arraybuffer',
         dataType: 'text',

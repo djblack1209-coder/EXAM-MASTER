@@ -86,9 +86,9 @@ export function dailyConversationContext(state, conversationId, at, { dayKey, ef
   );
   const messages = [];
   let characters = 0;
-  for (const message of today.slice(-10).reverse()) {
+  for (const message of today.slice(-6).reverse()) {
     const content = message.content.slice(0, 1800);
-    if (characters + content.length > 8000) break;
+    if (characters + content.length > 6000) break;
     messages.unshift({ role: message.role, content });
     characters += content.length;
   }

@@ -25,7 +25,11 @@
     </view>
     <view v-if="feedback.dimensions.length" class="feedback-dimensions" role="table" aria-label="写作维度"
       ><view v-for="dimension in feedback.dimensions" :key="dimension.name" class="feedback-dimension" role="row"
-        ><text role="rowheader">{{ dimension.name }}</text
+        ><text role="rowheader"
+          >{{ dimension.name
+          }}<text v-if="dimension.score !== undefined">
+            · {{ dimension.score === null ? '待核对' : ['需重练', '可改进', '达成本次要求'][dimension.score] }}</text
+          ></text
         ><MuseRichText :content="dimension.comment" role="cell" /></view
     ></view>
     <view

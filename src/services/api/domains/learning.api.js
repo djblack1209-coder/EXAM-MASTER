@@ -1,5 +1,4 @@
 import config from '../../../config/index.js';
-import { DEV_TEST } from '../../../config/build-channel.js';
 import { captureSession, sessionForRequest } from '../../auth-storage.js';
 import { generateLearningTurnStream } from '../../learning/learning-stream.js';
 import { reportAuthenticationFailure, isAuthenticationFailure } from '../../auth-failure.js';
@@ -60,11 +59,11 @@ export function learningRequest(path, body, options = {}) {
       method: 'POST',
       data: body,
       timeout:
-        DEV_TEST && body.modelId === 'dev-zai-byok' && body.learningContext?.coach?.phase === 'essay'
+        path === '/learning-models' && ['save', 'test'].includes(body.action)
           ? 130000
-          : body.learningContext?.coach || body.intake
+          : body.learningContext?.coach || body.intake || body.feedbackAttemptId
             ? 70000
-            : 35000,
+            : 65000,
       header: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       success: (res) =>
         finish(

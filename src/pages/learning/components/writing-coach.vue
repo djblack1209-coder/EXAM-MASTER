@@ -12,6 +12,20 @@
     <!-- #endif -->
     <template #controls>
       <BaseButton
+        v-if="coach"
+        variant="quiet"
+        :disabled="learning.busy"
+        @tap="act(() => learning.dispatchLearningAction({ type: 'change_method' }))"
+        >换法</BaseButton
+      >
+      <BaseButton
+        v-if="coach"
+        variant="quiet"
+        :disabled="learning.busy"
+        @tap="act(() => learning.dispatchLearningAction({ type: 'hint_only' }))"
+        >只要提示</BaseButton
+      >
+      <BaseButton
         v-if="coach && !learning.active.stopped"
         variant="quiet"
         icon="pause"
@@ -41,7 +55,7 @@
         "
         :busy="learning.busy || learning.intakeBusy"
         :disabled="Boolean(coach && (learning.active.stopped || !answerTarget))"
-        :submit-disabled="answerTarget?.kind === 'review'"
+        :submit-disabled="false"
         :attachment-disabled="fileBusy || learning.busy"
         @submit="submitComposer"
         @attach="showMaterials = !showMaterials"
@@ -259,19 +273,49 @@
           题待评估</text
         >
         <view id="coach-current-turn" class="coach-current-turn">
+          <text v-if="coach" class="coach-muted" role="status" aria-live="polite"
+            >当前教法：{{
+              { hint: '只给提示', steps: '分步讲解', example: '例子讲解', explain: '直接讲解', question: '引导提问' }[
+                learning.activeStrategy.method
+              ] || '按当前计划带练'
+            }}</text
+          >
+          <BaseCard v-if="dueRewrite">
+            <text class="coach-title">次日改写</text>
+            <text>{{ dueRewrite.task }}</text>
+            <template v-if="!dueRewrite.answer">
+              <BaseInput v-model="nextRewriteAnswer" label="改写后的全文" multiline :maxlength="6000" />
+              <BaseButton
+                :disabled="learning.busy || !nextRewriteAnswer.trim()"
+                @tap="
+                  act(() =>
+                    learning.coachSave('rewriteAnswer', { rewriteId: dueRewrite.id, answer: nextRewriteAnswer })
+                  )
+                "
+                >交卷</BaseButton
+              >
+            </template>
+            <template v-else-if="!dueRewrite.feedback">
+              <text selectable>{{ dueRewrite.answer.text }}</text>
+              <BaseButton :disabled="learning.busy" @tap="act(() => learning.requestCoach('essay', 'rewrite'))"
+                >按维反馈</BaseButton
+              >
+            </template>
+            <template v-else>
+              <text>AI 评估 · 原稿与改写稿均已保留</text>
+              <text v-for="dimension in dueRewrite.feedback.dimensions" :key="dimension.name"
+                >{{ dimension.name }}：{{
+                  dimension.score === null ? '待核对' : ['需重练', '可改进', '达成本次要求'][dimension.score]
+                }}
+                · {{ dimension.comment }}</text
+              >
+            </template>
+          </BaseCard>
           <BaseCard v-if="dueItem">
             <text class="coach-title">{{ materialTrack ? '先复习一个知识点' : '先复习到期句式' }}</text
             ><text>{{ dueItem.text }}</text>
-            <text class="coach-muted">提交后按自己的回忆情况选择，不记为可靠判分。</text>
-            <view class="coach-actions"
-              ><BaseButton
-                v-for="(label, index) in ['再学一次', '吃力', '记得', '轻松']"
-                :key="label"
-                :disabled="!answer.trim() || learning.busy"
-                @tap="review(index + 1)"
-                >{{ label }}</BaseButton
-              ></view
-            >
+            <text class="coach-muted">提交后由系统核对原句并安排复习，近义表达保留待核对。</text>
+            <BaseButton :disabled="!answer.trim() || learning.busy" @tap="review">提交复习答案</BaseButton>
           </BaseCard>
           <template v-else>
             <BaseCard v-if="!coach.diagnostic">
@@ -432,7 +476,7 @@
                   variant="primary"
                   :disabled="learning.busy || (!canSubmitWriting && (!loggedIn || !learning.sharingAllowed))"
                   @tap="request('essay')"
-                  >{{ canSubmitWriting ? '提交全文' : requestLabel('essay', 'essay', '查看成文反馈') }}</BaseButton
+                  >{{ canSubmitWriting ? '交卷' : requestLabel('essay', 'essay', '查看成文反馈') }}</BaseButton
                 ></BaseCard
               >
               <BaseCard v-else-if="!day.summary"
@@ -617,6 +661,10 @@ function resetProfileDraft() {
     minutes: ''
   });
 }
+const nextRewriteAnswer = ref('');
+const dueRewrite = computed(
+  () => (coach.value?.rewriteTasks || []).filter((task) => task.dueDay <= today.value).at(-1) || null
+);
 const analysisFields = [
   { key: 'genre', label: '体裁' },
   { key: 'recipient', label: '对象' },
@@ -770,6 +818,7 @@ async function submitComposer() {
   if (target?.kind === 'foundation') saveProfile(false);
   else if (target?.kind === 'diagnostic' || target?.kind === 'training')
     submitCard(target.card, target.kind === 'diagnostic');
+  else if (target?.kind === 'review') review();
   else if (target?.kind === 'paragraph' || target?.kind === 'rewrite') saveParagraph(target.kind === 'rewrite');
 }
 const configuredPrice = Number(import.meta.env.VITE_TRIAL_MONTHLY_PRICE || 19);
@@ -1001,9 +1050,9 @@ function saveParagraph(rewrite) {
     answer.value = '';
   });
 }
-function review(rating) {
+function review() {
   act(() => {
-    learning.coachReview(dueItem.value.id, answer.value, rating);
+    learning.coachReview(dueItem.value.id, answer.value);
     answer.value = '';
   });
 }

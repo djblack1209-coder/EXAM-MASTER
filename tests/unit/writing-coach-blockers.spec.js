@@ -145,7 +145,7 @@ it('明确提交全文独立于共享和模型，快照重放保留；测试渠�
     store.sharingAllowed = false;
     wrapper = mount(WritingCoach, { global: { stubs: { BaseIcon: true, PrivacyPopup: true } } });
     await flushPromises();
-    const button = wrapper.findAll('button').find((b) => b.text() === '提交全文');
+    const button = wrapper.findAll('button').find((b) => b.text() === '交卷');
     expect(button).toBeDefined();
     expect(button.attributes('disabled')).toBeUndefined();
     const calls = [generateLearningTurn.mock.calls.length, fetchLearningModels.mock.calls.length];

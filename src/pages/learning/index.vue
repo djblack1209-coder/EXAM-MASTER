@@ -24,6 +24,20 @@
       <BaseButton
         v-if="learning.active"
         variant="quiet"
+        :disabled="learning.busy"
+        @tap="run(() => learning.dispatchLearningAction({ type: 'change_method' }))"
+        >换法</BaseButton
+      >
+      <BaseButton
+        v-if="learning.active"
+        variant="quiet"
+        :disabled="learning.busy"
+        @tap="run(() => learning.dispatchLearningAction({ type: 'hint_only' }))"
+        >只要提示</BaseButton
+      >
+      <BaseButton
+        v-if="learning.active"
+        variant="quiet"
         icon="user"
         icon-only
         :label="t('tutor.intake.title')"
@@ -3165,7 +3179,12 @@ async function send() {
   activeDraftSends++;
   try {
     result = await run(() =>
-      learning.send(input, { id: ticket.id, chatEntry: true, discussionOnly: learning.batchTrainingActive })
+      learning.send(input, {
+        id: ticket.id,
+        chatEntry: true,
+        discussionOnly: learning.batchTrainingActive,
+        answering: Boolean(learning.activeQuestion) && !learning.batchTrainingActive
+      })
     );
   } finally {
     activeDraftSends--;
@@ -3193,7 +3212,15 @@ async function send() {
 async function sendDirective(action) {
   const conversationId = learning.selectedConversationId;
   const originalQuestionKey = learning.active?.activeQuestionKey;
-  const result = await run(() => learning.send(action));
+  const commands = {
+    继续当前任务: 'resume',
+    读参考信件: 'read_reference',
+    提示: 'hint_only',
+    直接讲解: 'explain',
+    独立检验原题: 'independent_check',
+    开始先修诊断: 'prerequisite'
+  };
+  const result = await run(() => learning.dispatchLearningAction({ type: commands[action] }));
   await nextTick();
   if (learning.selectedConversationId !== conversationId) return result;
   const sentenceHint =

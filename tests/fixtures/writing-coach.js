@@ -55,6 +55,13 @@ export function coachFixture(request) {
       ? { weaknessEvidence: [{ label: '主谓一致', quote: request.input.split('\n')[0], classification: 'error' }] }
       : {}),
     phrases: ['I am writing to invite you to...'],
-    dimensions: request.phase === 'essay' ? WRITING_METHOD.feedback.map((name) => ({ name, comment: '合成反馈' })) : []
+    dimensions:
+      request.phase === 'essay'
+        ? WRITING_METHOD.feedback.map((name) => ({
+            name,
+            comment: '合成反馈',
+            ...(request.dimensionContract ? { score: 1, evidence: [request.input.split('\n')[0]] } : {})
+          }))
+        : []
   };
 }

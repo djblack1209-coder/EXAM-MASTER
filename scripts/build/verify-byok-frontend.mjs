@@ -486,7 +486,9 @@ export async function verifyByokFrontend({
         ...bound,
         sources: [],
         weaknesses: coach.coachWeaknesses(current),
-        ...(['feedback', 'essay'].includes(phase) ? { feedbackVersion: coach.COACH_FEEDBACK_VERSION } : {})
+        ...(['feedback', 'essay'].includes(phase)
+          ? { feedbackVersion: coach.COACH_FEEDBACK_VERSION, dimensionContract: 'writing-dimensions-v1' }
+          : {})
       };
       if (phase === 'essay') {
         const band = coach.coachWritingBandContext(current, currentDay(), requestId);

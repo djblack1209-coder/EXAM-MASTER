@@ -138,7 +138,22 @@ export function modelConnectionState(model: any, calls: any[], now = Date.now())
         c.status !== 'reserved'
     )
     .at(-1);
-  if (!latest) return { connectionStatus: 'untested', lastCheckedAt: null, ...streamState, ...visionState };
+  if (!latest) {
+    const check = model.capabilityCheck;
+    if (
+      check?.version === 1 &&
+      check.tools === true &&
+      check.structured === true &&
+      Number.isSafeInteger(check.checkedAt)
+    )
+      return {
+        connectionStatus: now - check.checkedAt > 86400000 ? 'stale' : 'connected',
+        lastCheckedAt: check.checkedAt,
+        ...streamState,
+        ...visionState
+      };
+    return { connectionStatus: 'untested', lastCheckedAt: null, ...streamState, ...visionState };
+  }
   const age = now - (latest.at || 0);
   return {
     ...streamState,

@@ -200,6 +200,8 @@ function connectionLabel(saved) {
   if (saved.requiresModelSelection) return '待选择型号';
   if (!saved.configured) return '待填写密钥';
   if (saved.connectionStatus === 'failed') return modelErrorPresentation({ error: saved.lastError }).message;
+  if (!saved.requiresModelSelection && !(saved.capabilityCheck?.tools && saved.capabilityCheck?.structured))
+    return '教学能力待检查';
   return { connected: '连接正常', stale: '需要重新测试', untested: '尚未测试' }[saved.connectionStatus] || '尚未测试';
 }
 function close() {
