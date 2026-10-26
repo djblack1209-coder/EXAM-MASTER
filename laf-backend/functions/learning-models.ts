@@ -111,7 +111,10 @@ export default async function (ctx: any) {
       )
         return { success: false, code: 400, error: 'INPUT_INVALID' };
       const { account } = await mutateAccount(db, auth.userId, (account) => {
-        if (patch.selectedModelId && !account.profiles.some((p: any) => p.id === patch.selectedModelId && p.keyRef))
+        if (
+          patch.selectedModelId &&
+          !account.profiles.some((p: any) => p.id === patch.selectedModelId && p.keyRef && !p.requiresModelSelection)
+        )
           throw Object.assign(new Error('NEEDS_CONNECTION'), { code: 'NEEDS_CONNECTION' });
         account.modelPreferences = { ...account.modelPreferences, ...patch };
         return { account };
@@ -266,7 +269,7 @@ export default async function (ctx: any) {
             ...account.profiles
           ].map(redact),
           preferences: account.modelPreferences || { selectedModelId: null, sharingAllowed: false },
-          needsConnection: !account.profiles.some((profile: any) => profile.keyRef),
+          needsConnection: !account.profiles.some((profile: any) => profile.keyRef && !profile.requiresModelSelection),
           intakeContract: MODEL_INTAKE_CONTRACT,
           platformEnabled: process.env.LEARNING_PLATFORM_CALLS_ENABLED === 'true',
           coreLearningFree: true,
@@ -284,7 +287,7 @@ export default async function (ctx: any) {
         !p ||
         !/^[a-zA-Z0-9_-]{1,60}$/.test(p.id) ||
         typeof p.model !== 'string' ||
-        !p.model ||
+        (!p.model && p.requiresModelSelection !== true) ||
         p.model.length > 256 ||
         (p.apiKey != null && typeof p.apiKey !== 'string') ||
         p.apiKey?.length > MODEL_API_KEY_MAX_LENGTH ||
@@ -315,6 +318,7 @@ export default async function (ctx: any) {
         id: p.id,
         provider: String(p.provider || 'custom').slice(0, 80),
         model: p.model,
+        requiresModelSelection: p.requiresModelSelection === true,
         endpoint,
         source: 'byok',
         maxOutput: DEV_TEST ? 8192 : 2000,

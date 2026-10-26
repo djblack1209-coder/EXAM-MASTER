@@ -66,3 +66,12 @@ describe('native model intake handoff', () => {
     expect(target.learning.modelId).toBe('');
   });
 });
+
+it('selection-only handoff restores the saved model in the main window without any inference', async () => {
+  const target = context();
+  target.learning.selectModel = vi.fn().mockResolvedValue({ success: true });
+  expect(await receiveDesktopModelIntake({ ...intent, selectionOnly: true }, target)).toEqual({ success: true });
+  expect(target.learning.loadModels).toHaveBeenCalledOnce();
+  expect(target.learning.selectModel).toHaveBeenCalledExactlyOnceWith(intent.modelId);
+  expect(target.learning.beginModelIntake).not.toHaveBeenCalled();
+});

@@ -1,6 +1,16 @@
 <template>
-  <view v-if="intake && !intake.acceptedConversationId" class="model-intake" aria-live="polite">
-    <template v-for="(turn, index) in intake.turns" :key="index">
+  <view v-if="!intake?.acceptedConversationId" class="model-intake" aria-live="polite">
+    <view v-if="!intake" class="intake-agent">
+      <text>连接自己的 API 后，告诉我你想学什么。</text>
+      <BaseButton
+        v-if="learning.modelId && !learning.needsConnection"
+        variant="primary"
+        :disabled="learning.intakeBusy || !learning.sharingAllowed"
+        @tap="act(() => learning.beginModelIntake(learning.modelId))"
+        >开始建档</BaseButton
+      >
+    </view>
+    <template v-for="(turn, index) in intake?.turns || []" :key="index">
       <view class="intake-agent"
         ><text selectable>{{ turn.question }}</text></view
       >
@@ -8,7 +18,7 @@
         ><text selectable>{{ turn.answer }}</text></view
       >
     </template>
-    <view v-if="intake.status === 'ready' && reply" class="intake-agent">
+    <view v-if="intake?.status === 'ready' && reply" class="intake-agent">
       <text class="intake-question" selectable>{{ reply.message }}</text>
       <template v-if="proposal">
         <view class="intake-profile">
@@ -69,10 +79,12 @@
       <view class="reply-dots" aria-hidden="true"><view /><view /><view /></view>
       <text class="reply-state__label">正在等待回复…</text>
     </view>
-    <view v-else-if="['pending', 'failed'].includes(intake.status)" class="intake-agent">
+    <view v-else-if="['pending', 'failed'].includes(intake?.status)" class="intake-agent">
       <text role="status">{{
-        learning.intakeError ||
-        (intake.finalFailure ? '原请求已结束，没有可恢复的回复。可重新建档。' : '模型回复尚未收到，可查询原请求。')
+        modelErrorPresentation({
+          error: learning.retryState?.errorCode || 'INTAKE_INVALID',
+          status: intake?.finalFailure ? 'failed' : 'pending'
+        }).message
       }}</text>
       <text selectable>请求编号：{{ intake.requestId }}</text>
       <BaseButton v-if="intake.finalFailure" variant="quiet" @tap="act(() => learning.restartModelIntake())"
@@ -80,7 +92,7 @@
       >
       <BaseButton v-else variant="quiet" @tap="recover">查询原请求</BaseButton>
     </view>
-    <text v-if="error" role="alert">{{ error }}</text>
+    <MuseModelFeedback :failure="failure" :busy="learning.intakeBusy" @action="handleAction" />
   </view>
 </template>
 <script setup>
@@ -89,14 +101,16 @@ import { useConversationLearningStore } from '@/stores/modules/conversation-lear
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseOptions from '@/components/base/base-options/base-options.vue';
-import { publicError } from '@/i18n/index.js';
+import MuseModelFeedback from './muse-model-feedback.vue';
+import { modelErrorPresentation } from '../../../../laf-backend/functions/_shared/model-errors.js';
+import { safeNavigateTo } from '@/utils/safe-navigate.js';
 const props = defineProps({ sharedInput: Boolean, modelValue: { type: String, default: '' } });
 const emit = defineEmits(['accepted', 'update:modelValue']);
 const learning = useConversationLearningStore();
 const editing = ref(false);
 const choice = ref(''),
   localInput = ref(''),
-  error = ref('');
+  failure = ref(null);
 const input = computed({
   get: () => (props.sharedInput ? props.modelValue : localInput.value),
   set: (value) => (props.sharedInput ? emit('update:modelValue', value) : (localInput.value = value))
@@ -115,21 +129,44 @@ watch(
     editing.value = false;
     choice.value = '';
     input.value = '';
-    error.value = '';
+    failure.value = null;
   }
 );
+function failureState(value) {
+  failure.value = value;
+}
 async function act(action) {
-  error.value = '';
+  failure.value = null;
   try {
-    return await action();
+    const result = await action();
+    if (result?.success === false) failure.value = result;
+    return result;
   } catch (failure) {
-    error.value = publicError(failure);
+    failureState({ error: failure.code || 'MODEL_FAILED' });
   }
 }
 function submit() {
   if (answer.value) return act(() => learning.answerModelIntake(answer.value));
 }
-function submitDraft() {
+async function submitDraft() {
+  if (!intake.value) {
+    const raw = input.value.trim(),
+      context = learning.recordContext();
+    if (!raw) return;
+    if (!learning.modelId) {
+      failure.value = { error: 'NEEDS_CONNECTION' };
+      return;
+    }
+    if (!learning.sharingAllowed) {
+      failure.value = { error: 'CONSENT_REQUIRED' };
+      return;
+    }
+    const started = await act(() => learning.beginModelIntake(learning.modelId));
+    if (context !== learning.recordContext()) return;
+    if (started?.success) return act(() => learning.answerModelIntake(raw));
+    if (!input.value) input.value = raw;
+    return;
+  }
   if (intake.value?.turns.length >= 4 && !proposal.value) return;
   if (proposal.value) {
     if ((editing.value || props.sharedInput) && input.value.trim())
@@ -142,6 +179,12 @@ function submitDraft() {
   return submit();
 }
 defineExpose({ submitDraft });
+function handleAction(action) {
+  if (action.type === 'open_connectors' || action.type === 'manual_model')
+    return safeNavigateTo(learning.openModelConnector().route);
+  if (action.type === 'retry' && intake.value?.finalFailure) return act(() => learning.restartModelIntake());
+  if (action.type === 'query_result' && intake.value) return recover();
+}
 function recover() {
   return act(() => learning.recoverModelIntake());
 }

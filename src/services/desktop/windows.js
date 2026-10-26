@@ -37,6 +37,9 @@ export function openDesktopWorkspace(route) {
 export function startDesktopModelIntake(modelId, owner) {
   return invoke('open_desktop_workspace', { route: '/pages/learning/index', modelId, owner });
 }
+export function selectDesktopModel(modelId, owner) {
+  return invoke('open_desktop_workspace', { route: '/pages/learning/index', modelId, owner, selectionOnly: true });
+}
 export async function receiveDesktopModelIntake(intent, { owner, currentRoute, navigate, learning }) {
   if (!intent || intent.owner !== owner()) return null;
   // Reopening the current page runs its onHide hook and cancels model reads.
@@ -44,6 +47,14 @@ export async function receiveDesktopModelIntake(intent, { owner, currentRoute, n
   if (currentRoute() !== 'pages/learning/index') await navigate();
   if (intent.owner !== owner()) return null;
   learning.refresh();
+  if (intent.selectionOnly === true) {
+    const catalog = await learning.loadModels();
+    if (intent.owner !== owner()) return null;
+    if (!catalog.success) return catalog;
+    const result = await learning.selectModel(intent.modelId);
+    if (intent.owner !== owner()) return null;
+    return result?.success === false ? result : { success: true };
+  }
   const result = await learning.beginModelIntake(intent.modelId);
   if (intent.owner !== owner()) return null;
   if (result.success) {

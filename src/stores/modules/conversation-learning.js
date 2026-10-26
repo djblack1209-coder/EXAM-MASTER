@@ -268,6 +268,7 @@ export const CONVERSATION_ACTION_EFFECTS = Object.freeze({
   cancelModelReads: 'read',
   interpretQuestionImage: 'send',
   testModel: 'send',
+  recoverConnectionTest: 'send',
   selectModel: 'send',
   setSharingAllowed: 'send',
   openModelConnector: 'read',
@@ -398,7 +399,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const sharingAllowed = ref(false);
   const retryState = ref({ phase: 'idle', errorCode: null, message: '' });
   const modelPreferenceState = ref({ phase: 'idle', errorCode: null });
-  const needsConnection = computed(() => !models.value.some((model) => model.source === 'byok' && model.configured));
+  const needsConnection = computed(
+    () => !models.value.some((model) => model.source === 'byok' && model.configured && !model.requiresModelSelection)
+  );
   const connectionGuide = computed(() =>
     needsConnection.value ? modelErrorPresentation({ error: 'NEEDS_CONNECTION' }) : null
   );
@@ -453,18 +456,24 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     assert(!busy.value && !intakeBusy.value, 'BUSY', '请先等待或查询原请求');
     if (!models.value.length) await loadModels();
     assert(
-      models.value.some((model) => model.id === id && model.source === 'byok' && model.configured),
+      models.value.some(
+        (model) => model.id === id && model.source === 'byok' && model.configured && !model.requiresModelSelection
+      ),
       'NEEDS_CONNECTION',
       '请先保存可用的 API 连接'
     );
+    const unchanged = modelId.value === id;
     modelId.value = id;
     selectedMode.value = 'cloud';
-    return await preferenceWrite;
+    if (unchanged) persistModelPreferences();
+    return (await preferenceWrite) || { success: true };
   }
   async function setSharingAllowed(allowed) {
     assert(typeof allowed === 'boolean', 'INPUT_INVALID', '共享设置不合法');
+    const unchanged = sharingAllowed.value === allowed;
     sharingAllowed.value = allowed;
-    return await preferenceWrite;
+    if (unchanged) persistModelPreferences();
+    return (await preferenceWrite) || { success: true };
   }
   const selectedMode = ref('offline');
   const streamEnabled = ref(false),
@@ -2729,10 +2738,16 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   async function send(raw, options = {}) {
     ensureSessionCurrent();
     assert(!intakeBusy.value, 'BUSY', '请等待模型建档回复');
-    if (getToken() && selectedMode.value !== 'local' && !models.value.some((model) => model.configured))
+    if (
+      getToken() &&
+      selectedMode.value !== 'local' &&
+      !models.value.some((model) => model.source === 'byok' && model.configured && !model.requiresModelSelection)
+    )
       await loadModels();
     assert(
-      !getToken() || selectedMode.value === 'local' || models.value.some((model) => model.configured),
+      !getToken() ||
+        selectedMode.value === 'local' ||
+        models.value.some((model) => model.source === 'byok' && model.configured && !model.requiresModelSelection),
       'NEEDS_CONNECTION',
       '请先在 AI 连接器接入自己的 API'
     );
@@ -3609,7 +3624,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       data.models.every(
         (model) =>
           validObject(model) &&
-          ['id', 'provider', 'model'].every((key) => nonempty(model[key])) &&
+          ['id', 'provider'].every((key) => nonempty(model[key])) &&
+          (nonempty(model.model) || (model.requiresModelSelection === true && model.model === '')) &&
           validObject(model.capabilities)
       ) &&
       new Set(data.models.map((model) => model.id)).size === data.models.length &&
@@ -3660,7 +3676,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           try {
             const preferences = result.data.preferences;
             const selected = models.value.find(
-              (model) => model.id === preferences.selectedModelId && model.source === 'byok' && model.configured
+              (model) =>
+                model.id === preferences.selectedModelId &&
+                model.source === 'byok' &&
+                model.configured &&
+                !model.requiresModelSelection
             );
             modelId.value = selected?.id || '';
             selectedMode.value = selected ? 'cloud' : 'offline';
@@ -3798,10 +3818,17 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   }
   async function testModel(id) {
     const origin = ensureSessionCurrent();
-    const result = await modelAction((options) => testLearningModel(id, learningId('connection'), options));
+    const requestId = learningId('connection');
+    const result = await modelAction((options) => testLearningModel(id, requestId, options));
     ensureSessionCurrent(origin);
     await loadModels();
-    return result;
+    return { ...result, requestId };
+  }
+  async function recoverConnectionTest(id, requestId) {
+    const result = await modelAction((options) => fetchLearningResult(requestId, options));
+    if (result.success) assert(result.data.modelId === id, 'CONTEXT_CHANGED', '查询结果与连接不符');
+    await loadModels();
+    return { ...result, requestId };
   }
   async function runModelIntake(id, answer, recover = false, reset = false) {
     if (intakeBusy.value || busy.value) return { success: false, message: '请等待当前请求完成' };
@@ -5042,6 +5069,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     interpretQuestionImage,
     modelPresets,
     testModel,
+    recoverConnectionTest,
     beginModelIntake,
     restartModelIntake,
     cancelModelIntake,

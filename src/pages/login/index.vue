@@ -213,6 +213,7 @@ import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { useAuthStore } from '@/stores/modules/auth';
 import { useUserStore } from '@/stores/modules/user';
 import { useThemeStore } from '@/stores/modules/theme.js';
@@ -228,6 +229,7 @@ import { isDesktopRuntime } from '@/services/desktop/runtime.js';
 import { loginDesktopOAuth } from '@/services/desktop/oauth.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { openHomeTab } from '@/utils/home-navigation.js';
+import { toast } from '@/utils/toast.js';
 import config from '@/config/index.js';
 const authStore = useAuthStore();
 const websiteCodeLabels = { send: '获取验证码', resend: '重新发送', countdown: '{seconds}秒后重发' };
@@ -656,21 +658,38 @@ async function saveLoginInfo(data, attempt) {
   uni.$emit('auth:userdata', userInfo, session);
   uni.$emit('loginStatusChanged', true);
   uni.$emit('userInfoUpdated', userInfo);
+  toast.success(isRegister.value ? '注册成功' : '登录成功');
   emailForm.value = { email: '', password: '', code: '' };
   phone.value = '';
   phoneSent.value = false;
   phoneCode.value = '';
   ageTicket = '';
+  let connectorRoute = null;
+  if (!WEBSITE_MODE) {
+    const learning = useConversationLearningStore();
+    try {
+      const catalog = await learning.loadModels();
+      assertSession(session);
+      if (catalog.success && learning.needsConnection) connectorRoute = learning.openModelConnector().route;
+    } catch {
+      assertSession(session);
+    }
+  }
   const valid = current();
   clearTimeout(redirectTimer);
   redirectTimer = setTimeout(
     () => {
-      if (valid()) navigateAfterLogin();
+      if (valid()) navigateAfterLogin(connectorRoute);
     },
     devTestBuild ? 0 : 1500
   );
 }
-function navigateAfterLogin() {
+function navigateAfterLogin(connectorRoute) {
+  if (connectorRoute) {
+    if (desktop) uni.redirectTo({ url: '/pages/learning/index', success: () => safeNavigateTo(connectorRoute) });
+    else safeNavigateTo(connectorRoute);
+    return;
+  }
   const redirect = storageService.get('redirect_after_login');
   storageService.remove('redirect_after_login');
   if (WEBSITE_MODE) {

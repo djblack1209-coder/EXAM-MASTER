@@ -190,3 +190,19 @@ it('order-03: mounted profile reacts to unavailable, recovery and revoked login 
     for (const store of pinia._s.values()) store.$dispose();
   }
 });
+
+it('我的账户在普通构建中显示当前认证用户本人的邮箱', async () => {
+  const { storageService } = await import('@/services/storageService.js');
+  uni.clearStorageSync();
+  await storageService.saveLoginSession({ userId: 'email-owner', token: 'fixture-only-session' });
+  const context = {
+    dialogSequence: 0,
+    showDialog: false,
+    userStore: {
+      readCurrentProfile: vi.fn().mockResolvedValue({ success: true, uid: 'email-owner', email: 'owner@example.test' })
+    }
+  };
+  await ProfilePage.methods.showAccountInfo.call(context);
+  expect(context.dialog.content).toBe('邮箱：owner@example.test\n用户编号：email-owner');
+  uni.clearStorageSync();
+});

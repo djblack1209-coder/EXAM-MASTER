@@ -1791,3 +1791,42 @@ it.each([
   expect(listed.data.models[0]).toMatchObject({ connectionStatus: 'failed', lastError: category });
   expect(callLearningProvider).toHaveBeenCalledOnce();
 });
+
+it('saves a credential-only connection for discovery but blocks selection and inference until a model is saved', async () => {
+  const profile = {
+    id: 'awaiting-model',
+    provider: 'Custom',
+    endpoint: 'https://provider.example/chat/completions',
+    model: '',
+    requiresModelSelection: true,
+    apiKey: 'fixture-only-key'
+  };
+  expect((await models(context({ action: 'save', profile, shareConsent: true }))).success).toBe(true);
+  const listed = await models(context({ action: 'list' }));
+  expect(listed.data).toMatchObject({
+    needsConnection: true,
+    models: [{ id: profile.id, model: '', requiresModelSelection: true, configured: true }]
+  });
+  expect((await models(context({ action: 'preferences', preferences: { selectedModelId: profile.id } }))).success).toBe(
+    false
+  );
+  expect(await ai(context({ ...streamBody('draft-must-not-call'), modelId: profile.id }))).toMatchObject({
+    success: false,
+    error: 'MODEL_SELECTION_REQUIRED'
+  });
+  expect(callLearningProvider).not.toHaveBeenCalled();
+  expect(
+    (
+      await models(
+        context({
+          action: 'save',
+          profile: { ...profile, apiKey: '', model: 'chosen-id', requiresModelSelection: false },
+          shareConsent: true
+        })
+      )
+    ).success
+  ).toBe(true);
+  expect((await models(context({ action: 'preferences', preferences: { selectedModelId: profile.id } }))).success).toBe(
+    true
+  );
+});

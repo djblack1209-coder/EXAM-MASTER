@@ -43,7 +43,7 @@ describe('request core', () => {
     vi.useRealTimers();
   });
 
-  it('只读账户资料只返回服务器UID，业务与HTTP401不成功且保留会话', async () => {
+  it('只读账户资料返回本人UID和邮箱，业务与HTTP401不成功且保留会话', async () => {
     const { readCurrentProfile } = await import('@/services/api/domains/user.api.js');
     const session = captureSession();
     uni.$on('authFailure', () => delete global.__mockStorage.EXAM_USER_ID);
@@ -56,7 +56,12 @@ describe('request core', () => {
       success(response);
       return { abort: vi.fn() };
     });
-    expect(await readCurrentProfile()).toEqual({ success: true, code: 0, uid: 'user_123' });
+    expect(await readCurrentProfile()).toEqual({
+      success: true,
+      code: 0,
+      uid: 'user_123',
+      email: 'owner@example.test'
+    });
     response = { statusCode: 200, data: { code: 401, success: false, data: { _id: 'user_123' } } };
     expect(await readCurrentProfile()).toEqual({ success: false, code: 401, uid: null });
     response = { statusCode: 401, data: {} };
@@ -68,7 +73,7 @@ describe('request core', () => {
     expect(uni.$emit.mock.calls.some(([name]) => name === 'authFailure')).toBe(false);
   });
 
-  it('开发账户资料仅返回本次认证用户的邮箱', async () => {
+  it('账户资料仅返回本次认证用户的邮箱', async () => {
     vi.stubGlobal('__YOZI_DEV_TEST__', true);
     try {
       const { readCurrentProfile } = await import('@/services/api/domains/user.api.js');

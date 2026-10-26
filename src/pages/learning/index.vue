@@ -94,6 +94,13 @@
       :class="{ 'with-insights': showInsights }"
       :style="composerHeight ? { '--learning-composer-height': `${composerHeight}px` } : undefined"
     >
+      <MuseModelControl @connect="openAIConnectors" />
+      <MuseModelFeedback
+        :failure="modelFailure"
+        :state="learning.retryState"
+        :busy="learning.busy"
+        @action="handleModelAction"
+      />
       <BaseCard v-if="learning.accountRecordState !== 'ready'" class="panel">
         <text :role="learning.accountRecordState === 'error' ? 'alert' : 'status'">{{ accountRecordMessage }}</text>
         <BaseButton
@@ -224,7 +231,7 @@
         <BaseCheckbox
           class="consent"
           :model-value="learning.sharingAllowed"
-          @update:model-value="learning.sharingAllowed = !learning.sharingAllowed"
+          @update:model-value="run(() => learning.setSharingAllowed(!learning.sharingAllowed))"
         >
           {{ t('learning.kao') }}</BaseCheckbox
         >
@@ -945,7 +952,11 @@
           }}</BaseButton>
         </view>
         <view v-if="learning.error" id="learning-request-error" tabindex="-1">
-          <BaseEmpty state="error" :title="publicError(learning.error)" mascot-size="small" />
+          <MuseModelFeedback
+            :failure="modelFailure || { error: learning.retryState?.errorCode || 'MODEL_FAILED' }"
+            :busy="learning.busy"
+            @action="handleModelAction"
+          />
         </view>
         <OatutorPractice
           v-if="learning.activeQuestion?.oatutorExercise?.role === 'main'"
@@ -1953,6 +1964,9 @@ import {
   visibleModelChoices,
   completeModelEndpoint
 } from '../../../laf-backend/functions/_shared/ai-providers/model-endpoints.js';
+import MuseModelControl from '@/components/business/learning/muse-model-control.vue';
+import MuseModelFeedback from '@/components/business/learning/muse-model-feedback.vue';
+import { modelErrorPresentation } from '../../../laf-backend/functions/_shared/model-errors.js';
 import { publicError, t } from '@/i18n/index.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseCard from '@/components/base/base-card/base-card.vue';
@@ -1983,7 +1997,6 @@ import LearningShell from '@/components/business/learning/learning-shell.vue';
 import WritingCoach from '@/pages/learning/components/writing-coach.vue';
 import MuseComposer from '@/components/business/learning/muse-composer.vue';
 import { groupLearningMessages } from '@/services/learning/message-groups.js';
-import { requestProfilePanel } from '@/utils/safe-navigate.js';
 import CustomModal from '@/components/common/CustomModal.vue';
 import { createLearningDialog } from '@/services/learning/learning-dialog.js';
 // #ifdef MP-WEIXIN
@@ -2038,6 +2051,7 @@ import { getUserId, getToken } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 const learning = useConversationLearningStore();
+const modelFailure = ref(null);
 
 const latestAnswer = computed(
   () =>
@@ -3032,11 +3046,20 @@ onLoad((options) => {
 });
 async function run(action) {
   feedback.value = '';
+  modelFailure.value = null;
   try {
-    return await action();
+    const result = await action();
+    if (result?.success === false) modelFailure.value = result;
+    return result;
   } catch (e) {
-    feedback.value = publicError(e);
+    modelFailure.value = { error: e.code || 'MODEL_FAILED' };
+    feedback.value = modelErrorPresentation(modelFailure.value).message;
   }
+}
+function handleModelAction(action) {
+  if (action.type === 'open_connectors' || action.type === 'manual_model') return openAIConnectors();
+  if (action.type === 'query_result' && learning.recoverableRequest) return run(() => learning.recoverModelResult());
+  if (action.type === 'retry' && learning.recoverableRequest) return run(() => learning.recoverModelResult());
 }
 async function runMaterial(action, { connectionCheck = false } = {}) {
   const sequence = ++materialFeedbackSequence;
@@ -3213,9 +3236,8 @@ function setMode(mode) {
   learning.sharingAllowed = false;
 }
 function selectModel(id) {
-  setMode('cloud');
-  learning.modelId = id;
-  learning.streamEnabled = learning.streamSupported;
+  if (learning.busy || learning.intakeBusy) return;
+  return run(() => learning.selectModel(id));
 }
 function interpretImage() {
   const owner = learning.state.owner,
@@ -3291,8 +3313,7 @@ function openAIConnectors() {
     showConnections.value = !showConnections.value;
     return;
   }
-  requestProfilePanel('connectors');
-  safeNavigateTo('/pages/profile/index');
+  safeNavigateTo(learning.openModelConnector().route);
 }
 function usePreset(preset) {
   profile.value = {
@@ -3311,7 +3332,7 @@ function usePreset(preset) {
 }
 async function testModel(id) {
   const result = await run(() => learning.testModel(id));
-  if (result) feedback.value = result.success ? '助手可用，用量已记录。' : publicError(result);
+  if (result) feedback.value = result.success ? '连接正常，用量已记录。' : modelErrorPresentation(result).message;
 }
 async function loadUsage() {
   await readModelResource(() => learning.loadUsage());

@@ -24,6 +24,10 @@ export function modelErrorPresentation(input = {}) {
   const connector = { type: 'open_connectors', route: '/pages/profile/index?panel=connectors', panel: 'connectors' };
   const messages = {
     NEEDS_CONNECTION: ['请先连接自己的 API', connector],
+    MODEL_SELECTION_REQUIRED: ['请先选择并保存型号', { type: 'manual_model' }],
+    INTAKE_INVALID: ['建档回复未完成，请先查询原请求', { type: 'query_result' }],
+    CONSENT_REQUIRED: ['请先同意共享本次原答和必要资料片段', null],
+    AUTH_REQUIRED: ['请先登录，再连接自己的 API', connector],
     KEY_INVALID: ['密钥无效，请更新连接', connector],
     MODEL_UNAVAILABLE: ['型号不存在或已下线，请手动选择其他型号', connector],
     RATE_LIMITED: ['请求太频繁，请稍后重试', { type: 'query_result' }],

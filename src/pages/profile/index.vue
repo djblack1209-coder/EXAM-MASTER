@@ -144,8 +144,8 @@
           <view class="settings-group"
             ><BaseListRow
               class="learning-archive-link"
-              :label="devTestBuild ? t('muse.records') : t('tutor.archive.title')"
-              @tap="goTo('/pages/archive/index')" /><BaseListRow
+              :label="t('muse.goals')"
+              @tap="goTo('/pages/archive/index?view=plan')" /><BaseListRow
               :label="t('dashboard.copy104')"
               @tap="goTo('/pages/mistake/index')" /><BaseListRow
               :label="t('dashboard.copy105')"
@@ -210,7 +210,6 @@
 </template>
 <script>
 import '@/i18n/muse.js';
-import { DEV_TEST } from '@/config/build-channel.js';
 import { isDesktopSettingsWindow, openDesktopWorkspace } from '@/services/desktop/windows.js';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import MuseAIConnectors from '@/components/business/learning/muse-ai-connectors.vue';
@@ -250,7 +249,6 @@ export default {
 
   data() {
     return {
-      devTestBuild: DEV_TEST,
       nativeSettings: isDesktopSettingsWindow(),
       settingsMode: false,
       settingsSection: 'general',
@@ -497,9 +495,7 @@ export default {
       if (!this.showDialog || sequence !== this.dialogSequence) return;
       this.dialog.content =
         result.success && checkSession(session) === 'current'
-          ? [DEV_TEST && result.email ? `邮箱：${result.email}` : '', `用户编号：${result.uid}`]
-              .filter(Boolean)
-              .join('\n')
+          ? [result.email ? `邮箱：${result.email}` : '', `用户编号：${result.uid}`].filter(Boolean).join('\n')
           : result.code === 401
             ? '未认证，请重新登录'
             : '账户资料读取失败，请重试';

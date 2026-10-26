@@ -16,7 +16,6 @@
 import cloud from '@lafjs/cloud';
 import type { FunctionContext } from '../types/cloud-functions.js';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
-import { DEV_TEST } from './_shared/build-channel.js';
 
 const db = cloud.database();
 
@@ -204,7 +203,7 @@ async function handleGetProfile(body: UpdateProfileRequest, _requestId: string) 
     success: true,
     data: {
       _id: user.data._id,
-      ...(DEV_TEST && typeof user.data.email === 'string' ? { email: user.data.email } : {}),
+      ...(typeof user.data.email === 'string' ? { email: user.data.email } : {}),
       nickname: user.data.nickname,
       avatar_url: user.data.avatar_url,
       target_school: user.data.target_school,

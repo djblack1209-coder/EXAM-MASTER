@@ -264,6 +264,8 @@ export async function runLearningModelTask(
     }
     if (!model)
       return { code: 503, success: false, error: 'NEEDS_CONNECTION', message: '请先在 AI 连接器保存连接并选择型号' };
+    if ((model as any).requiresModelSelection)
+      return { code: 422, success: false, error: 'MODEL_SELECTION_REQUIRED', message: '请在 AI 连接器选择型号后保存' };
     const connectionVersion = modelConfigurationVersion(model);
     if (coach || intake)
       model = {

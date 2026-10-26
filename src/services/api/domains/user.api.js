@@ -1,5 +1,4 @@
 import { storageService } from '../../storageService.js';
-import { DEV_TEST } from '@/config/build-channel.js';
 import {
   isSessionUnavailable,
   captureSession,
@@ -247,7 +246,7 @@ export async function readCurrentProfile(options = {}) {
         success: true,
         code: 0,
         uid: result.data._id,
-        ...(DEV_TEST && typeof result.data.email === 'string' ? { email: result.data.email } : {})
+        ...(typeof result.data.email === 'string' ? { email: result.data.email } : {})
       };
     return { success: false, code: Number(result?.code) || 502, uid: null };
   } catch (error) {

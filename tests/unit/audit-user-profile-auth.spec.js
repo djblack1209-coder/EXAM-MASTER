@@ -173,3 +173,19 @@ describe('[安全审计] user-profile 鉴权响应语义', () => {
     expect(result.data.practice_config).toBeDefined();
   });
 });
+
+it('所有构建都返回已认证用户本人的邮箱，拒绝读取另一个账号邮箱', async () => {
+  mocked.resetScenario();
+  mocked.scenario.userDoc.email = 'profile-owner@example.test';
+  const own = await userProfileHandler({
+    body: { action: 'get', userId: 'user_profile_1' },
+    headers: { authorization: 'Bearer own-fixture-token' }
+  });
+  expect(own.data.email).toBe('profile-owner@example.test');
+  const other = await userProfileHandler({
+    body: { action: 'get', userId: 'another-user' },
+    headers: { authorization: 'Bearer own-fixture-token' }
+  });
+  expect(other.code).toBe(403);
+  expect(JSON.stringify(other)).not.toContain('profile-owner@example.test');
+});

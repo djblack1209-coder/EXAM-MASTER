@@ -139,17 +139,15 @@ it('页面交接时先保留草稿，旧页面稍后销毁也不会覆盖新草�
   expect(store.exportData()).toBe(before);
 });
 
-it('已成功提交的目标不再回填下一份新会话草稿，原会话仍保留', async () => {
+it('未连接时保留输入目标，不自动建立未经确认的学习事实', async () => {
   const store = useConversationLearningStore();
   wrapper = mount(WritingCoach, { attrs: { onGeneral: (input) => store.start(input) }, global: { stubs } });
   await wrapper.get('textarea[aria-label="发送消息"]').setValue('考研英语二申请信写作');
   await wrapper.get('button[aria-label="发送"]').trigger('tap');
-  expect(store.active.goal).toBe('考研英语二申请信写作');
-  const saved = store.exportData();
-  store.selectedConversationId = null;
   await flushPromises();
-  expect(wrapper.get('textarea[aria-label="发送消息"]').element.value).toBe('');
-  expect(store.exportData()).toBe(saved);
+  expect(store.active).toBeFalsy();
+  expect(wrapper.get('textarea[aria-label="发送消息"]').element.value).toBe('考研英语二申请信写作');
+  expect(wrapper.text()).toContain('请先连接自己的 API');
 });
 
 it('重新打开进入最新写作带练；旧对话仍能从目录定位且不改写记录', () => {
@@ -372,4 +370,16 @@ it('Muse 答题卡明确提交原答，题号回看与重新进入不改写历�
   expect(wrapper.get('.coach-history-turn').text()).toContain(raw);
   expect(wrapper.get('.coach-history-turn').text()).toContain('成分识别');
   expect(store.exportData()).toBe(before);
+});
+
+it('明确首条目标只填入未提交草稿，并保留用户确认', async () => {
+  const store = useConversationLearningStore();
+  store.startCoach('考研英语二，每天25分钟，2027-12-20考试');
+  wrapper = mount(WritingCoach, { global: { stubs } });
+  await flushPromises();
+  expect(wrapper.text()).toContain('英语二');
+  expect(wrapper.text()).toContain('25分钟/天');
+  expect(wrapper.text()).toContain('2027-12-20');
+  expect(store.active.coach.profile).toBeNull();
+  expect(wrapper.text()).toContain('保存建档');
 });

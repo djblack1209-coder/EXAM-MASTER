@@ -68,7 +68,7 @@ fn settings_only(window: &WebviewWindow) -> Result<(), String> {
     if window.label() == "settings" { Ok(()) } else { Err("此操作仅限设置窗口".into()) }
 }
 fn workspace_route(route: &str) -> bool {
-    ["/pages/learning/index", "/pages/archive/index", "/pages/mistake/index", "/pages/favorite/index",
+    ["/pages/learning/index", "/pages/archive/index", "/pages/archive/index?view=plan", "/pages/mistake/index", "/pages/favorite/index",
         "/pages/login/index", "/pages/index/index", "/pages/profile/index?panel=reset", "/pages/settings/privacy", "/pages/settings/terms"].contains(&route)
 }
 
@@ -110,7 +110,7 @@ pub fn close_desktop_settings(window: WebviewWindow) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn open_desktop_workspace(app: AppHandle, window: WebviewWindow, state: State<'_, SettingsRefresh>, route: String, model_id: Option<String>, owner: Option<String>) -> Result<(), String> {
+pub async fn open_desktop_workspace(app: AppHandle, window: WebviewWindow, state: State<'_, SettingsRefresh>, route: String, model_id: Option<String>, owner: Option<String>, selection_only: Option<bool>) -> Result<(), String> {
     settings_only(&window)?;
     if !workspace_route(&route) { return Err("工作区页面不合法".into()); }
     let main = app.get_webview_window("main").ok_or("主窗口暂不可用")?;
@@ -127,7 +127,7 @@ pub async fn open_desktop_workspace(app: AppHandle, window: WebviewWindow, state
             if pending.len() >= 4 { return Err("请等待当前连接完成".into()); }
             pending.insert(id.clone(), sender);
         }
-        let result = if main.emit("desktop-model-intake", json!({"id":id, "modelId":model_id, "owner":owner})).is_err() {
+        let result = if main.emit("desktop-model-intake", json!({"id":id, "modelId":model_id, "owner":owner, "selectionOnly":selection_only.unwrap_or(false)})).is_err() {
             Err("主窗口暂不可用".to_string())
         } else {
             tauri::async_runtime::spawn_blocking(move || receiver.recv_timeout(Duration::from_secs(90)))
@@ -214,6 +214,8 @@ mod tests {
     #[test]
     fn settings_routes_are_closed_to_remote_and_arbitrary_paths() {
         assert!(workspace_route("/pages/learning/index"));
+        assert!(workspace_route("/pages/archive/index?view=plan"));
+        assert!(!workspace_route("/pages/archive/index?view=other"));
         assert!(!workspace_route("https://example.com"));
         assert!(!workspace_route("/pages/learning/index?redirect=https://example.com"));
         assert!(!workspace_route("../../private"));

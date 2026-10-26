@@ -49,6 +49,13 @@
         @height="composerHeight = $event"
       />
     </template>
+    <MuseModelControl @connect="openConnections" />
+    <MuseModelFeedback
+      :failure="modelFailure"
+      :state="learning.retryState"
+      :busy="learning.busy || learning.intakeBusy"
+      @action="handleModelAction"
+    />
     <view class="coach-workspace">
       <view v-if="coach" class="coach-user-message" selectable>{{ learning.active.goal }}</view>
       <CustomModal
@@ -157,7 +164,7 @@
         <text v-else class="coach-question">{{
           materialTrack ? '目前的基础？（选填）' : '目前写作哪里最吃力？（选填）'
         }}</text>
-        <text v-if="DEV_TEST && profileStep === 3" class="coach-muted">{{ profileDescription(profile) }}</text>
+        <text v-if="profileStep === 3" class="coach-muted">{{ profileDescription(profile) }}</text>
         <view class="coach-actions">
           <BaseButton v-if="profileStep" variant="quiet" @tap="profileStep--">{{ t('muse.back') }}</BaseButton>
           <BaseButton v-if="profileStep < 3" variant="primary" @tap="advanceProfile">{{ t('muse.next') }}</BaseButton>
@@ -168,10 +175,8 @@
 
       <template v-else>
         <view class="coach-session-state">
-          <text v-if="DEV_TEST" class="coach-muted" role="status"
-            >建档已保存：{{ profileDescription(coach.profile) }}</text
-          >
-          <BaseChip v-model="learning.sharingAllowed">同意将本次原答和必要资料片段发送给所选模型</BaseChip>
+          <text class="coach-muted" role="status">建档已保存：{{ profileDescription(coach.profile) }}</text>
+
           <BaseButton v-if="!loggedIn" variant="primary" @tap="login">登录后开始带练</BaseButton>
           <text v-if="yesterday" class="coach-muted">{{ reentryText }}</text>
           <view v-if="learning.busy && !learning.streamPreview" class="reply-state" role="status">
@@ -237,7 +242,9 @@
               <BaseButton
                 v-if="record.request"
                 variant="quiet"
-                :disabled="learning.busy || !loggedIn || !learning.sharingAllowed"
+                :disabled="
+                  learning.busy || !loggedIn || (record.request.status === 'closed' && !learning.sharingAllowed)
+                "
                 @tap="act(() => learning.requestCoach(record.phase || 'feedback', record.target, record.request.id))"
                 >{{ record.request.status === 'closed' ? '重新评估' : '查询评估结果' }}</BaseButton
               >
@@ -291,14 +298,14 @@
               <BaseButton
                 v-if="!diagnosticCard"
                 variant="primary"
-                :disabled="learning.busy || !loggedIn || !learning.sharingAllowed"
+                :disabled="requestDisabled('feedback', 'diagnostic')"
                 @tap="request('feedback', 'diagnostic')"
                 >{{ requestLabel('feedback', 'diagnostic', '生成薄弱点与今日安排') }}</BaseButton
               >
               <BaseButton
                 v-if="!diagnosticCard"
                 variant="quiet"
-                :disabled="learning.busy || !loggedIn || !learning.sharingAllowed"
+                :disabled="requestDisabled('daily')"
                 @tap="request('daily')"
                 >先继续下一题</BaseButton
               >
@@ -311,12 +318,9 @@
                 coach.diagnostic.feedback.weaknesses.slice(0, 2).join('、') ||
                 (materialTrack ? '从资料里的一个概念开始' : '先练搭配和句子，再逐段写作')
               }}</text>
-              <BaseButton
-                variant="primary"
-                :disabled="learning.busy || !loggedIn || !learning.sharingAllowed"
-                @tap="request('daily')"
-                >{{ requestLabel('daily', 'daily', '安排今日训练') }}</BaseButton
-              >
+              <BaseButton variant="primary" :disabled="requestDisabled('daily')" @tap="request('daily')">{{
+                requestLabel('daily', 'daily', '安排今日训练')
+              }}</BaseButton>
             </BaseCard>
             <template v-else>
               <BaseCard v-if="trainingCard">
@@ -334,7 +338,7 @@
                 <BaseButton
                   v-if="cardAnswer"
                   variant="primary"
-                  :disabled="learning.busy || !loggedIn || !learning.sharingAllowed"
+                  :disabled="requestDisabled('feedback', `card-${trainingCard.id}`)"
                   @tap="request('feedback', `card-${trainingCard.id}`)"
                   >{{ requestLabel('feedback', `card-${trainingCard.id}`, '查看本卡反馈') }}</BaseButton
                 >
@@ -343,12 +347,9 @@
                 >
               </BaseCard>
               <BaseCard v-else-if="materialTrack && !day.summary">
-                <BaseButton
-                  variant="primary"
-                  :disabled="learning.busy || !loggedIn || !learning.sharingAllowed"
-                  @tap="request('summary')"
-                  >{{ requestLabel('summary', 'summary', '生成今日小结') }}</BaseButton
-                >
+                <BaseButton variant="primary" :disabled="requestDisabled('summary')" @tap="request('summary')">{{
+                  requestLabel('summary', 'summary', '生成今日小结')
+                }}</BaseButton>
               </BaseCard>
               <BaseCard v-else-if="!materialTrack && !day.analysis">
                 <text class="coach-title">先自己审题</text><text>{{ day.pack.writing.prompt }}</text
@@ -366,7 +367,7 @@
                 ><text>{{ day.pack.writing.prompt }}</text
                 ><BaseButton
                   variant="primary"
-                  :disabled="learning.busy || !loggedIn || !learning.sharingAllowed"
+                  :disabled="requestDisabled('feedback', 'analysis')"
                   @tap="request('feedback', 'analysis')"
                   >{{ requestLabel('feedback', 'analysis', '对照审题反馈') }}</BaseButton
                 ></BaseCard
@@ -383,9 +384,7 @@
                   }}</text
                 >
                 <text>{{ day.pack.writing.prompt }}</text
-                ><text class="coach-muted"
-                  >{{ DEV_TEST ? '全文字数以题干为准' : wordLimit }}；先借助句式写，再按反馈改写。</text
-                >
+                ><text class="coach-muted">全文字数以题干为准；先借助句式写，再按反馈改写。</text>
                 <text
                   v-for="pattern in day.pack.writing.patterns[paragraphIndex]"
                   :key="pattern"
@@ -397,7 +396,6 @@
                     v-model="answer"
                     shared-input
                     label="写下本段"
-                    :hint="DEV_TEST ? '' : wordLimit"
                     submit-label="提交本段"
                     :maxlength="1800"
                     english
@@ -408,7 +406,7 @@
                   ><text class="coach-saved">{{ day.drafts[paragraphIndex].text }}</text
                   ><BaseButton
                     variant="primary"
-                    :disabled="learning.busy || !loggedIn || !learning.sharingAllowed"
+                    :disabled="requestDisabled('feedback', `paragraph-${paragraphIndex}`)"
                     @tap="request('feedback', `paragraph-${paragraphIndex}`)"
                     >{{ requestLabel('feedback', `paragraph-${paragraphIndex}`, '逐句反馈') }}</BaseButton
                   ></template
@@ -418,7 +416,6 @@
                     v-model="answer"
                     shared-input
                     label="改写本段"
-                    :hint="DEV_TEST ? '' : wordLimit"
                     submit-label="保存改写"
                     :maxlength="1800"
                     english
@@ -440,12 +437,9 @@
               >
               <BaseCard v-else-if="!day.summary"
                 ><text class="coach-title">完成了，留一份小结</text
-                ><BaseButton
-                  variant="primary"
-                  :disabled="learning.busy || !loggedIn || !learning.sharingAllowed"
-                  @tap="request('summary')"
-                  >{{ requestLabel('summary', 'summary', '生成今日小结') }}</BaseButton
-                ></BaseCard
+                ><BaseButton variant="primary" :disabled="requestDisabled('summary')" @tap="request('summary')">{{
+                  requestLabel('summary', 'summary', '生成今日小结')
+                }}</BaseButton></BaseCard
               >
               <BaseCard v-else
                 ><text class="coach-title">{{ day.completed ? '今天已完成' : '今日小结' }}</text
@@ -455,7 +449,7 @@
                 ><BaseButton
                   v-if="DEV_TEST && !day.completed"
                   variant="quiet"
-                  :disabled="learning.busy || !loggedIn || !learning.sharingAllowed"
+                  :disabled="requestDisabled('summary')"
                   @tap="request('summary')"
                   >{{ requestLabel('summary', 'summary', '重新生成小结') }}</BaseButton
                 ><BaseButton
@@ -490,8 +484,10 @@
       <BaseCard
         v-if="message || learning.coachError || learning.error"
         :id="DEV_TEST ? 'coach-action-error' : undefined"
-        role="alert"
-        ><text>{{ message || learning.coachError || learning.error }}</text></BaseCard
+        :role="modelFailure?.error === 'NEEDS_CONNECTION' ? 'status' : 'alert'"
+        ><text>{{
+          message || modelErrorPresentation({ error: learning.retryState?.errorCode }).message
+        }}</text></BaseCard
       >
     </view>
   </LearningShell>
@@ -504,8 +500,11 @@ import { workspaceDrafts } from '@/services/learning/workspace-drafts.js';
 import BaseBubble from '@/components/base/base-bubble/base-bubble.vue';
 import '@/i18n/muse.js';
 import { t } from '@/i18n/index.js';
-import { safeNavigateTo, requestProfilePanel } from '@/utils/safe-navigate.js';
+import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import MuseComposer from '@/components/business/learning/muse-composer.vue';
+import MuseModelControl from '@/components/business/learning/muse-model-control.vue';
+import MuseModelFeedback from '@/components/business/learning/muse-model-feedback.vue';
+import { modelErrorPresentation } from '../../../../laf-backend/functions/_shared/model-errors.js';
 import MuseModelIntake from '@/components/business/learning/muse-model-intake.vue';
 import { DEV_TEST } from '@/config/build-channel.js';
 import MuseRichText from '@/components/business/learning/muse-rich-text.vue';
@@ -518,7 +517,6 @@ import { getToken } from '@/services/auth-storage.js';
 import { readWritingMaterial } from '@/services/learning/writing-material.js';
 import { resolveSkippedProfile } from '@/services/learning/coach-profile.js';
 import {
-  WRITING_METHOD,
   COACH_MATERIAL_TRACK,
   coachUsesMaterials,
   coachAssessmentCounts
@@ -531,7 +529,6 @@ import { useThemeStore } from '@/stores/modules/theme.js';
 import BaseCard from '@/components/base/base-card/base-card.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
-import BaseChip from '@/components/base/base-chip/base-chip.vue';
 import BaseOptions from '@/components/base/base-options/base-options.vue';
 import BaseSegmented from '@/components/base/base-segmented/base-segmented.vue';
 const props = defineProps({
@@ -542,6 +539,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['advanced', 'general']);
 const learning = useConversationLearningStore();
+const modelFailure = ref(null);
 const theme = useThemeStore(),
   materialSelection = ref([]);
 const profileStep = ref(0);
@@ -584,7 +582,7 @@ const profile = reactive({
   minutes: ''
 });
 const minuteOptions = computed(() =>
-  DEV_TEST && profile.minutes && !MINUTE_OPTIONS.some((option) => option.value === profile.minutes)
+  profile.minutes && !MINUTE_OPTIONS.some((option) => option.value === profile.minutes)
     ? [{ value: profile.minutes, label: `${profile.minutes}分钟` }, ...MINUTE_OPTIONS]
     : MINUTE_OPTIONS
 );
@@ -599,7 +597,7 @@ function profileDescription(value) {
     .join(' · ');
 }
 function skipKnownProfileSteps() {
-  while (DEV_TEST && profileStep.value < 3 && profile[['exam', 'deadlineBucket', 'minutes'][profileStep.value]])
+  while (profileStep.value < 3 && profile[['exam', 'deadlineBucket', 'minutes'][profileStep.value]])
     profileStep.value++;
 }
 function advanceProfile() {
@@ -686,11 +684,6 @@ const materials = computed(() =>
   learning.state.materials.filter((m) => !coach.value || coach.value.materialIds.includes(m.id))
 );
 const needsMaterial = computed(() => materialTrack.value && !materials.value.length);
-const wordLimit = computed(() =>
-  !materialTrack.value && coach.value?.profile && day.value
-    ? WRITING_METHOD.words[coach.value.profile.exam]?.[day.value.pack.writing.essayType] || '约100词'
-    : ''
-);
 const answerTarget = computed(() => {
   if (learning.active?.stopped) return null;
   if (coach.value && !coach.value.profile && profileStep.value === 3) return { kind: 'foundation' };
@@ -755,16 +748,19 @@ const composerDraft = computed({
     else goal.value = value;
   }
 });
-function submitComposer() {
+async function submitComposer() {
   if (learning.busy || learning.intakeBusy) return;
   if (!coach.value) {
     const input = goal.value.trim();
     if (!input) return;
     const submittedDraft = draftBinding;
     const previousConversation = learning.selectedConversationId;
-    if (!DEV_TEST && learning.state.intake?.status === 'ready' && !learning.state.intake.acceptedConversationId)
-      void intakePanel.value?.submitDraft();
-    else emit('general', input);
+    if (!DEV_TEST && !learning.state.intake?.acceptedConversationId) {
+      const result = await intakePanel.value?.submitDraft();
+      if (result?.success) goal.value = '';
+      return;
+    }
+    emit('general', input);
     if (learning.selectedConversationId && learning.selectedConversationId !== previousConversation)
       drafts.remove(submittedDraft.context, submittedDraft.key);
     goal.value = '';
@@ -823,16 +819,25 @@ watch(
           : /英语一|english\s*1/i.test(learning.active.goal)
             ? 'english1'
             : '');
+      const known = learning.coachProfileDraft || {};
+      if (known.exam) profile.exam = known.exam;
+      if (known.minutes) profile.minutes = String(known.minutes);
+      if (known.deadline) {
+        profile.deadline = known.deadline;
+        profile.deadlineBucket = 'other';
+      }
       if (DEV_TEST) {
         const input = learning.active.goal;
         if (/英语一|english\s*1/i.test(input) && /英语二|english\s*2/i.test(input)) profile.exam = '';
         const deadlines = [...input.matchAll(/(今年|明年)\s*(?:12|十二)\s*月/g)];
-        profile.deadlineBucket = deadlines.length === 1 ? (deadlines[0][1] === '今年' ? 'this' : 'next') : '';
+        if (!known.deadline)
+          profile.deadlineBucket = deadlines.length === 1 ? (deadlines[0][1] === '今年' ? 'this' : 'next') : '';
         const minutes = input.match(/(?:每天|每日)\s*(?:能|可以|可|有)?\s*(?:学习|学)?\s*(\d{1,2})\s*分钟/);
-        profile.minutes =
-          minutes && Number(minutes[1]) >= 10 && Number(minutes[1]) <= 90 && !/分钟\s*(?:或者?|还是)/.test(input)
-            ? String(Number(minutes[1]))
-            : '';
+        if (!known.minutes)
+          profile.minutes =
+            minutes && Number(minutes[1]) >= 10 && Number(minutes[1]) <= 90 && !/分钟\s*(?:或者?|还是)/.test(input)
+              ? String(Number(minutes[1]))
+              : '';
       }
     }
     profileStep.value = Math.min(3, saved.step || 0);
@@ -856,9 +861,13 @@ watch([() => savedPractice.value.length, () => coach.value?.profile], revealCurr
 async function act(action) {
   message.value = '';
   try {
-    return await action();
+    modelFailure.value = null;
+    const result = await action();
+    if (result?.success === false) modelFailure.value = result;
+    return result;
   } catch (error) {
-    message.value = error.message || '未完成，请保留原答后重试';
+    modelFailure.value = { error: error.code || 'MODEL_FAILED' };
+    message.value = modelErrorPresentation(modelFailure.value).message;
     if (DEV_TEST) {
       await nextTick();
       if (typeof document !== 'undefined')
@@ -910,6 +919,32 @@ function sourceLabel(source) {
     : source.kind === 'private_material'
       ? `${source.name}${source.page ? ` · 第${source.page}页` : ''} · 内容待核对`
       : '模型生成 · 内容待核对';
+}
+function pendingCoachRequest(phase, target = phase) {
+  return coach.value?.requests.find(
+    (item) =>
+      item.status === 'pending' &&
+      item.request.phase === phase &&
+      item.request.target === target &&
+      item.request.day === today.value
+  );
+}
+function requestDisabled(phase, target = phase) {
+  return learning.busy || !loggedIn.value || (!pendingCoachRequest(phase, target) && !learning.sharingAllowed);
+}
+function handleModelAction(action) {
+  if (action.type === 'open_connectors' || action.type === 'manual_model') return openConnections();
+  const pending = coach.value?.requests.findLast((item) => item.status === 'pending');
+  const previous = pending || coach.value?.requests.at(-1);
+  if (!previous) return;
+  if (pending || action.type === 'retry')
+    return act(() =>
+      learning.requestCoach(
+        previous.request.phase,
+        previous.request.target,
+        pending || ['feedback', 'essay'].includes(previous.request.phase) ? previous.id : null
+      )
+    );
 }
 function requestLabel(phase, target = phase, label = '开始摸底') {
   if (learning.busy) return '正在生成…';
@@ -1014,8 +1049,7 @@ async function pickFile(event) {
   event.target.value = '';
 }
 function openConnections() {
-  requestProfilePanel('connectors');
-  safeNavigateTo('/pages/profile/index');
+  safeNavigateTo(learning.openModelConnector().route);
 }
 function login() {
   uni.navigateTo({ url: '/pages/login/index' });

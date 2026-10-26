@@ -693,6 +693,13 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
     }
   }
 
+  if (
+    DEV_TEST &&
+    ctx.body.existingAccountOnly === true &&
+    !(await db.collection('users').where({ email }).getOne()).data
+  )
+    return { code: 404, success: false, error: 'ACCOUNT_NOT_FOUND', message: '测试账号不存在', requestId };
+
   // ✅ B005: 验证码校验逻辑
   if (verifyCode) {
     const codeValid =

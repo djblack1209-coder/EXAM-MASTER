@@ -1,60 +1,57 @@
 <template>
   <view class="ai-connectors">
-    <text v-if="!getToken()" class="connect-status">登录后才能连接 AI 老师；本地学习记录仍可查看。</text>
-    <text v-else-if="learning.modelListState?.phase === 'loading'" class="connect-status" role="status"
-      >正在读取已保存的连接…</text
+    <text v-if="!getToken()" class="connect-status">登录后保存和管理自己的 API 连接。</text>
+    <text v-else-if="learning.modelListState?.phase === 'loading'" role="status">正在读取已保存的连接…</text>
+    <view v-else-if="learning.modelListState?.phase === 'error'" role="alert"
+      ><text>连接暂时未读出</text><BaseButton variant="quiet" @tap="reload">重新读取连接</BaseButton></view
     >
-    <view v-else-if="learning.modelListState?.phase === 'error'" class="connect-status" role="alert">
-      <text>{{ learning.modelListState.message || '连接读取失败，请重试。' }}</text>
-      <BaseButton variant="quiet" @tap="learning.loadModels()">重新读取连接</BaseButton>
-    </view>
+    <text v-if="learning.needsConnection" class="connect-status">{{
+      learning.connectionGuide?.message || '请先连接自己的 API'
+    }}</text>
     <view class="connect-search"
       ><BaseIcon name="search" size="18px" /><BaseInput
         v-model="query"
         label="搜索 AI 连接器"
-        placeholder="搜索"
+        placeholder="搜索供应商或型号"
         hide-label
         maxlength="80"
     /></view>
-    <view class="connect-tabs" role="tablist" aria-label="连接器状态">
-      <BaseButton
-        v-for="tab in tabs"
-        :key="tab.id"
-        variant="quiet"
-        role="tab"
-        :aria-selected="filter === tab.id"
-        :selected="filter === tab.id"
-        @tap="filter = tab.id"
-        >{{ tab.label }}</BaseButton
-      >
-    </view>
-    <view v-for="group in providerGroups" :key="group.id" class="connect-group">
-      <text class="connect-group-title">{{ group.label }}</text>
-      <view class="connect-list">
-        <view v-for="provider in group.items" :key="provider.id" class="connect-row">
+    <view v-if="savedModels.length" class="connect-group">
+      <text class="connect-group-title">已保存连接</text>
+      <view class="connect-list"
+        ><view v-for="model in savedModels" :key="model.id" class="connect-row" :data-connection-id="model.id">
           <image
-            v-if="provider.logo"
-            :src="provider.logo"
+            v-if="modelBrand(model.provider).logo"
+            :src="modelBrand(model.provider).logo"
             class="connect-logo"
-            :class="{ 'brand-mono': provider.mono }"
             mode="aspectFit"
             alt=""
           />
           <view class="connect-name"
-            ><text>{{ provider.provider }}</text
-            ><text v-if="provider.saved" class="connect-model">{{ provider.saved.model }}</text
-            ><text class="connect-model">{{ connectionLabel(provider.saved) }}</text></view
+            ><text>{{ model.provider }}</text
+            ><text class="connect-model">{{ model.requiresModelSelection ? '请选择型号' : model.model }}</text
+            ><text class="connect-model">{{ connectionLabel(model) }}</text
+            ><text v-if="learning.modelId === model.id" class="connect-current">正在使用</text></view
           >
-          <BaseButton variant="quiet" :disabled="learning.busy || learning.intakeBusy" @tap="open(provider)">{{
-            provider.saved ? (provider.saved.configured ? '管理' : '填写密钥') : '添加'
-          }}</BaseButton>
-        </view>
-      </view>
+          <BaseButton variant="quiet" :disabled="locked" @tap="open(model, true)">管理</BaseButton>
+        </view></view
+      >
     </view>
-    <view
-      v-if="!providers.length && !['loading', 'error'].includes(learning.modelListState?.phase)"
-      class="connect-empty"
-      >{{ filter === 'connected' ? '暂无连接' : '没有匹配的连接器' }}</view
+    <text class="connect-group-title">添加连接</text>
+    <view class="connect-list"
+      ><view v-for="provider in providers" :key="provider.id" class="connect-row" :data-provider-id="provider.id">
+        <image
+          v-if="provider.logo"
+          :src="provider.logo"
+          class="connect-logo"
+          :class="{ 'brand-mono': provider.mono }"
+          mode="aspectFit"
+          alt=""
+        />
+        <view class="connect-name"
+          ><text>{{ provider.provider }}</text></view
+        ><BaseButton variant="quiet" :disabled="locked" @tap="open(provider)">添加</BaseButton>
+      </view></view
     >
     <text v-if="message" class="connect-status" role="status">{{ message }}</text>
     <CustomModal
@@ -64,78 +61,90 @@
       :is-dark="theme.isDark"
       :show-actions="false"
       close-button
-      mask-closable
+      :mask-closable="!saving"
       @cancel="close"
     >
-      <template #title>
-        <view class="connect-dialog-heading">
-          <image
-            v-if="current?.logo"
-            :src="current.logo"
-            class="connect-logo"
-            :class="{ 'brand-mono': current.mono }"
-            mode="aspectFit"
-            alt=""
-          />
-          <text>{{ current?.provider }}</text>
-        </view>
-      </template>
       <view class="connect-form">
-        <template v-if="current?.saved">
-          <text class="connect-model">{{ current.saved.model }}</text>
+        <template v-if="current?.saved && !editing && !choosing">
+          <text class="connect-model">{{ connectionLabel(current.saved) }}</text>
           <BaseButton
-            v-if="current.saved.configured"
             variant="primary"
-            :loading="saving"
-            :disabled="learning.busy || learning.intakeBusy"
-            @tap="select(current.saved)"
-            >{{ learning.modelId === current.saved.id ? '正在使用' : '使用此模型' }}</BaseButton
+            :disabled="locked || current.saved.requiresModelSelection || !current.saved.configured"
+            @tap="select"
+            >{{ learning.modelId === current.saved.id ? '正在使用' : '使用此连接' }}</BaseButton
           >
-          <BaseButton v-if="current.saved.configured" variant="quiet" @tap="editing = !editing">更换密钥</BaseButton>
-          <BaseButton variant="quiet" :disabled="saving" @tap="disconnecting = true">{{
-            current.saved.configured ? '断开连接' : '移除'
-          }}</BaseButton>
+          <BaseButton variant="quiet" :disabled="locked || current.saved.requiresModelSelection" @tap="test"
+            >测试</BaseButton
+          >
+          <BaseButton variant="quiet" :disabled="locked" @tap="chooseModels">换型号</BaseButton>
+          <BaseButton variant="quiet" :disabled="locked" @tap="editing = true">换密钥</BaseButton>
+          <BaseButton variant="quiet" :disabled="locked" @tap="disconnecting = true">断开</BaseButton>
         </template>
-        <template v-if="!current?.saved?.configured || editing">
-          <BaseInput v-if="!current?.saved" v-model="draft.model" label="模型" :maxlength="120" autocomplete="off" />
+        <template v-if="!current?.saved || editing">
           <BaseInput
             v-model="apiKey"
             label="API 密钥"
             type="password"
             :maxlength="MODEL_API_KEY_MAX_LENGTH"
             autocomplete="off"
+            :placeholder="current?.saved ? '留空保留原密钥' : '输入密钥'"
+            :disabled="saving"
           />
-          <text class="connect-status">{{
-            apiKey.trim() || editing
-              ? '密钥会加密保存到 Yozi 服务端，运维可解密；连接后开始模型建档。'
-              : '可先添加，稍后填写密钥。添加不会调用模型。'
-          }}</text>
+          <text class="connect-status">密钥加密保存到 Yozi 服务端，运维可解密。保存不会调用教学模型。</text>
           <BaseButton
             variant="primary"
             :loading="saving"
-            :disabled="saving || !draft.model.trim() || (Boolean(current?.saved) && !apiKey.trim())"
-            @tap="connect"
-            >{{ current?.saved ? '保存并连接' : apiKey.trim() ? '连接' : '添加' }}</BaseButton
+            :disabled="locked || (!current?.saved && !apiKey.trim())"
+            @tap="saveKey"
+            >{{ current?.saved ? '保存密钥' : '保存并读取型号' }}</BaseButton
           >
         </template>
-        <text v-if="error" class="connect-error" role="alert">{{ error }}</text>
+        <template v-if="choosing">
+          <text v-if="discovering" role="status">正在读取实时型号…</text>
+          <BaseInput
+            v-if="modelOptions.length && !manual"
+            v-model="draft.model"
+            label="型号"
+            :options="modelOptions"
+            placeholder="选择型号"
+            :disabled="locked"
+          />
+          <BaseInput
+            v-else-if="!discovering"
+            v-model="draft.model"
+            label="手填型号"
+            maxlength="256"
+            autocomplete="off"
+            :disabled="locked"
+          />
+          <BaseButton v-if="modelOptions.length && !manual" variant="quiet" :disabled="locked" @tap="manual = true"
+            >手填型号</BaseButton
+          >
+          <BaseButton
+            variant="primary"
+            :loading="saving"
+            :disabled="locked || !draft.model?.trim()"
+            @tap="saveSelectedModel"
+            >{{ newConnection ? '保存并使用' : '保存型号' }}</BaseButton
+          >
+        </template>
+        <MuseModelFeedback :failure="failure" :state="operationState" :busy="locked" @action="errorAction" />
       </view>
     </CustomModal>
     <CustomModal
       :visible="loginRequired"
-      title="登录后才能连接 AI 老师"
+      title="登录后连接自己的 API"
       :is-dark="theme.isDark"
       confirm-text="去登录"
-      cancel-text="继续本地学习"
+      cancel-text="稍后"
       @confirm="goLogin"
-      @cancel="continueLocal"
-      ><text>登录用于安全保存和管理模型连接。未登录仍可查看本地学习记录。</text></CustomModal
-    >
+      @cancel="loginRequired = false"
+    />
     <CustomModal
       :visible="disconnecting"
-      title="断开连接？"
+      title="断开此连接？"
       :is-dark="theme.isDark"
-      confirm-text="断开连接"
+      confirm-text="断开"
       :confirm-loading="saving"
       @cancel="disconnecting = false"
       @confirm="disconnect"
@@ -145,226 +154,231 @@
 <script setup>
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import {
-  MODEL_CONNECTION_PRESETS,
-  MODEL_API_KEY_MAX_LENGTH,
-  visibleModelChoices
+  MODEL_ENDPOINTS,
+  MODEL_API_KEY_MAX_LENGTH
 } from '../../../../laf-backend/functions/_shared/ai-providers/model-endpoints.js';
+import { modelErrorPresentation } from '../../../../laf-backend/functions/_shared/model-errors.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
+import { isDesktopSettingsWindow, selectDesktopModel } from '@/services/desktop/windows.js';
 import { getToken, getUserId } from '@/services/auth-storage.js';
-import { isDesktopSettingsWindow, startDesktopModelIntake } from '@/services/desktop/windows.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import { modelBrand } from '@/config/model-brands.js';
-import { publicError } from '@/i18n/index.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import CustomModal from '@/components/common/CustomModal.vue';
+import MuseModelFeedback from './muse-model-feedback.vue';
 const learning = useConversationLearningStore(),
   theme = useThemeStore();
 const query = ref(''),
-  filter = ref('available'),
   loginRequired = ref(false),
   current = ref(null),
   apiKey = ref(''),
   editing = ref(false),
+  choosing = ref(false),
   saving = ref(false),
+  discovering = ref(false),
   disconnecting = ref(false),
   message = ref(''),
-  error = ref(''),
-  draft = ref({});
-const tabs = [
-  { id: 'available', label: '可用' },
-  { id: 'connected', label: '已连接' }
-];
-const catalog = computed(() => {
-  const unique = new Map();
-  for (const preset of visibleModelChoices(
-    [...MODEL_CONNECTION_PRESETS, ...learning.modelPresets],
-    learning.models.filter((model) => model.source === 'byok')
-  ))
-    if (!unique.has(preset.provider)) unique.set(preset.provider, { ...preset, ...modelBrand(preset.provider) });
-  for (const saved of visibleModelChoices(learning.models, learning.models).filter(
-    (model) => model.source === 'byok'
-  )) {
-    const prior = [...unique.values()].find((item) => item.provider === saved.provider && !item.saved);
-    if (prior) unique.set(prior.provider, { ...prior, saved });
-    else unique.set(saved.id, { ...saved, saved, ...modelBrand(saved.provider) });
-  }
-  return [...unique.values()];
-});
-function connectionLabel(saved) {
-  if (!saved?.configured) return '未连接';
-  return (
-    { connected: '已配置 · 最近请求成功', failed: '已配置 · 验证失败', stale: '已配置 · 需重新验证' }[
-      saved.connectionStatus
-    ] || '已配置 · 未验证'
-  );
-}
+  failure = ref(null),
+  draft = ref({}),
+  modelOptions = ref([]),
+  manual = ref(false),
+  newConnection = ref(false),
+  operationState = ref({ phase: 'idle' }),
+  testRequest = ref(null);
+const locked = computed(() => saving.value || discovering.value || learning.busy || learning.intakeBusy);
+const matches = (item) =>
+  `${item.provider} ${item.model || ''}`.toLocaleLowerCase().includes(query.value.trim().toLocaleLowerCase());
+const savedModels = computed(() => learning.models.filter((model) => model.source === 'byok').filter(matches));
 const providers = computed(() =>
-  catalog.value.filter(
-    (item) =>
-      (filter.value !== 'connected' || item.saved?.configured) &&
-      `${item.provider} ${item.model}`.toLocaleLowerCase().includes(query.value.trim().toLocaleLowerCase())
-  )
+  MODEL_ENDPOINTS.filter((item) => item.id !== 'cloudflare')
+    .map((item) => ({ ...item, ...modelBrand(item.provider) }))
+    .filter(matches)
 );
-const providerGroups = computed(() =>
-  [
-    { id: 'general', label: '通用' },
-    { id: 'other', label: '其他' }
-  ]
-    .map((group) => ({ ...group, items: providers.value.filter((item) => item.group === group.id) }))
-    .filter((group) => group.items.length)
-);
+function connectionLabel(saved) {
+  if (saved.requiresModelSelection) return '待选择型号';
+  if (!saved.configured) return '待填写密钥';
+  if (saved.connectionStatus === 'failed') return modelErrorPresentation({ error: saved.lastError }).message;
+  return { connected: '连接正常', stale: '需要重新测试', untested: '尚未测试' }[saved.connectionStatus] || '尚未测试';
+}
 function close() {
-  loginRequired.value = false;
   current.value = null;
   apiKey.value = '';
-  error.value = '';
   editing.value = false;
+  choosing.value = false;
   disconnecting.value = false;
+  failure.value = null;
+  modelOptions.value = [];
+  manual.value = false;
+  operationState.value = { phase: 'idle' };
+  testRequest.value = null;
 }
-function open(provider) {
+function open(provider, saved = false) {
+  if (locked.value) return;
   close();
   if (!getToken()) {
     loginRequired.value = true;
     return;
   }
-  current.value = provider;
-  draft.value = { ...provider, ...(provider.saved || {}) };
+  current.value = { ...provider, ...(saved ? { saved: provider } : {}) };
+  draft.value = { ...provider, model: saved && !provider.requiresModelSelection ? provider.model : '' };
+  newConnection.value = !saved;
 }
 function goLogin() {
-  close();
+  loginRequired.value = false;
   safeNavigateTo('/pages/login/index');
 }
-function continueLocal() {
-  close();
-  safeNavigateTo('/pages/learning/index');
-}
-async function select(model) {
-  if (learning.busy || learning.intakeBusy || saving.value) return;
+async function perform(action) {
+  if (saving.value) return;
   const context = learning.recordContext();
   saving.value = true;
-  error.value = '';
+  failure.value = null;
+  operationState.value = { phase: 'running' };
   try {
-    if (isDesktopSettingsWindow()) {
-      await startDesktopModelIntake(model.id, getUserId());
-      close();
-      return;
+    const result = await action();
+    if (context !== learning.recordContext() || !current.value) return;
+    if (result?.success === false) {
+      failure.value = result;
+      operationState.value = { phase: 'failed', errorCode: result.error || result.errorCode };
+    } else operationState.value = { phase: 'succeeded' };
+    return result;
+  } catch (error) {
+    if (context === learning.recordContext() && current.value) {
+      failure.value = { error: error.code || 'MODEL_FAILED' };
+      operationState.value = { phase: 'failed', errorCode: error.code };
     }
-    const result = await learning.beginModelIntake(model.id);
-    if (context !== learning.recordContext()) return;
-    if (!result.success) {
-      error.value = result.error === 'INTAKE_UNAVAILABLE' ? '服务更新后即可开始对话建档' : publicError(result);
-      return;
-    }
-    const catalog = await learning.loadModels();
-    if (context !== learning.recordContext()) return;
-    if (!catalog.success) {
-      error.value = publicError(catalog);
-      return;
-    }
-    learning.modelId = model.id;
-    learning.selectedMode = 'cloud';
-    learning.streamEnabled = learning.streamSupported === true;
-    if (!learning.active?.coach?.profile && !learning.active?.studyProfile) learning.selectedConversationId = null;
-    close();
-    safeNavigateTo('/pages/learning/index');
-  } catch (failure) {
-    if (context === learning.recordContext())
-      error.value = isDesktopSettingsWindow()
-        ? '模型尚未启用，请在主窗口查看错误；连接配置已保留，可稍后重试。'
-        : publicError(failure);
   } finally {
     saving.value = false;
+    apiKey.value = '';
   }
 }
-async function connect() {
-  if (saving.value || !draft.value.model?.trim() || !current.value || (current.value.saved && !apiKey.value.trim()))
-    return;
-  if (!getToken()) {
-    apiKey.value = '';
-    current.value = null;
-    loginRequired.value = true;
-    return;
-  }
-  const context = learning.recordContext();
-  saving.value = true;
-  error.value = '';
+async function reload() {
   try {
-    const profile = {
-      id: current.value.saved?.id || draft.value.id,
-      provider: draft.value.provider,
-      model: draft.value.model.trim(),
-      endpoint: draft.value.endpoint,
-      structured: (current.value.saved?.capabilities?.structured ?? draft.value.structured) === true,
-      stream: (current.value.saved?.capabilities?.stream ?? draft.value.stream) === true,
-      vision: current.value.saved?.capabilities?.vision === true,
-      apiKey: apiKey.value
-    };
-    const result = await learning.saveModel(profile, true);
-    if (context !== learning.recordContext()) return;
-    if (!result.success) {
-      error.value = result.error === 'INTAKE_UNAVAILABLE' ? '服务更新后即可开始对话建档' : publicError(result);
-      return;
-    }
-    if (!profile.apiKey.trim()) {
-      close();
-      message.value = '已添加，可稍后填写密钥';
-      return;
-    }
-    if (isDesktopSettingsWindow()) {
-      await startDesktopModelIntake(profile.id, getUserId());
-      close();
-      return;
-    }
-    const connection = await learning.beginModelIntake(profile.id);
-    if (context !== learning.recordContext()) return;
-    if (!connection.success) {
-      error.value = connection.error === 'INTAKE_UNAVAILABLE' ? '服务更新后即可开始对话建档' : publicError(connection);
-      return;
-    }
-    const catalog = await learning.loadModels();
-    if (context !== learning.recordContext()) return;
-    if (!catalog.success) {
-      error.value = publicError(catalog);
-      return;
-    }
-    learning.modelId = profile.id;
-    learning.selectedMode = 'cloud';
-    learning.streamEnabled = learning.streamSupported === true;
-    if (!learning.active?.coach?.profile && !learning.active?.studyProfile) learning.selectedConversationId = null;
-    close();
-    safeNavigateTo('/pages/learning/index');
-  } catch (failure) {
-    if (context === learning.recordContext())
-      error.value = isDesktopSettingsWindow()
-        ? '模型尚未启用，请在主窗口查看错误；连接配置已保留，可稍后重试。'
-        : publicError(failure);
-  } finally {
-    apiKey.value = '';
-    saving.value = false;
+    await learning.loadModels();
+  } catch {
+    /* Store owns catalog status. */
   }
 }
-async function disconnect() {
+function profile(extra = {}) {
+  const saved = current.value?.saved;
+  return {
+    id: saved?.id || draft.value.id,
+    provider: draft.value.provider,
+    endpoint: draft.value.endpoint,
+    model: saved?.model || '',
+    requiresModelSelection: saved?.requiresModelSelection ?? true,
+    structured: saved?.capabilities?.structured === true,
+    stream: saved?.capabilities?.stream === true,
+    vision: saved?.capabilities?.vision === true,
+    ...extra
+  };
+}
+async function saveKey() {
+  if (locked.value || !current.value) return;
+  if (!current.value.saved)
+    draft.value.id = `byok_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+  const target = current.value;
+  const result = await perform(() => learning.saveModel(profile({ apiKey: apiKey.value }), true));
+  if (!result?.success || current.value !== target) return;
+  current.value = {
+    ...target,
+    saved: learning.models.find((model) => model.id === draft.value.id) || { ...profile(), configured: true }
+  };
+  editing.value = false;
+  if (newConnection.value || current.value.saved.requiresModelSelection) await chooseModels();
+  else message.value = '密钥已保存';
+}
+async function chooseModels() {
   const id = current.value?.saved?.id;
-  if (!id || saving.value) return;
-  const context = learning.recordContext();
-  saving.value = true;
+  if (!id || locked.value) return;
+  const target = current.value,
+    context = learning.recordContext();
+  choosing.value = true;
+  discovering.value = true;
+  failure.value = null;
+  modelOptions.value = [];
+  manual.value = false;
   try {
-    const result = await learning.removeModel(id);
-    if (context !== learning.recordContext()) return;
-    if (result.success) {
-      close();
-      message.value = '连接已断开';
-    } else error.value = result.error === 'INTAKE_UNAVAILABLE' ? '服务更新后即可开始对话建档' : publicError(result);
-  } catch (failure) {
-    if (context === learning.recordContext())
-      error.value = isDesktopSettingsWindow()
-        ? '模型尚未启用，请在主窗口查看错误；连接配置已保留，可稍后重试。'
-        : publicError(failure);
+    const result = await learning.loadModelDiscovery({ profileId: id, refresh: true });
+    if (context !== learning.recordContext() || current.value !== target) return;
+    if (!result.success) {
+      failure.value = result;
+      manual.value = true;
+      return;
+    }
+    modelOptions.value = (result.data.models || []).map((item) => ({
+      value: item.modelId,
+      label: item.displayName ? `${item.displayName} · ${item.modelId}` : item.modelId
+    }));
+    if (!modelOptions.value.length) {
+      manual.value = true;
+      failure.value = { error: 'UNSUPPORTED_DISCOVERY' };
+    }
+  } catch (error) {
+    if (context === learning.recordContext() && current.value === target) {
+      failure.value = { error: error.code || 'METADATA_UNAVAILABLE' };
+      manual.value = true;
+    }
   } finally {
-    disconnecting.value = false;
-    saving.value = false;
+    discovering.value = false;
+  }
+}
+async function saveSelectedModel() {
+  if (locked.value || !draft.value.model?.trim()) return;
+  const target = current.value;
+  const result = await perform(() =>
+    learning.saveModel(profile({ model: draft.value.model.trim(), requiresModelSelection: false }), true)
+  );
+  if (!result?.success || current.value !== target) return;
+  choosing.value = false;
+  current.value = {
+    ...target,
+    saved: learning.models.find((model) => model.id === draft.value.id) || {
+      ...profile({ model: draft.value.model.trim(), requiresModelSelection: false }),
+      configured: true
+    }
+  };
+  if (newConnection.value) await select();
+}
+async function select() {
+  if (locked.value || !current.value?.saved) return;
+  const result = await perform(async () => {
+    const saved = await learning.selectModel(current.value.saved.id);
+    if (saved?.success === false) return saved;
+    if (isDesktopSettingsWindow()) await selectDesktopModel(current.value.saved.id, getUserId());
+    return { success: true };
+  });
+  if (result?.success) {
+    message.value = '已切换连接';
+    if (!isDesktopSettingsWindow()) safeNavigateTo('/pages/learning/index');
+  }
+}
+
+async function test() {
+  if (locked.value || !current.value?.saved) return;
+  const id = current.value.saved.id;
+  const result = await perform(() => learning.testModel(id));
+  if (result?.requestId && current.value?.saved?.id === id) testRequest.value = { id, requestId: result.requestId };
+}
+
+async function disconnect() {
+  if (locked.value || !current.value?.saved) return;
+  const result = await perform(() => learning.removeModel(current.value.saved.id));
+  if (result?.success) {
+    close();
+    message.value = '连接已断开';
+  }
+}
+function errorAction(action) {
+  if (action.type === 'manual_model') {
+    manual.value = true;
+    choosing.value = true;
+  } else if (action.type === 'query_result') {
+    if (testRequest.value)
+      return perform(() => learning.recoverConnectionTest(testRequest.value.id, testRequest.value.requestId));
+  } else if (action.type === 'open_connectors') {
+    editing.value = true;
   }
 }
 watch(
@@ -375,13 +389,8 @@ watch(
     message.value = '';
   }
 );
-onMounted(async () => {
-  if (getToken())
-    try {
-      await learning.loadModels();
-    } catch {
-      /* Store owns read status. */
-    }
+onMounted(() => {
+  if (getToken()) void reload();
 });
 onUnmounted(close);
 </script>
