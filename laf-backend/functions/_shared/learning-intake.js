@@ -61,6 +61,25 @@ export function normalizeStudyProfile(value) {
     foundation: value.foundation
   };
 }
+// Draft facts use only literal, unambiguous statements; confirmation still owns persistence.
+export function explicitIntakeFacts(raw = '') {
+  const english1 = /英语一|english\s*1/i.test(raw),
+    english2 = /英语二|english\s*2/i.test(raw);
+  const facts = {};
+  if (english1 !== english2) facts.exam = english1 ? 'english1' : 'english2';
+  const minutes = [...raw.matchAll(/(?:每天|每日)\s*(?:能|可以|可|有)?\s*(?:学习|学)?\s*(\d{1,3})\s*分钟/g)];
+  if (minutes.length === 1 && !/分钟\s*(?:或者?|还是)|(?:或者?|还是)\s*\d+\s*分钟/.test(raw)) {
+    const value = Number(minutes[0][1]);
+    if (value >= (facts.exam ? 10 : 5) && value <= (facts.exam ? 90 : 120)) facts.minutes = value;
+  }
+  const dates = [...raw.matchAll(/\b(20\d{2})[-年](\d{1,2})[-月](\d{1,2})(?:日|\b)/g)];
+  if (dates.length === 1) {
+    const date = `${dates[0][1]}-${dates[0][2].padStart(2, '0')}-${dates[0][3].padStart(2, '0')}`;
+    const timestamp = Date.parse(`${date}T12:00:00Z`);
+    if (Number.isFinite(timestamp) && new Date(timestamp).toISOString().slice(0, 10) === date) facts.deadline = date;
+  }
+  return facts;
+}
 export function normalizeIntakeReply(value, first = false, context) {
   if (
     !value ||
@@ -80,7 +99,8 @@ export function normalizeIntakeReply(value, first = false, context) {
     seen.add(item.value);
     return { value: item.value, label: item.label.trim() };
   });
-  const profile = draft.profile === null ? null : normalizeStudyProfile(draft.profile);
+  const facts = explicitIntakeFacts(context?.turns.map((turn) => turn.answer).join('\n') || '');
+  const profile = draft.profile === null ? null : normalizeStudyProfile({ ...draft.profile, ...facts });
   if (!first) {
     const finished = context?.turns.length >= 4;
     if (!profile && !(finished && !options.length && draft.input === false)) {
@@ -160,7 +180,7 @@ export function intakeSystemPrompt(context) {
     question: null,
     tools: []
   };
-  return `你是学习教练，正在通过真实一问一答了解用户。现在优先根据最后的用户回答生成待确认学习档案，不能反复确认同一事实。
+  return `你是学习教练，正在通过真实一问一答了解用户。综合全部已回答轮次生成待确认学习档案，首条消息中的考试、日期和每日时间持续有效，不能重复追问已知事实。
 当用户已经说出具体学科或技能，必须立即返回格式A：${JSON.stringify(profile)}。
 将格式A的示例文字替换成用户实际表达的内容。category只能是cet/kaoyan/civil/ielts/toefl/other；exam仅在明确考研英语一时用english1，英语二用english2，计算机408用cs408，其余general。subjects只写用户明确说出的学科或技能原词，须逐字出现在用户回答中，不能预设整个考试目录或替用户补全。用户已说每天几分钟时minutes为那个整数，未说则null；用户已说基础时foundation为其原话，未说则null；deadline只在用户提供明确完整日期时填写YYYY-MM-DD，否则null。禁止推算考试日期。考研英语/408的minutes为10至90，其他5至120。所有数字不加引号。
 只有用户尚未明确具体方向（例如仅回答“考研”）时，才返回格式B：{"message":"一个明确科目的短问题","intake":{"options":[{"value":"english","label":"英语"},{"value":"major","label":"专业课"},{"value":"skip","label":"尚未确定"}],"input":false,"profile":null},"question":null,"tools":[]}。格式B一次只问一个必要问题，2–4个选项，必须含“尚未确定/跳过”类选项；能点选就不要input:true，不出阅读题、写作题或长文本框。选项按真实语境调整，不能把考研都当成英语写作。不要问基础、每天分钟、考试日期、动机等非必要信息。只回答“考研”不允许生成档案或推断科目。跳过不写事实，不再追问已跳过或已确认的项。

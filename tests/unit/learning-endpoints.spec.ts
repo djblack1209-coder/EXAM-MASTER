@@ -93,6 +93,14 @@ beforeEach(() => {
   mock.allowed = true;
   mock.failStateDelete = false;
   vi.clearAllMocks();
+  vi.mocked(callLearningProvider)
+    .mockReset()
+    .mockResolvedValue({
+      content: '{"message":"隔离测试回复","tools":[]}',
+      actualModel: 'explicit-test-id',
+      usage: { prompt_tokens: 15, completion_tokens: 12 },
+      durationMs: 1
+    });
   vi.stubEnv('JWT_SECRET', 'test-only-jwt-secret');
   vi.stubEnv('LEARNING_VAULT_KEY', 'a'.repeat(64));
   vi.stubEnv('LEARNING_ALLOWED_ORIGINS', 'https://provider.example');
@@ -259,8 +267,15 @@ it('国内无密钥添加只保存本账号元数据，不能覆盖已有连接�
       .success
   ).toBe(true);
   const configured = JSON.stringify([...mock.rows]);
-  expect((await models(context({ action: 'save', profile, shareConsent: true }))).success).toBe(false);
-  expect(JSON.stringify([...mock.rows])).toBe(configured);
+  expect((await models(context({ action: 'save', profile, shareConsent: true }))).success).toBe(true);
+  expect([...mock.rows.values()].filter((row: any) => row.vault)).toHaveLength(1);
+  expect(JSON.stringify([...mock.rows.values()].filter((row: any) => row.vault))).toBe(
+    JSON.stringify(
+      JSON.parse(configured)
+        .map((row: any) => row[1])
+        .filter((row: any) => row.vault)
+    )
+  );
   expect(callLearningProvider).not.toHaveBeenCalled();
   expect(callStreamingLearningProvider).not.toHaveBeenCalled();
 });
@@ -1466,7 +1481,8 @@ describe('明确写作反馈在预留前约束输出，收到后仍校验原答'
       max_tokens: 1000,
       response_format: { type: 'json_object' }
     });
-    expect(buildLearningRequest(config, messages)).not.toHaveProperty('reasoning_effort');
+    // The existing Groq per-model policy applies to ordinary chat as well.
+    expect(buildLearningRequest(config, messages)).toHaveProperty('reasoning_effort', 'high');
     expect(config.writingOutput).toBeUndefined();
     expect(account().calls[0]).not.toHaveProperty('outputContract');
   });
@@ -1608,7 +1624,7 @@ it('coach safe original input retains strict JSON and unchanged teaching text', 
   expect(callLearningProvider).toHaveBeenCalledOnce();
 });
 
-it('failed coach query preserves the validation path and pending cost without a second provider call', async () => {
+it('failed coach query preserves the validation path and pending cost after one repair without a third provider call', async () => {
   await streamProfile();
   const request = {
     contract: 'kaoyan-writing-coach-v1',
@@ -1622,7 +1638,7 @@ it('failed coach query preserves the validation path and pending cost without a 
   const { coachFixture } = await import('../fixtures/writing-coach.js');
   const invalid = coachFixture(request);
   invalid.cards[2].prompt = '';
-  vi.mocked(callLearningProvider).mockResolvedValueOnce({
+  vi.mocked(callLearningProvider).mockResolvedValue({
     ...streamCompleted,
     content: JSON.stringify({ message: '合成摸底', tools: [], question: null, coach: invalid })
   });
@@ -1652,5 +1668,126 @@ it('failed coach query preserves the validation path and pending cost without a 
   const ledger = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && Array.isArray(row.calls));
   expect(ledger.calls[0].result).toBeNull();
   expect(await models(context({ action: 'result', requestId: body.requestId }, 'u2'))).toMatchObject({ code: 404 });
+  expect(callLearningProvider).toHaveBeenCalledTimes(2);
+});
+
+it('BYOK saves multiple connections and account preferences, preserves keys on edit and clears a deleted selection', async () => {
+  await streamProfile(false);
+  await models(
+    context({
+      action: 'save',
+      shareConsent: true,
+      profile: {
+        id: 'second',
+        provider: 'Custom',
+        model: 'other-model',
+        endpoint: 'https://provider.example/chat',
+        apiKey: 'fixture-second-key'
+      }
+    })
+  );
+  expect(
+    (await models(context({ action: 'preferences', preferences: { selectedModelId: 'second', sharingAllowed: true } })))
+      .success
+  ).toBe(true);
+  let listed = await models(context({ action: 'list' }));
+  expect(listed.data.models).toHaveLength(2);
+  expect(listed.data.preferences).toEqual({ selectedModelId: 'second', sharingAllowed: true });
+  expect(listed.data.needsConnection).toBe(false);
+  expect((await models(context({ action: 'list' }, 'u2'))).data).toMatchObject({
+    models: [],
+    needsConnection: true,
+    preferences: { selectedModelId: null, sharingAllowed: false }
+  });
+  const edited = await models(
+    context({
+      action: 'save',
+      shareConsent: true,
+      profile: { id: 'second', provider: 'Custom', model: 'new-model', endpoint: 'https://provider.example/chat' }
+    })
+  );
+  expect(edited.success).toBe(true);
+  expect([...mock.rows.values()].filter((row: any) => row.vault)).toHaveLength(2);
+  listed = await models(context({ action: 'list' }));
+  expect(listed.data.models.find((row: any) => row.id === 'second').model).toBe('new-model');
+  expect(JSON.stringify(listed)).not.toContain('fixture-second-key');
+  await models(context({ action: 'delete', profileId: 'second' }));
+  expect((await models(context({ action: 'list' }))).data.preferences.selectedModelId).toBeNull();
+  expect(
+    (await models(context({ action: 'preferences', preferences: { selectedModelId: 'fixture-stream' } }, 'u2'))).success
+  ).toBe(false);
+});
+
+it('BYOK needs a connection before inference and does not fall back to a platform model', async () => {
+  const result = await ai(context({ ...streamBody('no-connection'), modelId: '' }));
+  expect(result).toMatchObject({ success: false, error: 'NEEDS_CONNECTION' });
+  expect(callLearningProvider).not.toHaveBeenCalled();
+});
+
+it('one repair uses an independent receipt, returns the parent binding and can be recovered without re-inference', async () => {
+  await streamProfile(false);
+  const request = {
+    contract: 'kaoyan-writing-coach-v1',
+    phase: 'diagnostic',
+    target: 'diagnostic',
+    exam: 'english2',
+    day: '2026-10-26',
+    input: '开始摸底',
+    sources: []
+  };
+  const { coachFixture } = await import('../fixtures/writing-coach.js');
+  const valid = coachFixture(request);
+  const invalid = structuredClone(valid);
+  invalid.cards[0].prompt = '';
+  vi.mocked(callLearningProvider)
+    .mockResolvedValueOnce({
+      ...streamCompleted,
+      content: JSON.stringify({ message: '摸底', tools: [], question: null, coach: invalid })
+    })
+    .mockResolvedValueOnce({
+      ...streamCompleted,
+      content: JSON.stringify({ message: '摸底', tools: [], question: null, coach: valid })
+    });
+  const body = { ...streamBody('repair-success'), learningContext: { owner: 'u1', coach: request } };
+  const result = await ai(context(body));
+  expect(result).toMatchObject({
+    success: true,
+    data: {
+      requestId: body.requestId,
+      repairRequestId: `${body.requestId}:repair1`,
+      requestBinding: body.requestBinding
+    }
+  });
+  const ledger = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && row.calls);
+  expect(ledger.calls.map((call: any) => [call.id, call.status])).toEqual([
+    [body.requestId, 'failed'],
+    [`${body.requestId}:repair1`, 'completed']
+  ]);
+  expect(ledger.calls[1]).toMatchObject({ repairOf: body.requestId, units: 0, entitlementCharged: 0 });
+  expect(ledger.calls[0].usage).toBeTruthy();
+  expect(ledger.calls[1].usage).toBeTruthy();
+  expect((await models(context({ action: 'result', requestId: body.requestId }))).data.requestId).toBe(body.requestId);
+  expect((await ai(context(body))).success).toBe(true);
+  expect(callLearningProvider).toHaveBeenCalledTimes(2);
+  expect(vi.mocked(callLearningProvider).mock.calls[0][0].provider).toBe(
+    vi.mocked(callLearningProvider).mock.calls[1][0].provider
+  );
+});
+
+it.each([
+  ['KEY_REJECTED', 'KEY_INVALID'],
+  ['MODEL_NOT_FOUND', 'MODEL_UNAVAILABLE'],
+  ['RATE_LIMITED', 'RATE_LIMITED'],
+  ['UPSTREAM_QUOTA', 'QUOTA_EXHAUSTED'],
+  ['TIMEOUT', 'TIMEOUT'],
+  ['TLS_FAILED', 'NETWORK_OR_TLS'],
+  ['SSRF_BLOCKED', 'ADDRESS_INVALID']
+])('connection failure %s persists category %s without retry', async (error, category) => {
+  await streamProfile(false);
+  vi.mocked(callLearningProvider).mockRejectedValueOnce(new ProviderError(error, 'synthetic failure'));
+  const result = await ai(context(streamBody(`failure-${error}`)));
+  expect(result).toMatchObject({ success: false, connectionError: category });
+  const listed = await models(context({ action: 'list' }));
+  expect(listed.data.models[0]).toMatchObject({ connectionStatus: 'failed', lastError: category });
   expect(callLearningProvider).toHaveBeenCalledOnce();
 });

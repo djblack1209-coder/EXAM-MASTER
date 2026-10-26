@@ -476,7 +476,11 @@ function resolveKey(key, session) {
   if (isUnscopedKey(key)) return key;
 
   const uid = session ? (session.owner === 'guest' ? null : session.owner) : getUserId();
-  if (!uid) return key; // 未登录降级
+  if (!uid) {
+    const guest = session || captureSession();
+    if (isDurableLearningKey(key) && guest?.owner === 'guest' && guest.epoch) return `g_${guest.epoch}_${key}`;
+    return key;
+  }
   return `u_${uid}_${key}`;
 }
 

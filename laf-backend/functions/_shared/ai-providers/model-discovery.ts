@@ -1,4 +1,5 @@
 import https from 'node:https';
+import { MODEL_ENDPOINTS } from './model-endpoints.js';
 import { resolveCloudEndpoint, validateCloudEndpoint, modelValueHasKeyEcho } from './learning-provider.js';
 import { DISCOVERY_CANDIDATES, unknownMetadata, type MetadataField } from './model-metadata.js';
 
@@ -18,6 +19,7 @@ export type DiscoveryProfile = {
   endpoint: string;
   configured: boolean;
   authorization: 'bearer';
+  keyRef?: string;
 };
 type FetchOptions = {
   method: 'GET';
@@ -34,6 +36,7 @@ type MetadataResponse = {
 };
 type Dependencies = {
   readProfile(owner: string, profileId: string): Promise<DiscoveryProfile | null>;
+  allowedOrigins?: () => string[];
   readCredential?: (profile: DiscoveryProfile, signal: AbortSignal) => Promise<string | null>;
   fetcher?: (url: URL, options: FetchOptions) => Promise<MetadataResponse>;
   resolve?: typeof resolveCloudEndpoint;
@@ -79,10 +82,22 @@ function listField(value: any, path: string, limit: number, length: number, allo
     ? known([...new Set(value)], path)
     : unknownMetadata('not_returned');
 }
-function mapMetadata(raw: any, vendor: keyof typeof DISCOVERY_CANDIDATES, target: string | undefined, now: number) {
+function mapMetadata(raw: any, vendor: string, target: string | undefined, now: number, listPath: string) {
   if (!object(raw)) fail('METADATA_UNAVAILABLE');
   const direct = vendor === 'groq' && target !== undefined;
-  const rows = direct ? [raw] : raw.data;
+  const rows = direct
+    ? [raw]
+    : vendor === 'gemini'
+      ? raw.models
+          ?.filter(
+            (row: any) => !row.supportedGenerationMethods || row.supportedGenerationMethods.includes('generateContent')
+          )
+          .map((row: any) => ({
+            id: typeof row.name === 'string' ? row.name.replace(/^models\//, '') : null,
+            name: row.displayName,
+            context_window: row.inputTokenLimit
+          }))
+      : raw.data;
   if (!Array.isArray(rows)) fail('METADATA_UNAVAILABLE');
   if (rows.length > DISCOVERY_LIMITS.models) fail('METADATA_LIMIT');
   let complete =
@@ -101,7 +116,7 @@ function mapMetadata(raw: any, vendor: keyof typeof DISCOVERY_CANDIDATES, target
   const source = {
     id: 'api',
     kind: 'official_api_observed',
-    sourceUrl: `${vendor}:GET ${direct ? '/openai/v1/models/{model}' : DISCOVERY_CANDIDATES[vendor].listPath}`,
+    sourceUrl: `${vendor}:GET ${direct ? '/openai/v1/models/{model}' : listPath}`,
     observedAt: now,
     sourceUpdatedAt: null,
     expiresAt: now + DISCOVERY_LIMITS.ttlMs
@@ -111,7 +126,15 @@ function mapMetadata(raw: any, vendor: keyof typeof DISCOVERY_CANDIDATES, target
     return {
       mode: 'list',
       complete,
-      models: valid.map((row) => ({ modelId: row.id, displayName: displayName(row), availability: 'listed' })),
+      models: valid.map((row) => ({
+        modelId: row.id,
+        displayName: displayName(row),
+        availability: 'listed',
+        ...(Number.isSafeInteger(row.context_window || row.context_length) &&
+        (row.context_window || row.context_length) > 0
+          ? { contextWindowTokens: row.context_window || row.context_length }
+          : {})
+      })),
       sources: [source],
       fetchedAt: now
     };
@@ -219,7 +242,11 @@ async function readJson(response: MetadataResponse, controller: AbortController)
           ? 'RATE_LIMITED'
           : response.status === 401 || response.status === 403
             ? 'DISCOVERY_AUTH_REJECTED'
-            : 'METADATA_UNAVAILABLE'
+            : [404, 405, 410, 501].includes(response.status)
+              ? 'UNSUPPORTED_DISCOVERY'
+              : response.status === 402
+                ? 'UPSTREAM_QUOTA'
+                : 'METADATA_UNAVAILABLE'
       );
     const mime = (response.headers.get('content-type') || '').split(';')[0].trim();
     if (!/^application\/(?:[a-z0-9.+-]+\+)?json$/i.test(mime)) fail('METADATA_NOT_JSON');
@@ -323,13 +350,26 @@ export function createModelDiscovery(deps: Dependencies) {
       if (!enabled) fail('DISCOVERY_DISABLED');
       const profile = await abortable(() => deps.readProfile(owner, body.profileId), controller.signal);
       if (!profileValid(profile, owner, body.profileId)) fail('CONTEXT_CHANGED');
-      const vendor = (Object.keys(DISCOVERY_CANDIDATES) as (keyof typeof DISCOVERY_CANDIDATES)[]).find(
-        (key) => DISCOVERY_CANDIDATES[key].provider === profile!.provider
+      const preset = MODEL_ENDPOINTS.find(
+        (item) =>
+          item.provider === profile!.provider &&
+          (item.endpoint === profile!.endpoint || `${item.legacyBaseURL}/chat/completions` === profile!.endpoint)
       );
-      if (!vendor) fail('UNSUPPORTED_DISCOVERY');
-      const candidate = DISCOVERY_CANDIDATES[vendor];
-      const endpoint = validateCloudEndpoint(profile!.endpoint, [candidate.origin]);
+      const endpoint = validateCloudEndpoint(
+        profile!.endpoint,
+        deps.allowedOrigins?.() || [new URL(profile!.endpoint).origin]
+      );
+      if (!endpoint.pathname.endsWith('/chat/completions')) fail('UNSUPPORTED_DISCOVERY');
+      const vendor = preset?.id || 'custom';
+      const candidate = (DISCOVERY_CANDIDATES as Record<string, any>)[vendor] || {
+        origin: endpoint.origin,
+        chatPath: endpoint.pathname,
+        listPath: vendor === 'gemini' ? '/v1beta/models' : endpoint.pathname.replace(/\/chat\/completions$/, '/models'),
+        authorization: 'bearer',
+        detailPrefix: null
+      };
       if (
+        endpoint.origin !== candidate.origin ||
         endpoint.pathname !== candidate.chatPath ||
         profile!.authorization !== candidate.authorization ||
         !profile!.configured
@@ -383,7 +423,9 @@ export function createModelDiscovery(deps: Dependencies) {
                   signal: upstream.signal,
                   address: resolved.address,
                   headers: {
-                    Authorization: `Bearer ${credential}`,
+                    ...(vendor === 'gemini'
+                      ? { 'x-goog-api-key': credential }
+                      : { Authorization: `Bearer ${credential}` }),
                     Accept: 'application/json',
                     'Accept-Encoding': 'identity'
                   }
@@ -391,7 +433,7 @@ export function createModelDiscovery(deps: Dependencies) {
               upstream.signal
             );
             const raw = await readJson(response, upstream);
-            const mapped = mapMetadata(raw, vendor, body.modelId, now());
+            const mapped = mapMetadata(raw, vendor, body.modelId, now(), candidate.listPath);
             if (modelValueHasKeyEcho(mapped, credential)) fail('METADATA_UNAVAILABLE');
             const current = await abortable(() => deps.readProfile(owner, body.profileId), upstream.signal);
             if (
@@ -408,7 +450,12 @@ export function createModelDiscovery(deps: Dependencies) {
             entry.failed = false;
             return { success: true, code: 0, data: publicValue(mapped) };
           } catch (error) {
-            const errorCode = error instanceof DiscoveryError ? error.code : 'METADATA_UNAVAILABLE';
+            const errorCode =
+              error instanceof DiscoveryError
+                ? error.code
+                : ['SSRF_BLOCKED', 'INVALID_ENDPOINT', 'KEY_UNAVAILABLE', 'KEY_REJECTED'].includes((error as any)?.code)
+                  ? (error as any).code
+                  : 'METADATA_UNAVAILABLE';
             // Invalidate the snapshot without dropping this profile's refresh cooldown.
             if (errorCode === 'CONTEXT_CHANGED') entry.value = undefined;
             entry.failed = true;
@@ -437,7 +484,12 @@ export function createModelDiscovery(deps: Dependencies) {
       return {
         success: false,
         code: 503,
-        errorCode: error instanceof DiscoveryError ? error.code : 'METADATA_UNAVAILABLE'
+        errorCode:
+          error instanceof DiscoveryError
+            ? error.code
+            : ['SSRF_BLOCKED', 'INVALID_ENDPOINT', 'KEY_UNAVAILABLE', 'KEY_REJECTED'].includes((error as any)?.code)
+              ? (error as any).code
+              : 'METADATA_UNAVAILABLE'
       };
     } finally {
       clearTimeout(timer);

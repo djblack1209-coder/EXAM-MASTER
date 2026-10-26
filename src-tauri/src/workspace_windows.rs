@@ -59,7 +59,7 @@ pub fn install_chinese_menu(app: &AppHandle) -> tauri::Result<()> {
 }
 
 #[derive(Default)]
-pub struct SettingsRefresh(Mutex<HashMap<String, mpsc::Sender<Value>>>);
+pub struct SettingsRefresh(Mutex<HashMap<String, mpsc::Sender<Value>>>, Mutex<()>);
 
 fn main_only(window: &WebviewWindow) -> Result<(), String> {
     if window.label() == "main" { Ok(()) } else { Err("此操作仅限主窗口".into()) }
@@ -73,18 +73,19 @@ fn workspace_route(route: &str) -> bool {
 }
 
 #[tauri::command]
-pub async fn open_desktop_settings(app: AppHandle, window: WebviewWindow, panel: String) -> Result<(), String> {
+pub async fn open_desktop_settings(app: AppHandle, window: WebviewWindow, state: State<'_, SettingsRefresh>, panel: String) -> Result<(), String> {
     main_only(&window)?;
     if !["settings", "connectors", "profile"].contains(&panel.as_str()) { return Err("设置分组不合法".into()); }
+    // Serialize the lookup and build: two rapid invokes must share one native webview.
+    let _opening = state.1.lock().map_err(|_| "设置窗口正在打开")?;
     if let Some(settings) = app.get_webview_window("settings") {
         settings.emit("desktop-settings-panel", &panel).map_err(|_| "设置窗口暂不可用")?;
         settings.unminimize().map_err(|_| "设置窗口暂不可用")?;
+        settings.show().map_err(|_| "设置窗口暂不可用")?;
         return settings.set_focus().map_err(|_| "无法打开设置窗口".into());
     }
     let route = format!("/pages/profile/index?panel={panel}");
-    let script = format!("window.location.replace('index.html#{}');", route);
-    let builder = tauri::WebviewWindowBuilder::new(&app, "settings", tauri::WebviewUrl::App("index.html".into()))
-        .initialization_script(format!("if (!window.location.hash) {{ {script} }}"))
+    let builder = tauri::WebviewWindowBuilder::new(&app, "settings", tauri::WebviewUrl::App(format!("index.html#{route}").into()))
         .title("Yozi AI 设置").inner_size(800.0, 600.0).min_inner_size(800.0, 600.0).center()
         .theme(window.theme().ok());
     #[cfg(target_os = "macos")]

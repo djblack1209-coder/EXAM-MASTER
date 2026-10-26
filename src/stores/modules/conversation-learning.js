@@ -1,8 +1,9 @@
+import { modelErrorPresentation } from '../../../laf-backend/functions/_shared/model-errors.js';
 import { DEV_TEST } from '@/config/build-channel.js';
 import { ENTRY_TOOL_NAMES, activeEntryMemories } from '../../../laf-backend/functions/_shared/learning-entries.js';
 import { extractConversationEntries } from '../../../laf-backend/functions/_shared/learning-entry-extractor.js';
 import { mapContentBlocks } from '../../../laf-backend/functions/_shared/learning-content-blocks.js';
-import { normalizeIntakeReply } from '../../../laf-backend/functions/_shared/learning-intake.js';
+import { normalizeIntakeReply, explicitIntakeFacts } from '../../../laf-backend/functions/_shared/learning-intake.js';
 import { coachMaterialContext } from '@/services/learning/coach-material-context.js';
 import {
   WRITING_COACH_CONTRACT,
@@ -165,6 +166,7 @@ import {
   testLearningModel,
   generateLearningTurn,
   saveLearningModel,
+  saveLearningModelPreferences,
   deleteLearningModel,
   cancelLearningTurn,
   fetchLearningResult,
@@ -266,6 +268,10 @@ export const CONVERSATION_ACTION_EFFECTS = Object.freeze({
   cancelModelReads: 'read',
   interpretQuestionImage: 'send',
   testModel: 'send',
+  selectModel: 'send',
+  setSharingAllowed: 'send',
+  openModelConnector: 'read',
+  modelErrorPresentation: 'read',
   beginModelIntake: 'send',
   restartModelIntake: 'send',
   cancelModelIntake: 'read',
@@ -374,6 +380,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   let intakeController = null;
   let modelIntakeAvailable = false;
   const coachError = ref('');
+  const coachProfileDraft = computed(() => explicitIntakeFacts(active.value?.goal || ''));
   const models = ref([]);
   const modelPresets = ref([]);
   const modelId = ref('');
@@ -389,6 +396,76 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const localConnection = ref(null);
   const materialConnection = ref(null);
   const sharingAllowed = ref(false);
+  const retryState = ref({ phase: 'idle', errorCode: null, message: '' });
+  const modelPreferenceState = ref({ phase: 'idle', errorCode: null });
+  const needsConnection = computed(() => !models.value.some((model) => model.source === 'byok' && model.configured));
+  const connectionGuide = computed(() =>
+    needsConnection.value ? modelErrorPresentation({ error: 'NEEDS_CONNECTION' }) : null
+  );
+  let hydratingPreferences = false;
+  let preferencesOwner = null;
+  let preferencesDirty = false;
+  let preferenceWrite = Promise.resolve();
+  const preferenceKey = 'learning_model_preferences_v1';
+  function openModelConnector() {
+    return modelErrorPresentation({ error: 'NEEDS_CONNECTION' }).action;
+  }
+  function persistModelPreferences() {
+    if (
+      resettingSession ||
+      hydratingPreferences ||
+      !boundSession ||
+      boundSession.owner === 'guest' ||
+      checkSession(boundSession) !== 'current'
+    )
+      return;
+    const session = boundSession;
+    const preferences = {
+      selectedModelId: models.value.some((model) => model.id === modelId.value && model.source === 'byok')
+        ? modelId.value
+        : null,
+      sharingAllowed: sharingAllowed.value
+    };
+    preferencesDirty = true;
+    const saved = storageService.save(preferenceKey, preferences, true, session);
+    modelPreferenceState.value = { phase: saved ? 'saving' : 'error', errorCode: saved ? null : 'STORAGE_FAILED' };
+    preferenceWrite = preferenceWrite
+      .catch(() => undefined)
+      .then(async () => {
+        if (checkSession(session) !== 'current') return { success: false, error: 'CONTEXT_CHANGED' };
+        const result = await saveLearningModelPreferences(preferences, { session, expectedOwner: session.owner });
+        if (checkSession(session) === 'current')
+          modelPreferenceState.value = {
+            phase: result.success ? 'saved' : 'error',
+            errorCode: result.success ? null : result.error || result.errorCode || 'CONFIG_FAILED'
+          };
+        return result;
+      })
+      .catch(() => {
+        if (checkSession(session) === 'current')
+          modelPreferenceState.value = { phase: 'error', errorCode: 'NETWORK_FAILED' };
+        return { success: false, error: 'NETWORK_FAILED' };
+      });
+    return preferenceWrite;
+  }
+  watch([modelId, sharingAllowed], persistModelPreferences, { flush: 'sync' });
+  async function selectModel(id) {
+    assert(!busy.value && !intakeBusy.value, 'BUSY', '请先等待或查询原请求');
+    if (!models.value.length) await loadModels();
+    assert(
+      models.value.some((model) => model.id === id && model.source === 'byok' && model.configured),
+      'NEEDS_CONNECTION',
+      '请先保存可用的 API 连接'
+    );
+    modelId.value = id;
+    selectedMode.value = 'cloud';
+    return await preferenceWrite;
+  }
+  async function setSharingAllowed(allowed) {
+    assert(typeof allowed === 'boolean', 'INPUT_INVALID', '共享设置不合法');
+    sharingAllowed.value = allowed;
+    return await preferenceWrite;
+  }
   const selectedMode = ref('offline');
   const streamEnabled = ref(false),
     streamPreview = ref('');
@@ -1212,6 +1289,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     syncController?.abort();
     historyController?.abort();
     historyProgress.value = null;
+    preferencesOwner = null;
+    preferencesDirty = false;
+    modelPreferenceState.value = { phase: 'idle', errorCode: null };
+    retryState.value = { phase: 'idle', errorCode: null, message: '' };
     sharingAllowed.value = false;
     localConnection.value = null;
     materialConnection.value = null;
@@ -1275,6 +1356,17 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         selectedConversationId.value = startup.at(-1)?.id || next.conversations.at(-1)?.id || null;
       }
       state.value = next;
+      if (preferencesOwner !== next.owner && boundSession && boundSession.owner === next.owner) {
+        hydratingPreferences = true;
+        try {
+          sharingAllowed.value =
+            storageService.get(preferenceKey, null, { session: boundSession, migrateLegacy: false })?.sharingAllowed ===
+            true;
+        } finally {
+          hydratingPreferences = false;
+        }
+        preferencesOwner = next.owner;
+      }
       calendar.read();
       pendingUploads.value = uploads;
       syncConflict.value = conflict;
@@ -1323,6 +1415,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       recordLocation.value = null;
       conversationLocation.value = null;
       if (identityChanged) {
+        state.value = emptyLearningState(readSessionSnapshot().session?.owner || 'guest');
+        selectedConversationId.value = null;
         recordsInitialized = false;
         lastRecordContext = null;
         recordReadState.value = 'loading';
@@ -1567,7 +1661,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       owner = state.value.owner;
     assert(!busy.value && active.value?.coach && !active.value.stopped, 'BUSY', '请回到当前未停止的带练');
     assert(getToken(), 'AUTH_REQUIRED', '登录后开始 AI 带练，建档和原答已保留');
-    assert(sharingAllowed.value, 'CONSENT_REQUIRED', '请先确认本次带练所需的资料片段与原答可发送给所选模型');
     const conversationId = active.value.id,
       context = recordContext(),
       today = dayKey(Date.now(), state.value.timezone);
@@ -1586,11 +1679,19 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const day = coach.days.find((v) => v.day === requestDay);
     const bound = coachInputFor(coach, day, phase, target);
     const recovering = Boolean(request);
+    assert(
+      recovering || sharingAllowed.value,
+      'CONSENT_REQUIRED',
+      '请先确认本次带练所需的资料片段与原答可发送给所选模型'
+    );
     if (DEV_TEST) {
       await learningWriteLease.waitUntilWritable(owner);
       ensureSessionCurrent(session);
       assert(
-        recordContext() === context && active.value?.id === conversationId && !busy.value && sharingAllowed.value,
+        recordContext() === context &&
+          active.value?.id === conversationId &&
+          !busy.value &&
+          (recovering || sharingAllowed.value),
         'CONTEXT_CHANGED',
         '当前学习或共享授权已变化，请重新确认'
       );
@@ -1599,15 +1700,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       const listed = await loadModels();
       assert(recordContext() === context && active.value?.id === conversationId, 'CONTEXT_CHANGED', '当前学习已变化');
       assert(listed.success, 'MODEL_DISABLED', listed.message || '平台模型暂不可用');
-      const model = modelId.value
-        ? models.value.find((m) => m.id === modelId.value)
-        : models.value.find((m) => m.source === 'platform' && m.configured);
+      const model = modelId.value ? models.value.find((m) => m.id === modelId.value) : null;
       assert(
         model && (model.source !== 'platform' || listed.data.platformEnabled),
-        'MODEL_DISABLED',
-        modelId.value
-          ? '所选模型暂不可用，请重新选择；不会自动切换模型'
-          : '平台模型服务尚未开放，请稍后再试或在高级设置接入模型'
+        'NEEDS_CONNECTION',
+        modelId.value ? '所选模型暂不可用，请重新选择；不会自动切换模型' : '请先在 AI 连接器接入自己的 API'
       );
       assert(
         !streamEnabled.value || (model.capabilities?.stream === true && streamPlatform !== 'unsupported'),
@@ -1664,7 +1761,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           state.value.revision === revision &&
           modelId.value === selectedModel &&
           selectedMode.value === selectedProviderMode &&
-          sharingAllowed.value,
+          (recovering || sharingAllowed.value),
         'CONTEXT_CHANGED',
         '当前学习、模型或共享授权已变化，未采用旧响应'
       );
@@ -1672,6 +1769,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     busy.value = true;
     error.value = '';
     coachError.value = '';
+    retryState.value = {
+      phase: 'running',
+      requestId: request.id,
+      errorCode: null,
+      message: recovering ? '正在查询原请求' : '正在请求模型'
+    };
     streamPreview.value = '';
     try {
       assertCurrent();
@@ -1702,7 +1805,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           );
       assertCurrent();
       if (!result.success) {
-        if (recovering && (['failed', 'cancelled'].includes(result.status) || [404, 410].includes(result.code)))
+        if (['failed', 'cancelled'].includes(result.status) || (recovering && [404, 410].includes(result.code)))
           commit('coach.closeRequest', {
             conversationId,
             explicit: true,
@@ -1717,6 +1820,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
                     ? 'expired'
                     : 'failed'
           });
+        retryState.value = {
+          phase: 'failed',
+          requestId: request.id,
+          errorCode: result.error || result.errorCode || String(result.code),
+          message: modelErrorPresentation(result).message
+        };
         coachError.value =
           (result.message || '请求未完成，原答已保存；可查询原请求结果') +
           (DEV_TEST && Number.isInteger(result.upstreamStatus)
@@ -1736,7 +1845,19 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         { conversationId, explicit: true, requestId: request.id, output: result.data.coach },
         `${request.id}:result`
       );
+      retryState.value = { phase: 'succeeded', requestId: request.id, errorCode: null, message: '已收到结果' };
       return result;
+    } catch (failure) {
+      if (recordContext() === context) {
+        retryState.value = {
+          phase: 'failed',
+          requestId: request.id,
+          errorCode: failure.code || 'MODEL_FAILED',
+          message: modelErrorPresentation(failure).message
+        };
+        coachError.value = retryState.value.message;
+      }
+      throw failure;
     } finally {
       if (controller === requestController) {
         controller = null;
@@ -2608,6 +2729,13 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   async function send(raw, options = {}) {
     ensureSessionCurrent();
     assert(!intakeBusy.value, 'BUSY', '请等待模型建档回复');
+    if (getToken() && selectedMode.value !== 'local' && !models.value.some((model) => model.configured))
+      await loadModels();
+    assert(
+      !getToken() || selectedMode.value === 'local' || models.value.some((model) => model.configured),
+      'NEEDS_CONNECTION',
+      '请先在 AI 连接器接入自己的 API'
+    );
     if (options.feedbackAttemptId) {
       assert(!options.visual, 'FORBIDDEN', '写作反馈不发送图片');
       feedbackAttempt(options.feedbackAttemptId);
@@ -3323,9 +3451,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const pending = recoverableRequest.value;
     assert(pending && !busy.value, 'PRECONDITION', '当前没有可读取的模型请求');
     assert(
-      sharingAllowed.value && selectedMode.value === 'cloud' && modelId.value === pending.modelId,
+      selectedMode.value === 'cloud' && modelId.value === pending.modelId,
       'CONSENT_REQUIRED',
-      '请选择原模型并授权在当前对话应用已完成结果'
+      '请选择原模型以读取已完成结果'
     );
     const owner = state.value.owner,
       lifecycle = learningRepository.lifecycleRevision();
@@ -3345,7 +3473,6 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           selectedConversationId.value === pending.conversationId &&
           selectedMode.value === 'cloud' &&
           modelId.value === pending.modelId &&
-          sharingAllowed.value &&
           (active.value?.activeQuestionKey || null) === pending.questionKey &&
           active.value.messages.filter((m) => m.role === 'user').at(-1)?.id === pending.messageId &&
           eventIndex >= 0 &&
@@ -3528,16 +3655,26 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         modelIntakeAvailable = result.success && result.data.intakeContract === 'model-intake-v1';
         models.value = result.success ? result.data.models : [];
         modelPresets.value = result.success ? result.data.presets || [] : [];
-        if (result.success && !modelId.value && selectedMode.value === 'offline') {
-          const previous = DEV_TEST ? active.value?.coach?.requests.at(-1)?.modelId : null;
-          const connected = previous
-            ? models.value.find((model) => model.id === previous && model.configured)
-            : models.value.find((model) => model.configured && model.connectionStatus === 'connected');
-          if (connected) {
-            modelId.value = connected.id;
-            selectedMode.value = 'cloud';
-            streamEnabled.value = streamSupported.value;
+        if (result.success && !preferencesDirty && result.data.preferences) {
+          hydratingPreferences = true;
+          try {
+            const preferences = result.data.preferences;
+            const selected = models.value.find(
+              (model) => model.id === preferences.selectedModelId && model.source === 'byok' && model.configured
+            );
+            modelId.value = selected?.id || '';
+            selectedMode.value = selected ? 'cloud' : 'offline';
+            sharingAllowed.value = preferences.sharingAllowed === true;
+            storageService.save(preferenceKey, preferences, true, boundSession);
+          } finally {
+            hydratingPreferences = false;
           }
+        }
+        if (result.success && modelId.value && !models.value.some((model) => model.id === modelId.value)) {
+          hydratingPreferences = true;
+          modelId.value = '';
+          selectedMode.value = 'offline';
+          hydratingPreferences = false;
         }
       } else usage.value = result.success ? result.data : null;
       status.value = {
@@ -4886,6 +5023,15 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     busy,
     error,
     coachError,
+    coachProfileDraft,
+    needsConnection,
+    connectionGuide,
+    selectModel,
+    setSharingAllowed,
+    openModelConnector,
+    modelErrorPresentation,
+    modelPreferenceState,
+    retryState,
     models,
     modelListState,
     modelUsageState,
@@ -5001,6 +5147,28 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         ensureSessionCurrent(session, undefined, { readOnly: effect === 'read' || name === 'cancel' });
       const session = check();
       const revocation = sessionRevocation.signal;
+      const tracksRetry = [
+        'requestCoach',
+        'restartModelIntake',
+        'recoverModelIntake',
+        'recoverModelResult',
+        'testModel'
+      ].includes(name);
+      const trackResult = (value) => {
+        if (tracksRetry) {
+          const failure = value?.success === false;
+          const presentation = failure ? modelErrorPresentation(value) : null;
+          retryState.value = {
+            ...retryState.value,
+            operation: name,
+            phase: failure ? 'failed' : 'succeeded',
+            errorCode: failure ? value.error || value.errorCode || presentation.code : null,
+            message: presentation?.message || '已收到结果'
+          };
+        }
+        return value;
+      };
+      if (tracksRetry) retryState.value = { phase: 'running', operation: name, errorCode: null, message: '正在处理' };
       operationSessions.push(session);
       try {
         const result = action(...args);
@@ -5019,10 +5187,19 @@ export const useConversationLearningStore = defineStore('conversation-learning',
             .then(
               (value) => {
                 check(session);
-                return value;
+                return trackResult(value);
               },
               (failure) => {
                 check(session);
+                if (tracksRetry) {
+                  const presentation = modelErrorPresentation(failure);
+                  retryState.value = {
+                    phase: 'failed',
+                    operation: name,
+                    errorCode: failure.code || presentation.code,
+                    message: presentation.message
+                  };
+                }
                 throw failure;
               }
             )
@@ -5032,6 +5209,14 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         return result;
       } catch (failure) {
         check(session);
+        if (name === 'requestCoach') {
+          retryState.value = {
+            phase: 'failed',
+            errorCode: failure.code || 'MODEL_FAILED',
+            message: modelErrorPresentation(failure).message
+          };
+          coachError.value = retryState.value.message;
+        }
         throw failure;
       } finally {
         operationSessions.pop();

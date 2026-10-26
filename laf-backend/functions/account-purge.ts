@@ -12,6 +12,7 @@
  */
 
 import cloud from '@lafjs/cloud';
+import { DEV_TEST } from './_shared/build-channel.js';
 import crypto from 'crypto';
 import { createLogger } from './_shared/api-response.js';
 
@@ -94,7 +95,10 @@ function getAdminPurgeHeaderToken(headers: Record<string, any> = {}): string {
 /**
  * 清除单个用户的所有数据
  */
-async function purgeUserData(userId: string): Promise<{ deleted: Record<string, number>; errors: string[] }> {
+async function purgeUserData(
+  userId: string,
+  retainTestBilling = false
+): Promise<{ deleted: Record<string, number>; errors: string[] }> {
   const deleted: Record<string, number> = {};
   const errors: string[] = [];
 
@@ -106,6 +110,63 @@ async function purgeUserData(userId: string): Promise<{ deleted: Record<string, 
     errors.push(`${scope}: ${error?.message || String(error)}`);
   };
 
+  if (retainTestBilling) {
+    if (!DEV_TEST) throw new Error('Test account cleanup requires the isolated runtime');
+    const account = (await db.collection('learning_accounts').where({ user_id: userId }).get()).data?.[0];
+    if (account?.calls?.some((call: any) => call.status === 'reserved')) throw new Error('REQUEST_PENDING');
+    if (account) {
+      const receiptId = `deleted_test_${crypto.createHash('sha256').update(userId).digest('hex')}`;
+      const calls = account.calls.map((call: any) => {
+        const {
+          id,
+          source,
+          provider,
+          model,
+          status,
+          at,
+          actualCost,
+          costStatus,
+          usage,
+          priceVersion,
+          units,
+          entitlementCharged,
+          repairOf,
+          deliveryUnits
+        } = call;
+        return Object.fromEntries(
+          Object.entries({
+            id,
+            source,
+            provider,
+            model,
+            status,
+            at,
+            actualCost,
+            costStatus,
+            usage,
+            priceVersion,
+            units,
+            entitlementCharged,
+            repairOf,
+            deliveryUnits
+          }).filter(([, value]) => value !== undefined)
+        );
+      });
+      const receipts = db.collection('learning_billing_receipts');
+      const existing = (await receipts.where({ _id: receiptId }).get()).data?.[0];
+      if (!existing)
+        await receipts.add({
+          _id: receiptId,
+          calls,
+          cost: account.cost,
+          entitlement: account.entitlement,
+          deletedAt: Date.now()
+        });
+      else if (JSON.stringify(existing.calls) !== JSON.stringify(calls)) throw new Error('BILLING_RECEIPT_CONFLICT');
+      const verified = (await receipts.where({ _id: receiptId }).get()).data?.[0];
+      if (JSON.stringify(verified?.calls) !== JSON.stringify(calls)) throw new Error('BILLING_RECEIPT_UNVERIFIED');
+    }
+  }
   // 1. 删除所有用户关联集合的数据
   for (const col of USER_COLLECTIONS) {
     try {

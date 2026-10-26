@@ -88,7 +88,7 @@ export function modelConnectionState(model: any, calls: any[], now = Date.now())
       (c) =>
         c.modelId === model.id &&
         c.model === model.model &&
-        c.configurationVersion === configurationVersion &&
+        (c.connectionVersion || c.configurationVersion) === configurationVersion &&
         c.transport === 'sse-v1' &&
         c.status !== 'reserved'
     )
@@ -111,7 +111,7 @@ export function modelConnectionState(model: any, calls: any[], now = Date.now())
       (c) =>
         c.modelId === model.id &&
         c.model === model.model &&
-        c.configurationVersion === configurationVersion &&
+        (c.connectionVersion || c.configurationVersion) === configurationVersion &&
         c.inputMode === 'image' &&
         c.status !== 'reserved'
     )
@@ -134,7 +134,7 @@ export function modelConnectionState(model: any, calls: any[], now = Date.now())
       (c) =>
         c.modelId === model.id &&
         c.model === model.model &&
-        c.configurationVersion === configurationVersion &&
+        (c.connectionVersion || c.configurationVersion) === configurationVersion &&
         c.status !== 'reserved'
     )
     .at(-1);
@@ -145,6 +145,6 @@ export function modelConnectionState(model: any, calls: any[], now = Date.now())
     ...visionState,
     connectionStatus: age > 86400000 ? 'stale' : latest.status === 'completed' ? 'connected' : 'failed',
     lastCheckedAt: latest.at,
-    lastError: latest.errorCode || null
+    lastError: latest.connectionError || latest.errorCode || null
   };
 }

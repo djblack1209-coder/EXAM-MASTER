@@ -12,29 +12,34 @@ if (
   process.env.PORT !== '4382'
 )
   throw new Error('This launcher only runs the existing isolated dev/test backend.');
-const catalog = resolve(homedir(), 'Desktop/Free-llm-API.html');
-const model = {
-  id: 'qa-free-platform',
-  provider: 'OpenRouter',
-  model: 'nvidia/nemotron-3-ultra-550b-a55b:free',
-  endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  keyEnv: 'YOZI_QA_FREE_MODEL_KEY',
-  maxOutput: 2000,
-  capabilities: { structured: false, tools: false, vision: false, stream: false }
-};
-const row = readFreeApiCatalog(catalog).find((entry) => entry.id === 'openrouter');
-if (
-  !row?.baseMatchesOfficial ||
-  row.status !== 'verified' ||
-  !row.models.includes(model.model) ||
-  !freeModelPricing(model)
-)
-  throw new Error('The reviewed exact free model is unavailable; no paid fallback is enabled.');
-if (JSON.parse(process.env.LEARNING_PLATFORM_MODELS || '[]').some((entry) => entry.id !== model.id))
-  throw new Error('Existing platform configuration must be preserved; this isolated launcher cannot replace it.');
-process.env.YOZI_QA_FREE_MODEL_KEY = readFreeApiCredential(catalog, row.id, row.baseURL);
-process.env.LEARNING_PLATFORM_MODELS = JSON.stringify([model]);
-process.env.LEARNING_PLATFORM_CALLS_ENABLED = 'true';
+const enablePlatform = process.argv.includes('--enable-free-platform');
+process.env.LEARNING_PLATFORM_CALLS_ENABLED = 'false';
+process.env.LEARNING_PLATFORM_MODELS = '[]';
+if (enablePlatform) {
+  const catalog = resolve(homedir(), 'Desktop/Free-llm-API.html');
+  const model = {
+    id: 'qa-free-platform',
+    provider: 'OpenRouter',
+    model: 'nvidia/nemotron-3-ultra-550b-a55b:free',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+    keyEnv: 'YOZI_QA_FREE_MODEL_KEY',
+    maxOutput: 2000,
+    capabilities: { structured: false, tools: false, vision: false, stream: false }
+  };
+  const row = readFreeApiCatalog(catalog).find((entry) => entry.id === 'openrouter');
+  if (
+    !row?.baseMatchesOfficial ||
+    row.status !== 'verified' ||
+    !row.models.includes(model.model) ||
+    !freeModelPricing(model)
+  )
+    throw new Error('The reviewed exact free model is unavailable; no paid fallback is enabled.');
+  if (JSON.parse(process.env.LEARNING_PLATFORM_MODELS || '[]').some((entry) => entry.id !== model.id))
+    throw new Error('Existing platform configuration must be preserved; this isolated launcher cannot replace it.');
+  process.env.YOZI_QA_FREE_MODEL_KEY = readFreeApiCredential(catalog, row.id, row.baseURL);
+  process.env.LEARNING_PLATFORM_MODELS = JSON.stringify([model]);
+  process.env.LEARNING_PLATFORM_CALLS_ENABLED = 'true';
+}
 process.env.LEARNING_FRIEND_TRIAL_ENABLED = 'true';
 process.env.LEARNING_USER_DAILY_CALL_LIMIT = '500';
 process.env.LEARNING_GLOBAL_DAILY_CALL_LIMIT = '2000';
@@ -50,10 +55,11 @@ process.env.ALLOWED_ORIGINS = [
 process.env.LEARNING_ALLOWED_ORIGINS = [
   ...new Set([
     ...(process.env.LEARNING_ALLOWED_ORIGINS || '').split(',').filter(Boolean),
-    new URL(model.endpoint).origin
+    ...(enablePlatform ? ['https://openrouter.ai'] : [])
   ])
 ].join(',');
 console.info(
-  '[qa] Existing isolated backend uses the reviewed free platform model; credential remains in process memory.'
+  enablePlatform ? '[qa] Explicit free platform mode enabled.' : '[qa] BYOK default; platform calls disabled.'
 );
+console.info('[qa] Runtime ownership', JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }));
 await import('../../tmp/yozi-candidate-build/backend/standalone/server.js');

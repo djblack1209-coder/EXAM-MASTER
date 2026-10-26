@@ -1,3 +1,4 @@
+import { modelConfigurationVersion } from './ai-providers/free-model-presets.js';
 import crypto from 'node:crypto';
 import { DEV_TEST } from './build-channel.js';
 import {
@@ -223,6 +224,7 @@ export function newAccount(userId: string) {
     user_id: userId,
     revision: 0,
     profiles: [],
+    modelPreferences: { selectedModelId: null, sharingAllowed: false },
     calls: [],
     entitlement: {
       policyVersion: 'development-unconfirmed-v1',
@@ -275,6 +277,20 @@ export function reserveCall(account: any, input: any, now = Date.now(), policy =
     'POLICY_INVALID',
     '调用预算不合法'
   );
+  if (input.repairOf) {
+    const parent = account.calls.find((call: any) => call.id === input.repairOf);
+    requireValue(
+      parent?.status === 'failed' &&
+        parent.errorCode === 'COACH_INVALID' &&
+        !parent.repairOf &&
+        input.id === `${parent.id}:repair1` &&
+        parent.modelId === input.modelId &&
+        parent.configurationVersion === input.configurationVersion,
+      'REPAIR_INVALID',
+      '修复仅能派生自同连接的校验失败请求'
+    );
+    input = { ...input, units: 0, deliveryUnits: parent.units || 0 };
+  }
   const result = structuredClone(account);
   if (input.source === 'platform') {
     const week = weekKey(now, result.entitlement.timezone, result.entitlement.startDay);
@@ -284,7 +300,8 @@ export function reserveCall(account: any, input: any, now = Date.now(), policy =
     }
     requireValue(
       DEV_TEST ||
-        result.entitlement.spent + result.entitlement.reserved + input.units <= result.entitlement.weeklyUnits,
+        result.entitlement.spent + result.entitlement.reserved + (input.deliveryUnits ?? input.units) <=
+          result.entitlement.weeklyUnits,
       'QUOTA_EXHAUSTED',
       '本周平台模型额度不足，可主动选择自带 API 或本地连接'
     );
@@ -293,7 +310,7 @@ export function reserveCall(account: any, input: any, now = Date.now(), policy =
       'COST_LIMIT',
       '平台模型成本硬预算不足'
     );
-    result.entitlement.reserved += input.units;
+    result.entitlement.reserved += input.deliveryUnits ?? input.units;
     result.cost.reserved += input.maxCost;
   }
   const call = {
@@ -367,6 +384,17 @@ export function settleCall(
     call.resultPolicyVersion = policy.version;
   }
   call.errorCode = cancelled ? 'CANCELLED' : settlement.errorCode || null;
+  call.connectionError = successful ? null : settlement.connectionError || call.errorCode;
+  const profile = result.profiles.find(
+    (p: any) =>
+      p.id === call.modelId && modelConfigurationVersion(p) === (call.connectionVersion || call.configurationVersion)
+  );
+  if (profile)
+    profile.connectionState = {
+      status: successful ? 'connected' : 'failed',
+      errorCode: call.connectionError,
+      checkedAt: now
+    };
   const validationPath =
     call.status === 'failed' ? modelValidationPath(call.errorCode, settlement.validationPath) : null;
   if (validationPath) call.validationPath = validationPath;
@@ -394,8 +422,15 @@ export function settleCall(
       result.cost.spent += actualCost;
     } else result.cost.pending += 1; // 保留供应商成本预留，未知成本不会被返还成零。
     if (call.entitlementWeek === result.entitlement.week) {
-      result.entitlement.reserved = Math.max(0, result.entitlement.reserved - call.units);
-      if (successful) result.entitlement.spent += call.units;
+      result.entitlement.reserved = Math.max(0, result.entitlement.reserved - (call.deliveryUnits ?? call.units));
+      if (successful) result.entitlement.spent += call.deliveryUnits ?? call.units;
+    }
+    if (call.repairOf) {
+      const parent = result.calls.find((item: any) => item.id === call.repairOf);
+      if (parent && successful) {
+        parent.entitlementCharged = call.deliveryUnits || 0;
+        parent.deliveredBy = call.id;
+      }
     }
     call.entitlementCharged = successful ? call.units : 0; // 开发配置：失败/及时取消用户权益返还一次。
   } else call.entitlementCharged = 0;

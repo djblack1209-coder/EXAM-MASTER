@@ -3,8 +3,7 @@ import { DEV_TEST } from '../../../config/build-channel.js';
 import { captureSession, sessionForRequest } from '../../auth-storage.js';
 import { generateLearningTurnStream } from '../../learning/learning-stream.js';
 
-const DISCOVERY_CLIENT_ENABLED = false;
-export const learningModelDiscoveryEnabled = () => DEV_TEST && DISCOVERY_CLIENT_ENABLED;
+export const learningModelDiscoveryEnabled = () => true;
 const discoveryDisabled = () => ({ success: false, code: 503, errorCode: 'DISCOVERY_DISABLED' });
 
 // 学习模型请求固定到用户选择的后端，不使用跨服务自动故障切换，不记录消息和密钥。
@@ -128,6 +127,8 @@ export const fetchLearningResult = (requestId, options) =>
   learningRequest('/learning-models', { action: 'result', requestId }, options);
 export const saveLearningModel = (profile, shareConsent, options) =>
   learningRequest('/learning-models', { action: 'save', profile, shareConsent }, options);
+export const saveLearningModelPreferences = (preferences, options) =>
+  learningRequest('/learning-models', { action: 'preferences', preferences }, options);
 export const deleteLearningModel = (profileId, options) =>
   learningRequest('/learning-models', { action: 'delete', profileId }, options);
 export const generateLearningTurn = (body, options) =>

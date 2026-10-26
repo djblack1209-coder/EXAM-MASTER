@@ -15,6 +15,8 @@
  */
 
 import cloud from '@lafjs/cloud';
+import { DEV_TEST } from './_shared/build-channel.js';
+import { purgeUserData } from './account-purge.js';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import { createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
 
@@ -84,6 +86,24 @@ export default async function (ctx: any) {
         };
       }
 
+      if (DEV_TEST) {
+        const account = (await db.collection('learning_accounts').where({ user_id: userId }).get()).data?.[0];
+        if (account?.calls?.some((call: any) => call.status === 'reserved'))
+          return {
+            code: 409,
+            success: false,
+            error: 'REQUEST_PENDING',
+            message: '请先查询在途请求，账号尚未删除',
+            requestId
+          };
+        const result = await purgeUserData(userId, true);
+        return {
+          code: result.errors.length ? 503 : 0,
+          success: !result.errors.length,
+          data: { deleted: result.deleted.users === 1, billingRetained: true },
+          requestId
+        };
+      }
       const deleteAt = Date.now() + COOLING_DAYS * 24 * 60 * 60 * 1000;
 
       await db.collection('users').doc(userId).update({

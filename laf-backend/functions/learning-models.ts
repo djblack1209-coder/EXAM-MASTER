@@ -6,6 +6,8 @@ import { checkRateLimitDistributed } from './_shared/api-response.js';
 import { DEV_TEST } from './_shared/build-channel.js';
 import { createModelDiscovery } from './_shared/ai-providers/model-discovery.js';
 import proxyAI, { configuredModels } from './proxy-ai.js';
+import { readModelCredential } from './_shared/model-connections.js';
+import { modelErrorPresentation } from './_shared/model-errors.js';
 import { FREE_MODEL_PRESETS, modelConnectionState } from './_shared/ai-providers/free-model-presets.js';
 import {
   completeModelEndpoint,
@@ -31,7 +33,6 @@ import {
 } from './_shared/learning-model-resources.js';
 
 const discoverModels = createModelDiscovery({
-  // Non-secret projection only. No vault read/decryption adapter is installed in this phase.
   readProfile: async (owner, profileId) => {
     const id = `learning_${crypto.createHash('sha256').update(owner).digest('hex')}`;
     const account = (
@@ -58,27 +59,65 @@ const discoverModels = createModelDiscovery({
           provider: profile.provider,
           endpoint: profile.endpoint,
           configured: Boolean(profile.keyRef),
+          keyRef: profile.keyRef,
           authorization: 'bearer'
         }
       : null;
-  }
+  },
+  allowedOrigins: () => (process.env.LEARNING_ALLOWED_ORIGINS || '').split(',').filter(Boolean),
+  readCredential: (profile) => readModelCredential(cloud.database(), profile.owner, profile)
 });
 export default async function (ctx: any) {
   const auth = requireAuth(ctx);
   if (isAuthError(auth)) return auth;
   const body = ctx.body || {};
-  // Discovery bypasses writing rate-limit/account-maintenance paths; it cannot create an account.
-  if (body.action === 'discover')
-    return discoverModels(
+  // Discovery has its own per-account rate limit, in addition to profile refresh cooldowns.
+  if (body.action === 'discover') {
+    if (process.env.LEARNING_MODEL_DISCOVERY_ENABLED === 'false')
+      return { success: false, code: 503, errorCode: 'DISCOVERY_DISABLED' };
+    const limit = await checkRateLimitDistributed(`learning-discovery:${auth.userId}`, 30, 60000);
+    if (!limit.allowed) return { success: false, code: 429, errorCode: 'RATE_LIMITED' };
+    const result = await discoverModels(
       auth.userId,
       body,
-      DEV_TEST && process.env.NODE_ENV !== 'production' && process.env.LEARNING_MODEL_DISCOVERY_ENABLED === 'true',
+      true,
       ctx.signal instanceof AbortSignal ? ctx.signal : undefined
     );
+    return result.success
+      ? result
+      : {
+          ...result,
+          manualEntryAllowed: true,
+          ...modelErrorPresentation(result),
+          code: result.code,
+          errorCode: result.errorCode
+        };
+  }
   const limit = await checkRateLimitDistributed(`learning-models:${auth.userId}`, DEV_TEST ? 1000000 : 30, 60000);
   if (!limit.allowed) return { code: 429, success: false, message: '请求过于频繁' };
   const db = cloud.database();
   try {
+    if (body.action === 'preferences') {
+      const patch = body.preferences;
+      if (
+        !patch ||
+        typeof patch !== 'object' ||
+        Array.isArray(patch) ||
+        Object.keys(patch).some((key) => !['selectedModelId', 'sharingAllowed'].includes(key)) ||
+        (patch.selectedModelId !== undefined &&
+          patch.selectedModelId !== null &&
+          (typeof patch.selectedModelId !== 'string' || !/^[a-zA-Z0-9_-]{1,60}$/.test(patch.selectedModelId))) ||
+        (patch.sharingAllowed !== undefined && typeof patch.sharingAllowed !== 'boolean')
+      )
+        return { success: false, code: 400, error: 'INPUT_INVALID' };
+      const { account } = await mutateAccount(db, auth.userId, (account) => {
+        if (patch.selectedModelId && !account.profiles.some((p: any) => p.id === patch.selectedModelId && p.keyRef))
+          throw Object.assign(new Error('NEEDS_CONNECTION'), { code: 'NEEDS_CONNECTION' });
+        account.modelPreferences = { ...account.modelPreferences, ...patch };
+        return { account };
+      });
+      return { success: true, code: 0, data: account.modelPreferences };
+    }
     if (body.action === 'test') {
       if (typeof body.modelId !== 'string' || body.shareConsent !== true)
         return { code: 400, success: false, message: '连接测试会真实调用指定模型，需明确确认' };
@@ -122,7 +161,11 @@ export default async function (ctx: any) {
             maintainModelResources(recoverStaleReservations(a).account, Date.now(), policy)
           )
         : null;
-      const call = maintained?.account.calls.find((c: any) => c.id === body.requestId);
+      let call = maintained?.account.calls.find((c: any) => c.id === body.requestId);
+      const repair = maintained?.account.calls.find(
+        (c: any) => c.id === `${body.requestId}:repair1` && c.repairOf === body.requestId
+      );
+      if (call?.status === 'failed' && repair) call = repair;
       if (!call) return { code: 404, success: false, message: '本账户没有此模型请求' };
       if (call.resultDeletedAt) return modelResultUnavailable(call, Date.now(), policy);
       if (call.status === 'completed')
@@ -130,7 +173,7 @@ export default async function (ctx: any) {
           modelResultUnavailable(call, Date.now(), policy) || {
             code: 0,
             success: true,
-            data: call.result,
+            data: repair ? { ...call.result, requestId: body.requestId, repairRequestId: repair.id } : call.result,
             reused: true
           }
         );
@@ -218,7 +261,12 @@ export default async function (ctx: any) {
         code: 0,
         success: true,
         data: {
-          models: [...configuredModels(), ...account.profiles].map(redact),
+          models: [
+            ...(process.env.LEARNING_PLATFORM_CALLS_ENABLED === 'true' ? configuredModels() : []),
+            ...account.profiles
+          ].map(redact),
+          preferences: account.modelPreferences || { selectedModelId: null, sharingAllowed: false },
+          needsConnection: !account.profiles.some((profile: any) => profile.keyRef),
           intakeContract: MODEL_INTAKE_CONTRACT,
           platformEnabled: process.env.LEARNING_PLATFORM_CALLS_ENABLED === 'true',
           coreLearningFree: true,
@@ -237,7 +285,7 @@ export default async function (ctx: any) {
         !/^[a-zA-Z0-9_-]{1,60}$/.test(p.id) ||
         typeof p.model !== 'string' ||
         !p.model ||
-        p.model.length > 120 ||
+        p.model.length > 256 ||
         (p.apiKey != null && typeof p.apiKey !== 'string') ||
         p.apiKey?.length > MODEL_API_KEY_MAX_LENGTH ||
         body.shareConsent !== true
@@ -246,13 +294,23 @@ export default async function (ctx: any) {
       }
       const endpoint = completeModelEndpoint(p.endpoint);
       const hasKey = typeof p.apiKey === 'string' && Boolean(p.apiKey.trim());
-      if (!hasKey && !isDomesticModel({ provider: p.provider, endpoint }))
+      const existingAccount = (
+        await db
+          .collection('learning_accounts')
+          .where({
+            _id: `learning_${crypto.createHash('sha256').update(auth.userId).digest('hex')}`,
+            user_id: auth.userId
+          })
+          .get()
+      ).data?.[0];
+      const existing = existingAccount?.profiles?.find((item: any) => item.id === p.id);
+      if (!hasKey && !existing?.keyRef && !isDomesticModel({ provider: p.provider, endpoint }))
         return { code: 400, success: false, message: '该提供商需要密钥才能添加连接' };
       // Keyless rows are closed-catalog metadata only; adding credentials still needs the deployment allowlist.
-      if (hasKey)
+      if (hasKey || existing?.keyRef)
         validateCloudEndpoint(endpoint, (process.env.LEARNING_ALLOWED_ORIGINS || '').split(',').filter(Boolean));
       const preset = FREE_MODEL_PRESETS.find((item) => item.model === p.model && item.endpoint === endpoint);
-      const keyRef = hasKey ? `model_key_${crypto.randomUUID()}` : undefined;
+      const keyRef = hasKey ? `model_key_${crypto.randomUUID()}` : existing?.keyRef;
       const profile = {
         id: p.id,
         provider: String(p.provider || 'custom').slice(0, 80),
@@ -271,7 +329,7 @@ export default async function (ctx: any) {
         keyRef: keyRef || null,
         ...(preset ? { pricing: preset.pricing, terms: preset.terms, privacy: preset.privacy } : {})
       };
-      if (keyRef) {
+      if (hasKey && keyRef) {
         const vault = encryptModelKey(p.apiKey, auth.userId, p.id, process.env.LEARNING_VAULT_KEY || '');
         await db.collection('learning_model_keys').add({ _id: keyRef, user_id: auth.userId, profile_id: p.id, vault });
       }
@@ -279,7 +337,10 @@ export default async function (ctx: any) {
       try {
         await mutateAccount(db, auth.userId, (account) => {
           // An empty-key add must never replace an existing connection or remove its vault key.
-          if (!hasKey && account.profiles.some((item: any) => item.id === p.id)) throw new Error('MODEL_ALREADY_SAVED');
+          if (!hasKey && existing && !existing.keyRef)
+            throw Object.assign(new Error('MODEL_ALREADY_SAVED'), { code: 'MODEL_ALREADY_SAVED' });
+          if (!hasKey && account.profiles.find((item: any) => item.id === p.id)?.keyRef !== existing?.keyRef)
+            throw Object.assign(new Error('CONTEXT_CHANGED'), { code: 'CONTEXT_CHANGED' });
           if (!DEV_TEST && account.profiles.length >= 5 && !account.profiles.some((item: any) => item.id === p.id))
             throw new Error('PROFILE_LIMIT');
           account.profiles
@@ -289,19 +350,26 @@ export default async function (ctx: any) {
           return { account };
         });
       } catch (error) {
-        if (keyRef) await db.collection('learning_model_keys').where({ _id: keyRef, user_id: auth.userId }).remove();
+        if (hasKey && keyRef)
+          await db.collection('learning_model_keys').where({ _id: keyRef, user_id: auth.userId }).remove();
         throw error;
       }
       for (const ref of replacedRefs)
         if (ref && ref !== keyRef)
           await db.collection('learning_model_keys').where({ _id: ref, user_id: auth.userId }).remove();
-      return { code: 0, success: true, data: { id: profile.id, keySaved: hasKey, connectionStatus: 'untested' } };
+      return {
+        code: 0,
+        success: true,
+        data: { id: profile.id, keySaved: Boolean(keyRef), connectionStatus: 'untested' }
+      };
     }
     if (body.action === 'delete' && typeof body.profileId === 'string') {
       const removedRefs = new Set<string>();
       await mutateAccount(db, auth.userId, (account) => {
         account.profiles.filter((p: any) => p.id === body.profileId).forEach((p: any) => removedRefs.add(p.keyRef));
         account.profiles = account.profiles.filter((p: any) => p.id !== body.profileId);
+        if (account.modelPreferences?.selectedModelId === body.profileId)
+          account.modelPreferences.selectedModelId = null;
         return { account };
       });
       for (const ref of removedRefs)

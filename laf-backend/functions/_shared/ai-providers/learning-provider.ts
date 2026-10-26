@@ -766,11 +766,13 @@ export async function callLearningProvider(
           const code =
             res.statusCode === 429
               ? 'RATE_LIMITED'
-              : res.statusCode === 401
+              : [401, 403].includes(res.statusCode || 0)
                 ? 'KEY_REJECTED'
                 : res.statusCode === 402
                   ? 'UPSTREAM_QUOTA'
-                  : 'UPSTREAM_FAILED';
+                  : [404, 410].includes(res.statusCode || 0)
+                    ? 'MODEL_NOT_FOUND'
+                    : 'UPSTREAM_FAILED';
           const chunks: Buffer[] = [];
           let size = 0;
           res.on('data', (chunk: Buffer) => {
@@ -788,6 +790,8 @@ export async function callLearningProvider(
               const rawCode = String(upstreamError?.code || '');
               if (/^[a-zA-Z0-9_-]{1,40}$/.test(rawCode) && !modelValueHasKeyEcho(rawCode, config.apiKey))
                 error.upstreamCode = rawCode;
+              if (['insufficient_quota', 'billing_hard_limit_reached', 'quota_exceeded'].includes(rawCode))
+                error.code = 'UPSTREAM_QUOTA';
               const message = typeof upstreamError?.message === 'string' ? upstreamError.message : '';
               const unit = message.match(/\b(TPM|TPD|RPM|RPD)\b/)?.[1];
               if (traceSafeModel && unit) {
@@ -896,7 +900,10 @@ export async function callLearningProvider(
             ? err
             : err instanceof StreamError
               ? new ProviderError(err.code, err.message)
-              : new ProviderError(signal?.aborted ? 'CANCELLED' : 'UPSTREAM_FAILED', '模型连接失败');
+              : new ProviderError(
+                  signal?.aborted ? 'CANCELLED' : /CERT|TLS|SSL/.test(err.code || '') ? 'TLS_FAILED' : 'NETWORK_FAILED',
+                  '模型连接失败'
+                );
       if (traceSafeModel)
         console.info(
           '[model-local-error]',

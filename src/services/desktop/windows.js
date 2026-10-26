@@ -10,8 +10,21 @@ export function isDesktopSettingsWindow() {
     return false;
   }
 }
+let settingsOpening = null;
 export function openDesktopSettings(panel) {
-  return invoke('open_desktop_settings', { panel });
+  if (!['settings', 'connectors', 'profile'].includes(panel)) return Promise.reject(new Error('设置分组不合法'));
+  // Sequence different panels; merge duplicate rapid clicks while native creation is pending.
+  if (settingsOpening?.panel === panel) return settingsOpening.promise;
+  const previous = settingsOpening?.promise;
+  const operation = { panel };
+  operation.promise = Promise.resolve(previous)
+    .catch(() => undefined)
+    .then(() => invoke('open_desktop_settings', { panel }))
+    .finally(() => {
+      if (settingsOpening === operation) settingsOpening = null;
+    });
+  settingsOpening = operation;
+  return operation.promise;
 }
 export function closeDesktopSettings() {
   return invoke('close_desktop_settings');

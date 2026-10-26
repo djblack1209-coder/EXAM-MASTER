@@ -99,10 +99,12 @@ beforeEach(() => {
 afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
 
 describe('默认关闭discover与只读owner投影离线接缝', () => {
   it('真实handler关闭态零数据库／维护／限流调用；usage不再携带诊断', async () => {
+    vi.stubEnv('LEARNING_MODEL_DISCOVERY_ENABLED', 'false');
     const result = await learningModels({ body: body() });
     expect(result).toMatchObject({ success: false, errorCode: 'DISCOVERY_DISABLED' });
     expect(runtime.database).not.toHaveBeenCalled();
@@ -194,7 +196,12 @@ describe('默认关闭discover与只读owner投影离线接缝', () => {
     expect((await a).success).toBe(true);
     expect((await b).success).toBe(true);
     const cached: any = await f.discover(runtime.owner, body({ refresh: false }), true);
-    expect(cached.data.models[0]).toEqual({ modelId: 'fixture-model', displayName: 'Fixture', availability: 'listed' });
+    expect(cached.data.models[0]).toMatchObject({
+      modelId: 'fixture-model',
+      displayName: 'Fixture',
+      availability: 'listed',
+      contextWindowTokens: 10000
+    });
     expect(f.fetcher).toHaveBeenCalledTimes(1);
     expect((await f.discover('other-owner', body({ refresh: false }), true)).success).toBe(false);
     f.state.version++;
@@ -334,4 +341,41 @@ describe('默认关闭discover与只读owner投影离线接缝', () => {
     expect(await stopped.discover(runtime.owner, body({ refresh: false }), true)).not.toHaveProperty('data');
     expect((await stopped.discover(runtime.owner, body(), true)).errorCode).toBe('RATE_LIMITED');
   });
+});
+
+it('production-capable discovery uses saved OpenAI-compatible endpoints and Gemini header auth without returning keys', async () => {
+  for (const [provider, endpoint, listPath] of [
+    ['OpenRouter', 'https://openrouter.ai/api/v1/chat/completions', '/api/v1/models'],
+    ['Google Gemini', 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', '/v1beta/models'],
+    ['Custom', 'https://custom.example/v1/chat/completions', '/v1/models']
+  ]) {
+    const f = fixture();
+    f.state.provider = provider;
+    f.state.endpoint = endpoint;
+    if (provider === 'Google Gemini')
+      (f.state as any).data = {
+        models: [{ name: 'models/gemini-fixture', displayName: 'Fixture', inputTokenLimit: 1234 }]
+      };
+    const result = await f.discover(runtime.owner, body(), true);
+    expect(result.success).toBe(true);
+    expect(f.fetcher.mock.calls[0][0].pathname).toBe(listPath);
+    const headers = f.fetcher.mock.calls[0][1].headers;
+    expect(headers[provider === 'Google Gemini' ? 'x-goog-api-key' : 'Authorization']).toBe(
+      provider === 'Google Gemini' ? KEY : `Bearer ${KEY}`
+    );
+    expect(JSON.stringify(result)).not.toContain(KEY);
+  }
+});
+
+it('deployment allowlist is enforced before credential reads and unsupported listing allows manual entry', async () => {
+  const f = fixture();
+  const denied = createModelDiscovery({
+    readProfile: f.readProfile,
+    readCredential: f.readCredential,
+    allowedOrigins: () => ['https://other.example']
+  });
+  expect((await denied(runtime.owner, body(), true)).success).toBe(false);
+  expect(f.readCredential).not.toHaveBeenCalled();
+  f.state.status = 404;
+  expect((await f.discover(runtime.owner, body(), true)).errorCode).toBe('UNSUPPORTED_DISCOVERY');
 });

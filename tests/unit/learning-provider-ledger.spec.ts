@@ -417,3 +417,24 @@ it('coach JSON shape diagnostics use a closed whitelist and never retain syntax 
   expect(erased.account.calls[0]).not.toHaveProperty('responseDiagnostics');
   expect(erased.account.cost).toEqual(original.cost);
 });
+
+it.each([true, false])('repair receipts charge student entitlement once only when delivered: %s', (success) => {
+  const parent = { ...input('parent-repair'), modelId: 'explicit', configurationVersion: 'same' };
+  let account = reserveCall(funded(), parent).account;
+  account = settleCall(account, parent.id, { success: false, actualCost: 0.1, errorCode: 'COACH_INVALID' }).account;
+  const repair = { ...parent, id: `${parent.id}:repair1`, fingerprint: 'repair-fingerprint', repairOf: parent.id };
+  account = reserveCall(account, repair).account;
+  expect(account.calls[1]).toMatchObject({ units: 0, deliveryUnits: 1 });
+  account = settleCall(account, repair.id, {
+    success,
+    actualCost: 0.2,
+    result: success ? { message: 'valid' } : null,
+    errorCode: success ? null : 'COACH_INVALID'
+  }).account;
+  expect(account.entitlement.spent).toBe(success ? 1 : 0);
+  expect(account.entitlement.reserved).toBe(0);
+  expect(account.cost.spent).toBeCloseTo(0.3);
+  expect(account.calls[1].entitlementCharged).toBe(0);
+  expect(account.calls[0].entitlementCharged).toBe(success ? 1 : 0);
+  expect(() => reserveCall(account, { ...repair, id: `${repair.id}:repair1`, repairOf: repair.id })).toThrow();
+});

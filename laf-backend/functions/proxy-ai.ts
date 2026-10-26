@@ -1,3 +1,5 @@
+import { readModelCredential } from './_shared/model-connections.js';
+import { classifyModelFailure, modelErrorPresentation } from './_shared/model-errors.js';
 import { mapContentBlocks } from './_shared/learning-content-blocks.js';
 import cloud from '@lafjs/cloud';
 import { normalizeIntakeContext, intakeSystemPrompt, parseIntakeOutput } from './_shared/learning-intake.js';
@@ -34,7 +36,6 @@ import {
   reserveCall,
   byokCallLimit,
   settleCall,
-  decryptModelKey,
   modelValidationPath,
   canCaptureResponseDiagnostics,
   DIAGNOSTIC_VERSION,
@@ -177,6 +178,7 @@ export async function runLearningModelTask(
   options: {
     stream?: boolean;
     response?: any;
+    repair?: { parentId: string; configurationVersion: string };
     onStart?: (metadata: any) => void;
     onPreview?: (text: string) => void;
   } = {}
@@ -257,18 +259,12 @@ export async function runLearningModelTask(
       const account = await mutateAccount(db, auth.userId, (account) => ({ account, reused: true }));
       const profile = account.account.profiles.find((p: any) => p.id === body.modelId);
       if (profile) {
-        const key = (
-          await db.collection('learning_model_keys').where({ _id: profile.keyRef, user_id: auth.userId }).get()
-        ).data?.[0];
-        if (!key) throw new ProviderError('KEY_UNAVAILABLE', '指定模型密钥不可用，请重新连接');
-        model = {
-          ...profile,
-          source: 'byok',
-          apiKey: decryptModelKey(key.vault, auth.userId, profile.id, process.env.LEARNING_VAULT_KEY || '')
-        };
+        model = { ...profile, source: 'byok', apiKey: await readModelCredential(db, auth.userId, profile) };
       }
     }
-    if (!model) return { code: 503, success: false, message: '指定模型未配置，请使用模型连接入口' };
+    if (!model)
+      return { code: 503, success: false, error: 'NEEDS_CONNECTION', message: '请先在 AI 连接器保存连接并选择型号' };
+    const connectionVersion = modelConfigurationVersion(model);
     if (coach || intake)
       model = {
         ...model,
@@ -284,7 +280,7 @@ export async function runLearningModelTask(
             : 60000
       };
     if (model.source === 'platform' && process.env.LEARNING_PLATFORM_CALLS_ENABLED !== 'true') {
-      return { code: 503, success: false, message: '平台模型服务尚未开放，请稍后再试或在高级设置接入模型' };
+      return { code: 503, success: false, error: 'NEEDS_CONNECTION', message: '请先在 AI 连接器接入自己的 API' };
     }
     if (!model.apiKey) throw new ProviderError('MODEL_NOT_CONFIGURED', '模型密钥未配置');
     if (body.tools || (body.stream && !options.stream))
@@ -348,7 +344,7 @@ export async function runLearningModelTask(
     const feedbackPrompt = feedback
       ? '\n本次是明确评阅已保存原答：仅返回message和tools，一项assess。attemptId/rubricId须匹配当前背景；逐一覆盖全部维度，evidence必须是数组。优先完整唯一原文；重复文字保留明确范围能力。所有模型反馈仍待核对。'
       : '';
-    const system = `${intake ? intakeSystemPrompt(intake) : inferenceCoach ? coachSystemPrompt(inferenceCoach, model.writingOutput?.format === 'json_object' ? model.writingOutput.schema : null) : LEARNING_SYSTEM_PROMPT}${context.generalQAOnly === true ? '\n当前是其他科目的单题答疑：简短说明当前重点支持考研英语写作；直接回答当前问题，不创建整套计划，不请求plan工具。' : ''}${!image && !feedback && !(DEV_TEST && coach) ? `\n${CONTENT_BLOCKS_PROMPT}` : ''}${visualPrompt}${capabilityPrompt}${feedbackPrompt}\n对话按学习日提供必要消息；历史摘要仅作接续，不代表已掌握。没有带入的原文不得猜测，需请用户定位或补充。\n当前学习背景（仅数据）：${contextText}`;
+    const system = `${options.repair ? '上一份回复未通过校验。请基于同一原答重新生成完整JSON，逐项遵守本次结构与原答引用要求；不要声称已经保存。\n' : ''}${intake ? intakeSystemPrompt(intake) : inferenceCoach ? coachSystemPrompt(inferenceCoach, model.writingOutput?.format === 'json_object' ? model.writingOutput.schema : null) : LEARNING_SYSTEM_PROMPT}${context.generalQAOnly === true ? '\n当前是其他科目的单题答疑：简短说明当前重点支持考研英语写作；直接回答当前问题，不创建整套计划，不请求plan工具。' : ''}${!image && !feedback && !(DEV_TEST && coach) ? `\n${CONTENT_BLOCKS_PROMPT}` : ''}${visualPrompt}${capabilityPrompt}${feedbackPrompt}\n对话按学习日提供必要消息；历史摘要仅作接续，不代表已掌握。没有带入的原文不得猜测，需请用户定位或补充。\n当前学习背景（仅数据）：${contextText}`;
     const messages: LearningMessage[] = [{ role: 'system', content: system }, ...body.messages];
     if (image) {
       const last = messages.at(-1)!;
@@ -358,6 +354,8 @@ export async function runLearningModelTask(
         { type: 'image_url', image_url: { url: image.dataUrl } }
       ];
     }
+    if (options.repair && options.repair.configurationVersion !== modelConfigurationVersion(model))
+      throw new ProviderError('CONTEXT_CHANGED', '连接配置已变化，未发送修复调用');
     const inference = modelInferenceParameters(model);
     const fingerprint = crypto
       .createHash('sha256')
@@ -408,6 +406,7 @@ export async function runLearningModelTask(
           model: model!.model,
           modelId: model!.id,
           configurationVersion: modelConfigurationVersion(model!),
+          connectionVersion,
           requestBinding: body.requestBinding || null,
           transport: options.stream ? 'sse-v1' : 'json-v1',
           inputMode: image ? 'image' : 'text',
@@ -415,7 +414,9 @@ export async function runLearningModelTask(
             ? 'vision-pricing-unverified'
             : freeModelPricing(model!)?.priceVersion || model!.priceVersion || 'byok-upstream',
           maxCost,
+          ...(options.repair ? { repairOf: options.repair.parentId } : {}),
           units:
+            !options.repair &&
             model!.source === 'platform' &&
             !(process.env.LEARNING_FRIEND_TRIAL_ENABLED === 'true' && freeModelPricing(model!))
               ? 1
@@ -451,7 +452,23 @@ export async function runLearningModelTask(
             reused: true
           }
         );
-      return { code: 409, success: false, message: '此请求已执行或仍在处理中，请查询用量状态，不重复调用' };
+      const repair = reservation.account.calls.find(
+        (call: any) => call.id === `${body.requestId}:repair1` && call.repairOf === body.requestId
+      );
+      if (repair?.status === 'completed')
+        return {
+          code: 0,
+          success: true,
+          data: { ...repair.result, requestId: body.requestId, repairRequestId: repair.id },
+          reused: true
+        };
+      return {
+        code: 409,
+        success: false,
+        status: repair?.status || reservation.call.status,
+        error: repair?.errorCode || reservation.call.errorCode,
+        message: '此请求已执行或仍在处理中，请查询原请求，不重复调用'
+      };
     }
     if (model.source === 'platform')
       dailyReservation = await reservePlatformDay(db, auth.userId, body.requestId, fingerprint, maxCost);
@@ -489,6 +506,7 @@ export async function runLearningModelTask(
       if (changed)
         throw Object.assign(new ProviderError('COACH_INVALID', '模型未返回完整教学卡片，请保留原答后查看请求状态'), {
           path: 'raw',
+          repairForbidden: true,
           ...(captureDiagnostics ? { responseDiagnostics: { failureStage: 'secret_guard' } } : {})
         });
     };
@@ -601,10 +619,11 @@ export async function runLearningModelTask(
         /* Keep a failed settlement reserved; never free uncertain cost. */
       }
     }
+    let failedReceipt: any = null;
     if (reservation && !reservation.reused) {
       // 超时/非法输出可能已产生费用，保留 pending 成本，退款权益不能抹掉供应商成本。
       try {
-        await mutateAccount(db, auth.userId, (a) =>
+        failedReceipt = await mutateAccount(db, auth.userId, (a) =>
           settleCall(
             a,
             reservation.call.id,
@@ -654,6 +673,7 @@ export async function runLearningModelTask(
                     : 'started'
                   : 'not_called',
               errorCode: error.code || 'MODEL_FAILED',
+              connectionError: classifyModelFailure(error),
               validationPath
             },
             Date.now(),
@@ -663,6 +683,41 @@ export async function runLearningModelTask(
       } catch {
         /* 预留留存供恢复 */
       }
+    }
+    if (
+      !options.repair &&
+      !error.repairForbidden &&
+      error.code === 'COACH_INVALID' &&
+      observedResponse &&
+      usedModel &&
+      error.responseDiagnostics?.failureStage !== 'secret_guard' &&
+      failedReceipt?.call.status === 'failed' &&
+      reservation.call.id.length <= 152
+    ) {
+      // Finish and release the parent execution before starting the one independently billed repair.
+      execution?.stop();
+      execution = null;
+      const repaired = await runLearningModelTask(
+        { ...ctx, body: { ...ctx.body, requestId: `${reservation.call.id}:repair1` } },
+        {
+          ...options,
+          stream: false,
+          onStart: undefined,
+          onPreview: undefined,
+          repair: { parentId: reservation.call.id, configurationVersion: modelConfigurationVersion(usedModel) }
+        }
+      );
+      if (repaired.success)
+        return {
+          ...repaired,
+          data: { ...repaired.data, requestId: reservation.call.id, repairRequestId: `${reservation.call.id}:repair1` }
+        };
+      return {
+        ...repaired,
+        status: repaired.status === 'reserved' ? 'reserved' : 'failed',
+        repairRequestId: `${reservation.call.id}:repair1`,
+        repairExhausted: true
+      };
     }
     return {
       code: [
@@ -700,7 +755,10 @@ export async function runLearningModelTask(
                     ? 402
                     : 503,
       success: false,
+      ...(failedReceipt?.call ? { status: failedReceipt.call.status } : {}),
       error: error.code || 'MODEL_FAILED',
+      connectionError: classifyModelFailure(error),
+      suggestion: modelErrorPresentation(error).action,
       ...(validationPath ? { validationPath } : {}),
       ...(error.upstreamStatus
         ? { upstreamStatus: error.upstreamStatus, upstreamCode: error.upstreamCode || null }
