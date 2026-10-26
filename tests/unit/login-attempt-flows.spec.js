@@ -18,7 +18,7 @@ vi.mock('@/services/auth-region.js', async (importOriginal) => {
   };
 });
 const mocks = vi.hoisted(() => ({ api: vi.fn(), provider: vi.fn() }));
-vi.mock('@dcloudio/uni-app', () => ({ onShow: () => {}, onHide: () => {} }));
+vi.mock('@dcloudio/uni-app', () => ({ onShow: () => {}, onHide: () => {}, onLoad: () => {} }));
 vi.mock('@/pages/login/provider-utils.js', () => ({ requestProviderToken: mocks.provider }));
 vi.mock('@/stores/modules/auth', () => ({ useAuthStore: () => ({ regionalLogin: mocks.api }) }));
 let wrapper;

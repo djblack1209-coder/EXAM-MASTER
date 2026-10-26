@@ -1,13 +1,18 @@
+import { ENTRY_TOOL_NAMES, validateEntryCall, validateEntrySchema } from '../learning-entries.js';
 import { normalizeContentBlocks } from '../learning-content-blocks.js';
 import https from 'node:https';
 import { lookup, Resolver } from 'node:dns/promises';
 import { isIP } from 'node:net';
 import crypto from 'node:crypto';
+import { modelInferenceParameters } from './free-model-presets.js';
+import { DEV_TEST } from '../build-channel.js';
+import { WRITING_METHOD, COACH_FEEDBACK_VERSION, COACH_FEEDBACK_CLASSES } from '../learning-writing-coach.js';
 import {
   normalizeRubric,
   assessWithRubric,
   RUBRIC_EVIDENCE_CONTRACT,
-  WRITING_FEEDBACK_OUTPUT_CONTRACT
+  WRITING_FEEDBACK_OUTPUT_CONTRACT,
+  writingBandExample
 } from '../learning-rubric.js';
 import { validateVisualReading, visualReadingText } from '../learning-vision.js';
 import { visualRecipe } from '../learning-visual.js';
@@ -29,6 +34,12 @@ export class ProviderError extends Error {
   ) {
     super(message);
   }
+}
+// Detection only; callers must never use the redacted value as business input.
+export function modelValueHasKeyEcho(value: any, key?: string) {
+  if (!key) return false;
+  const filtered = redactModelValue(value, key);
+  return typeof value === 'string' ? filtered !== value : JSON.stringify(filtered) !== JSON.stringify(value);
 }
 export function isPublicAddress(address: string): boolean {
   let ip = address.toLowerCase();
@@ -135,10 +146,19 @@ export type ModelConfig = {
   outputPerMillion?: number;
   priceVersion?: string;
   maxOutput: number;
+  timeoutMs?: number;
+  plainCoachRequest?: string;
   writingOutput?: {
     contract: string;
-    inferencePolicy: 'groq-writing-strict-v1';
-    reasoningEffort: 'low';
+    inferencePolicy:
+      | 'groq-writing-strict-v1'
+      | 'groq-writing-json-object-v1'
+      | 'groq-writing-plain-batch-v1'
+      | 'local-writing-plain-v1';
+    format?: 'json_object';
+    omitResponseFormatForRequest?: string;
+    feedbackVersion?: number;
+    reasoningEffort: 'low' | 'high';
     schemaDigest: string;
     schema: any;
   };
@@ -180,13 +200,13 @@ export function writingFeedbackContext(body: any) {
     throw new ProviderError('WRITING_CONTEXT_INVALID', '写作反馈需要有效的当前评分维度和题目版本');
   }
 }
+const closed = (properties: Record<string, any>) => ({
+  type: 'object',
+  properties,
+  required: Object.keys(properties),
+  additionalProperties: false
+});
 function writingFeedbackSchema(feedback: NonNullable<ReturnType<typeof writingFeedbackContext>>) {
-  const closed = (properties: Record<string, any>) => ({
-    type: 'object',
-    properties,
-    required: Object.keys(properties),
-    additionalProperties: false
-  });
   const evidence = {
     type: 'array',
     description: '最多3段原答；优先唯一原文字符串，重复原文可用完整UTF-16范围。给分必须引用。',
@@ -265,6 +285,127 @@ export function prepareWritingFeedbackModel(
     }
   };
 }
+export function prepareCoachFeedbackModel(
+  config: ModelConfig,
+  request: any,
+  stream = false,
+  allowSummary = false,
+  allowPlain = false
+): ModelConfig {
+  const plain =
+    allowPlain &&
+    config.endpoint === 'https://openrouter.ai/api/v1/chat/completions' &&
+    config.model === 'nvidia/nemotron-3-ultra-550b-a55b:free';
+  if (
+    !DEV_TEST ||
+    !request ||
+    (!['feedback', 'essay'].includes(request.phase) && !(allowSummary && request.phase === 'summary')) ||
+    !['english1', 'english2', 'general'].includes(request.exam) ||
+    (config.source !== 'byok' && !plain) ||
+    (!plain &&
+      (config.endpoint !== 'https://api.groq.com/openai/v1/chat/completions' || config.model !== 'openai/gpt-oss-120b'))
+  )
+    return config;
+  if (!config.capabilities.structured && !plain)
+    throw new ProviderError('WRITING_FORMAT_UNSUPPORTED', '此点评路径需要结构化能力');
+  if (stream) throw new ProviderError('WRITING_STREAM_UNSUPPORTED', '此严格格式不支持流式，请主动选择非流式');
+  const string = { type: 'string' },
+    strings = { type: 'array', items: string };
+  const coach: Record<string, any> =
+    request.phase === 'summary'
+      ? {
+          kind: { type: 'string', enum: ['summary'] },
+          learned: { ...strings, items: { ...string, minLength: 1, maxLength: 400 }, minItems: 1, maxItems: 6 },
+          tomorrow: { ...strings, items: { ...string, minLength: 1, maxLength: 400 }, minItems: 1, maxItems: 4 }
+        }
+      : {
+          kind: { type: 'string', enum: [request.phase] },
+          target: { type: 'string', enum: [request.target] },
+          lines: {
+            type: 'array',
+            description: '1至6条，原文逐字引用，advice与rewrite必须非空。',
+            items: closed({ original: string, advice: string, rewrite: string })
+          },
+          weaknesses: strings,
+          strengths: strings,
+          strengthEvidence: { type: 'array', items: closed({ label: string, quote: string }) },
+          phrases: { ...strings, items: { ...string, minLength: 1, maxLength: 240 }, maxItems: 6 },
+          dimensions: {
+            type: 'array',
+            items: closed({ name: { type: 'string', enum: WRITING_METHOD.feedback }, comment: string })
+          }
+        };
+  if (request.feedbackVersion === COACH_FEEDBACK_VERSION)
+    coach.weaknessEvidence = {
+      type: 'array',
+      items: closed({ label: string, quote: string, classification: { type: 'string', enum: COACH_FEEDBACK_CLASSES } })
+    };
+  if (request.writingBand) {
+    const example = writingBandExample(request.writingBand, request.input);
+    coach.bandResult = closed({
+      contract: { type: 'string', enum: [example.contract] },
+      binding: closed(
+        Object.fromEntries(
+          Object.entries(example.binding).map(([key, value]) => [
+            key,
+            typeof value === 'number'
+              ? { type: 'integer', description: `固定为${value}，精确值由原宿主绑定校验。` }
+              : { type: 'string', enum: [value] }
+          ])
+        )
+      ),
+      status: { type: 'string', enum: ['observation_only'] },
+      nullReason: { type: 'null' },
+      band: { type: 'null' },
+      bandRange: { type: 'null' },
+      scoreEstimate: { type: 'null' },
+      maxScore: { type: 'null' },
+      taskCoverage: { ...strings, description: '本次没有结构化任务点，必须为空数组。' },
+      observations: {
+        type: 'array',
+        description: '最多两项，只观察语言和衔接。',
+        items: closed({
+          key: { type: 'string', enum: ['language', 'cohesion'] },
+          evidenceSpans: {
+            type: 'array',
+            items: closed({ quote: string, start: { type: 'integer' }, end: { type: 'integer' } })
+          },
+          note: string
+        })
+      },
+      integrityFlags: { ...strings, description: '本次必须为空数组。' }
+    });
+  }
+  const schema = closed({
+    message: string,
+    question: { type: 'null' },
+    tools: { ...strings, description: '必须为空数组，不使用工具。' },
+    coach: closed(coach)
+  });
+  return {
+    ...config,
+    maxOutput: 8192,
+    writingOutput: {
+      contract: request.contract,
+      inferencePolicy: plain ? 'local-writing-plain-v1' : 'groq-writing-strict-v1',
+      ...(plain ? { format: 'json_object' as const } : {}),
+      ...(request.feedbackVersion === COACH_FEEDBACK_VERSION ? { feedbackVersion: COACH_FEEDBACK_VERSION } : {}),
+      reasoningEffort: 'high',
+      schemaDigest: crypto.createHash('sha256').update(JSON.stringify(schema)).digest('hex'),
+      schema
+    }
+  };
+}
+export function validateCoachSchema(schema: any, value: any) {
+  try {
+    validateEntrySchema(schema, value, { exact: true });
+  } catch (error: any) {
+    throw Object.assign(new ProviderError('COACH_INVALID', '模型响应未通过完整字段合同'), {
+      path: error.path || 'root',
+      schemaKeyword: error.keyword || 'schema'
+    });
+  }
+}
 export function validateWritingFeedbackOutput(
   raw: string,
   feedback: NonNullable<ReturnType<typeof writingFeedbackContext>>
@@ -306,37 +447,87 @@ export function validateWritingFeedbackOutput(
     );
   }
 }
+function coachResponseFunction(config: ModelConfig) {
+  return DEV_TEST &&
+    config.plainCoachRequest &&
+    config.writingOutput?.format === 'json_object' &&
+    config.model === 'nvidia/nemotron-3-ultra-550b-a55b:free' &&
+    config.endpoint === 'https://openrouter.ai/api/v1/chat/completions'
+    ? {
+        name: 'yozi_coach_response',
+        description: 'Return the complete teaching response as arguments. No action is executed.',
+        parameters: config.writingOutput.schema
+      }
+    : null;
+}
+export function readCoachFunctionResponse(config: ModelConfig, raw: any): string | null {
+  const expected = coachResponseFunction(config);
+  if (!expected) return null;
+  const choice = raw?.choices?.[0],
+    message = choice?.message,
+    call = message?.tool_calls?.[0];
+  if (
+    !Array.isArray(raw?.choices) ||
+    raw.choices.length !== 1 ||
+    choice?.finish_reason !== 'tool_calls' ||
+    (message?.content != null && message.content !== '') ||
+    !Array.isArray(message?.tool_calls) ||
+    message.tool_calls.length !== 1 ||
+    call?.type !== 'function' ||
+    call.function?.name !== expected.name ||
+    typeof call.function.arguments !== 'string'
+  )
+    throw Object.assign(new ProviderError('COACH_INVALID', '模型未按本次教学格式返回，原答已保留'), { path: 'tools' });
+  return call.function.arguments;
+}
 export function buildLearningRequest(config: ModelConfig, messages: LearningMessage[], stream = false) {
   const endpoint = new URL(config.endpoint);
+  const responseFunction = coachResponseFunction(config);
   // 适配只用于核对过的供应商和明确型号；不把任意文本模型当作具有同样能力。
   const thinking =
-    ['https://api.z.ai', 'https://open.bigmodel.cn'].includes(endpoint.origin) && config.model === 'glm-4.7-flash'
+    modelInferenceParameters(config) ||
+    (endpoint.origin === 'https://api.z.ai' && config.model === 'glm-4.5-flash'
       ? { thinking: { type: 'disabled' } }
       : endpoint.origin === 'https://generativelanguage.googleapis.com' && config.model === 'gemini-2.5-flash-lite'
         ? { reasoning_effort: 'none' }
-        : {};
+        : endpoint.origin === 'https://integrate.api.nvidia.com' && config.model === 'openai/gpt-oss-20b'
+          ? { reasoning_effort: 'low' }
+          : {});
   return {
     model: config.model,
     messages,
-    max_tokens: config.maxOutput,
+    ...(DEV_TEST && config.writingOutput && config.model === 'openai/gpt-oss-120b'
+      ? { max_completion_tokens: config.maxOutput }
+      : { max_tokens: config.maxOutput }),
     stream,
     ...(stream ? { stream_options: { include_usage: true } } : {}),
     ...thinking,
-    ...(config.writingOutput
+    ...(DEV_TEST && config.writingOutput?.inferencePolicy === 'local-writing-plain-v1' ? { temperature: 0 } : {}),
+    ...(responseFunction
       ? {
-          reasoning_effort: config.writingOutput.reasoningEffort,
-          response_format: {
-            type: 'json_schema',
-            json_schema: {
-              name: 'writing_feedback_v1',
-              strict: true,
-              schema: config.writingOutput.schema
-            }
-          }
+          tools: [{ type: 'function', function: responseFunction }],
+          tool_choice: { type: 'function', function: { name: responseFunction.name } }
         }
-      : config.capabilities.structured
-        ? { response_format: { type: 'json_object' } }
-        : {})
+      : config.writingOutput
+        ? {
+            ...(config.writingOutput.inferencePolicy === 'local-writing-plain-v1'
+              ? {}
+              : { reasoning_effort: config.writingOutput.reasoningEffort }),
+            response_format:
+              config.writingOutput.format === 'json_object'
+                ? { type: 'json_object' }
+                : {
+                    type: 'json_schema',
+                    json_schema: {
+                      name: 'writing_feedback_v1',
+                      strict: true,
+                      schema: config.writingOutput.schema
+                    }
+                  }
+          }
+        : config.capabilities.structured
+          ? { response_format: { type: 'json_object' } }
+          : {})
   };
 }
 export function createLearningProviderStream(config: ModelConfig, onPreview?: (raw: string) => void) {
@@ -384,7 +575,7 @@ export function createLearningProviderStream(config: ModelConfig, onPreview?: (r
       if (content.length > 30000) throw new ProviderError('RESPONSE_LIMIT', '模型内容超过限制');
       if (actualModel) onPreview?.(content);
     }
-    if (choice.finish_reason != null) {
+    if (choice.finish_reason != null && choice.finish_reason !== '') {
       if (finished || !['stop', 'length', 'content_filter'].includes(choice.finish_reason))
         throw new ProviderError('INVALID_STREAM', '模型结束类型不受支持');
       finished = choice.finish_reason;
@@ -411,12 +602,43 @@ export function callStreamingLearningProvider(
   if (config.capabilities.stream !== true) throw new ProviderError('STREAM_UNSUPPORTED', '指定型号未开放流式能力');
   return callLearningProvider(config, messages, origins, options.signal, { onPreview: options.onPreview });
 }
+// Shape only: never retain reply text, reasoning text, headers or arbitrary upstream names.
+export function learningResponseShape(raw: any) {
+  const type = (value: any) =>
+    value === undefined ? 'missing' : value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value;
+  const choice = raw?.choices?.[0];
+  const message = choice?.message;
+  const shape: Record<string, any> = {
+    envelopeType: type(raw),
+    choicesType: type(raw?.choices),
+    choiceType: type(choice),
+    messageType: type(message),
+    finishReasonType: type(choice?.finish_reason),
+    finishReason: [
+      'stop',
+      'length',
+      'content_filter',
+      'tool_calls',
+      'function_call',
+      'end_turn',
+      'max_tokens'
+    ].includes(choice?.finish_reason)
+      ? choice.finish_reason
+      : 'other'
+  };
+  for (const field of ['content', 'reasoning_content', 'reasoning', 'thinking']) {
+    shape[`${field}Type`] = type(message?.[field]);
+    if (typeof message?.[field] === 'string') shape[`${field}Chars`] = message[field].length;
+  }
+  return shape;
+}
 export async function callLearningProvider(
   config: ModelConfig,
   messages: LearningMessage[],
   origins: string[],
   signal?: AbortSignal,
-  streamOptions?: { onPreview?: (raw: string) => void }
+  streamOptions?: { onPreview?: (raw: string) => void },
+  captureDiagnostics = false
 ) {
   if (signal?.aborted)
     throw signal.reason instanceof ProviderError ? signal.reason : new ProviderError('CANCELLED', '请求已取消');
@@ -433,11 +655,72 @@ export async function callLearningProvider(
     throw error;
   }
   const { url, address } = resolved;
-  const body = JSON.stringify(buildLearningRequest(config, messages, Boolean(streamOptions)));
+  const wire: Record<string, unknown> = buildLearningRequest(config, messages, Boolean(streamOptions));
+  if (
+    DEV_TEST &&
+    ((config.model === 'openai/gpt-oss-120b' &&
+      config.endpoint === 'https://api.groq.com/openai/v1/chat/completions') ||
+      (config.model === 'nvidia/nemotron-3-ultra-550b-a55b:free' &&
+        config.endpoint === 'https://openrouter.ai/api/v1/chat/completions')) &&
+    (config.writingOutput?.omitResponseFormatForRequest || config.plainCoachRequest)
+  )
+    delete wire.response_format;
+  const body = JSON.stringify(wire);
+  const timeoutMs = DEV_TEST && config.timeoutMs === 110000 ? 110000 : config.timeoutMs === 60000 ? 60000 : 30000;
+  const traceSafeModel =
+    DEV_TEST &&
+    ((config.model === 'openai/gpt-oss-120b' && url.origin === 'https://api.groq.com') ||
+      (config.model === 'glm-4.7-flash' && url.origin === 'https://api.z.ai') ||
+      (config.plainCoachRequest &&
+        config.model === 'nvidia/nemotron-3-ultra-550b-a55b:free' &&
+        url.origin === 'https://openrouter.ai'));
   const started = Date.now();
   const stream = streamOptions ? createLearningProviderStream(config, streamOptions.onPreview) : null;
+  let observed: any = null;
   const raw = await new Promise<any>((resolve, reject) => {
     // DNS 校验后的地址固定给 socket；TLS 仍检查原始 hostname，禁止任何重定向。
+    if (traceSafeModel) {
+      const outbound = JSON.parse(body);
+      const schema = outbound.response_format?.json_schema?.schema;
+      const promptSchema =
+        config.writingOutput?.format === 'json_object' ? JSON.stringify(config.writingOutput.schema) : null;
+      const schemaInPrompt =
+        promptSchema &&
+        outbound.messages.some(
+          (message: any) => typeof message.content === 'string' && message.content.includes(promptSchema)
+        );
+      console.info(
+        '[model-outbound]',
+        JSON.stringify({
+          model: outbound.model,
+          messageChars: outbound.messages.reduce(
+            (sum: number, item: LearningMessage) => sum + (typeof item.content === 'string' ? item.content.length : 0),
+            0
+          ),
+          response_formatPresent: Object.hasOwn(outbound, 'response_format'),
+          response_format: {
+            type: outbound.response_format?.type || null,
+            json_schema: { strict: outbound.response_format?.json_schema?.strict ?? null }
+          },
+          stream: outbound.stream === true,
+          toolsPresent: Object.hasOwn(outbound, 'tools'),
+          toolsCount: Array.isArray(outbound.tools) ? outbound.tools.length : 0,
+          max_completion_tokens: Number.isInteger(outbound.max_completion_tokens)
+            ? outbound.max_completion_tokens
+            : null,
+          max_tokens: Number.isInteger(outbound.max_tokens) ? outbound.max_tokens : null,
+          reasoning_formatPresent: Object.hasOwn(outbound, 'reasoning_format'),
+          reasoning_effort: outbound.reasoning_effort || null,
+          reasoning: outbound.reasoning?.effort || null,
+          thinkingType: outbound.thinking?.type || null,
+          timeoutMs,
+          include_reasoning: typeof outbound.include_reasoning === 'boolean' ? outbound.include_reasoning : null,
+          schemaHash: schema ? crypto.createHash('sha256').update(JSON.stringify(schema)).digest('hex') : null,
+          feedbackVersion: config.writingOutput?.feedbackVersion || null,
+          promptSchemaHash: schemaInPrompt ? crypto.createHash('sha256').update(promptSchema!).digest('hex') : null
+        })
+      );
+    }
     const req = https.request(
       url,
       {
@@ -453,6 +736,32 @@ export async function callLearningProvider(
         }
       },
       (res) => {
+        if (traceSafeModel) console.info('[model-http]', JSON.stringify({ httpStatus: res.statusCode || null }));
+        const countDecodedBytes = !res.headers['content-encoding'] || res.headers['content-encoding'] === 'identity';
+        if (captureDiagnostics && !stream) {
+          const mime = String(res.headers['content-type'] || '')
+            .split(';')[0]
+            .trim()
+            .toLowerCase();
+          observed = {
+            usage: null,
+            actualModel: config.model,
+            responseDiagnostics: {
+              httpStatus: res.statusCode || 0,
+              networkStage: 'headers',
+              mimeCategory:
+                mime === 'application/json'
+                  ? 'json'
+                  : mime === 'text/event-stream'
+                    ? 'sse'
+                    : mime.startsWith('text/')
+                      ? 'text'
+                      : mime
+                        ? 'other'
+                        : 'missing'
+            }
+          };
+        }
         if (res.statusCode !== 200) {
           const code =
             res.statusCode === 429
@@ -466,17 +775,43 @@ export async function callLearningProvider(
           let size = 0;
           res.on('data', (chunk: Buffer) => {
             size += chunk.length;
+            if (observed && countDecodedBytes) observed.responseDiagnostics.responseBytes = size;
             if (size <= 65536) chunks.push(chunk);
           });
           res.on('end', () => {
+            if (observed) observed.responseDiagnostics.networkStage = 'received';
             const error = new ProviderError(code, '模型服务未成功返回；不会替换供应商或启用付费路由');
             error.upstreamStatus = res.statusCode;
+            let rateLimit: Record<string, string | number> | null = null;
             try {
-              const rawCode = String(JSON.parse(Buffer.concat(chunks).toString('utf8'))?.error?.code || '');
-              if (/^[a-zA-Z0-9_-]{1,40}$/.test(rawCode)) error.upstreamCode = rawCode;
+              const upstreamError = JSON.parse(Buffer.concat(chunks).toString('utf8'))?.error;
+              const rawCode = String(upstreamError?.code || '');
+              if (/^[a-zA-Z0-9_-]{1,40}$/.test(rawCode) && !modelValueHasKeyEcho(rawCode, config.apiKey))
+                error.upstreamCode = rawCode;
+              const message = typeof upstreamError?.message === 'string' ? upstreamError.message : '';
+              const unit = message.match(/\b(TPM|TPD|RPM|RPD)\b/)?.[1];
+              if (traceSafeModel && unit) {
+                rateLimit = { unit };
+                for (const field of ['Limit', 'Used', 'Requested']) {
+                  const match = message.match(new RegExp(`\\b${field}\\s*:?\\s*([0-9][0-9,]*)\\b`, 'i'));
+                  const value = match ? Number(match[1].replaceAll(',', '')) : NaN;
+                  if (Number.isSafeInteger(value) && value >= 0) rateLimit[field.toLowerCase()] = value;
+                }
+              }
             } catch {
               /* 不保存上游原始错误内容，避免回显密钥或私人消息 */
             }
+            if (traceSafeModel)
+              console.info(
+                '[model-result]',
+                JSON.stringify({
+                  httpStatus: res.statusCode || null,
+                  errorCode: error.upstreamCode || code,
+                  classification: code,
+                  finish_reason: 'unknown',
+                  ...(rateLimit ? { rateLimit } : {})
+                })
+              );
             reject(error);
           });
           res.on('error', () => reject(new ProviderError('UPSTREAM_FAILED', '模型响应中断')));
@@ -491,6 +826,7 @@ export async function callLearningProvider(
         const chunks: Buffer[] = [];
         res.on('data', (chunk: Buffer) => {
           size += chunk.length;
+          if (observed && countDecodedBytes) observed.responseDiagnostics.responseBytes = size;
           if (size > 1024 * 1024) req.destroy(new ProviderError('RESPONSE_LIMIT', '模型输出超过限制'));
           else if (stream) {
             try {
@@ -502,46 +838,103 @@ export async function callLearningProvider(
         });
         res.on('error', () => reject(new ProviderError('UPSTREAM_FAILED', '模型响应中断')));
         res.on('end', () => {
+          if (observed) observed.responseDiagnostics.networkStage = 'received';
           try {
             if (stream) {
               decoder!.end();
               resolve(stream.end());
-            } else resolve(JSON.parse(Buffer.concat(chunks).toString('utf8')));
+            } else {
+              const parsed = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+              if (traceSafeModel) {
+                const finish = learningResponseShape(parsed).finishReason;
+                console.info(
+                  '[model-result]',
+                  JSON.stringify({
+                    httpStatus: res.statusCode || null,
+                    errorCode: null,
+                    finish_reason: finish === 'other' ? 'unknown' : finish,
+                    completion_tokens: Number.isInteger(parsed.usage?.completion_tokens)
+                      ? parsed.usage.completion_tokens
+                      : null,
+                    reasoning_tokens: Number.isInteger(parsed.usage?.completion_tokens_details?.reasoning_tokens)
+                      ? parsed.usage.completion_tokens_details.reasoning_tokens
+                      : Number.isInteger(parsed.usage?.reasoning_tokens)
+                        ? parsed.usage.reasoning_tokens
+                        : null,
+                    contentLength:
+                      typeof parsed?.choices?.[0]?.message?.content === 'string'
+                        ? parsed.choices[0].message.content.length
+                        : null
+                  })
+                );
+              }
+              if (observed) {
+                observed.usage = parsed?.usage && typeof parsed.usage === 'object' ? parsed.usage : null;
+                observed.actualModel = typeof parsed?.model === 'string' ? parsed.model : config.model;
+                Object.assign(observed.responseDiagnostics, learningResponseShape(parsed), { envelopeJson: 'valid' });
+              }
+              resolve(parsed);
+            }
           } catch (error) {
+            if (observed) {
+              observed.responseDiagnostics.envelopeJson = 'invalid';
+              observed.responseDiagnostics.expectedType = 'json_object';
+              observed.responseDiagnostics.actualType = 'invalid_json';
+            }
             reject(stream ? error : new ProviderError('INVALID_RESPONSE', '模型响应不是合法 JSON'));
           }
         });
       }
     );
-    const timer = setTimeout(() => req.destroy(new ProviderError('TIMEOUT', '模型请求超时')), 30000);
+    const timer = setTimeout(() => req.destroy(new ProviderError('TIMEOUT', '模型请求超时')), timeoutMs);
     req.on('close', () => clearTimeout(timer));
-    req.on('error', (err: any) =>
-      reject(
+    req.on('error', (err: any) => {
+      const error =
         signal?.aborted && signal.reason instanceof ProviderError
           ? signal.reason
           : err instanceof ProviderError
             ? err
             : err instanceof StreamError
               ? new ProviderError(err.code, err.message)
-              : new ProviderError(signal?.aborted ? 'CANCELLED' : 'UPSTREAM_FAILED', '模型连接失败')
-      )
-    );
+              : new ProviderError(signal?.aborted ? 'CANCELLED' : 'UPSTREAM_FAILED', '模型连接失败');
+      if (traceSafeModel)
+        console.info(
+          '[model-local-error]',
+          JSON.stringify({ errorCode: error.code, elapsedMs: Date.now() - started, timeoutMs })
+        );
+      reject(error);
+    });
     req.end(body);
   }).catch((error) => {
     if (stream)
       error.observed = redactModelValue({ ...stream.observed(), durationMs: Date.now() - started }, config.apiKey);
+    else if (observed)
+      error.observed = redactModelValue({ ...observed, durationMs: Date.now() - started }, config.apiKey);
     throw error;
   });
-  const content = stream ? raw.content : raw?.choices?.[0]?.message?.content;
-  if (typeof content !== 'string' || !content.trim() || content.length > 30000)
-    throw new ProviderError('INVALID_RESPONSE', '模型没有返回有效内容');
+  const functionContent = stream ? null : readCoachFunctionResponse(config, raw);
+  const content = stream ? raw.content : (functionContent ?? raw?.choices?.[0]?.message?.content);
+  if (typeof content !== 'string' || !content.trim() || content.length > 30000) {
+    const error = new ProviderError('INVALID_RESPONSE', '模型没有返回有效内容');
+    if (observed) {
+      Object.assign(observed.responseDiagnostics, {
+        expectedType: 'string',
+        actualType: observed.responseDiagnostics.contentType
+      });
+      error.observed = redactModelValue({ ...observed, durationMs: Date.now() - started }, config.apiKey);
+    }
+    throw error;
+  }
   // 原始 usage 保存全部账单字段；无法确认用量时保持 pending，不按零成本结算。
   const usage = raw.usage && typeof raw.usage === 'object' ? raw.usage : null;
   return {
     content,
     usage,
     actualModel: stream ? raw.actualModel : typeof raw.model === 'string' ? raw.model : config.model,
+    finishReason: stream ? raw.finishReason || 'unknown' : learningResponseShape(raw).finishReason,
+    ...(functionContent !== null ? { coachFunctionResult: true } : {}),
     durationMs: Date.now() - started,
+    ...(observed ? { responseDiagnostics: observed.responseDiagnostics } : {}),
     ...(stream ? { usageComplete: raw.usageComplete } : {})
   };
 }
@@ -587,7 +980,7 @@ export function parseLearningOutput(raw: string) {
     tools.some(
       (call: any) =>
         !call ||
-        !['progress', 'visualize', 'method', 'hint', 'assess', 'plan'].includes(call.name) ||
+        !['progress', 'visualize', 'method', 'hint', 'assess', 'plan', ...ENTRY_TOOL_NAMES].includes(call.name) ||
         !call.arguments ||
         typeof call.arguments !== 'object' ||
         Array.isArray(call.arguments)
@@ -596,6 +989,13 @@ export function parseLearningOutput(raw: string) {
     throw new ProviderError('TOOL_FORBIDDEN', '模型请求了未授权的工具');
   }
   for (const call of tools) {
+    if (ENTRY_TOOL_NAMES.includes(call.name)) {
+      try {
+        validateEntryCall(call.name, call.arguments);
+      } catch {
+        throw new ProviderError('INVALID_STRUCTURE', '对象工具参数不合法');
+      }
+    }
     if (call.name !== 'visualize') continue;
     try {
       visualRecipe(call.arguments);

@@ -2,8 +2,9 @@
   <view class="base-stat"
     ><text class="base-stat__label">{{ label }}</text
     ><view class="base-stat__number"
-      ><text class="summary-count">{{ formatNumber(value) }}</text
-      ><text v-if="denominator !== null" class="base-stat__unit">/ {{ formatNumber(denominator) }}</text
+      ><text class="summary-count">{{ typeof value === 'number' ? formatNumber(value) : value }}</text
+      ><text v-if="denominator !== null" class="base-stat__unit"
+        >/ {{ typeof denominator === 'number' ? formatNumber(denominator) : denominator }}</text
       ><text v-else-if="unit" class="base-stat__unit">{{ ` ${unit}` }}</text></view
     ></view
   >
@@ -12,8 +13,8 @@
 import { formatNumber } from '@/i18n/format.js';
 defineProps({
   label: { type: String, required: true },
-  value: { type: Number, required: true },
-  denominator: { type: Number, default: null },
+  value: { type: [Number, String], required: true },
+  denominator: { type: [Number, String], default: null },
   unit: { type: String, default: '' }
 });
 </script>

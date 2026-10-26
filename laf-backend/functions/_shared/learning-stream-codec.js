@@ -173,7 +173,8 @@ export function learningMessagePreview(raw, key = '') {
     if (text.length > 8000) return '';
   }
   if (key) {
-    text = redactModelValue(text, key);
+    const filtered = redactModelValue(text, key);
+    if (filtered !== text) return '';
     if (!complete)
       for (let n = Math.min(key.length - 1, text.length); n > 0; n--)
         if (text.endsWith(key.slice(0, n))) {

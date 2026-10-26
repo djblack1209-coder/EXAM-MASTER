@@ -10,7 +10,7 @@ import {
 } from '../../laf-backend/functions/_shared/learning-record-search.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { learningWriteLease } from '@/services/learning/learning-write-lease.js';
-import { initI18n, setLanguage } from '@/i18n/index.js';
+import { initI18n, setLanguage, t } from '@/i18n/index.js';
 import LearningPage from '@/pages/learning/index.vue';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
@@ -414,6 +414,8 @@ describe('record location uses canonical facts', () => {
     });
     wrappers.push(wrapper);
     const shell = wrapper.findComponent(LearningShell);
+    await shell.get('.rail-item[aria-label="搜索题目、原答或对话"]').trigger('tap');
+    await flushPromises();
     shell
       .findAllComponents(BaseInput)
       .find((row) => Number(row.props('maxlength')) === 120)
@@ -503,8 +505,10 @@ describe('record location uses canonical facts', () => {
       }
     });
     wrappers.push(wrapper);
-    const shell = wrapper.findComponent(LearningShell),
-      input = shell.findAllComponents(BaseInput).find((row) => Number(row.props('maxlength')) === 120);
+    const shell = wrapper.findComponent(LearningShell);
+    await shell.get('.rail-item[aria-label="搜索题目、原答或对话"]').trigger('tap');
+    await flushPromises();
+    const input = shell.findAllComponents(BaseInput).find((row) => Number(row.props('maxlength')) === 120);
     const before = store.exportData();
     input.vm.$emit('update:modelValue', '第一稿');
     await new Promise((resolve) => setTimeout(resolve, 200));
@@ -529,6 +533,8 @@ describe('cross-subject review filters use saved evidence', () => {
     const { store } = await storeRecords();
     const before = store.exportData();
     const wrapper = mount(LearningShell, { global: { stubs: { BaseIcon: true } } });
+    await wrapper.get('.rail-item[aria-label="搜索题目、原答或对话"]').trigger('tap');
+    await flushPromises();
     const input = wrapper.findAllComponents(BaseInput).find((row) => Number(row.props('maxlength')) === 120);
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
     try {
@@ -537,7 +543,10 @@ describe('cross-subject review filters use saved evidence', () => {
       await vi.advanceTimersByTimeAsync(179);
       await flushPromises();
       expect(search).not.toHaveBeenCalled();
-      expect(wrapper.text()).toContain('正在读取学习记录');
+      // 当前读取状态用骨架呈现；保留可访问的精确状态名。
+      expect(wrapper.get('.muse-list-skeleton[role="status"]').attributes('aria-label')).toBe(
+        t('learning.records.loading')
+      );
       await vi.advanceTimersByTimeAsync(1);
       await flushPromises();
       expect(search).toHaveBeenCalledTimes(1);
@@ -621,7 +630,7 @@ describe('cross-subject review filters use saved evidence', () => {
   it.each(['mastered', '__proto__', null])('rejects unsupported filters %s', (filter) => {
     expect(() => searchLearningRecords(fixture(), '', { filter })).toThrow();
   });
-  it('filters and resets in the existing shell without writing facts or requesting a model, including in English', async () => {
+  it('searches and clears in the single-input palette without filter chips, tags, writes or model requests in both languages', async () => {
     const { store } = await storeRecords();
     const wrapper = mount(LearningShell, {
       attachTo: document.body,
@@ -634,36 +643,36 @@ describe('cross-subject review filters use saved evidence', () => {
       }
     });
     wrappers.push(wrapper);
+    await wrapper.get('.rail-item[aria-label="搜索题目、原答或对话"]').trigger('tap');
+    await flushPromises();
     const before = store.exportData(),
       request = vi.spyOn(uni, 'request');
-    const chips = () => wrapper.findAllComponents(BaseChip);
-    chips()
-      .find((row) => row.text() === '待核对')
-      .vm.$emit('update:modelValue', true);
+    // 批次 12A：搜索浮层只保留一个输入，不再呈现筛选 chip 或结果 Tag。
+    expect(wrapper.findAllComponents(BaseChip)).toHaveLength(0);
+    expect(wrapper.findAll('input, textarea')).toHaveLength(1);
+    const input = wrapper.findComponent(BaseInput);
+    input.vm.$emit('update:modelValue', '第一稿');
+    await new Promise((resolve) => setTimeout(resolve, 200));
     await flushPromises();
-    expect(wrapper.get('[aria-label="学习记录搜索结果"]').text()).toContain('2条记录');
-    expect(wrapper.get('[aria-label="学习记录搜索结果"]').text()).not.toContain('计算 12 + 8');
+    expect(wrapper.get('[aria-label="学习记录搜索结果"]').text()).toContain('第一稿');
+    expect(wrapper.get('[aria-label="学习记录搜索结果"]').findAll('.base-tag')).toHaveLength(0);
     expect(store.exportData()).toBe(before);
-    chips()
-      .find((row) => row.text() === '用过帮助')
-      .vm.$emit('update:modelValue', true);
+    input.vm.$emit('update:modelValue', '不存在的学习原文');
+    await new Promise((resolve) => setTimeout(resolve, 200));
     await flushPromises();
     expect(wrapper.text()).toContain('没有匹配的学习记录');
-    expect(wrapper.findAllComponents(BaseButton).some((row) => row.text() === '清除筛选')).toBe(true);
     setLanguage('en');
     await flushPromises();
     expect(wrapper.text()).toContain('No matching learning records');
-    wrapper
-      .findAllComponents(BaseButton)
-      .find((row) => row.text() === 'Clear filters')
-      .vm.$emit('tap');
+    expect(wrapper.findAllComponents(BaseChip)).toHaveLength(0);
+    input.vm.$emit('update:modelValue', '');
     await flushPromises();
     expect(wrapper.find('[aria-label="Learning record search results"]').exists()).toBe(false);
-    expect(
-      chips()
-        .find((row) => row.text() === 'All')
-        .props('modelValue')
-    ).toBe(true);
+    input.vm.$emit('update:modelValue', '第一稿');
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    await flushPromises();
+    expect(wrapper.get('[aria-label="Learning record search results"]').text()).toContain('第一稿');
+    expect(wrapper.get('[aria-label="Learning record search results"]').findAll('.base-tag')).toHaveLength(0);
     expect(store.exportData()).toBe(before);
     expect(request).not.toHaveBeenCalled();
   });

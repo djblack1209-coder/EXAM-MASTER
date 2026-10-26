@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { bindPlayfulGaze } from '@/design/playful-gaze.js';
-import { bindFutureSky, FUTURE_ASSETS } from '@/design/future-motion.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
+import { mount } from '@vue/test-utils';
+import MuseLaunch from '@/components/business/learning/muse-launch.vue';
+import MuseChatEmpty from '@/components/business/learning/muse-chat-empty.vue';
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -21,14 +22,6 @@ function legacyMedia(matches) {
   };
 }
 
-function videoFixture() {
-  const video = document.createElement('video');
-  vi.spyOn(video, 'play').mockResolvedValue(undefined);
-  vi.spyOn(video, 'pause').mockImplementation(() => undefined);
-  vi.spyOn(video, 'load').mockImplementation(() => undefined);
-  return video;
-}
-
 describe('学习首页动效的实际播放与生命周期', () => {
   it('业务浮层跟随减少动态效果，旧浏览器监听在卸载后释放', () => {
     const reduced = legacyMedia(false);
@@ -44,56 +37,96 @@ describe('学习首页动效的实际播放与生命周期', () => {
     reduced.set(false);
     expect(change).toHaveBeenCalledTimes(calls);
   });
-  it('旧 WebView 的手机眼睛视频尊重减少动效，卸载后释放监听', () => {
-    const mobile = legacyMedia(true);
-    const reduced = legacyMedia(false);
-    vi.spyOn(window, 'matchMedia').mockImplementation((query) => (query.includes('max-width') ? mobile : reduced));
-    const video = videoFixture();
-    const dispose = bindPlayfulGaze(video);
-    video.dispatchEvent(new Event('loadeddata'));
-    expect(video.loop).toBe(true);
-    expect(video.play).toHaveBeenCalledOnce();
-    reduced.set(true);
-    expect(video.pause).toHaveBeenCalled();
-    expect(video.play).toHaveBeenCalledOnce();
-    dispose();
-    expect(mobile.listenerCount + reduced.listenerCount).toBe(0);
-    mobile.set(false);
-    video.dispatchEvent(new Event('loadeddata'));
-    expect(video.play).toHaveBeenCalledOnce();
-  });
+});
 
-  it('天空动效在减少动效时卸载资源，恢复与开关不造成离页播放', () => {
-    const reduced = legacyMedia(false);
-    vi.spyOn(window, 'matchMedia').mockReturnValue(reduced);
-    const video = videoFixture();
-    const control = bindFutureSky(video);
-    video.dispatchEvent(new Event('playing'));
-    expect(video.classList.contains('is-playing')).toBe(true);
-    reduced.set(true);
-    expect(video.hasAttribute('src')).toBe(false);
-    expect(video.classList.contains('is-playing')).toBe(false);
-    expect(video.load).toHaveBeenCalledOnce();
-    reduced.set(false);
-    expect(video.getAttribute('src')).toBe(FUTURE_ASSETS.video);
-    control.setEnabled(false);
-    expect(video.pause).toHaveBeenCalled();
-    control.dispose();
-    const calls = video.play.mock.calls.length;
-    expect(reduced.listenerCount).toBe(0);
-    window.dispatchEvent(new Event('pointerdown'));
-    video.dispatchEvent(new Event('ended'));
-    expect(video.play).toHaveBeenCalledTimes(calls);
+describe('Muse launch entrance', () => {
+  let wrappers = [];
+  afterEach(() => {
+    for (const wrapper of wrappers) wrapper.unmount();
+    wrappers = [];
+    vi.useRealTimers();
   });
-
-  it('天空播完从指定三秒位置续播，保持原视频循环合同', () => {
+  const launch = (props) => {
+    const wrapper = mount(MuseLaunch, {
+      props: { scope: {}, ...props },
+      global: { stubs: { AnimatedAvatar: true } }
+    });
+    wrappers.push(wrapper);
+    return wrapper;
+  };
+  it('waits for records, fades once, and never replays during navigation', async () => {
+    vi.useFakeTimers();
     vi.spyOn(window, 'matchMedia').mockReturnValue(legacyMedia(false));
-    const video = videoFixture();
-    const control = bindFutureSky(video);
-    video.dispatchEvent(new Event('ended'));
-    expect(video.loop).toBe(false);
-    expect(video.currentTime).toBe(3);
-    expect(video.play).toHaveBeenCalledTimes(2);
-    control.dispose();
+    const scope = {};
+    const wrapper = launch({ scope, ready: false });
+    await vi.advanceTimersByTimeAsync(1080);
+    expect(wrapper.get('.muse-launch').classes()).not.toContain('is-leaving');
+    await wrapper.setProps({ ready: true });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(wrapper.get('.muse-launch').classes()).toContain('is-leaving');
+    await vi.advanceTimersByTimeAsync(220);
+    expect(wrapper.find('.muse-launch').exists()).toBe(false);
+    expect(wrapper.emitted('complete')).toHaveLength(1);
+    wrapper.unmount();
+    wrappers = [];
+    const navigated = launch({ scope, ready: true });
+    expect(navigated.find('.muse-launch').exists()).toBe(false);
+    expect(navigated.emitted('complete')).toHaveLength(1);
   });
+  it('gives the kitten a full visible cycle and completes after 1.3 seconds', async () => {
+    vi.useFakeTimers();
+    vi.spyOn(window, 'matchMedia').mockReturnValue(legacyMedia(false));
+    const wrapper = launch({ ready: true });
+    await vi.advanceTimersByTimeAsync(1079);
+    expect(wrapper.get('.muse-launch').classes()).not.toContain('is-leaving');
+    await vi.advanceTimersByTimeAsync(1);
+    expect(wrapper.get('.muse-launch').classes()).toContain('is-leaving');
+    await vi.advanceTimersByTimeAsync(220);
+    expect(wrapper.find('.muse-launch').exists()).toBe(false);
+  });
+  it('respects a live reduced-motion change and releases pending timers/listeners', async () => {
+    vi.useFakeTimers();
+    const media = legacyMedia(false);
+    vi.spyOn(window, 'matchMedia').mockReturnValue(media);
+    const wrapper = launch({ ready: false });
+    media.set(true);
+    await wrapper.setProps({ ready: true });
+    expect(wrapper.find('.muse-launch').exists()).toBe(false);
+    expect(wrapper.emitted('complete')).toHaveLength(1);
+    wrapper.unmount();
+    wrappers = [];
+    expect(media.listenerCount).toBe(0);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+  it('cancels an unfinished entrance on unmount instead of sending a late navigation signal', async () => {
+    vi.useFakeTimers();
+    const media = legacyMedia(false);
+    vi.spyOn(window, 'matchMedia').mockReturnValue(media);
+    const wrapper = launch({ ready: true });
+    await vi.advanceTimersByTimeAsync(200);
+    wrapper.unmount();
+    wrappers = [];
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(wrapper.emitted('complete')).toBeUndefined();
+    expect(media.listenerCount).toBe(0);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
+describe('compact chat connection status', () => {
+  it.each(['未连接', '已连接 · glm-4.5-flash'])(
+    '%s opens connectors without creating learning facts',
+    async (status) => {
+      const wrapper = mount(MuseChatEmpty, { props: { status } });
+      try {
+        expect(wrapper.findAll('button')).toHaveLength(1);
+        expect(wrapper.find('.animated-avatar').exists()).toBe(false);
+        await wrapper.get('button').trigger('keydown', { key: 'Enter' });
+        expect(wrapper.emitted('connect')).toHaveLength(1);
+        expect(wrapper.get('button').text()).toBe(status);
+      } finally {
+        wrapper.unmount();
+      }
+    }
+  );
 });

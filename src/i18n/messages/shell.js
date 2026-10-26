@@ -18,6 +18,17 @@ export const PAGE_TITLE_KEYS = {
   'pages/mistake/index': 'pages.mistake',
   'pages/favorite/index': 'pages.favorite',
   'pages/learning/index': 'pages.learning',
+  'pages/learning/knowledge': 'pages.knowledge',
+  'pages/learning/review': 'pages.review',
   'pages/plan/index': 'pages.plan',
   'pages/study-detail/index': 'pages.stats'
 };
+
+// Archive subviews share one route; lifecycle and locale refreshes must keep its visible title.
+export const ARCHIVE_TITLE_KEYS = Object.freeze({
+  plan: 'muse.goals',
+  phrases: 'muse.phrases',
+  materials: 'muse.library',
+  all: 'muse.activity',
+  usage: 'muse.usage'
+});

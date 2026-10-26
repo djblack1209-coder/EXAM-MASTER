@@ -1,5 +1,17 @@
 # 后端运行合同
 
+## 2026-10-23 三文件诊断增量
+
+现网已沿既有 `vpsctl maintain-files` 新事务 `9393ad6b4ff243278a108cd33e83f700` 于北京时间22:18:15 accepted，Mac独立watcher返回accepted／verified=true。当前release为 `/opt/vps-config/releases/exam-master/0f0738d4e412e0d3`，PID639252、`/usr/bin/node`20.20.2、127.0.0.1:3002；原ec3 release、共享d77依赖和Mac恢复材料保留。归档136文件中仅learning-account、proxy-ai、learning-models三个诊断模块变化（29增／6删）；服务控制文件只改两处release路径，没有发布本地dev/test放宽逻辑或其他在研源码，没有迁移数据库或更改凭据／安全配置。
+实际运行文件回读匹配，listener／cwd／health／entry与回环鉴权／CORS检查通过。正常API会话已在本机QA读回原COACH_INVALID，但旧字段未留存；这不构成生产真实模型失败字段或完整教学验收。额外匿名公网探针在开启事务前返回Cloudflare403，未产生事务或服务变化；随后回到原已验收的受保护合同，公网403继续单列，未重试被拒请求、绕过访问控制或改Cloudflare规则。归档、源码差异、事务、回滚及QA记录见[既有交接](../tmp/cleanup-experience-a/dev-test-build.log)。
+
+## 2026-10-21 已授权的国内学习接口上线
+
+候选 `b07890f2a26a893aeddf51147ba5605f4910df2e91801e63dced50f1bcf2e1ec`，136 文件；沿既有 VPS-Config 事务暂存 `ee6d52cd19bd4645bc44efc7b82cbf5b`，正式切换 `1b69787a7584451b9ec9c106d103422c`，均 accepted / verified。`yozi-learning` 仅监听 127.0.0.1:3002，HTTPS 学习路由进入新版本；旧 `exam-master` 停止并保留回滚，JWT、账户库与私有保险库配置保持，收费／短信／默认平台调用关闭。
+
+Mongo 官方逻辑备份已实际恢复到隔离命名空间，并逐项核对文档及索引，恢复材料由既有独立观察者保存于 Mac 私有恢复区。首次全库物理归档传输超时已回退，未切公网；改用已实际恢复核验的逻辑备份完成。新真实账户或学习写入会阻止破坏性数据回退。公网密码登录、鉴权、精确 tauri 来源、账户隔离、错答、幂等同步和 model-intake-v1 均通过；线上免费模型两次首问／法硕档案确认与同步通过，密钥撤下，费用各为 0。此项不代表真实用户 OAuth、邮件、手机或全科教学质量已验收。
+
+
 ## 可信代理与客户端 IP：本地修复、待授权上线（阶段7A）
 
 仓库腾讯拓扑是**宿主机 Nginx → 127.0.0.1:3001 发布端口 → Docker bridge 后端:3000**，不是容器 Nginx。历史 Compose 动态网关不能推断固定来源；本次为 exam-net 显式配置 `172.30.87.0/24`、网关 `172.30.87.1`，并给 backend 默认设置 `TRUST_PROXY=172.30.87.1/32`（Compose 启动 shell 或 --env-file 可覆盖，backend 的 env_file 不覆盖该插值项；显式空值仍拒绝），只信任宿主经发布端口进入容器的网关，不信任整个容器网段。现存网络不会自动按新 IPAM 重建，部署时必须先核实网络冲突与实际 socket 对端；本次未连接服务器、未证明实际 Docker/NAT 来源。

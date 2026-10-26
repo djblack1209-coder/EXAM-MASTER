@@ -6,6 +6,7 @@
 
 extern void yozi_notification_action(const char *payload);
 static NSString *const Prefix = @"yozi-learning-v1-";
+static NSString *const TestRequestedAt = @"YoziLearningTestNotificationRequestedAt";
 
 @interface YoziLearningNotificationDelegate : NSObject <UNUserNotificationCenterDelegate>
 @end
@@ -78,7 +79,19 @@ static NSDictionary *Permission(UNUserNotificationCenter *center) {
         dispatch_semaphore_signal(semaphore);
     }];
     if (dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC))) return @{ @"ok": @NO };
-    return @{ @"ok": @YES, @"permission": permission, @"channel": @"macos" };
+    __block BOOL testDelivered = NO;
+    NSTimeInterval requestedAt = [[NSUserDefaults standardUserDefaults] doubleForKey:TestRequestedAt];
+    if (requestedAt > 0) {
+        dispatch_semaphore_t delivered = dispatch_semaphore_create(0);
+        [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> *items) {
+            for (UNNotification *item in items)
+                if ([item.request.identifier isEqualToString:[Prefix stringByAppendingString:@"test"]] &&
+                    item.date.timeIntervalSince1970 >= requestedAt) testDelivered = YES;
+            dispatch_semaphore_signal(delivered);
+        }];
+        if (dispatch_semaphore_wait(delivered, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC))) testDelivered = NO;
+    }
+    return @{ @"ok": @YES, @"permission": permission, @"channel": @"macos", @"testDelivered": testDelivered ? @YES : @NO };
 }
 
 char *yozi_notifications_call(const char *requestText) {
@@ -89,6 +102,30 @@ char *yozi_notifications_call(const char *requestText) {
             NSString *action = request[@"action"];
             if ([action isEqualToString:@"bootstrap"]) { Bootstrap(); return Reply(@{@"ok": @YES}); }
             UNUserNotificationCenter *center = Center();
+            if ([action isEqualToString:@"settings"]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"x-apple.systempreferences:com.apple.Notifications-Settings.extension"]];
+                });
+                return Reply(@{@"ok": @YES});
+            }
+            if ([action isEqualToString:@"test"]) {
+                NSDictionary *permission = Permission(center);
+                if (![permission[@"permission"] isEqualToString:@"granted"]) return Reply(@{@"ok": @NO});
+                UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+                content.title = @"Yozi AI";
+                content.body = @"学习提醒已就绪。";
+                content.sound = [UNNotificationSound defaultSound];
+                UNNotificationRequest *test = [UNNotificationRequest requestWithIdentifier:[Prefix stringByAppendingString:@"test"] content:content
+                    trigger:[UNTimeIntervalNotificationTrigger triggerWithTimeInterval:5 repeats:NO]];
+                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                __block BOOL accepted = NO;
+                NSTimeInterval requestedAt = [NSDate date].timeIntervalSince1970;
+                [center addNotificationRequest:test withCompletionHandler:^(NSError *error) { accepted = error == nil; dispatch_semaphore_signal(semaphore); }];
+                BOOL timedOut = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC));
+                if (!timedOut && accepted) [[NSUserDefaults standardUserDefaults] setDouble:requestedAt forKey:TestRequestedAt];
+                // C logical expressions box as an integer; the bridge requires a JSON boolean.
+                return Reply(@{@"ok": !timedOut && accepted ? @YES : @NO});
+            }
             if ([action isEqualToString:@"permission"]) {
                 NSDictionary *before = Permission(center);
                 if (![before[@"ok"] boolValue]) return Reply(before);
@@ -112,13 +149,21 @@ char *yozi_notifications_call(const char *requestText) {
             }
             if (![action isEqualToString:@"replace"]) return Reply(@{@"ok": @NO});
             NSArray *jobs = request[@"jobs"];
+            if (jobs.count == 0 && [request[@"clearDelivered"] boolValue]) {
+                [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> *items) {
+                    NSMutableArray *ids = [NSMutableArray array];
+                    for (UNNotification *item in items) if ([item.request.identifier hasPrefix:Prefix]) [ids addObject:item.request.identifier];
+                    [center removeDeliveredNotificationsWithIdentifiers:ids];
+                }];
+            }
             NSArray *before = Pending(center);
             if (!before) return Reply(@{@"ok": @NO});
             NSMutableSet *wanted = [NSMutableSet set];
             NSMutableArray *remove = [NSMutableArray array];
             for (NSDictionary *job in jobs) [wanted addObject:[Prefix stringByAppendingString:job[@"id"]]];
             for (UNNotificationRequest *item in before)
-                if ([item.identifier hasPrefix:Prefix] && ![wanted containsObject:item.identifier]) [remove addObject:item.identifier];
+                if ([item.identifier hasPrefix:Prefix] && ![wanted containsObject:item.identifier] &&
+                    (![item.identifier isEqualToString:[Prefix stringByAppendingString:@"test"]] || [request[@"clearDelivered"] boolValue])) [remove addObject:item.identifier];
             [center removePendingNotificationRequestsWithIdentifiers:remove];
             NSMutableArray *failed = [NSMutableArray array];
             NSMutableSet *confirmed = [NSMutableSet set];

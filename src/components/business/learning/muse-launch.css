@@ -1,0 +1,63 @@
+.muse-launch {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--canvas);
+  pointer-events: none;
+}
+.muse-launch__ring {
+  position: absolute;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 62%, #4b93ffe6 78%, transparent 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+  animation: muse-launch-spin 900ms linear infinite;
+}
+.muse-launch__kitten,
+.muse-launch__poster {
+  transform-origin: 50% 80%;
+  animation: muse-launch-kitten 1200ms ease-in-out infinite;
+}
+.muse-launch.is-leaving {
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+.muse-launch.reduce-motion .muse-launch__ring {
+  animation: none;
+}
+.muse-launch.reduce-motion .muse-launch__kitten,
+.muse-launch.reduce-motion .muse-launch__poster {
+  animation: none;
+}
+.muse-launch.reduce-motion.is-leaving {
+  transition: none;
+}
+@keyframes muse-launch-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes muse-launch-kitten {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) rotate(3deg) scale(1.04);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .muse-launch__ring,
+  .muse-launch__kitten,
+  .muse-launch__poster {
+    animation: none;
+  }
+  .muse-launch.is-leaving {
+    transition: none;
+  }
+}

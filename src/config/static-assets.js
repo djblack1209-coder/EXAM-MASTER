@@ -8,7 +8,7 @@
  * - 配置了 VITE_CDN_URL 时：返回 CDN 地址（如 https://xxx.sealosbja.site/static/badges/xxx.png）
  * - 未配置 VITE_CDN_URL 时：返回本地 /static/ 路径（兼容 H5 和开发环境）
  *
- * 注意：tabbar 图标不走 CDN，微信小程序要求 tabbar 图标必须是本地文件
+ * 品牌与分享图始终引用当前本地 Logo；动态教学图片继续沿用既有 CDN / 本地规则。
  *
  * @module config/static-assets
  */
@@ -42,124 +42,29 @@ const CDN_BASE = isSafeCdnBase(configuredCdnBase) && !isH5Runtime ? configuredCd
  */
 const useCdn = !!CDN_BASE;
 
-/**
- * 小程序包内真实存在的本地兜底资源。
- *
- * H5 构建会把 cdn-assets/ 复制到 /static，因此 H5 可直接回退到 /static。
- * 小程序没有这一步，不能把注册表里的大图都当成本地可用资源，否则会产生
- * 404 或被构建脚本为了保守保留进包导致体积超标。
- */
-const MINI_PROGRAM_LOCAL_ASSETS = new Set([
-  'images/default-avatar.png',
-  'images/logo.png',
-  'tabbar/home.png',
-  'tabbar/home-active.png',
-  'tabbar/practice.png',
-  'tabbar/practice-active.png',
-  'tabbar/profile.png',
-  'tabbar/profile-active.png'
-]);
-
-/**
- * 静态资源注册表
- * 按分类管理所有大体积静态资源
- * key = 资源名（不含扩展名），value = 相对路径（相对于 /static/ 目录）
- */
-const ASSET_REGISTRY = {
-  // ==================== 成就徽章 ====================
-  badges: {
-    'streak-7day': 'badges/streak-7day.png',
-    'streak-30day': 'badges/streak-30day.png',
-    'accuracy-90': 'badges/accuracy-90.png',
-    'first-100': 'badges/first-100.png',
-    'master-500': 'badges/master-500.png',
-    'pk-victory': 'badges/pk-victory.png',
-    scholar: 'badges/scholar.png',
-    'speed-demon': 'badges/speed-demon.png',
-    'perfect-score': 'badges/perfect-score.png',
-    'knowledge-explorer': 'badges/knowledge-explorer.png'
-  },
-
-  // ==================== 插画 ====================
-  illustrations: {
-    'mascot-owl': 'illustrations/mascot-owl.png',
-    'ai-welcome': 'illustrations/ai-welcome.png',
-    'empty-search': 'illustrations/empty-search.png',
-    'empty-journey': 'illustrations/empty-journey.png',
-    'school-guide': 'illustrations/school-guide.png',
-    // 引导页插画（login 子包本地也有副本，CDN 作为备选）
-    'onboard-choose-exam': 'illustrations/onboard-choose-exam.png',
-    'onboard-set-goal': 'illustrations/onboard-set-goal.png',
-    'onboard-import': 'illustrations/onboard-import.png',
-    'onboard-ready': 'illustrations/onboard-ready.png',
-    // PK 对战等待插画（practice-sub 子包本地也有副本）
-    'pk-waiting': 'illustrations/pk-waiting.png'
-  },
-
-  // ==================== 通用图片 ====================
-  images: {
-    'default-avatar': 'images/default-avatar.png',
-    'app-share-cover': 'images/app-share-cover.png',
-    logo: 'images/logo.png',
-    'logo-full': 'images/logo-full.png'
-  },
-
-  // ==================== 特效图片 ====================
-  effects: {
-    'star-sparkle': 'effects/star-sparkle.png'
-  },
-
-  // ==================== 功能图标 ====================
-  icons: {
-    'ai-chat': 'icons/ai-chat.png',
-    'bookmark-save': 'icons/bookmark-save.png',
-    'camera-search': 'icons/camera-search.png',
-    'clock-timer': 'icons/clock-timer.png',
-    'crossed-swords': 'icons/crossed-swords.png',
-    'doc-convert': 'icons/doc-convert.png',
-    'flame-streak': 'icons/flame-streak.png',
-    'rocket-launch': 'icons/rocket-launch.png',
-    'star-badge': 'icons/star-badge.png',
-    'target-bullseye': 'icons/target-bullseye.png',
-    'trophy-cup': 'icons/trophy-cup.png'
-  },
-
-  // ==================== 底部导航栏图标（不走 CDN，微信要求本地文件） ====================
-  tabbar: {
-    home: 'tabbar/home.png',
-    'home-active': 'tabbar/home-active.png',
-    practice: 'tabbar/practice.png',
-    'practice-active': 'tabbar/practice-active.png',
-    profile: 'tabbar/profile.png',
-    'profile-active': 'tabbar/profile-active.png'
-  }
-};
-
-/**
- * 不走 CDN 的分类列表
- * 微信小程序 tabbar 图标必须是本地文件，所以排除在外
- */
-const LOCAL_ONLY_CATEGORIES = ['tabbar'];
+// Brand assets are always bundled locally; retired registry entries must not resurrect old artwork.
+const MINI_PROGRAM_LOCAL_ASSETS = new Set(['images/logo.png']);
+const ASSET_REGISTRY = Object.freeze({
+  images: Object.freeze({ logo: 'images/logo.png', 'app-share-cover': 'images/logo.png' })
+});
+const LOCAL_ONLY_CATEGORIES = ['images'];
 
 /**
  * 获取静态资源的完整 URL
  *
- * @param {string} category - 资源分类：badges / illustrations / images / effects / icons / tabbar
- * @param {string} name - 资源名称（不含扩展名），如 'default-avatar'、'star-sparkle'
+ * @param {string} category - 当前静态注册分类 images
+ * @param {string} name - 当前名称 logo / app-share-cover
  * @returns {string} 完整的资源路径（CDN 地址或本地 /static/ 路径）
  *
  * @example
- * // CDN 已配置时
- * getAssetUrl('images', 'default-avatar')
- * // => 'https://nf98ia8qnt.sealosbja.site/static/images/default-avatar.png'
+ * // 品牌不随 CDN 配置改变
+ * getAssetUrl('images', 'logo')
+ * // => '/static/images/logo.png'
  *
  * // CDN 未配置时
- * getAssetUrl('images', 'default-avatar')
- * // => '/static/images/default-avatar.png'
+ * getAssetUrl('images', 'logo')
+ * // => '/static/images/logo.png'
  *
- * // tabbar 图标始终返回本地路径
- * getAssetUrl('tabbar', 'home')
- * // => '/static/tabbar/home.png'
  */
 export function getAssetUrl(category, name) {
   const categoryMap = ASSET_REGISTRY[category];
@@ -174,7 +79,7 @@ export function getAssetUrl(category, name) {
     return '';
   }
 
-  // tabbar 等特殊分类强制使用本地路径
+  // 当前品牌始终使用本地包内素材
   if (LOCAL_ONLY_CATEGORIES.includes(category)) {
     return `/static/${relativePath}`;
   }
@@ -228,8 +133,7 @@ export function getStaticAssetUrl(relativePath) {
  * @returns {Object} { 资源名: 完整URL } 的映射对象
  *
  * @example
- * const badges = getAssetUrls('badges');
- * // => { 'streak-7day': 'https://cdn.../badges/streak-7day.png', ... }
+ * const images = getAssetUrls('images');
  */
 export function getAssetUrls(category) {
   const categoryMap = ASSET_REGISTRY[category];
@@ -248,18 +152,10 @@ export function getAssetUrls(category) {
 /**
  * 预定义的常用资源路径（方便直接引用，避免每次调用 getAssetUrl）
  */
-export const ASSETS = {
-  /** 默认头像 */
-  defaultAvatar: getAssetUrl('images', 'default-avatar'),
-  /** 应用分享封面 */
-  appShareCover: getAssetUrl('images', 'app-share-cover'),
-  /** 应用 Logo */
+export const ASSETS = Object.freeze({
   logo: getAssetUrl('images', 'logo'),
-  /** 应用完整 Logo */
-  logoFull: getAssetUrl('images', 'logo-full'),
-  /** 星光特效 */
-  starSparkle: getAssetUrl('effects', 'star-sparkle')
-};
+  appShareCover: getAssetUrl('images', 'app-share-cover')
+});
 
 export default {
   getAssetUrl,

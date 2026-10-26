@@ -24,6 +24,8 @@ pub struct NotificationJob {
     pub kind: String,
     pub day: String,
     pub question_key: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub review_id: Option<String>,
 }
 fn identifier(value: &str, maximum: usize) -> bool {
     !value.is_empty() && value.len() <= maximum && value.bytes().all(|b| b.is_ascii_alphanumeric() || b"_-:@.".contains(&b))
@@ -35,9 +37,10 @@ fn validate_jobs(jobs: &[NotificationJob], now: u64) -> Result<(), String> {
         if job.login_epoch.as_ref().is_some_and(|epoch| !identifier(epoch, 120)) || !identifier(&job.id, 160) || !identifier(&job.conversation_id, 160)
             || !identifier(&job.reminder_id, 160) || !identifier(&job.generation, 160)
             || job.question_key.as_ref().is_some_and(|k| !identifier(k, 180))
+            || job.review_id.as_ref().is_some_and(|k| !identifier(k, 180))
             || !["study", "review", "recap"].contains(&job.kind.as_str())
             || job.day.len() != 10 || !job.day.bytes().all(|b| b.is_ascii_digit() || b == b'-')
-            || job.due_at <= now || job.due_at - now > 8 * 86400000 || !ids.insert(&job.id)
+            || job.due_at <= now || job.due_at - now > 29 * 86400000 || !ids.insert(&job.id)
         { return Err("提醒时间或任务标识不合法，请重新核对".into()); }
     }
     Ok(())
@@ -116,6 +119,17 @@ pub async fn learning_notification_permission(request: bool, consent: bool) -> R
         .await.map_err(|_| "系统通知读取失败")?
 }
 #[tauri::command]
+pub async fn test_learning_notification(consent: bool) -> Result<Value, String> {
+    if !consent { return Err("请先明确允许系统提醒".into()); }
+    tauri::async_runtime::spawn_blocking(move || native_call(json!({ "action": "test" })))
+        .await.map_err(|_| "测试通知未确认")?
+}
+#[tauri::command]
+pub async fn open_learning_notification_settings() -> Result<Value, String> {
+    tauri::async_runtime::spawn_blocking(move || native_call(json!({ "action": "settings" })))
+        .await.map_err(|_| "系统设置未打开")?
+}
+#[tauri::command]
 pub async fn replace_learning_notifications(
     state: State<'_, LearningNotifications>, token: String, sequence: u64,
     jobs: Vec<NotificationJob>, consent: bool, language: Option<String>,
@@ -127,7 +141,7 @@ pub async fn replace_learning_notifications(
     let mut current = state.session.lock().map_err(|_| "通知状态不可用")?;
     if token != current.0 || sequence <= current.1 { return Err("通知请求已失效".into()); }
     current.1 = sequence;
-    native_call(json!({ "action": "replace", "jobs": jobs, "language": if language.as_deref() == Some("en") { "en" } else { "zh-CN" } }))
+    native_call(json!({ "action": "replace", "jobs": jobs, "clearDelivered": !consent, "language": if language.as_deref() == Some("en") { "en" } else { "zh-CN" } }))
 }
 #[tauri::command]
 pub fn take_learning_notification_actions(_state: State<'_, LearningNotifications>) -> Vec<Value> {
@@ -140,7 +154,7 @@ mod tests {
     fn job(now: u64) -> NotificationJob {
         NotificationJob { login_epoch: None, id: "reminder:1:2026-10-10".into(), due_at: now + 10000,
             conversation_id: "conversation-1".into(), reminder_id: "reminder".into(), generation: "generation".into(),
-            kind: "study".into(), day: "2026-10-10".into(), question_key: None }
+            kind: "study".into(), day: "2026-10-10".into(), question_key: None, review_id: None }
     }
     #[test]
     fn schedule_rejects_unknown_routes_duplicate_ids_expired_or_unbounded_dates() {
@@ -151,7 +165,9 @@ mod tests {
         assert!(validate_jobs(&[job(now), job(now)], now).is_err());
         let mut expired = job(now); expired.due_at = now;
         assert!(validate_jobs(&[expired], now).is_err());
-        let mut future = job(now); future.due_at = now + 9 * 86400000;
+        let mut valid_future = job(now); valid_future.due_at = now + 28 * 86400000;
+        assert!(validate_jobs(&[valid_future], now).is_ok());
+        let mut future = job(now); future.due_at = now + 30 * 86400000;
         assert!(validate_jobs(&[future], now).is_err());
     }
     #[test]

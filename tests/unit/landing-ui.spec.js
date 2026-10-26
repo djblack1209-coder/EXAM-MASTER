@@ -2,22 +2,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
 import { nextTick } from 'vue';
-import PlayfulLanding from '@/components/business/learning/playful-landing.vue';
-import FutureLanding from '@/components/business/learning/future-landing.vue';
-import { initI18n, setLanguage, t, currentLanguage } from '@/i18n/index.js';
+import LearningLanding from '@/components/business/learning/learning-landing.vue';
+import NomiLanding from '@/components/business/learning/nomi-landing.vue';
+import { initI18n, setLanguage, t } from '@/i18n/index.js';
 import { landingMessages } from '@/i18n/messages/landing.js';
-import { useThemeStore } from '@/stores/modules/theme.js';
 import { setMascotReducedMotion } from '@/design/mascot-motion.js';
 
-vi.mock('@dcloudio/uni-app', () => ({ onHide: vi.fn(), onShow: vi.fn() }));
-vi.mock('@/design/future-motion.js', () => ({
-  FUTURE_ASSETS: { video: '' },
-  bindFutureSky: () => ({ setEnabled: vi.fn(), dispose: vi.fn() }),
-  runFutureEntrance: (_root, finish) => {
-    finish();
-    return vi.fn();
-  }
-}));
+vi.mock('@dcloudio/uni-app', () => ({ onHide: vi.fn(), onShow: vi.fn(), onLoad: vi.fn(), onBackPress: vi.fn() }));
 let wrapper;
 beforeEach(() => {
   initI18n();
@@ -41,8 +32,9 @@ afterEach(() => {
   setMascotReducedMotion(false, { persist: false });
   vi.unstubAllGlobals();
 });
-function render(component) {
+function render(component, props = {}) {
   wrapper = mount(component, {
+    props,
     attachTo: document.body,
     global: {
       plugins: [createPinia()],
@@ -60,91 +52,47 @@ describe('landing language, entry and mascot behavior', () => {
       for (const key of Object.keys(landingMessages.en)) expect(t(`landing.${key}`)).toBe(landingMessages[locale][key]);
     }
   });
-  it.each([PlayfulLanding, FutureLanding])(
-    'switches product copy and accessible labels with the learning language',
-    async (component) => {
-      render(component);
-      expect(wrapper.text()).toContain('开始学习');
-      expect(currentLanguage.value).toBe('zh-CN');
-      expect(t('landing.topic.function')).toBe('函数运算带练');
-      setLanguage('en');
+  it('the App welcome keeps one explicit entry and the approved transparent mascot', async () => {
+    render(LearningLanding, { welcome: true });
+    expect(wrapper.findAll('.base-button--primary')).toHaveLength(1);
+    expect(wrapper.find('.animated-avatar').exists()).toBe(true);
+    await wrapper.get('.base-button--primary').trigger('keydown', { key: 'Enter' });
+    expect(wrapper.emitted('start')).toHaveLength(1);
+    setLanguage('en');
+    await nextTick();
+    expect(wrapper.text()).toContain('Start learning');
+    expect(wrapper.find('.playful-footer, .future-landing').exists()).toBe(false);
+  });
+  it('Nomi homepage keeps English project copy and Chinese controls in both learning languages', async () => {
+    render(NomiLanding);
+    for (const language of ['zh-CN', 'en']) {
+      setLanguage(language);
       await nextTick();
-      expect(wrapper.text()).toContain('Start learning');
-      expect(wrapper.text()).not.toMatch(/[\u3400-\u9fff]/);
+      expect(wrapper.get('h1').text()).toBe('Yozi AI — English Writing Coach');
+      expect(wrapper.get('.hero__lede').text()).toContain('postgraduate English writing');
+      expect(wrapper.get('.hero__stats').text()).toContain('English I & II');
       expect(
         wrapper
-          .findAll('[aria-label]')
-          .map((node) => node.attributes('aria-label'))
-          .join(' ')
-      ).not.toMatch(/[\u3400-\u9fff]/);
+          .findAll('button')
+          .every((button) => /[\u3400-\u9fff]/.test(button.text() || button.attributes('aria-label')))
+      ).toBe(true);
+      expect(wrapper.text()).not.toMatch(/Nomi|bills paid|inboxes tamed/);
     }
-  );
-  it.each([PlayfulLanding, FutureLanding])(
-    'one primary entry is keyboard accessible and emits once',
-    async (component) => {
-      render(component);
-      const primary = wrapper.findAll('.base-button--primary');
-      expect(primary).toHaveLength(1);
-      await primary[0].trigger('keydown', { key: 'Enter' });
-      expect(wrapper.emitted('open')).toEqual([['start']]);
-    }
-  );
-  it.each([PlayfulLanding, FutureLanding])(
-    'uses approved front pose or greeting, settles to idle, and respects reduced motion',
-    async (component) => {
-      render(component);
-      await nextTick();
-      const mascot = wrapper.get('.yozi-mascot');
-      if (component === PlayfulLanding) {
-        expect(mascot.attributes('data-pose')).toBe('wave');
-        expect(mascot.attributes('data-moving')).toBe('true');
-        await mascot.get('.yozi-mascot__alt').trigger('animationend', { animationName: 'yozi-wave' });
-      }
-      expect(mascot.attributes('data-pose')).toBe('idle');
-      setMascotReducedMotion(true, { persist: false });
-      await nextTick();
-      expect(mascot.attributes('data-moving')).toBe('false');
-    }
-  );
-  it('keeps the two-line template heading with localized product copy', async () => {
-    render(PlayfulLanding);
-    const heading = wrapper.get('.playful-jobs > .playful-job-title');
-    expect(wrapper.get('.playful-badge').text()).toBe('每个问题，都是起点');
-    expect(heading.attributes('role')).toBe('heading');
-    expect(heading.attributes('aria-level')).toBe('1');
-    expect(heading.element.textContent).toBe('从一个问题\n学到真正明白');
-    expect(heading.element.nextElementSibling.classList.contains('playful-nav')).toBe(true);
-    setLanguage('en');
-    await nextTick();
-    expect(heading.element.textContent).toBe('one question\na clearer mind');
   });
-  it('keeps Future brand heading and two equal localized five-unit ticker runs', async () => {
-    render(FutureLanding);
-    expect(wrapper.get('.intro .name[role=heading]').text()).toBe('Yozi AI');
-    const runs = wrapper.findAll('.marquee-run > *');
-    expect(runs).toHaveLength(2);
-    expect(runs.every((run) => run.text() === '提问·理解·练习·复习·'.repeat(5))).toBe(true);
-    setLanguage('en');
-    await nextTick();
-    expect(runs.every((run) => run.text() === 'ASK·LEARN·PRACTISE·REVIEW·'.repeat(5))).toBe(true);
-    expect(wrapper.find('.scene-assembly .scene').exists()).toBe(true);
-  });
-  it.each([PlayfulLanding, FutureLanding])(
-    'uses dark Playful and the original light Future sky without changing preference',
-    async (component) => {
-      render(component);
-      const theme = useThemeStore();
-      theme.isDark = true;
-      await nextTick();
-      expect(wrapper.classes()).toContain(component === PlayfulLanding ? 'theme-dark' : 'theme-light');
-      expect(theme.isDark).toBe(true);
-    }
-  );
-  it('Future motion chip pauses the mascot without changing the learning entry', async () => {
-    render(FutureLanding);
-    await wrapper.get('.base-chip').trigger('keydown', { key: ' ' });
-    await nextTick();
-    expect(wrapper.get('.yozi-mascot').attributes('data-moving')).toBe('false');
-    expect(wrapper.findAll('.base-button--primary')).toHaveLength(1);
+  it('Nomi menu closes on navigation and Escape, with download and account entries', async () => {
+    render(NomiLanding);
+    await wrapper.get('#navToggle').trigger('tap');
+    expect(wrapper.get('#navToggle').attributes('aria-expanded')).toBe('true');
+    await wrapper.findAll('#navLinks button')[1].trigger('tap');
+    expect(wrapper.emitted('open')).toEqual([['progress']]);
+    expect(wrapper.get('#navToggle').attributes('aria-expanded')).toBe('false');
+    await wrapper.get('#navToggle').trigger('tap');
+    await wrapper.get('#nav').trigger('keydown', { key: 'Escape' });
+    expect(wrapper.get('#navToggle').attributes('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(wrapper.get('#navToggle').element);
+    await wrapper.get('.hero__actions .btn').trigger('keydown', { key: 'Enter' });
+    expect(wrapper.emitted('open')).toEqual([['progress']]);
+    expect(wrapper.get('.download-card a').attributes('href')).toMatch(/downloads\/Yozi-AI.*\.zip$/);
+    expect(wrapper.text()).not.toContain('导入学习资料');
   });
 });

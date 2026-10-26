@@ -1,7 +1,7 @@
 <template>
-  <LearningLanding><PrivacyPopup /></LearningLanding>
+  <HomeLanding><PrivacyPopup /></HomeLanding>
 </template>
 <script setup>
-import LearningLanding from '@/components/business/learning/learning-landing.vue';
+import HomeLanding from '@yozi-home';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 </script>

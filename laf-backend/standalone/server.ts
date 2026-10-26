@@ -17,6 +17,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { closeDb, runWithResponse } from './cloud-shim.js';
+import { DEV_TEST } from '../functions/_shared/build-channel.js';
+
+Object.defineProperty(globalThis, '__YOZI_DEV_TEST__', { value: DEV_TEST });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

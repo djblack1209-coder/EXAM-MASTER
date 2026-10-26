@@ -42,17 +42,6 @@
         "backgroundColor": "@pageBackground",
         "backgroundTextStyle": "@backgroundText"
       }
-    },
-    {
-      "path": "pages/profile/index",
-      "style": {
-        "navigationBarTitleText": "%pages.profile%",
-        "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "@navBackground",
-        "navigationBarTextStyle": "@navText",
-        "backgroundColor": "@pageBackground",
-        "backgroundTextStyle": "@backgroundText"
-      }
     }
   ],
   "subPackages": [
@@ -173,10 +162,25 @@
       "root": "pages/learning",
       "pages": [
         {
+          "path": "review",
+          "style": { "navigationBarTitleText": "%pages.review%", "navigationStyle": "custom" }
+        },
+        {
           "path": "index",
           "style": {
             "navigationStyle": "custom",
             "navigationBarTitleText": "%pages.learning%",
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
+          }
+        },
+        {
+          "path": "knowledge",
+          "style": {
+            "navigationStyle": "custom",
+            "navigationBarTitleText": "%pages.knowledge%",
             "navigationBarBackgroundColor": "@navBackground",
             "navigationBarTextStyle": "@navText",
             "backgroundColor": "@pageBackground",
@@ -225,6 +229,22 @@
           "style": {
             "navigationStyle": "custom",
             "navigationBarTitleText": "%pages.archive%",
+            "navigationBarBackgroundColor": "@navBackground",
+            "navigationBarTextStyle": "@navText",
+            "backgroundColor": "@pageBackground",
+            "backgroundTextStyle": "@backgroundText"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/profile",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "%pages.profile%",
+            "navigationStyle": "custom",
             "navigationBarBackgroundColor": "@navBackground",
             "navigationBarTextStyle": "@navText",
             "backgroundColor": "@pageBackground",

@@ -1,0 +1,207 @@
+<template>
+  <view v-if="intake && !intake.acceptedConversationId" class="model-intake" aria-live="polite">
+    <template v-for="(turn, index) in intake.turns" :key="index">
+      <view class="intake-agent"
+        ><text selectable>{{ turn.question }}</text></view
+      >
+      <view class="intake-user"
+        ><text selectable>{{ turn.answer }}</text></view
+      >
+    </template>
+    <view v-if="intake.status === 'ready' && reply" class="intake-agent">
+      <text class="intake-question" selectable>{{ reply.message }}</text>
+      <template v-if="proposal">
+        <view class="intake-profile">
+          <text>{{ proposal.goal }}</text>
+          <text v-if="proposal.subjects.length">{{ proposal.subjects.join(' · ') }}</text>
+          <text v-if="proposal.minutes">每天 {{ proposal.minutes }} 分钟</text>
+          <text v-if="proposal.deadline">{{ proposal.deadline }}</text>
+          <text v-if="proposal.foundation">{{ proposal.foundation }}</text>
+        </view>
+        <BaseButton variant="primary" :disabled="learning.intakeBusy" @tap="accept">确认目标</BaseButton>
+        <BaseButton variant="quiet" @tap="editing = !editing">修改回答</BaseButton>
+        <template v-if="editing"
+          ><BaseInput
+            v-if="!sharedInput"
+            v-model="input"
+            label="修改回答"
+            hide-label
+            placeholder="输入你的调整"
+            maxlength="500"
+          /><BaseButton
+            variant="primary"
+            :disabled="!input.trim() || learning.intakeBusy"
+            @tap="act(() => learning.answerModelIntake(input.trim()))"
+            >发送</BaseButton
+          ></template
+        >
+      </template>
+      <BaseButton v-else-if="intake.turns.length >= 4" variant="quiet" @tap="act(() => learning.restartModelIntake())"
+        >重新选择方向</BaseButton
+      >
+      <template v-else>
+        <BaseOptions
+          v-if="reply.intake.options.length"
+          v-model="choice"
+          :label="reply.message"
+          :options="reply.intake.options"
+          :disabled="learning.intakeBusy"
+        />
+        <BaseInput
+          v-if="!sharedInput && reply.intake.input && (!reply.intake.options.length || choice === 'other')"
+          v-model="input"
+          label="你的回答"
+          hide-label
+          placeholder="输入你的回答"
+          maxlength="500"
+        />
+        <BaseButton variant="primary" :disabled="learning.intakeBusy || !answer" @tap="submit">发送</BaseButton>
+        <BaseButton
+          v-if="!reply.intake.options.some((item) => /尚未确定|不确定|跳过/.test(item.label))"
+          variant="quiet"
+          :disabled="learning.intakeBusy"
+          @tap="act(() => learning.answerModelIntake('跳过'))"
+          >跳过</BaseButton
+        >
+      </template>
+    </view>
+    <view v-if="learning.intakeBusy" class="intake-status reply-state" role="status">
+      <view class="reply-dots" aria-hidden="true"><view /><view /><view /></view>
+      <text class="reply-state__label">正在等待回复…</text>
+    </view>
+    <view v-else-if="['pending', 'failed'].includes(intake.status)" class="intake-agent">
+      <text role="status">{{
+        learning.intakeError ||
+        (intake.finalFailure ? '原请求已结束，没有可恢复的回复。可重新建档。' : '模型回复尚未收到，可查询原请求。')
+      }}</text>
+      <text selectable>请求编号：{{ intake.requestId }}</text>
+      <BaseButton v-if="intake.finalFailure" variant="quiet" @tap="act(() => learning.restartModelIntake())"
+        >重新建档</BaseButton
+      >
+      <BaseButton v-else variant="quiet" @tap="recover">查询原请求</BaseButton>
+    </view>
+    <text v-if="error" role="alert">{{ error }}</text>
+  </view>
+</template>
+<script setup>
+import { computed, ref, watch } from 'vue';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
+import BaseOptions from '@/components/base/base-options/base-options.vue';
+import { publicError } from '@/i18n/index.js';
+const props = defineProps({ sharedInput: Boolean, modelValue: { type: String, default: '' } });
+const emit = defineEmits(['accepted', 'update:modelValue']);
+const learning = useConversationLearningStore();
+const editing = ref(false);
+const choice = ref(''),
+  localInput = ref(''),
+  error = ref('');
+const input = computed({
+  get: () => (props.sharedInput ? props.modelValue : localInput.value),
+  set: (value) => (props.sharedInput ? emit('update:modelValue', value) : (localInput.value = value))
+});
+const intake = computed(() => learning.state.intake);
+const reply = computed(() => intake.value?.reply);
+const proposal = computed(() => reply.value?.intake.profile);
+const answer = computed(() =>
+  choice.value === 'other' || !reply.value?.intake.options.length
+    ? input.value.trim()
+    : reply.value.intake.options.find((item) => item.value === choice.value)?.label || ''
+);
+watch(
+  () => intake.value?.requestId,
+  () => {
+    editing.value = false;
+    choice.value = '';
+    input.value = '';
+    error.value = '';
+  }
+);
+async function act(action) {
+  error.value = '';
+  try {
+    return await action();
+  } catch (failure) {
+    error.value = publicError(failure);
+  }
+}
+function submit() {
+  if (answer.value) return act(() => learning.answerModelIntake(answer.value));
+}
+function submitDraft() {
+  if (intake.value?.turns.length >= 4 && !proposal.value) return;
+  if (proposal.value) {
+    if ((editing.value || props.sharedInput) && input.value.trim())
+      return act(() => learning.answerModelIntake(input.value.trim()));
+    return;
+  }
+  // Both option confirmation and free text use the existing intake action.
+  // The dock text is an explicit answer when the student types instead of choosing.
+  if (props.sharedInput && input.value.trim()) return act(() => learning.answerModelIntake(input.value.trim()));
+  return submit();
+}
+defineExpose({ submitDraft });
+function recover() {
+  return act(() => learning.recoverModelIntake());
+}
+function accept() {
+  return act(() => {
+    const conversation = learning.acceptModelIntake();
+    emit('accepted', conversation);
+  });
+}
+</script>
+<style scoped>
+.model-intake {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 680px;
+  margin: 0 auto;
+  width: 100%;
+}
+.intake-agent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.intake-question {
+  font-size: 20px;
+  font-weight: 500;
+}
+.intake-agent :deep(.base-options) {
+  width: 100%;
+}
+.intake-agent :deep(.base-input) {
+  width: 100%;
+}
+.intake-user {
+  align-self: flex-end;
+  max-width: 85%;
+  background: var(--paper-sunk);
+  border: 1px solid var(--line);
+  border-radius: 20px 20px 4px 20px;
+  padding: 10px 16px;
+  line-height: 1.6;
+}
+.intake-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-left: 2px solid var(--line-strong);
+  padding-left: 18px;
+}
+.intake-status {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+@media (max-width: 600px) {
+  .intake-question {
+    font-size: 18px;
+  }
+}
+</style>

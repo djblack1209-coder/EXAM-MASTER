@@ -211,6 +211,9 @@
     height: var(--s-14);
     border-radius: var(--r-pill);
   }
+  .avatar.avatar--brand {
+    border-radius: 0;
+  }
   :where(.q-source-image, .report-image) {
     width: 100%;
     max-width: 100%;

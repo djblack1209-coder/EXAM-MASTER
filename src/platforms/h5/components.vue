@@ -14,6 +14,27 @@
         >
       </view></view
     >
+    <view class="preview-stack preview-section learning-preview" data-section="learning-ui">
+      <text class="preview-title">学习界面组件自检</text>
+      <text>以下为合成内容，仅保留本页输入，不连接账号或模型，不保存学习记录。</text>
+      <LearningProposalCard :proposal="previewPlan" />
+      <BaseSegmented
+        v-model="profileStage"
+        label="建档输入状态"
+        :options="[
+          { value: 'choice', label: '选择阶段' },
+          { value: 'foundation', label: '补充基础' }
+        ]"
+      />
+      <MuseComposer
+        v-model="foundationDraft"
+        label="补充基础"
+        :placeholder="profileStage === 'choice' ? '请先完成上方选择' : '写下目前的基础或困难（选填）'"
+        :disabled="profileStage === 'choice'"
+        attachment-disabled
+        submit-disabled
+      />
+    </view>
     <view class="preview-grid">
       <BaseCard :title="t('preview.buttons')" class="preview-section" data-section="buttons"
         ><view class="preview-stack">
@@ -213,6 +234,8 @@ import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseToast from '@/components/base/base-toast/base-toast.vue';
 import BaseListRow from '@/components/base/base-list-row/base-list-row.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import LearningProposalCard from '@/components/business/learning/learning-proposal-card.vue';
+import MuseComposer from '@/components/business/learning/muse-composer.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import CustomModal from '@/components/common/CustomModal.vue';
 import WdButton from '@/components/base/base-button/wot-button.vue';
@@ -221,6 +244,18 @@ import WdInput from 'wot-design-uni/components/wd-input/wd-input.vue';
 import WdTag from 'wot-design-uni/components/wd-tag/wd-tag.vue';
 import WdSegmented from 'wot-design-uni/components/wd-segmented/wd-segmented.vue';
 const enabled = typeof __YOZI_PREVIEW__ !== 'undefined' && __YOZI_PREVIEW__;
+const profileStage = ref('choice'),
+  foundationDraft = ref('');
+const previewPlan = {
+  type: 'plan.set',
+  data: {
+    reason: '合成计划，仅用于检查任务对齐与长文本换行。',
+    tasks: [
+      { title: '用自建浮力练习说明排水体积与浮力的关系，再写出自己的解释和仍然不确定的部分。' },
+      { title: '回顾本次自建练习，整理需要复习的概念。' }
+    ]
+  }
+};
 const theme = useThemeStore();
 const themeDraft = ref(theme.isDark ? 'dark' : 'light');
 watch(themeDraft, (value) => theme.setDarkMode(value === 'dark', { persist: false }));
@@ -280,6 +315,11 @@ function playPose(pose) {
   display: flex;
   flex-direction: column;
   gap: var(--s-4);
+  margin-bottom: var(--s-6);
+}
+.learning-preview {
+  max-width: 680px;
+  margin-inline: auto;
   margin-bottom: var(--s-6);
 }
 .preview-title {

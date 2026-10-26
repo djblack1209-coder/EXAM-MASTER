@@ -5,25 +5,9 @@
     </template>
     <LearningOverview :initial-expanded="true" :show-navigation="false" view="mistake" />
   </LearningShell>
-  <view v-else class="yozi-page" :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
-    <view class="aurora-bg" />
-
+  <LearningShell v-else class="yozi-page" active="mistake" :title="$t('pages.mistake')">
     <!-- 骨架屏 -->
     <BaseEmpty v-if="isInitLoading" :is-dark="isDark" state="loading" />
-
-    <!-- 导航栏 - 添加设计系统工具类 -->
-    <view v-if="!isInitLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <view class="nav-content ds-flex ds-flex-between" :style="{ paddingRight: capsuleSafeRight + 'px' }">
-        <BaseButton class="nav-back" :label="$t('ui.back')" variant="secondary" @tap="goBack"
-          ><BaseIcon name="arrow-left"
-        /></BaseButton>
-        <text class="nav-title ds-text-lg ds-font-semibold">{{ $t('pages.mistake') }}</text>
-        <view class="nav-actions">
-          <!-- 移除垃圾桶图标 -->
-          <view class="nav-placeholder" />
-        </view>
-      </view>
-    </view>
 
     <scroll-view
       v-if="!isInitLoading"
@@ -200,7 +184,7 @@
 
     <!-- 离线状态指示器 -->
     <OfflineIndicator :auto-show="true" position="top" :auto-hide-delay="5000" />
-  </view>
+  </LearningShell>
   <CustomModal
     v-if="pageDialog"
     :visible="true"

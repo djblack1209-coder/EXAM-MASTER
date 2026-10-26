@@ -107,6 +107,17 @@ describe('有界 UTF8/SSE 与独立完成收据', () => {
     expect(learningMessagePreview('{"tools":[],"message":"no preview"}', model.apiKey)).toBe('');
     expect(() => learningMessagePreview(JSON.stringify({ message: '已经调整计划'.repeat(900) }))).toThrow('容量');
   });
+  it.each(['literal', 'unicode', 'escaped_leaf'])('密钥命中的流式预览整段抑制：%s', (mode) => {
+    const key = mode === 'escaped_leaf' ? 'fixture-"\\-preview-key' : 'fixture-only-preview-key';
+    let raw = JSON.stringify({ message: '讲解 ' + key + ' 后续内容仍在流入', tools: [] });
+    if (mode === 'unicode')
+      raw = raw.replace(key, [...key].map((c) => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0')).join(''));
+    expect(learningMessagePreview(raw.slice(0, raw.indexOf(' 后续') + 3), key)).toBe('');
+    expect(learningMessagePreview(raw, key)).toBe('');
+    expect(learningMessagePreview(JSON.stringify({ message: '普通讲解会继续显示。', tools: [] }), key)).toBe(
+      '普通讲解会继续显示。'
+    );
+  });
   it('仅完整 stop+DONE 升级输出；截断仍保留真实用量且不执行工具', () => {
     const parser = createLearningProviderStream(model);
     const stream = upstream('{"message":"讲解","tools":[]}');
@@ -124,6 +135,20 @@ describe('有界 UTF8/SSE 与独立完成收据', () => {
     lost.feed(upstream('lost', 'stop', false));
     expect(() => lost.end()).toThrow('完整');
     expect(lost.observed().usageComplete).toBe(false);
+  });
+  it('百川文档中的空finish_reason仅表示尚未结束，仍需stop和DONE才采用', () => {
+    const config = { ...model, provider: '百川智能', model: 'Baichuan4-Turbo' };
+    const parser = createLearningProviderStream(config);
+    const chunk = (content: string, finish: string) =>
+      `data: ${JSON.stringify({
+        model: config.model,
+        choices: [{ index: 0, delta: { content }, finish_reason: finish }]
+      })}\n\n`;
+    parser.feed(chunk('合成', ''));
+    expect(parser.observed().usageComplete).toBe(false);
+    parser.feed(chunk('回复', 'stop'));
+    parser.feed('data: [DONE]\n\n');
+    expect(parser.end()).toMatchObject({ content: '合成回复', actualModel: config.model, usageComplete: true });
   });
   it('模型错配、原生工具、结束后追加和错误结构不能进入最终结果', () => {
     for (const value of [
@@ -293,4 +318,70 @@ it.each(['changed', 'cancelled'])('inflight-4: cleanup await rejects %s success'
   else controller.abort();
   release();
   expect(await pending).toMatchObject({ success: false, error: kind === 'changed' ? 'CONTEXT_CHANGED' : 'CANCELLED' });
+});
+
+it.each(['coach', 'intake'])(
+  'H5 %s response after 50 seconds stays inside its existing 60-second provider window',
+  async (kind) => {
+    vi.useFakeTimers();
+    const { storageService } = await import('@/services/storageService.js');
+    storageService.saveLoginSession({ userId: 'stream-owner', token: 'fixture-token', userInfo: {} });
+    const delayedFetch = vi.fn(
+      (_url, options) =>
+        new Promise((resolve, reject) => {
+          const timer = setTimeout(
+            () =>
+              resolve({
+                headers: new Headers({ 'content-type': 'text/event-stream' }),
+                body: new ReadableStream({
+                  start(controller) {
+                    controller.enqueue(
+                      new TextEncoder().encode(
+                        start() + event('preview', 2, { text: '合成预览', provisional: true }) + result()
+                      )
+                    );
+                    controller.close();
+                  }
+                })
+              }),
+            50000
+          );
+          options.signal.addEventListener(
+            'abort',
+            () => {
+              clearTimeout(timer);
+              reject(new DOMException('Aborted', 'AbortError'));
+            },
+            { once: true }
+          );
+        })
+    );
+    vi.stubGlobal('fetch', delayedFetch);
+    const request =
+      kind === 'coach'
+        ? { ...body, learningContext: { ...body.learningContext, coach: { phase: 'feedback' } } }
+        : { ...body, intake: { turns: [] } };
+    const pending = generateLearningTurnStream(request, { platform: 'h5', session: captureSession() });
+    await vi.advanceTimersByTimeAsync(50000);
+    expect(await pending).toMatchObject({ success: true });
+    expect(delayedFetch).toHaveBeenCalledOnce();
+  }
+);
+it('ordinary H5 stream still times out at 45 seconds and does not retry', async () => {
+  vi.useFakeTimers();
+  const { storageService } = await import('@/services/storageService.js');
+  storageService.saveLoginSession({ userId: 'stream-owner', token: 'fixture-token', userInfo: {} });
+  const delayedFetch = vi.fn(
+    (_url, options) =>
+      new Promise((_resolve, reject) => {
+        options.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), {
+          once: true
+        });
+      })
+  );
+  vi.stubGlobal('fetch', delayedFetch);
+  const pending = generateLearningTurnStream(body, { platform: 'h5', session: captureSession() });
+  await vi.advanceTimersByTimeAsync(45000);
+  expect(await pending).toMatchObject({ success: false, error: 'TIMEOUT' });
+  expect(delayedFetch).toHaveBeenCalledOnce();
 });

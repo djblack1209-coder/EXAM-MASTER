@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { BRAND } from '@/config/brand.js';
+import { ASSETS } from '@/config/static-assets.js';
 
 describe('品牌显示与兼容合同', () => {
   it('H5、App、页面与 PWA 使用同一显示身份，技术标识保留', () => {
@@ -22,7 +23,7 @@ describe('品牌显示与兼容合同', () => {
     expect(native.identifier).toBe('cn.wangshiliang.wenli');
     expect(native.app.windows[0].title).toBe(BRAND.name);
   });
-  it('品牌 PNG 可安装尺寸正确，SVG 不包含外链、脚本或外部字体', () => {
+  it('品牌 PNG 可安装尺寸正确，分享沿当前 Logo，官方 SVG 保持本地', () => {
     for (const [path, size] of [
       ['src/static/images/logo.png', 256],
       ['public/static/pwa-icons/icon-192x192.png', 192],
@@ -33,11 +34,13 @@ describe('品牌显示与兼容合同', () => {
       expect(png.readUInt32BE(16)).toBe(size);
       expect(png.readUInt32BE(20)).toBe(size);
     }
-    for (const name of ['mark', 'mark-light', 'icon', 'icon-maskable']) {
+    expect(ASSETS.logo).toBe(BRAND.icon);
+    expect(ASSETS.appShareCover).toBe(BRAND.icon);
+    expect(readFileSync(`src${BRAND.mark}`).length).toBeGreaterThan(0);
+    for (const name of ['apple', 'google-g', 'wechat']) {
       const svg = readFileSync(`src/static/brand/${name}.svg`, 'utf8');
-      expect(svg).toMatch(/viewBox="0 0 (?:84 84|512 512)"/);
+      expect(svg).toContain('viewBox=');
       expect(svg).not.toMatch(/<script|<foreignObject|@import|<text\b/i);
-      expect(svg).toMatch(/href="data:image\/png;base64,[A-Za-z0-9+/=]+"/);
       expect(svg).not.toMatch(/\bhref="(?:https?:|file:|javascript:)/i);
     }
   });

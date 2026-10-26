@@ -13,7 +13,7 @@
  *   通常由 npm run build:h5 自动调用，无需手动执行。
  */
 
-import { existsSync, cpSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, cpSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -25,6 +25,13 @@ const ROOT = resolve(__dirname, '..', '..');
 const SRC_DIR = resolve(ROOT, 'cdn-assets');
 // 目标目录：dist/build/h5/static/
 const DEST_DIR = resolve(ROOT, process.env.UNI_OUTPUT_DIR || 'dist/build/h5', 'static');
+
+if (!existsSync(DEST_DIR)) throw new Error(`[copy-cdn-to-h5] 构建产物不存在: ${DEST_DIR}`);
+
+// Teaching clips stay in App builds; the website contains downloads, account and progress only.
+if (process.env.YOZI_DESKTOP !== '1' && process.env.WENLI_DESKTOP !== '1') {
+  for (const resource of ['learning-media']) rmSync(join(DEST_DIR, resource), { recursive: true, force: true });
+}
 
 /**
  * 递归统计目录中的文件数量
@@ -48,15 +55,8 @@ console.log('[copy-cdn-to-h5] 开始复制 CDN 静态资源到 H5 构建产物..
 
 // 检查源目录是否存在
 if (!existsSync(SRC_DIR)) {
-  console.error(`[copy-cdn-to-h5] ❌ 源目录不存在: ${SRC_DIR}`);
-  process.exit(1);
-}
-
-// 检查目标目录是否存在（构建产物必须先生成）
-if (!existsSync(DEST_DIR)) {
-  console.error(`[copy-cdn-to-h5] ❌ 目标目录不存在: ${DEST_DIR}`);
-  console.error('[copy-cdn-to-h5]    请确认 H5 构建已完成（uni build -p h5）');
-  process.exit(1);
+  console.log('[copy-cdn-to-h5] 无额外公共素材，跳过复制。');
+  process.exit(0);
 }
 
 // 统计要复制的文件数量

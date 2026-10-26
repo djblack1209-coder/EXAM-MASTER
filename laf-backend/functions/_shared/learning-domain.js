@@ -1,5 +1,8 @@
+import { ENTRY_EVENTS, applyEntryOperation, normalizeEntrySchedule } from './learning-entries.js';
+import { applyAdherenceOperation, ADHERENCE_EVENTS, reviewFacts } from './learning-adherence.js';
 import { normalizeLearningProposal, assertLearningProposalAcceptance } from './learning-proposals.js';
 import { normalizeContentBlocks } from './learning-content-blocks.js';
+import { normalizeIntakeContext, normalizeIntakeReply, normalizeStudyProfile } from './learning-intake.js';
 import { applyWritingCoachOperation } from './learning-writing-coach.js';
 import {
   normalizeRubric,
@@ -497,6 +500,7 @@ function redactMaterial(state, data, deletionId, at) {
         : planChanged
           ? {
               kind: 'plan',
+              ...(plan.conversationId ? { conversationId: plan.conversationId } : {}),
               day: event.data.day || plan.day,
               tasks: (event.data.tasks || plan.tasks).map((task, index) => {
                 const sanitized = sanitizeTask({ ...task, id: task.id || `${event.id}_${index}` });
@@ -1071,9 +1075,15 @@ export function summarizeLearning(state, time = Date.now(), options = {}) {
   const first = [...firstByQuestion.values()].filter((attempt) => effectiveGrade(attempt).status === 'reliable');
   const wrong = first.filter((attempt) => effectiveGrade(attempt).outcome === 'wrong');
   const partial = first.filter((attempt) => effectiveGrade(attempt).outcome === 'partial');
-  const plans = state.plans.filter((plan) => plan.day === day);
-  const plan = options.planId ? plans.find((item) => item.id === options.planId) : plans.at(-1);
-  const tasks = (plan?.tasks || []).filter((task) => !scopedKeys || scopedKeys.has(task.questionKey));
+  const plans = state.plans.filter(
+    (plan) => plan.day === day && (!session || !plan.conversationId || plan.conversationId === session.id)
+  );
+  const plan = options.planId
+    ? plans.find((item) => item.id === options.planId)
+    : (session ? plans.filter((p) => p.conversationId === session.id).at(-1) : null) || plans.at(-1);
+  const tasks = (plan?.tasks || []).filter(
+    (task) => !scopedKeys || plan.conversationId === session?.id || scopedKeys.has(task.questionKey)
+  );
   const completed = tasks.filter((task) => task.completedBy).length;
   const denominator = tasks.length;
   const mistakes = attempts.filter(
@@ -1123,7 +1133,16 @@ export function summarizeLearning(state, time = Date.now(), options = {}) {
       (a) => effectiveGrade(a).status === 'reliable' && effectiveGrade(a).outcome === 'correct'
     ).length,
     knowledge,
-    due: state.reviews.filter((r) => r.due <= time && !r.cancelled && (!scopedKeys || scopedKeys.has(r.questionKey)))
+    due: reviewFacts(state, time)
+      .filter(
+        (r) =>
+          r.kind !== 'coach' &&
+          r.availableAt <= time &&
+          !r.cancelled &&
+          !r.completedBy &&
+          (!scopedKeys || scopedKeys.has(r.questionKey))
+      )
+      .map((r) => state.reviews.find((original) => original.id === r.id))
   };
 }
 
@@ -1169,20 +1188,146 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
     return session;
   };
   if (data.proposalId !== undefined) {
-    assert(['profile.set', 'plan.set'].includes(operation.type), 'FORBIDDEN', '建议不能执行其他操作');
-    assertLearningProposalAcceptance(state, operation.type, data, { assert, fingerprint: operationFingerprint });
+    assert(
+      ['profile.set', 'plan.set', 'reminder.set', ...ENTRY_EVENTS].includes(operation.type),
+      'FORBIDDEN',
+      '建议不能执行其他操作'
+    );
+    assert(opId === `${data.proposalId}:accept`, 'FORBIDDEN', '确认必须使用原候选标识');
+    assertLearningProposalAcceptance(state, operation.type, data, { assert, fingerprint: operationFingerprint, now });
   }
   switch (operation.type) {
+    case 'review.batch.start':
+    case 'review.open':
+    case 'review.skip':
+    case 'review.reschedule':
+    case 'learning.leave':
+    case 'review.idea.suggest': {
+      result = applyAdherenceOperation(state, { id: opId, type: operation.type, at: now, data }, { assert });
+      break;
+    }
+    case 'goal.revise':
+    case 'goal.close':
+    case 'goal.reopen':
+    case 'goal.pause':
+    case 'goal.resume':
+    case 'idea.keep':
+    case 'idea.update':
+    case 'profile.retract': {
+      result = applyEntryOperation(state, { ...operation, id: opId, at: now, data }, { assert });
+      break;
+    }
+    case 'intake.request': {
+      assert(data.explicit === true, 'EXPLICIT_REQUIRED', '请明确开始模型建档');
+      const previous = state.intake;
+      const turns =
+        data.answer !== undefined
+          ? [...(previous?.turns || []), { question: previous?.reply?.message, answer: data.answer }]
+          : data.reset === true || previous?.acceptedConversationId
+            ? []
+            : previous?.turns || [];
+      if (data.answer !== undefined)
+        assert(
+          previous?.status === 'ready' && !previous.acceptedConversationId,
+          'INVALID_STATE',
+          '当前没有待回答的问题'
+        );
+      state.intake = {
+        requestId: text(data.requestId, 160),
+        modelId: text(data.modelId, 160),
+        turns: normalizeIntakeContext({ turns }).turns,
+        status: 'pending',
+        reply: null,
+        at: now
+      };
+      result = state.intake;
+      break;
+    }
+    case 'intake.result': {
+      assert(
+        state.intake?.requestId === data.requestId &&
+          state.intake.modelId === data.modelId &&
+          ['pending', 'failed'].includes(state.intake.status),
+        'CONTEXT_CHANGED',
+        '旧模型建档回复不再适用'
+      );
+      state.intake.reply = normalizeIntakeReply(data.reply, !state.intake.turns.length, state.intake);
+      state.intake.status = 'ready';
+      state.intake.finalFailure = false;
+      result = state.intake.reply;
+      break;
+    }
+    case 'intake.failed': {
+      assert(state.intake?.requestId === data.requestId, 'CONTEXT_CHANGED', '建档请求已变化');
+      state.intake.status = 'failed';
+      state.intake.finalFailure = data.final === true;
+      break;
+    }
+    case 'intake.accept': {
+      assert(
+        data.explicit === true && state.intake?.status === 'ready' && state.intake.reply?.intake?.profile,
+        'EXPLICIT_REQUIRED',
+        '请先确认模型提出的学习档案'
+      );
+      const profile = normalizeStudyProfile(state.intake.reply.intake.profile);
+      assert(!state.intake.acceptedConversationId, 'ALREADY_ACCEPTED', '此学习档案已经确认');
+      const messages = state.intake.turns.flatMap((turn, index) => [
+        { id: `${opId}:intake:${index}:q`, role: 'assistant', content: turn.question, at: now },
+        { id: `${opId}:intake:${index}:a`, role: 'user', content: turn.answer, at: now }
+      ]);
+      const conversation = {
+        id: opId,
+        goal: profile.goal,
+        at: now,
+        messages,
+        studyProfile: profile,
+        activeQuestionKey: null,
+        pendingHints: [],
+        stopped: false
+      };
+      state.conversations.push(conversation);
+      if (['english1', 'english2', 'cs408'].includes(profile.exam)) {
+        applyWritingCoachOperation(
+          state,
+          { id: `${opId}:coach`, type: 'coach.begin', at: now, data: { conversationId: opId, explicit: true } },
+          { assert, dayKey }
+        );
+        applyWritingCoachOperation(
+          state,
+          {
+            id: `${opId}:profile`,
+            type: 'coach.profile',
+            at: now,
+            data: {
+              conversationId: opId,
+              explicit: true,
+              profile: {
+                ...profile,
+                subjects: [profile.exam === 'cs408' ? 'kaoyan_major' : 'kaoyan_english'],
+                minutes: profile.minutes,
+                track: profile.exam === 'cs408' ? 'kaoyan-cs-material' : 'kaoyan-english-writing'
+              }
+            }
+          },
+          { assert, dayKey }
+        );
+      }
+      state.intake.acceptedConversationId = opId;
+      result = conversation;
+      break;
+    }
     case 'coach.begin':
     case 'coach.profile':
     case 'coach.material':
     case 'coach.request':
     case 'coach.closeRequest':
+    case 'coach.reassess':
     case 'coach.result':
     case 'coach.answer':
     case 'coach.review':
     case 'coach.analysis':
     case 'coach.paragraph':
+    case 'coach.essaySubmit':
     case 'coach.adopt':
     case 'coach.finish':
     case 'coach.survey': {
@@ -1190,8 +1335,14 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       break;
     }
     case 'reminder.set':
+    case 'reminder.complete':
+    case 'reminder.cancel':
     case 'reminder.receipt': {
-      result = applyReminderOperation(state, { ...operation, id: opId, at: now, data }, { assert, dayKey });
+      result = applyReminderOperation(
+        state,
+        { ...operation, id: opId, at: now, data },
+        { assert, dayKey, normalizeSchedule: normalizeEntrySchedule }
+      );
       break;
     }
     case 'journey.configure':
@@ -2064,7 +2215,10 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       const defaultDay = validateTimezone(now, timezone, '计划时区不合法');
       const day = data.day || defaultDay;
       assert(/^\d{4}-\d{2}-\d{2}$/.test(day), 'INVALID_INPUT', '日期不合法');
-      const previous = state.plans.filter((p) => p.day === day).at(-1);
+      if (data.conversationId) current();
+      const previous = state.plans
+        .filter((p) => p.day === day && (p.conversationId || null) === (data.conversationId || null))
+        .at(-1);
       const tasks = data.tasks.map((task, index) => {
         assert(
           ['submitted', 'independent_correct', 'manual'].includes(task.condition),
@@ -2086,6 +2240,7 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       assert(new Set(tasks.map((t) => t.id)).size === tasks.length, 'INVALID_INPUT', '任务标识重复');
       result = {
         id: opId,
+        ...(data.conversationId ? { conversationId: data.conversationId } : {}),
         day,
         timezone,
         version: (previous?.version || 0) + 1,
@@ -2100,7 +2255,13 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
     case 'plan.merge': {
       assert(Array.isArray(data.planIds) && data.planIds.length === 2, 'INVALID_INPUT', '合并需要两份已有计划');
       const plans = data.planIds.map((id) => state.plans.find((p) => p.id === id));
-      assert(plans.every(Boolean) && plans[0].day === plans[1].day, 'PRECONDITION', '只能合并同一天的已有计划');
+      assert(
+        plans.every(Boolean) &&
+          plans[0].day === plans[1].day &&
+          (plans[0].conversationId || null) === (plans[1].conversationId || null),
+        'PRECONDITION',
+        '只能合并同一天的已有计划'
+      );
       const tasks = new Map();
       for (const plan of plans)
         for (const task of plan.tasks) {
@@ -2113,9 +2274,12 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
           tasks.set(task.id, prior ? { ...prior, completedBy: prior.completedBy || task.completedBy } : clone(task));
         }
       assert(tasks.size <= 100, 'RESOURCE_LIMIT', '合并后的计划不能超过 100 项任务');
-      const previous = state.plans.filter((p) => p.day === plans[0].day).at(-1);
+      const previous = state.plans
+        .filter((p) => p.day === plans[0].day && (p.conversationId || null) === (plans[0].conversationId || null))
+        .at(-1);
       result = {
         id: opId,
+        ...(plans[0].conversationId ? { conversationId: plans[0].conversationId } : {}),
         day: plans[0].day,
         timezone: state.timezone,
         version: previous.version + 1,
@@ -2167,6 +2331,20 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
           'PRECONDITION',
           '观察和推测需要实际作答证据'
         );
+      if (data.conversationId) {
+        current();
+        entry.conversationId = data.conversationId;
+        for (const prior of state.profile)
+          if (
+            prior.conversationId === data.conversationId &&
+            prior.field === entry.field &&
+            !prior.retractedBy &&
+            !prior.supersededBy
+          ) {
+            prior.supersededBy = opId;
+            entry.supersedes = prior.id;
+          }
+      }
       state.profile.push(entry);
       if (data.field === 'goal' && data.conversationId) current().goal = entry.value;
       result = entry;
@@ -2243,6 +2421,7 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
     case 'task.resume': {
       const session = current();
       assert(data.source === 'self_report', 'FORBIDDEN', '继续任务须由用户明确要求');
+      assert(!session.goalLifecycle, 'STOPPED', '已结束目标需要明确重开');
       session.stopped = false;
       state.strategy = conversationStrategy(state, session.id);
       result = { stopped: false };
@@ -2391,7 +2570,8 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
             });
         } else {
           assert(
-            seed.kind === 'plan' && Object.keys(seed).every((k) => ['kind', 'day', 'tasks'].includes(k)),
+            seed.kind === 'plan' &&
+              Object.keys(seed).every((k) => ['kind', 'day', 'tasks', 'conversationId'].includes(k)),
             'INVALID_INPUT',
             '脱敏计划结构不合法'
           );
@@ -2414,7 +2594,12 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
               id: opId,
               type: 'plan.set',
               at: now,
-              data: { day: seed.day, tasks: seed.tasks, reason: '关联资料已删除，保留计划分母' }
+              data: {
+                ...(seed.conversationId ? { conversationId: seed.conversationId } : {}),
+                day: seed.day,
+                tasks: seed.tasks,
+                reason: '关联资料已删除，保留计划分母'
+              }
             }).state;
             state.plans = seeded.plans;
           }
@@ -2530,7 +2715,22 @@ function reduceLearningOperation(original, operation, owned = false, budget = nu
       throw new LearningError('UNKNOWN_TOOL', '不支持的学习操作');
   }
   const receipt = operation.type === 'material.add' ? { id: result.id, fingerprint: result.fingerprint } : result;
-  state.events.push({ id: opId, type: operation.type, at: now, data: clone(data), result: clone(receipt) });
+  state.events.push({
+    id: opId,
+    type: operation.type,
+    at: now,
+    data: clone(data),
+    result: clone(receipt),
+    ...(ADHERENCE_EVENTS.includes(operation.type)
+      ? {
+          owner: state.owner,
+          source: data.source,
+          conversationId: data.conversationId,
+          questionKey: data.questionKey,
+          reason: data.reason
+        }
+      : {})
+  });
   // 先重放删除墓碑，再重放脱敏骨架；即使首次同步/恢复也不需要已删除的正文。
   if (operation.type === 'material.delete')
     state.events = [

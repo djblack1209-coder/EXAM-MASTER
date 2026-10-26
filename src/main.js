@@ -6,9 +6,15 @@ import { logger } from '@/utils/logger.js';
 import { applyTheme, getCurrentTheme } from '@/design/theme-runtime.js';
 import { readNativeInsets } from '@/design/native-theme.js';
 import { installI18n } from '@/i18n/index.js';
+// #ifdef H5
+import { bindAppBoot } from '@/design/app-boot.js';
+// #endif
 
 export function createApp() {
   const app = createSSRApp(App);
+  // #ifdef H5
+  bindAppBoot(app);
+  // #endif
   const pinia = createPinia();
 
   app.use(pinia);

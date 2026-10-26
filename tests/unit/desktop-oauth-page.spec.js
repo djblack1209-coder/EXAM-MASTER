@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   success: vi.fn()
 }));
 vi.mock('@dcloudio/uni-app', () => ({
+  onLoad: () => {},
   onShow: (callback) => mocks.show.push(callback),
   onHide: (callback) => mocks.hide.push(callback)
 }));

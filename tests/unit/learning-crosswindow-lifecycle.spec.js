@@ -151,6 +151,60 @@ function notify() {
   window.dispatchEvent(new StorageEvent('storage', { key: `u_synthetic-crosswindow-owner_${epochKey}` }));
 }
 describe('模型列表与用量读取的实际请求生命周期', () => {
+  it('开发冷启动首次带练等待写入权后只发送一次请求', async () => {
+    vi.stubGlobal('__YOZI_DEV_TEST__', true);
+    vi.resetModules();
+    const { useConversationLearningStore: useFreshStore } = await import('@/stores/modules/conversation-learning.js');
+    const { createLearningWriteLease, learningWriteLease } =
+      await import('@/services/learning/learning-write-lease.js');
+    storageService.saveLoginSession({
+      userId: 'synthetic-crosswindow-owner',
+      token: 'fixture-only-token',
+      userInfo: {}
+    });
+    setActivePinia(createPinia());
+    const fresh = useFreshStore();
+    fresh.startCoach('考研英语二写作');
+    fresh.coachSave('profile', { profile: { exam: 'english2', deadline: null, minutes: 15 } });
+    fresh.sharingAllowed = true;
+    fresh.modelId = 'saved-model';
+    let release;
+    const ready = new Promise((resolve) => {
+      release = resolve;
+    });
+    const lease = createLearningWriteLease({
+      request: async (_name, _options, callback) => {
+        await ready;
+        return callback({});
+      }
+    });
+    vi.spyOn(learningWriteLease, 'assertWritable').mockImplementation((owner) => lease.assertWritable(owner));
+    vi.spyOn(learningWriteLease, 'waitUntilWritable').mockImplementation((owner) => lease.waitUntilWritable(owner));
+    const sent = [];
+    vi.spyOn(uni, 'request').mockImplementation((options) => {
+      sent.push(options.url);
+      options.success({
+        data: options.url.includes('/learning-models')
+          ? modelResult('saved-model')
+          : { success: false, code: 503, message: '合成供应商暂不可用' }
+      });
+      return { abort() {} };
+    });
+    try {
+      const pending = fresh.requestCoach('diagnostic').catch((error) => ({ code: error.code }));
+      await Promise.resolve();
+      release();
+      const result = await pending;
+      expect(result.code).not.toBe('WRITE_LEASE_PENDING');
+      expect(sent.filter((url) => url.endsWith('/proxy-ai'))).toHaveLength(1);
+      expect(fresh.active.coach.requests).toHaveLength(1);
+    } finally {
+      lease.release();
+      fresh.$dispose();
+      vi.unstubAllGlobals();
+      vi.resetModules();
+    }
+  });
   function requests() {
     storageService.saveLoginSession({
       userId: 'synthetic-crosswindow-owner',
@@ -201,6 +255,21 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
     expect(store.selectedMode).toBe('local');
     expect(store.modelId).toBe('explicit-choice');
     expect(store.sharingAllowed).toBe(true);
+    expect(store.exportData()).toBe(before);
+  });
+  it('首次读取恢复已验证模型的显示，不发起推理或授予共享许可', async () => {
+    const pending = requests(),
+      before = store.exportData();
+    const reading = store.loadModels();
+    const result = modelResult('saved-model');
+    Object.assign(result.data.models[0], { configured: true, connectionStatus: 'connected' });
+    pending[0].success({ data: result });
+    await reading;
+    expect(store.modelId).toBe('saved-model');
+    expect(store.selectedMode).toBe('cloud');
+    expect(store.sharingAllowed).toBe(false);
+    expect(pending).toHaveLength(1);
+    expect(pending[0].data).toEqual({ action: 'list' });
     expect(store.exportData()).toBe(before);
   });
   it('读取失败与明确重试分别显示状态；成功后清除旧错误，不自动重放', async () => {

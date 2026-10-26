@@ -1,5 +1,5 @@
 import { ref, readonly, shallowReactive } from 'vue';
-import shell, { PAGE_TITLE_KEYS } from './messages/shell.js';
+import shell, { PAGE_TITLE_KEYS, ARCHIVE_TITLE_KEYS } from './messages/shell.js';
 import settings from './messages/settings.js';
 import components from './messages/components.js';
 import learningShell from './messages/learning-shell.js';
@@ -170,7 +170,12 @@ export function syncNavigationTitle() {
     return;
   }
   const page = pages?.[pages.length - 1];
-  const key = PAGE_TITLE_KEYS[(page?.route || page?.__route__ || '').replace(/^\//, '')];
+  const route = (page?.route || page?.__route__ || '').replace(/^\//, '');
+  const view = (page?.options || page?.$page?.options)?.view || 'all';
+  const key =
+    route === 'pages/archive/index' && Object.hasOwn(ARCHIVE_TITLE_KEYS, view)
+      ? ARCHIVE_TITLE_KEYS[view]
+      : PAGE_TITLE_KEYS[route];
   if (key) {
     try {
       uni.setNavigationBarTitle?.({ title: t(key) })?.catch?.(() => undefined);

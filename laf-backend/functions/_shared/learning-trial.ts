@@ -1,7 +1,9 @@
+import { DEV_TEST } from './build-channel.js';
 export class TrialError extends Error {
   code = 'TRIAL_CLOSED';
 }
 export function friendTrialPolicy(env = process.env) {
+  if (DEV_TEST) return null;
   if (env.LEARNING_FRIEND_TRIAL_ENABLED !== 'true') return null;
   const cap = Number(env.LEARNING_TRIAL_USER_LIMIT || 0);
   const emails = [

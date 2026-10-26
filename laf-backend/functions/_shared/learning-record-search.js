@@ -1,4 +1,5 @@
 import { assert, dayKey, effectiveGrade, questionKey } from './learning-domain.js';
+import { coachSavedRecords } from './learning-coach-records.js';
 
 export const RECORD_SEARCH_CONTRACT = 'learning-record-search-v1';
 export const RECORD_SEARCH_FILTERS = Object.freeze(['all', 'wrong', 'partial', 'pending', 'helped']);
@@ -64,6 +65,31 @@ function records(state) {
     );
   };
   for (const session of sessions.values()) append(session);
+  for (const session of sessions.values())
+    for (const saved of coachSavedRecords(session)) {
+      const row = Object.freeze({
+        id: identity(session.id, null, `coach:${saved.key}`),
+        kind: 'answer',
+        conversationId: session.id,
+        goal: session.goal,
+        questionKey: null,
+        attemptId: null,
+        coachRecordId: saved.key,
+        prompt: saved.prompt || saved.title,
+        answer: saved.answer,
+        subject: '考研英语写作',
+        grade: Object.freeze({ status: 'pending', outcome: null }),
+        helped: false,
+        at: saved.at
+      });
+      rows.push(
+        Object.freeze({
+          row,
+          timezone: session.coach.timezone || state.timezone,
+          terms: Object.freeze([row.prompt, row.subject, row.answer].map(normalized))
+        })
+      );
+    }
   for (const entry of links.values()) {
     const session = sessions.get(entry.conversationId),
       question = questions.get(entry.questionKey);
@@ -116,6 +142,7 @@ function searchProjection(read, query, { offset = 0, limit = 20, filter = 'all' 
       conversationId: row.conversationId,
       questionKey: row.questionKey,
       attemptId: row.attemptId,
+      coachRecordId: row.coachRecordId || null,
       goal: row.goal,
       label: snippet(row.prompt || row.goal, ''),
       excerpt: snippet(row.answer && terms.at(-1).includes(term) ? row.answer : row.prompt || row.goal, term),

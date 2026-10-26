@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   applyLearningOperation,
   emptyLearningState,
@@ -7,16 +7,71 @@ import {
 import {
   WRITING_METHOD,
   WRITING_COACH_CONTRACT,
+  COACH_FEEDBACK_VERSION,
   normalizeCoachRequest,
   normalizeCoachOutput,
+  parseCoachModelOutput,
+  coachSystemPrompt,
   coachInputFor,
   coachEssayType,
   writingCoachDashboard
 } from '../../laf-backend/functions/_shared/learning-writing-coach.js';
 import { parsePastedMaterial } from '@/services/learning/material-intake.js';
+import { museLearningInsights } from '@/services/learning/muse-learning-insights.js';
 
 // 明确的合成模型输出，仅验证编排和事实边界，不充当真实教学验收。
 import { coachFixture } from '../fixtures/writing-coach.js';
+
+it('严格拒绝非对象教学信封并保留固定结构错误，不修复或采用内容', () => {
+  const request = {
+    contract: WRITING_COACH_CONTRACT,
+    phase: 'diagnostic',
+    exam: 'english2',
+    day: '2026-10-25',
+    sources: []
+  };
+  for (const raw of ['null', '[]', '42'])
+    expect(() => parseCoachModelOutput(raw, request)).toThrowError(
+      expect.objectContaining({ code: 'COACH_INVALID', path: 'root' })
+    );
+  expect(() => parseCoachModelOutput('{', request)).toThrowError(
+    expect.objectContaining({ code: 'COACH_INVALID', path: 'raw' })
+  );
+  const envelope = { message: '合成结构核对', question: null, tools: [], coach: coachFixture(request) };
+  expect(parseCoachModelOutput(JSON.stringify(envelope), request).coach.cards).toHaveLength(5);
+});
+
+it('批内小结严格解析整段JSON，旧请求解析方式保持', () => {
+  const request = normalizeCoachRequest({
+    contract: WRITING_COACH_CONTRACT,
+    phase: 'summary',
+    target: 'summary',
+    exam: 'english2',
+    day: '2026-10-25',
+    input: 'Synthetic saved original.',
+    sources: []
+  });
+  const raw = JSON.stringify({
+    message: '已保存的小结',
+    question: null,
+    tools: [],
+    coach: { kind: 'summary', learned: ['已提交原答'], tomorrow: ['复习已保存句式'] }
+  });
+  expect(parseCoachModelOutput(raw, request, false, undefined, true).coach.kind).toBe('summary');
+  for (const claim of ['掌握邀请信开头搭配', '学会礼貌表达', '通过练习，掌握条件从句', '巩固两个易错点']) {
+    const ungrounded = JSON.parse(raw);
+    ungrounded.coach.learned = [claim];
+    expect(() => parseCoachModelOutput(JSON.stringify(ungrounded), request, false, undefined, true)).toThrowError(
+      expect.objectContaining({ code: 'COACH_INVALID', path: 'learned[0]' })
+    );
+    expect(parseCoachModelOutput(JSON.stringify(ungrounded), request).coach.learned).toEqual([claim]);
+  }
+  const fenced = '\x60\x60\x60json\n' + raw + '\n\x60\x60\x60';
+  expect(() => parseCoachModelOutput(fenced, request, false, undefined, true)).toThrowError(
+    expect.objectContaining({ code: 'COACH_INVALID', path: 'raw' })
+  );
+  expect(parseCoachModelOutput(fenced, request).coach.kind).toBe('summary');
+});
 
 function session(profile = { exam: 'english1', deadline: '2026-12-22', minutes: 25 }) {
   let state = emptyLearningState('synthetic-user', 'Asia/Shanghai'),
@@ -67,7 +122,270 @@ function session(profile = { exam: 'english1', deadline: '2026-12-22', minutes: 
     }
   };
 }
+it('开发主动复习保存真实原答和自评，不改变到期与FSRS；正式渠道拒绝该分支', () => {
+  const s = session();
+  const due = Date.parse('2026-10-19T03:00:00Z');
+  s.coach().library.push({ id: 'saved-phrase', text: 'We invite you to join us.', due, reviews: [], schedule: null });
+  const data = {
+    itemId: 'saved-phrase',
+    answer: 'We invite you to join our reading event.',
+    rating: 3,
+    practice: true
+  };
+  try {
+    vi.stubGlobal('__YOZI_DEV_TEST__', false);
+    expect(() => s.apply('coach.review', data)).toThrow('当前渠道不支持主动复习');
+    vi.stubGlobal('__YOZI_DEV_TEST__', true);
+    s.apply('coach.review', data);
+    expect(s.coach().library[0]).toMatchObject({
+      due,
+      schedule: null,
+      reviews: [],
+      practices: [{ answer: data.answer, rating: 3, at: Date.parse('2026-10-18T03:00:00Z'), source: 'self_report' }]
+    });
+    expect(s.get().events.at(-1).data).not.toHaveProperty('schedule');
+  } finally {
+    vi.unstubAllGlobals();
+  }
+});
 describe('考研写作方法与完整已保存事实路径', () => {
+  it('新版分类反馈保存建议但只聚合有证据的错误，旧记录保持原格式', () => {
+    const s = session();
+    s.generate('diagnostic');
+    for (let i = 1; i <= 5; i++)
+      s.apply('coach.answer', { target: 'diagnostic', cardId: `d${i}`, answer: 'Synthetic original.' });
+    s.generate('feedback', 'diagnostic');
+    s.generate('daily');
+    const legacy = JSON.stringify(s.coach().diagnostic.feedback);
+    const beforeAttempts = JSON.stringify(s.get().attempts);
+    for (const [index, answer, classification] of [
+      [0, 'We could meet next Friday.', 'suggestion'],
+      [1, 'She go to class.', 'error']
+    ]) {
+      const target = `card-c${index}`;
+      s.apply('coach.answer', { target: 'daily', cardId: `c${index}`, answer });
+      const request = normalizeCoachRequest({
+        contract: WRITING_COACH_CONTRACT,
+        feedbackVersion: COACH_FEEDBACK_VERSION,
+        phase: 'feedback',
+        target,
+        exam: 'english1',
+        day: '2026-10-18',
+        ...coachInputFor(s.coach(), s.coach().days[0], 'feedback', target)
+      });
+      const output = {
+        ...coachFixture(request),
+        weaknesses: ['局部证据对照'],
+        weaknessEvidence: [{ label: '局部证据对照', quote: answer, classification }]
+      };
+      const parsed = parseCoachModelOutput(
+        JSON.stringify({ message: '本地业务对照', question: null, tools: [], coach: output }),
+        request
+      ).coach;
+      expect(parsed.weaknesses).toEqual(classification === 'error' ? ['局部证据对照'] : []);
+      expect(parsed.lines).toEqual(output.lines);
+      expect(() =>
+        parseCoachModelOutput(
+          '```json\n' + JSON.stringify({ message: '本地业务对照', question: null, tools: [], coach: output }) + '\n```',
+          request
+        )
+      ).toThrowError(expect.objectContaining({ code: 'COACH_INVALID', path: 'raw' }));
+      expect(() =>
+        normalizeCoachOutput(
+          { ...output, weaknessEvidence: [{ label: '局部证据对照', quote: 'outside this answer', classification }] },
+          request
+        )
+      ).toThrowError(expect.objectContaining({ code: 'COACH_INVALID', path: 'weaknessEvidence' }));
+      expect(() =>
+        normalizeCoachOutput({ ...output, weaknessEvidence: [{ label: '局部证据对照', quote: answer }] }, request)
+      ).toThrow('分类');
+      const requestId = `classified-${index}`;
+      s.apply('coach.request', { requestId, request, modelId: 'synthetic', binding: 'synthetic-binding' });
+      s.apply('coach.result', { requestId, output: parsed });
+    }
+    const reopened = JSON.parse(JSON.stringify(s.get()));
+    const feedback = reopened.conversations[0].coach.days[0].feedback;
+    expect(feedback['card-c0']).toMatchObject({
+      feedbackVersion: 2,
+      weaknesses: [],
+      weaknessEvidence: [{ classification: 'suggestion' }]
+    });
+    expect(feedback['card-c1']).toMatchObject({
+      feedbackVersion: 2,
+      weaknesses: ['局部证据对照'],
+      weaknessEvidence: [{ classification: 'error' }]
+    });
+    const insight = museLearningInsights(reopened, Date.parse('2026-10-18T03:00:00Z')).weaknesses.find(
+      (x) => x.label === '局部证据对照'
+    );
+    expect(insight.evidence).toHaveLength(1);
+    expect(insight.evidence[0].feedback.target).toBe('card-c1');
+    expect(JSON.stringify(reopened.conversations[0].coach.diagnostic.feedback)).toBe(legacy);
+    expect(JSON.stringify(reopened.attempts)).toBe(beforeAttempts);
+  });
+  it('开发选择题反馈声明原样选项，补齐非选择题原句，正式上下文不变且不改原答', () => {
+    const card = {
+      id: 'c1',
+      prompt: 'The lecture is held ___ June 10th.',
+      options: ['on', 'in'],
+      example: 'The lecture is held on June 10th.'
+    };
+    const day = { pack: { cards: [card] }, answers: [{ cardId: 'c1', answer: 'on' }], feedback: {} };
+    const before = JSON.stringify(day);
+    try {
+      vi.stubGlobal('__YOZI_DEV_TEST__', false);
+      expect(coachInputFor({}, day, 'feedback', 'card-c1')).toMatchObject({ input: 'on', task: card.prompt });
+      vi.stubGlobal('__YOZI_DEV_TEST__', true);
+      expect(coachInputFor({}, day, 'feedback', 'card-c1')).toMatchObject({
+        input: 'on',
+        task: expect.stringContaining('原答是所选项标签')
+      });
+      expect(coachInputFor({}, day, 'feedback', 'card-c1').task).toContain('["on","in"]');
+      const prompt = coachSystemPrompt({
+        contract: WRITING_COACH_CONTRACT,
+        phase: 'feedback',
+        target: 'card-c1',
+        exam: 'english2',
+        day: '2026-10-25',
+        ...coachInputFor({}, day, 'feedback', 'card-c1')
+      });
+      expect(prompt).toContain('标签本身不是完整句子是正常答题形式');
+      expect(prompt).not.toContain('只评阅这些片段');
+      const sentence = 'We propose holding the lecture at 3 p.m. in our main auditorium.';
+      expect(
+        coachSystemPrompt({
+          contract: WRITING_COACH_CONTRACT,
+          phase: 'feedback',
+          target: 'paragraph-0',
+          exam: 'english2',
+          day: '2026-10-25',
+          input: sentence,
+          task: '展开本段要点'
+        })
+      ).toContain(JSON.stringify([sentence]));
+      card.options = undefined;
+      expect(coachInputFor({}, day, 'feedback', 'card-c1').task).toContain(card.example);
+      card.options = ['on', 'in'];
+      expect(JSON.stringify(day)).toBe(before);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+  it('开发重新点评保留旧评估和原答，兼容旧题干绑定；正式渠道拒绝', () => {
+    try {
+      vi.stubGlobal('__YOZI_DEV_TEST__', false);
+      const s = session();
+      s.generate('diagnostic');
+      for (let i = 1; i <= 5; i++)
+        s.apply('coach.answer', { target: 'diagnostic', cardId: `d${i}`, answer: 'Synthetic original.' });
+      s.generate('feedback', 'diagnostic');
+      s.generate('daily');
+      s.apply('coach.answer', { target: 'daily', cardId: 'c0', answer: 'on' });
+      const day = s.coach().days[0];
+      const request = normalizeCoachRequest({
+        contract: WRITING_COACH_CONTRACT,
+        phase: 'feedback',
+        target: 'card-c0',
+        exam: 'english1',
+        day: '2026-10-18',
+        ...coachInputFor(s.coach(), day, 'feedback', 'card-c0')
+      });
+      vi.stubGlobal('__YOZI_DEV_TEST__', true);
+      s.apply('coach.request', {
+        requestId: 'legacy-card',
+        request,
+        modelId: 'synthetic',
+        binding: 'synthetic-binding'
+      });
+      s.apply('coach.result', { requestId: 'legacy-card', output: coachFixture(request) });
+      const previous = structuredClone(s.coach().days[0].feedback['card-c0']);
+      const original = structuredClone(s.coach().days[0].answers[0]);
+      s.apply('coach.reassess', { target: 'card-c0', feedbackId: previous.id });
+      expect(s.coach().days[0].feedback['card-c0']).toBeUndefined();
+      expect(s.coach().days[0].feedbackHistory['card-c0']).toEqual([expect.objectContaining(previous)]);
+      expect(s.coach().days[0].answers[0]).toEqual({ ...original, assessmentStatus: 'pending' });
+      expect(() => s.apply('coach.reassess', { target: 'card-c0', feedbackId: previous.id })).toThrow();
+      s.apply('coach.request', {
+        requestId: 'legacy-failure',
+        request,
+        modelId: 'synthetic',
+        binding: 'synthetic-binding'
+      });
+      s.apply('coach.closeRequest', { requestId: 'legacy-failure', outcome: 'failed', closeAssessment: true });
+      const updated = normalizeCoachRequest({
+        ...request,
+        ...coachInputFor(s.coach(), s.coach().days[0], 'feedback', 'card-c0')
+      });
+      s.apply('coach.request', {
+        requestId: 'updated-retry',
+        retryOf: 'legacy-failure',
+        request: updated,
+        modelId: 'synthetic',
+        binding: 'synthetic-binding'
+      });
+      s.apply('coach.result', { requestId: 'updated-retry', output: coachFixture(updated) });
+      expect(s.coach().days[0].feedback['card-c0'].id).not.toBe(previous.id);
+      expect(s.coach().days[0].feedbackHistory['card-c0']).toHaveLength(1);
+      expect(s.coach().days[0].answers[0]).toEqual(original);
+      for (let i = 1; i < 8; i++) {
+        s.apply('coach.answer', { target: 'daily', cardId: `c${i}`, answer: 'Synthetic original.' });
+        s.generate('feedback', `card-c${i}`);
+      }
+      s.apply('coach.analysis', {
+        fields: { genre: '邀请信', recipient: '教授', purpose: '邀请', points: '安排与确认', words: '约100词' }
+      });
+      s.generate('feedback', 'analysis');
+      s.apply('coach.paragraph', {
+        index: 0,
+        text: 'Your expertise would helps our students.',
+        authorship: 'user_typed'
+      });
+      const writingDay = s.coach().days[0];
+      vi.stubGlobal('__YOZI_DEV_TEST__', false);
+      const legacyParagraph = normalizeCoachRequest({
+        ...request,
+        target: 'paragraph-0',
+        ...coachInputFor(s.coach(), writingDay, 'feedback', 'paragraph-0')
+      });
+      vi.stubGlobal('__YOZI_DEV_TEST__', true);
+      s.apply('coach.request', {
+        requestId: 'legacy-paragraph',
+        request: legacyParagraph,
+        modelId: 'synthetic',
+        binding: 'synthetic-binding'
+      });
+      s.apply('coach.result', { requestId: 'legacy-paragraph', output: coachFixture(legacyParagraph) });
+      const paragraph = structuredClone(s.coach().days[0].drafts[0]);
+      const paragraphFeedback = structuredClone(s.coach().days[0].feedback['paragraph-0']);
+      s.apply('coach.reassess', { target: 'paragraph-0', feedbackId: paragraphFeedback.id });
+      const currentParagraph = coachInputFor(s.coach(), s.coach().days[0], 'feedback', 'paragraph-0');
+      expect(currentParagraph.task).toContain(writingDay.pack.writing.prompt);
+      s.apply('coach.request', {
+        requestId: 'previous-paragraph-scope',
+        request: {
+          ...legacyParagraph,
+          ...currentParagraph,
+          task: currentParagraph.task.slice(writingDay.pack.writing.prompt.length + 1)
+        },
+        modelId: 'synthetic',
+        binding: 'synthetic-binding'
+      });
+      s.apply('coach.closeRequest', {
+        requestId: 'previous-paragraph-scope',
+        outcome: 'failed',
+        closeAssessment: true
+      });
+      s.generate('feedback', 'paragraph-0');
+      expect(s.coach().days[0].drafts[0]).toEqual(paragraph);
+      expect(s.coach().days[0].feedbackHistory['paragraph-0']).toEqual([expect.objectContaining(paragraphFeedback)]);
+      vi.stubGlobal('__YOZI_DEV_TEST__', false);
+      expect(() =>
+        s.apply('coach.reassess', { target: 'card-c0', feedbackId: s.coach().days[0].feedback['card-c0'].id })
+      ).toThrow('当前渠道');
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
   it.each([
     { exam: 'english1', minutes: 25 },
     { exam: 'english1', deadline: null, minutes: 25 }
@@ -81,6 +399,32 @@ describe('考研写作方法与完整已保存事实路径', () => {
     expect(() => session({ exam: 'english1', deadline: '2026-02-30', minutes: 25 })).toThrow('日期不合法');
     expect(() => session({ exam: 'english1', deadline: '', minutes: 25 })).toThrow('日期不合法');
     expect(() => session({ exam: 'english1' })).toThrow('每天时间需在10至90分钟');
+  });
+
+  it('未知建档通过通用起步任务走通，运行时默认不回写档案', () => {
+    const s = session({ exam: null, deadline: null, deadlineBucket: 'next', minutes: null, skipped: true });
+    const profile = structuredClone(s.coach().profile);
+    const request = normalizeCoachRequest({
+      contract: WRITING_COACH_CONTRACT,
+      exam: 'general',
+      phase: 'diagnostic',
+      day: '2026-10-18',
+      minutes: s.coach().profile.minutes,
+      ...coachInputFor(s.coach(), null, 'diagnostic', 'diagnostic')
+    });
+    expect(request.minutes).toBe(25);
+    s.apply('coach.request', {
+      requestId: 'unknown-profile-start',
+      request,
+      modelId: 'synthetic',
+      binding: 'synthetic-binding'
+    });
+    s.apply('coach.result', { requestId: 'unknown-profile-start', output: coachFixture(request) });
+    expect(s.coach().diagnostic.cards).toHaveLength(5);
+    expect(s.coach().profile).toEqual(profile);
+    expect(profile).toMatchObject({ exam: null, minutes: null, deadline: null, deadlineBucket: 'next', skipped: true });
+    expect(coachEssayType(s.coach(), '2026-10-26')).toBe('small');
+    expect(() => normalizeCoachRequest({ ...request, essayType: 'large' })).toThrow('通用应用文');
   });
 
   it('在途只查询原请求，明确关闭终态后才允许另一次主动请求；第七天反馈只记录一次', () => {
@@ -102,6 +446,50 @@ describe('考研写作方法与完整已保存事实路径', () => {
     for (let i = 0; i < 6; i++) s.nextDay();
     s.apply('coach.survey', { answer: 'skip' });
     expect(() => s.apply('coach.survey', { answer: 'yes' })).toThrow();
+  });
+  it('终态评估请求可在次日明确重评，原答与旧事件保留，不能跳过终态或更换原答', () => {
+    const s = session();
+    s.generate('diagnostic');
+    for (let i = 1; i <= 5; i++)
+      s.apply('coach.answer', { target: 'diagnostic', cardId: `d${i}`, answer: 'Buoyancy acts upward.' });
+    const answers = structuredClone(s.coach().diagnostic.answers);
+    const request = normalizeCoachRequest({
+      contract: WRITING_COACH_CONTRACT,
+      phase: 'feedback',
+      target: 'diagnostic',
+      exam: 'english1',
+      day: '2026-10-18',
+      ...coachInputFor(s.coach(), null, 'feedback', 'diagnostic')
+    });
+    const data = { request, modelId: 'synthetic', binding: 'synthetic-binding' };
+    s.apply('coach.request', { ...data, requestId: 'assessment' });
+    expect(() => s.apply('coach.request', { ...data, requestId: 'early', retryOf: 'assessment' })).toThrow('终态');
+    s.apply('coach.closeRequest', { requestId: 'assessment', outcome: 'failed' });
+    expect(s.coach().requests.at(-1).status).toBe('pending'); // 兼容已有历史事件。
+    s.apply('coach.closeRequest', { requestId: 'assessment', outcome: 'failed', closeAssessment: true });
+    expect(s.coach().diagnostic.answers).toEqual(answers);
+    s.nextDay();
+    expect(() => s.apply('coach.request', { ...data, requestId: 'unbound' })).toThrow('日期');
+    expect(() =>
+      s.apply('coach.request', {
+        ...data,
+        request: { ...request, input: 'Changed answer.' },
+        requestId: 'changed',
+        retryOf: 'assessment'
+      })
+    ).toThrow('同一份原答');
+    s.apply('coach.request', {
+      ...data,
+      requestId: 'retry',
+      retryOf: 'assessment',
+      modelId: 'another-synthetic-model'
+    });
+    expect(s.coach().diagnostic.answers).toEqual(answers);
+    expect(s.coach().requests.at(-1)).toMatchObject({ retryOf: 'assessment', status: 'pending' });
+    s.apply('coach.result', { requestId: 'retry', output: coachFixture(request) });
+    expect(s.coach().requests.find((r) => r.id === 'assessment').status).toBe('closed');
+    expect(s.coach().diagnostic.answers.map((a) => a.answer)).toEqual(answers.map((a) => a.answer));
+    expect(s.coach().diagnostic.answers.every((a) => a.assessmentStatus === 'assessed')).toBe(true);
   });
   it('限定五项摸底和顺序、考试字数，拒绝伪造来源及不合法的动态目标', () => {
     expect(WRITING_METHOD.onboarding).toHaveLength(5);

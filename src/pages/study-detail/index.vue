@@ -5,23 +5,7 @@
     </template>
     <LearningOverview :initial-expanded="true" :show-navigation="false" view="study-detail" />
   </LearningShell>
-  <view v-else class="yozi-page" :style="$yoziInsets" :class="['study-detail-page', themeClass]">
-    <!-- 透明导航栏 -->
-    <view class="transparent-navbar" :class="{ 'navbar-solid': scrolled }">
-      <view class="navbar-content">
-        <BaseButton class="navbar-left" variant="secondary" @tap="goBack"
-          ><text class="back-icon"> <BaseIcon name="arrow-left" /> </text
-        ></BaseButton>
-        <text class="navbar-title" :class="{ 'title-visible': scrolled }">{{ $t('pages.stats') }}</text>
-        <view class="navbar-right">
-          <!-- 主题切换按钮 -->
-          <BaseButton class="theme-toggle" :label="$t('ui.toggleTheme')" variant="secondary" @tap="toggleTheme"
-            ><BaseIcon :name="isDark ? 'sun' : 'moon'"
-          /></BaseButton>
-        </view>
-      </view>
-    </view>
-
+  <LearningShell v-else class="yozi-page" active="study-detail" :title="$t('pages.stats')">
     <!-- 滚动容器 -->
     <scroll-view
       class="scroll-container"
@@ -130,7 +114,7 @@
         </template>
       </template>
     </scroll-view>
-  </view>
+  </LearningShell>
 </template>
 
 <script setup>
@@ -155,7 +139,6 @@ function toggleLegacy() {
 import { onLoad, onUnload } from '@dcloudio/uni-app';
 import { toast } from '@/utils/toast.js';
 import { useThemeStore } from '@/stores';
-import { safeNavigateBack } from '@/utils/safe-navigate';
 import { useStudyStore } from '@/stores/modules/study';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
@@ -166,14 +149,12 @@ import FSRSOptimizer from './FSRSOptimizer.vue';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
 import { getNavBarHeight } from '@/utils/core/system.js';
-import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { summarizeQuizProgress } from '@/services/quiz-session-contract.js';
 import { useStatsStore } from '@/stores/modules/stats.js';
 
 defineOptions({ name: 'StudyDetail' });
 
 // Store 实例
-const themeStore = useThemeStore();
 const studyStore = useStudyStore();
 const statsStore = useStatsStore();
 
@@ -198,11 +179,6 @@ const legacySummary = ref(summarizeQuizProgress());
 const studyRecordData = ref({}); // { 'YYYY-MM-DD': minutes }
 
 // === 计算属性 ===
-
-/** 安全获取主题类名 */
-const themeClass = computed(() => {
-  return themeStore?.themeClass || (isDark.value ? 'dark' : 'light');
-});
 
 // === 生命周期 ===
 
@@ -246,19 +222,9 @@ function handleScroll(e) {
   scrolled.value = scrollTop > 50;
 }
 
-/** 返回上一页 */
-function goBack() {
-  safeNavigateBack();
-}
-
 /** 跳转到练习页面（空状态引导按钮） */
 function goToPractice() {
   uni.switchTab({ url: '/pages/practice/index' });
-}
-
-/** 切换主题 */
-function toggleTheme() {
-  themeStore.toggleTheme();
 }
 
 /** 旧聚合只展示历史数量和时长；可追溯学习状态由上方核心视图提供。 */

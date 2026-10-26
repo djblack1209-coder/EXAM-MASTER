@@ -25,8 +25,24 @@ vi.mock('@/services/auth-region.js', async (importOriginal) => {
     readLoginRegion: (runtime) => actual.readLoginRegion(runtime, { enabled: true })
   };
 });
-const mocks = vi.hoisted(() => ({ api: vi.fn(), email: vi.fn(), sendEmail: vi.fn(), show: [], hide: [] }));
-vi.mock('@dcloudio/uni-app', () => ({ onShow: (fn) => mocks.show.push(fn), onHide: (fn) => mocks.hide.push(fn) }));
+const mocks = vi.hoisted(() => ({
+  api: vi.fn(),
+  email: vi.fn(),
+  sendEmail: vi.fn(),
+  show: [],
+  hide: [],
+  devTest: false
+}));
+vi.mock('@/config/build-channel.js', () => ({
+  get DEV_TEST() {
+    return mocks.devTest;
+  }
+}));
+vi.mock('@dcloudio/uni-app', () => ({
+  onShow: (fn) => mocks.show.push(fn),
+  onHide: (fn) => mocks.hide.push(fn),
+  onLoad: () => {}
+}));
 vi.mock('@/stores/modules/auth', () => ({
   useAuthStore: () => ({ regionalLogin: mocks.api, loginByEmail: mocks.email, sendEmailCode: mocks.sendEmail })
 }));
@@ -50,6 +66,7 @@ async function agree(wrapper) {
   await wrapper.findComponent(BaseCheckbox).trigger('tap');
 }
 beforeEach(() => {
+  mocks.devTest = false;
   setActivePinia(createPinia());
   uni.clearStorageSync();
   localStorage.clear();
@@ -69,6 +86,48 @@ beforeEach(() => {
 afterEach(() => {
   wrappers.splice(0).forEach((w) => w.unmount());
   vi.restoreAllMocks();
+});
+it('dev/test 回访邮箱登录沿固定测试码，无密码和协议勾选门槛', async () => {
+  mocks.devTest = true;
+  mocks.email.mockReset().mockResolvedValue({ code: 503, message: '合成服务不可用' });
+  mocks.sendEmail.mockReset();
+  uni.setStorageSync('yozi_login_region', 'CN');
+  const wrapper = open();
+  await flushPromises();
+  await action(wrapper, '使用邮箱登录').vm.$emit('tap');
+  await flushPromises();
+  const inputs = wrapper.findAllComponents(BaseInput);
+  expect(inputs).toHaveLength(1);
+  expect(wrapper.findComponent(BaseCheckbox).exists()).toBe(true);
+  expect(wrapper.findComponent(BaseCheckbox).props('modelValue')).toBe(false);
+  await inputs[0].vm.$emit('update:modelValue', 'returning@example.test');
+  await action(wrapper, '登录').vm.$emit('tap');
+  await flushPromises();
+  expect(mocks.email).toHaveBeenCalledOnce();
+  expect(mocks.email.mock.calls[0][0]).toMatchObject({ email: 'returning@example.test', verifyCode: '000000' });
+  expect(mocks.email.mock.calls[0][0]).not.toHaveProperty('password');
+  expect(mocks.sendEmail).not.toHaveBeenCalled();
+});
+it('正式邮箱登录仍校验并发送密码，不发送固定测试码', async () => {
+  mocks.email.mockReset().mockResolvedValue({ code: 503, message: '合成服务不可用' });
+  uni.setStorageSync('yozi_login_region', 'CN');
+  const wrapper = open();
+  await flushPromises();
+  await agree(wrapper);
+  await action(wrapper, '使用邮箱登录').vm.$emit('tap');
+  await flushPromises();
+  const inputs = wrapper.findAllComponents(BaseInput);
+  expect(inputs).toHaveLength(2);
+  await inputs[0].vm.$emit('update:modelValue', 'returning@example.test');
+  await action(wrapper, '登录').vm.$emit('tap');
+  await flushPromises();
+  expect(mocks.email).not.toHaveBeenCalled();
+  await inputs[1].vm.$emit('update:modelValue', 'Fixture-password');
+  await action(wrapper, '登录').vm.$emit('tap');
+  await flushPromises();
+  expect(mocks.email).toHaveBeenCalledOnce();
+  expect(mocks.email.mock.calls[0][0]).toMatchObject({ password: 'Fixture-password' });
+  expect(mocks.email.mock.calls[0][0].verifyCode).toBeUndefined();
 });
 describe('regions and platform capability filtering', () => {
   it('朋友试用仅显示邮箱验证码，不要求创建密码或出现其他登录方式', async () => {
@@ -225,10 +284,7 @@ describe('login page explicit actions', () => {
     expect(buttons.filter((button) => button.props('variant') === 'primary')).toHaveLength(1);
     expect(buttons[0].props('variant')).toBe('primary');
     expect(buttons[0].props('disabled')).toBe(false);
-    if (!sms) {
-      expect(buttons.at(-1).text()).toBe(t('login.phoneClosed', { prefix: region === 'US' ? '+1' : '+86' }));
-      expect(buttons.at(-1).props()).toMatchObject({ variant: 'secondary', disabled: true });
-    }
+    expect(Boolean(action(wrapper, t('login.phone')))).toBe(sms);
     expect(mocks.api.mock.calls.every(([body]) => body.type === 'capabilities')).toBe(true);
   });
   it('a rejected age ticket clears the proof and returns to neutral confirmation', async () => {
@@ -282,18 +338,24 @@ describe('login page explicit actions', () => {
     expect(mocks.api).toHaveBeenCalledWith({ type: 'age_confirm', region: 'US', year: 2000, month: 1 });
     expect(uni.getStorageSync('yozi_birth')).toBeFalsy();
   });
-  it('closed phone sign-in is labelled and cannot send a request in English', async () => {
+  it('unavailable phone sign-in is hidden without sending a request in English', async () => {
     uni.setStorageSync('yozi_login_region', 'CN');
     setLanguage('en');
     const wrapper = open();
     await flushPromises();
     await agree(wrapper);
-    expect(action(wrapper, t('login.phoneClosed', { prefix: '+86' })).props('disabled')).toBe(true);
-    await action(wrapper, t('login.phoneClosed', { prefix: '+86' })).vm.$emit('tap');
-    await flushPromises();
-    expect(wrapper.find('[role="alert"]').text()).toBe(t('login.smsClosed'));
+    expect(action(wrapper, 'Continue with phone')).toBeUndefined();
+    expect(wrapper.text()).not.toContain('unavailable');
     expect(action(wrapper, 'Continue with email')).toBeTruthy();
     expect(mocks.api.mock.calls.every(([body]) => body.type === 'capabilities')).toBe(true);
+  });
+  it('shows a service status and no form when every sign-in method is unavailable', async () => {
+    mocks.api.mockResolvedValue({ code: 0, data: { email: false, sms: false, wechat: false } });
+    const wrapper = open();
+    await flushPromises();
+    expect(wrapper.get('[role="status"]').text()).toBe('登录服务暂时不可用，请稍后再试');
+    expect(wrapper.findAllComponents(BaseInput)).toHaveLength(0);
+    expect(action(wrapper, '使用邮箱登录')).toBeUndefined();
   });
   it('underage erases all draft values, does not call backend, and back cannot reopen age', async () => {
     uni.setStorageSync('yozi_login_region', 'US');

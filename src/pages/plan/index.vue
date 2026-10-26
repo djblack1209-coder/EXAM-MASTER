@@ -1,13 +1,12 @@
 <template>
   <LearningShell v-if="!showLegacy" class="yozi-page" active="plan" :title="$t('pages.plan')">
     <template #controls>
+      <BaseButton variant="secondary" @tap="safeNavigateTo('/pages/learning/review')">分批复习</BaseButton>
       <BaseButton class="quiet-button" variant="secondary" @tap="toggleLegacy">{{ t('plan.copy0') }}</BaseButton>
     </template>
     <LearningOverview :initial-expanded="true" :show-navigation="false" view="plan" />
   </LearningShell>
-  <view v-else class="yozi-page" :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]">
-    <view class="aurora-bg" />
-
+  <LearningShell v-else class="yozi-page" active="plan" :title="$t('pages.plan')">
     <!-- 骨架屏 -->
     <!-- #ifdef APP-PLUS -->
     <BaseEmpty v-if="isLoading" :is-dark="isDark" state="loading" />
@@ -23,23 +22,9 @@
     <!-- #endif -->
     <!-- #endif -->
 
-    <view v-if="!isLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <view class="nav-content" :style="{ paddingRight: capsuleSafeRight + 'px' }">
-        <BaseButton class="nav-back" :label="$t('ui.back')" variant="secondary" @tap="goBack"
-          ><BaseIcon name="arrow-left"
-        /></BaseButton>
-        <text class="nav-title">{{ $t('pages.plan') }}</text>
-        <BaseButton
-          class="nav-add"
-          variant="secondary"
-          icon="plus"
-          icon-only
-          :label="t('plan.copy1')"
-          @tap="showLegacy ? createPlan() : safeNavigateTo('/pages/learning/index')"
-        />
-      </view>
-    </view>
-
+    <template #controls
+      ><BaseButton variant="quiet" icon="plus" icon-only :label="t('plan.copy1')" @tap="createPlan"
+    /></template>
     <scroll-view
       v-if="!isLoading"
       scroll-y
@@ -259,7 +244,7 @@
         </view>
       </template>
     </scroll-view>
-  </view>
+  </LearningShell>
   <CustomModal
     v-if="pageDialog"
     :visible="true"
@@ -309,7 +294,7 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { intelligentPlanManager } from './intelligent-plan-manager.js';
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
-import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
+import { safeNavigateTo } from '@/utils/safe-navigate';
 import { requireLogin, isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { storageService } from '@/services/storageService.js';
 import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
@@ -448,11 +433,6 @@ function startAIPlanDay(day) {
 function createPlan() {
   if (learning.state.plans.length || learning.state.attempts.length) return safeNavigateTo('/pages/learning/index');
   requireLogin(() => safeNavigateTo('/pages/practice/index'), { message: t('plan.copy30') });
-}
-
-/** 返回上一页 */
-function goBack() {
-  safeNavigateBack();
 }
 
 // ---- 辅助函数 ----

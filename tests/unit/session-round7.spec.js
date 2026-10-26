@@ -53,6 +53,7 @@ afterEach(() => {
   vi.clearAllTimers();
   vi.useRealTimers();
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
   vi.unstubAllGlobals();
 });
 it('order-07-01: registration preserves the initiating fence with and without locks', () => {
@@ -65,9 +66,14 @@ it('order-07-01: registration preserves the initiating fence with and without lo
   expect(rows).toHaveLength(4);
   for (const row of rows) expect(row.ok, row.name).toBe(true);
 });
-it('regress-7-01: first unavailable root leaves a complete retryable store', () => {
+it.each([
+  ['retained legacy', 'false', 'start'],
+  ['default coach', 'true', 'startCoach']
+])('regress-7-01: first unavailable root leaves a complete retryable store (%s)', (_mode, enabled, start) => {
+  // Startup selects coach history by default; retained legacy history has its own opt-in mode.
+  vi.stubEnv('VITE_ENABLE_WRITING_COACH', enabled);
   const old = learning.useConversationLearningStore();
-  old.start('已有学习目标');
+  old[start]('已有学习目标');
   old.$dispose();
   pinia = createPinia();
   setActivePinia(pinia);
@@ -85,6 +91,7 @@ it('regress-7-01: first unavailable root leaves a complete retryable store', () 
   expect(same).toBe(store);
   const result = same.searchRecords('已有学习目标');
   expect(result.items.length).toBeGreaterThan(0);
+  expect(same.recordReadState).toBe('ready');
   expect(same.active.goal).toBe('已有学习目标');
   same.start('恢复后正常');
   expect(same.state.conversations).toHaveLength(2);
@@ -146,6 +153,7 @@ it('regress-7-02: every exported action has an explicit effect classification', 
   for (const name of actions) expect(['read', 'write', 'send']).toContain(table[name]);
   expect(table.openRecord).toBe('read');
   expect(table.locateConversation).toBe('read');
+  expect(table.cancelModelIntake).toBe('read');
 });
 const connection = () => ({
   endpoint: 'http://127.0.0.1:8765/parse',

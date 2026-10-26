@@ -13,6 +13,7 @@ import {
   createHistoryPackage,
   HISTORY_LIMITS
 } from '../../../laf-backend/functions/_shared/learning-history.js';
+import { ADHERENCE_EVENTS } from '../../../laf-backend/functions/_shared/learning-adherence.js';
 
 const ROOT_FIELDS = new Set([
   'version',
@@ -288,10 +289,19 @@ export async function prepareLearningHistoryRestore(
 }
 
 // 访客归属变更是独立、明确授权的入口；普通备份恢复继续严格校验同一账户。
+function rebindGuestBehaviors(guest, owner) {
+  return {
+    ...guest,
+    owner,
+    events: guest.events.map((e) =>
+      ADHERENCE_EVENTS.includes(e.type) ? { ...e, owner, data: { ...e.data, owner } } : e
+    )
+  };
+}
 export function prepareGuestMigration(current, guest, { now = Date.now() } = {}) {
   assert(current.owner !== 'guest', 'AUTH_REQUIRED', '请先登录，再确认本设备访客记录归属');
   assert(guest?.owner === 'guest' && guest.version === 1, 'PRECONDITION', '没有可迁移的本设备访客记录');
-  const result = prepareLearningRestore(current, JSON.stringify({ ...guest, owner: current.owner }), { now });
+  const result = prepareLearningRestore(current, JSON.stringify(rebindGuestBehaviors(guest, current.owner)), { now });
   return mergeGuestPlans(current, guest, result, now);
 }
 export async function prepareGuestHistoryMigration(current, guest, options = {}) {
@@ -299,7 +309,7 @@ export async function prepareGuestHistoryMigration(current, guest, options = {})
   assert(guest?.owner === 'guest' && guest.version === 1, 'PRECONDITION', '没有可迁移的本设备访客记录');
   const result = await prepareLearningHistoryRestore(
     current,
-    JSON.stringify(createHistoryPackage({ ...guest, owner: current.owner })),
+    JSON.stringify(createHistoryPackage(rebindGuestBehaviors(guest, current.owner))),
     options
   );
   return mergeGuestPlans(current, guest, result, options.now || Date.now());

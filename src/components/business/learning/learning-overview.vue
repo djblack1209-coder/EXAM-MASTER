@@ -7,6 +7,7 @@
     padding="none"
   >
     <view v-if="showNavigation" class="learning-links">
+      <BaseButton variant="quiet" @tap="safeNavigateTo('/pages/learning/review')">分批复习</BaseButton>
       <BaseButton
         v-for="item in ['对话', '错题', '计划', '统计']"
         :key="item"
@@ -15,6 +16,16 @@
       >
         {{ t({ 对话: 'ui.navChat', 错题: 'ui.navMistake', 计划: 'ui.navPlan', 统计: 'ui.navStats' }[item]) }}
       </BaseButton>
+    </view>
+    <view v-if="view === 'mistake'" class="learning-links subject-filters" role="group" aria-label="错题学科筛选">
+      <BaseButton
+        v-for="option in mistakeSubjects"
+        :key="option.id"
+        variant="quiet"
+        :selected="subject === option.id"
+        @tap="subject = option.id"
+        >{{ option.label }} ({{ option.count }})</BaseButton
+      >
     </view>
     <BaseSegmented
       v-if="!inline && hasHistory"
@@ -152,11 +163,16 @@
         </template>
         <template v-if="showMistakes">
           <text class="learning-label detail-heading">{{ t('learning.kr9') }}</text>
-          <view v-if="!stats.mistakes.length" class="record-empty">
-            <BaseEmpty state="empty" :title="t('learning.k45')" mascot-size="small" />
+          <view v-if="!filteredMistakes.length" class="record-empty">
+            <BaseEmpty
+              state="empty"
+              :title="subject === 'all' ? t('learning.k45') : '该学科暂无记录'"
+              mascot-size="small"
+            />
           </view>
-          <view v-for="attempt in stats.mistakes" :key="attempt.id" class="learning-row">
-            <text class="record-question">{{ questionPrompt(attempt.questionKey) }}</text>
+          <view v-for="attempt in filteredMistakes" :key="attempt.id" class="learning-row">
+            <text class="subtle">{{ attemptSubject(attempt) }} · {{ attemptTopic(attempt) }}</text
+            ><text class="record-question">{{ questionPrompt(attempt.questionKey) }}</text>
             <text class="subtle"
               >{{ t('learning.kcd') }}{{ attempt.answer }} · {{ t(`learning.attemptKind.${attempt.kind}`)
               }}{{ t('learning.km') }}{{ attempt.hints.length }}{{ t('learning.kbd') }}</text
@@ -242,7 +258,11 @@
     <BaseEmpty
       v-else
       class="overview-empty"
-      :title="t(view === 'mistake' ? 'ui.emptyMistakes' : view === 'plan' ? 'ui.emptyPlan' : 'ui.emptyStats')"
+      :title="
+        view === 'mistake' && subject !== 'all'
+          ? '该学科暂无记录'
+          : t(view === 'mistake' ? 'ui.emptyMistakes' : view === 'plan' ? 'ui.emptyPlan' : 'ui.emptyStats')
+      "
       mascot-size="medium"
       show-button
       :button-text="!inline && range === 'day' && hasHistory ? t('learning.history') : t('ui.learnNow')"
@@ -292,6 +312,7 @@ import { createLearningDialog } from '@/services/learning/learning-dialog.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { effectiveGrade, questionKey, knowledgeScope, dayKey } from '@/services/learning/learning-domain.js';
+import { museRecordSubjects, museSubjectOptions } from '@/services/learning/muse-workspace-data.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 const learning = useConversationLearningStore();
 const calendarReader = learning.observeCalendar();
@@ -306,6 +327,28 @@ const props = defineProps({
   view: { type: String, default: 'all' }
 });
 const expanded = ref(props.initialExpanded);
+const subject = ref('all');
+const attemptQuestion = (attempt) => learning.state.questions.find((q) => questionKey(q) === attempt.questionKey);
+const attemptSubject = (attempt) => museRecordSubjects(attemptQuestion(attempt) || {}).join('、');
+const attemptTopic = (attempt) => attemptQuestion(attempt)?.knowledgePoint || '练习';
+const mistakeSubjects = computed(() =>
+  museSubjectOptions(
+    learning.state,
+    stats.value.mistakes.map((attempt) => ({ subjects: museRecordSubjects(attemptQuestion(attempt) || {}) }))
+  )
+);
+const filteredMistakes = computed(() =>
+  stats.value.mistakes.filter(
+    (attempt) =>
+      subject.value === 'all' || museRecordSubjects(attemptQuestion(attempt) || {}).includes(subject.value.slice(8))
+  )
+);
+watch(
+  () => learning.recordContext(),
+  () => {
+    subject.value = 'all';
+  }
+);
 const range = ref('day');
 const message = ref('');
 const messageError = ref(false);

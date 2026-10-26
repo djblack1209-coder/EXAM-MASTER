@@ -35,5 +35,6 @@ if (action === 'web') {
   await run('scripts/build/copy-cdn-to-h5.mjs', [], env);
   await run('scripts/build/ui-quality-gate.js', ['--public-build', env.UNI_OUTPUT_DIR], env);
 } else {
+  if (action === 'dev') process.env.YOZI_BUILD_CHANNEL ||= 'dev';
   await run('node_modules/@tauri-apps/cli/tauri.js', [action, ...process.argv.slice(3)]);
 }

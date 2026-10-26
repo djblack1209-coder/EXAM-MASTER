@@ -2,7 +2,7 @@ import { registerMessages } from '@/i18n/index.js';
 const messages = {
   'zh-CN': {
     languageChinese: '简体中文',
-    languageEnglish: 'English',
+    languageEnglish: '英语',
     copy0: '记录暂不可读',
     copy1: '正在读取记录',
     copy2: '返回学习空间',

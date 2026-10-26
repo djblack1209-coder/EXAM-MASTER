@@ -1,12 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, getActivePinia, setActivePinia } from 'pinia';
 import { flushPromises, mount } from '@vue/test-utils';
+import { h } from 'vue';
 import LearningPage from '@/pages/learning/index.vue';
 import CustomModal from '@/components/common/CustomModal.vue';
-import JourneyReview from '@/components/business/learning/journey-review.vue';
+import JourneyReview from '@/pages/learning/components/journey-review.vue';
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
-import LearningJourney from '@/components/business/learning/learning-journey.vue';
+import LearningJourney from '@/pages/learning/components/learning-journey.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
+import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
+import MuseChatEmpty from '@/components/business/learning/muse-chat-empty.vue';
+import LearningShell from '@/components/business/learning/learning-shell.vue';
+import MuseComposer from '@/components/business/learning/muse-composer.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
 import BaseOptions from '@/components/base/base-options/base-options.vue';
@@ -63,16 +68,96 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe('learning interface states preserve learning facts', () => {
+  it('narrow navigation keeps every action labelled and closes the directory directly without writing facts', async () => {
+    vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(390);
+    const store = useConversationLearningStore();
+    const before = store.exportData();
+    const wrapper = render(LearningShell);
+    await flushPromises();
+    expect(wrapper.findAll('.rail-item-tip').map((item) => item.text())).toEqual([
+      '对话',
+      '搜索⌘K',
+      '历史',
+      '洞察',
+      '计划',
+      '资料',
+      '用量',
+      '设置⌘,'
+    ]);
+    expect(wrapper.findAll('.muse-rail button')).toHaveLength(8);
+    await wrapper.get('.directory-pill').trigger('tap');
+    await flushPromises();
+    expect(wrapper.get('.directory-search input').attributes('placeholder')).toBe('搜索会话');
+    await wrapper.get('.sidebar-close').trigger('tap');
+    await flushPromises();
+    expect(wrapper.get('.directory-pill').attributes('aria-expanded')).toBe('false');
+    await wrapper.setProps({ active: 'settings' });
+    expect(wrapper.get('.rail-settings').attributes('aria-current')).toBe('page');
+    expect(store.exportData()).toBe(before);
+  });
+  it('mobile header discloses every action, preserves keyboard activation and restores focus on Escape', async () => {
+    vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(390);
+    const store = useConversationLearningStore();
+    const before = store.exportData();
+    const actions = ['档案', '统计', 'AI 连接器', '设置'].map((label) => ({ label, run: vi.fn() }));
+    const wrapper = mount(LearningShell, {
+      attachTo: document.body,
+      global: { stubs },
+      slots: {
+        controls: () => actions.map(({ label, run }) => h(BaseButton, { label, iconOnly: true, onTap: run }))
+      }
+    });
+    wrappers.push(wrapper);
+    await flushPromises();
+    const toggle = wrapper.get('.header-actions-toggle');
+    const group = wrapper.get('#learning-header-actions');
+    expect(toggle.attributes('aria-expanded')).toBe('false');
+    expect(group.isVisible()).toBe(false);
+    for (let index = 0; index < actions.length; index++) {
+      await toggle.trigger('keydown', { key: 'Enter' });
+      await flushPromises();
+      await group.find('button').trigger('keyup', { key: 'Enter' });
+      expect(group.isVisible()).toBe(true);
+      const buttons = group.findAll('button');
+      expect(buttons.map((button) => button.attributes('aria-label'))).toEqual(actions.map(({ label }) => label));
+      expect(document.activeElement).toBe(buttons[0].element);
+      await buttons[index].trigger('keydown', { key: ' ' });
+      await buttons[index].trigger('keyup', { key: ' ' });
+      await flushPromises();
+      expect(actions[index].run).toHaveBeenCalledTimes(1);
+      expect(group.isVisible()).toBe(false);
+      expect(document.activeElement).toBe(toggle.element);
+    }
+    await toggle.trigger('tap');
+    await group.find('button').trigger('keydown', { key: 'Escape' });
+    await flushPromises();
+    expect(group.isVisible()).toBe(false);
+    expect(document.activeElement).toBe(toggle.element);
+    await toggle.trigger('tap');
+    await wrapper.get('.space-content').trigger('pointerdown');
+    expect(group.isVisible()).toBe(false);
+    await toggle.trigger('tap');
+    await group.trigger('focusout', { relatedTarget: wrapper.get('.directory-pill').element });
+    expect(group.isVisible()).toBe(false);
+    expect(store.exportData()).toBe(before);
+  });
+  it('desktop header keeps its direct controls and no overflow trigger', async () => {
+    vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1090);
+    const wrapper = render(LearningShell);
+    await flushPromises();
+    expect(wrapper.find('.header-actions-toggle').exists()).toBe(false);
+    expect(wrapper.get('.space-header-actions').isVisible()).toBe(true);
+  });
   it.each([
-    ['offline', null, 'idle', '选择 AI 助手', 'neutral'],
-    ['offline', null, 'error', '选择 AI 助手', 'neutral'],
-    ['local', 'connector_verified', 'error', '本地连接就绪', 'apricot'],
-    ['local', 'model_verified', 'idle', '本机模型已连接', 'mint'],
-    ['cloud', 'connected', 'ready', '最近调用成功', 'mint'],
-    ['cloud', 'failed', 'ready', '最近调用失败', 'coral'],
-    ['cloud', 'stale', 'ready', '连接需重新验证', 'apricot'],
-    ['cloud', 'connected', 'error', '模型列表暂不可用', 'coral']
-  ])('operation errors preserve the %s connection evidence (%s, %s)', async (mode, status, phase, label, tone) => {
+    ['offline', null, 'idle'],
+    ['offline', null, 'error'],
+    ['local', 'connector_verified', 'error'],
+    ['local', 'model_verified', 'idle'],
+    ['cloud', 'connected', 'ready'],
+    ['cloud', 'failed', 'ready'],
+    ['cloud', 'stale', 'ready'],
+    ['cloud', 'connected', 'error']
+  ])('operation errors preserve the %s connection evidence (%s, %s)', async (mode, status, phase) => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
     store.submit('19', true);
@@ -88,14 +173,22 @@ describe('learning interface states preserve learning facts', () => {
     for (const error of ['请求已取消，费用状态请查看模型用量', '学习天数必须在 1 到 365 之间']) {
       store.error = error;
       await flushPromises();
-      expect(wrapper.get('.connection-pill').text()).toBe(label);
-      expect(wrapper.get('.connection-pill .base-tag').classes()).toContain(`base-tag--${tone}`);
+      // 批次 12A：右上连接入口为纯图标；仍严格核对已保存的连接事实。
+      const connector = wrapper.get('.connection-pill');
+      expect(connector.text()).toBe('');
+      expect(connector.attributes('aria-label')).toBe('AI 连接器');
+      expect(connector.attributes('title')).toBe('AI 连接器');
+      expect(connector.find('.base-tag').exists()).toBe(false);
+      expect(store.selectedMode).toBe(mode);
+      expect(store.modelListState.phase).toBe(phase);
+      if (mode === 'local') expect(store.localConnection.status).toBe(status);
+      if (mode === 'cloud') expect(store.models[0].connectionStatus).toBe(status);
       expect(wrapper.get('#learning-request-error').text()).toContain(error);
       expect(store.exportData()).toBe(before);
     }
     setLanguage('en');
     await flushPromises();
-    expect(wrapper.get('.connection-pill').text()).not.toMatch(/[\u3400-\u9fff]/);
+    expect(wrapper.get('.connection-pill').text()).toBe('');
     expect(store.exportData()).toBe(before);
   });
   it('model failure is visible and focused beside recovery without writing or changing an original answer', async () => {
@@ -197,8 +290,10 @@ describe('learning interface states preserve learning facts', () => {
       originalScroll = Element.prototype.scrollIntoView;
     Element.prototype.scrollIntoView = scroll;
     try {
-      const stop = wrapper.get('#learning-composer [aria-label="停止当前任务"]');
-      await stop.trigger('keydown', { key: 'Enter' });
+      // 批次 12A 移除 composer pause；从唯一输入框明确提交停止意图。
+      expect(wrapper.find('#learning-composer [aria-label="停止当前任务"]').exists()).toBe(false);
+      await wrapper.get('#learning-composer textarea').setValue('停止当前任务');
+      await wrapper.get('#learning-composer [aria-label="发送"]').trigger('keydown', { key: 'Enter' });
       await flushPromises();
       const state = wrapper.get('#learning-stop-state');
       expect(document.activeElement).toBe(state.element);
@@ -290,12 +385,19 @@ describe('learning interface states preserve learning facts', () => {
       Element.prototype.scrollIntoView = originalScroll;
     }
   });
-  it('thinks in the chat empty state without creating a conversation', async () => {
+  it('shows the Muse chat empty state and composer without creating a conversation', async () => {
     const store = useConversationLearningStore(),
       wrapper = render();
-    expect(pose(wrapper.find('.welcome-copy'), 'think').props('play')).toBe('loop');
-    await flushPromises();
-    expect(wrapper.find('.composer textarea').exists()).toBe(true);
+    // Muse's new chat is only the avatar identity and composer; connectors stay in the header.
+    expect(wrapper.findComponent(MuseChatEmpty).exists()).toBe(false);
+    const identity = wrapper.getComponent(LearningShell).get('.muse-chat-identity');
+    expect(identity.getComponent(AnimatedAvatar).props('size')).toBe(56);
+    expect(identity.get('.brand-name').text()).toBe('Yozi AI');
+    expect(wrapper.get('.space-content').text()).not.toContain('未连接');
+    expect(wrapper.get('.space-content').findAllComponents(BaseChip)).toHaveLength(0);
+    const composer = wrapper.getComponent(MuseComposer);
+    expect(composer.find('textarea').exists()).toBe(true);
+    expect(composer.get('textarea').element.value).toBe('');
     expect(store.state.conversations).toHaveLength(0);
   });
   it('thinking loops while replying, pauses for answer input, and stops on reply or error', async () => {
@@ -416,15 +518,29 @@ describe('learning interface states preserve learning facts', () => {
       vi.useRealTimers();
     }
   });
-  it('empty statistics have one action; reduced motion stops the thinking pose', async () => {
+  it('empty statistics have one action; reduced motion stops the empty avatar animation', async () => {
     const overview = render(LearningOverview);
     expect(overview.findComponent(YoziMascot).exists()).toBe(true);
     expect(overview.findAll('.overview-empty .base-button')).toHaveLength(1);
     expect(overview.find('.base-stat').exists()).toBe(false);
     setMascotReducedMotion(true, { persist: false });
+    const matchMedia = vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: true,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn()
+    });
+    const play = vi.spyOn(HTMLMediaElement.prototype, 'play');
     const wrapper = render();
     await flushPromises();
-    expect(pose(wrapper, 'think').attributes('data-moving')).toBe('false');
+    const avatar = wrapper.getComponent(LearningShell).get('.muse-chat-identity').getComponent(AnimatedAvatar);
+    await avatar.trigger('pointerenter');
+    await flushPromises();
+    expect(matchMedia).toHaveBeenCalledWith('(prefers-reduced-motion: reduce)');
+    expect(avatar.findAll('canvas.is-static')).toHaveLength(avatar.findAll('canvas').length);
+    expect(avatar.findAll('canvas')).toHaveLength(1);
+    expect(play).not.toHaveBeenCalled();
+    expect(wrapper.getComponent(MuseComposer).find('textarea').exists()).toBe(true);
+    expect(useConversationLearningStore().state.conversations).toHaveLength(0);
   });
   it('confirmed daily recap celebrates once without changing the saved original answers', async () => {
     const store = useConversationLearningStore();

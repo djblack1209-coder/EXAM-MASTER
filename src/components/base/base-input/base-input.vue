@@ -64,6 +64,7 @@
         :class="['base-field__input', inputClass]"
         :value="modelValue"
         :rows="autoGrow ? 1 : undefined"
+        :autocomplete="autocomplete"
         :disabled="disabled"
         :readonly="readonly"
         :maxlength="maxlength"
@@ -112,6 +113,7 @@
         :value="modelValue"
         :type="type"
         :inputmode="inputmode"
+        :autocomplete="autocomplete"
         :disabled="disabled"
         :readonly="readonly"
         :maxlength="maxlength"
@@ -184,6 +186,7 @@ const props = defineProps({
   placeholder: { type: String, default: '' },
   type: { type: String, default: 'text' },
   inputmode: { type: String, default: 'text' },
+  autocomplete: { type: String, default: undefined },
   prefix: { type: String, default: '' },
   multiline: Boolean,
   autoGrow: Boolean,
@@ -196,6 +199,7 @@ const props = defineProps({
   disabled: Boolean,
   verification: Boolean,
   verificationSent: { type: Boolean, default: true },
+  verificationLabels: { type: Object, default: null },
   options: { type: Array, default: () => [] },
   resendSeconds: { type: Number, default: 0 },
   maxlength: { type: Number, default: -1 },
@@ -257,11 +261,16 @@ nativePlatform = false;
 // #endif
 const remaining = ref(0);
 const descriptionId = computed(() => (props.help || props.error ? `${id}-description` : undefined));
-const resendLabel = computed(() =>
-  remaining.value > 0
+const resendLabel = computed(() => {
+  const labels = props.verificationLabels;
+  if (labels)
+    return remaining.value > 0
+      ? labels.countdown.replace('{seconds}', remaining.value)
+      : labels[props.verificationSent ? 'resend' : 'send'];
+  return remaining.value > 0
     ? t('ui.resendCountdown', { seconds: remaining.value })
-    : t(props.verificationSent ? 'ui.resend' : 'ui.getCode')
-);
+    : t(props.verificationSent ? 'ui.resend' : 'ui.getCode');
+});
 let timer;
 watch(
   () => props.resendSeconds,

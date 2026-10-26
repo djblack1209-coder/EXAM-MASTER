@@ -1,3 +1,4 @@
+import { ENTRY_EVENTS } from '../../../laf-backend/functions/_shared/learning-entries.js';
 import { storageService } from '../storageService.js';
 import { getUserId, captureSession, assertSession } from '../auth-storage.js';
 import {
@@ -215,6 +216,10 @@ export function createLearningRepository(
       assert(
         operations.every((op) =>
           [
+            ...ENTRY_EVENTS,
+            'reminder.set',
+            'reminder.complete',
+            'reminder.cancel',
             'conversation.start',
             'question.add',
             'question.focus',

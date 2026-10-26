@@ -361,7 +361,7 @@ describe('选择项与明确保存', () => {
       global: {
         stubs: {
           ...stubs,
-          LearningShell: { template: '<div><slot /><slot name="controls" /></div>' },
+          LearningShell: { template: '<div><slot /><slot name="controls" /><slot name="composer" /></div>' },
           LearningLab: true,
           NumberLine: true
         }
@@ -388,7 +388,7 @@ describe('选择项与明确保存', () => {
     store.focus(result.questionKey);
     return result;
   }
-  it('默认聊天不先选学段教材，示例只改草稿，发送后只澄清必要知识点', async () => {
+  it('默认聊天不先选学段教材，输入只改草稿，发送后只澄清必要知识点', async () => {
     const p = page();
     try {
       const before = p.store.exportData();
@@ -396,7 +396,7 @@ describe('选择项与明确保存', () => {
       expect(p.wrapper.find('[data-test="task-track-junior"]').exists()).toBe(false);
       expect(p.wrapper.find('.goal-panel').exists()).toBe(false);
       expect(p.wrapper.find('.today-layout').exists()).toBe(false);
-      await p.button('我想复习初二数学，先测测我的薄弱点').trigger('tap');
+      await p.wrapper.get('#learning-composer textarea').setValue('我想复习初二数学，先测测我的薄弱点');
       expect(p.store.exportData()).toBe(before);
       await p.button('发送').trigger('tap');
       await flushPromises();
@@ -790,7 +790,7 @@ describe('选择项与明确保存', () => {
   it('默认页从小步引导到贴题、原答订正和独立变式，明确提交保留可靠判分且不再追加诗词', async () => {
     const p = page();
     try {
-      await p.button('这道题我不会，带我一步步理解').trigger('tap');
+      await p.wrapper.get('#learning-composer textarea').setValue('这道题我不会，带我一步步理解');
       expect(p.store.state.conversations).toHaveLength(0);
       await p.button('发送').trigger('tap');
       await flushPromises();
@@ -819,7 +819,9 @@ describe('选择项与明确保存', () => {
       await flushPromises();
       expect(p.store.state.attempts[2]).toMatchObject({ kind: 'variant', hints: [], grade: { outcome: 'correct' } });
       expect(p.store.active.messages.filter((message) => message.content.startsWith('妙哉妙哉'))).toHaveLength(0);
-      await p.button('停止当前任务').trigger('tap');
+      await input().setValue('停止当前任务');
+      await p.wrapper.get('#learning-composer .muse-send').trigger('tap');
+      await flushPromises();
       expect(p.store.active).toMatchObject({ id: conversationId, stopped: true });
       expect(p.store.state.reviews.length).toBeGreaterThan(0);
     } finally {
@@ -1995,7 +1997,7 @@ describe('学习空间的实际入口与目录', () => {
       global: {
         stubs: {
           ...stubs,
-          LearningShell: { template: '<div><slot /><slot name="controls" /></div>' },
+          LearningShell: { template: '<div><slot /><slot name="controls" /><slot name="composer" /></div>' },
           NumberLine: true,
           WdPopup: { props: ['modelValue'], template: '<div v-if="modelValue"><slot /></div>' }
         }
@@ -2246,12 +2248,14 @@ describe('学习空间的实际入口与目录', () => {
       global: { stubs: { ...stubs, image: true } }
     });
     expect(wrapper.get('.learning-space').classes()).toContain('space-dark');
-    expect(wrapper.get('.space-sidebar').element.closest('.space-dark')).toBe(wrapper.get('.learning-space').element);
+    expect(wrapper.get('.settings-sidebar').element.closest('.space-dark')).toBe(
+      wrapper.get('.learning-space').element
+    );
     expect(wrapper.find('.mobile-dock').exists()).toBe(false);
     theme.setDarkMode(false);
     await flushPromises();
     expect(wrapper.get('.learning-space').classes()).toContain('space-light');
-    expect(wrapper.get('.space-sidebar').element.closest('.space-dark')).toBeNull();
+    expect(wrapper.get('.settings-sidebar').element.closest('.space-dark')).toBeNull();
     wrapper.unmount();
   });
   it('账户导航到共享统计后沿原答更新概览，旧题库数据保留独立口径', async () => {
@@ -2266,10 +2270,7 @@ describe('学习空间的实际入口与目录', () => {
     expect(wrapper.find('.learning-overview').exists()).toBe(false);
     expect(wrapper.text()).toContain('历史题库记录');
     expect(wrapper.find('.stats-card').text()).toContain('7');
-    await wrapper
-      .findAll('button')
-      .find((button) => button.text().trim() === '学习档案')
-      .trigger('tap');
+    await wrapper.get('.learning-archive-link').trigger('tap');
     expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/archive/index' }));
     const statistics = mount(StudyDetailPage, {
       global: { stubs: { ...stubs, LearningOverview: false, image: true } }
@@ -2491,7 +2492,7 @@ describe('学习空间的实际入口与目录', () => {
       global: {
         stubs: {
           ...stubs,
-          LearningShell: { template: '<div><slot /><slot name="controls" /></div>' },
+          LearningShell: { template: '<div><slot /><slot name="controls" /><slot name="composer" /></div>' },
           NumberLine: true
         }
       }
@@ -2508,7 +2509,10 @@ describe('学习空间的实际入口与目录', () => {
     wrapper.unmount();
     const shell = mount(LearningShell, { global: { stubs } });
     expect(shell.find('.brand-name').text()).toContain(BRAND.chinese);
-    expect(shell.find('.brand-mark').attributes('src')).toBe(BRAND.mark);
+    expect(shell.find('.brand-mark').classes()).toContain('animated-avatar');
+    expect(shell.find('.brand-mark .animated-avatar__fallback').attributes('src')).toBe(
+      '/public/visual/avatar/idle.webp'
+    );
     shell.unmount();
   });
   it('聊天发送向辅助工具说明禁用状态，填写目标后才创建学习记录', async () => {
@@ -2517,7 +2521,7 @@ describe('学习空间的实际入口与目录', () => {
       global: {
         stubs: {
           ...stubs,
-          LearningShell: { template: '<div><slot /><slot name="controls" /></div>' },
+          LearningShell: { template: '<div><slot /><slot name="controls" /><slot name="composer" /></div>' },
           NumberLine: true
         }
       }
@@ -2540,7 +2544,7 @@ describe('学习空间的实际入口与目录', () => {
       global: {
         stubs: {
           ...stubs,
-          LearningShell: { template: '<div><slot /><slot name="controls" /></div>' },
+          LearningShell: { template: '<div><slot /><slot name="controls" /><slot name="composer" /></div>' },
           NumberLine: true
         }
       }
@@ -2552,9 +2556,12 @@ describe('学习空间的实际入口与目录', () => {
     expect(button('提交作答').attributes('aria-disabled')).toBe('true');
     await button('提交作答').trigger('tap');
     expect(store.state.attempts).toHaveLength(0);
-    expect(button('停止当前任务').attributes('aria-disabled')).toBe('false');
+    expect(wrapper.find('#learning-composer [aria-label="停止当前任务"]').exists()).toBe(false);
+    expect(wrapper.findAll('#learning-composer .muse-send[aria-label="取消请求"]')).toHaveLength(1);
+    const stop = wrapper.get('#learning-composer .muse-send[aria-label="取消请求"]');
+    expect(stop.attributes('aria-disabled')).toBe('false');
     const cancel = vi.spyOn(store, 'cancel');
-    await button('取消请求').trigger('tap');
+    await stop.trigger('tap');
     expect(cancel).toHaveBeenCalledOnce();
     expect(wrapper.find('.composer textarea').element.value).toBe('20');
     cancel.mockRestore();
@@ -2571,7 +2578,7 @@ describe('学习空间的实际入口与目录', () => {
       global: {
         stubs: {
           ...stubs,
-          LearningShell: { template: '<div><slot /><slot name="controls" /></div>' },
+          LearningShell: { template: '<div><slot /><slot name="controls" /><slot name="composer" /></div>' },
           NumberLine: true
         }
       }
@@ -2679,9 +2686,10 @@ describe('学习空间的实际入口与目录', () => {
       expect(uni.switchTab).not.toHaveBeenCalled();
       expect(store.exportData()).toBe(before);
       const pageTimers = schedule.mock.calls.flatMap((call, index) =>
-        [1800, 4200, 350, 1200, 2500].includes(call[1]) ? [schedule.mock.results[index].value] : []
+        [4200, 350, 1200, 2500].includes(call[1]) ? [schedule.mock.results[index].value] : []
       );
-      expect(pageTimers).toHaveLength(5);
+      expect(pageTimers).toHaveLength(4);
+      expect(schedule.mock.calls.some((call) => call[1] === 1800)).toBe(false);
       wrapper.unmount();
       for (const timer of pageTimers) expect(clear).toHaveBeenCalledWith(timer);
       expect(clear).not.toHaveBeenCalledWith(unrelated);
@@ -2726,11 +2734,12 @@ describe('学习空间的实际入口与目录', () => {
       store.commit('task.stop', { conversationId: store.selectedConversationId });
       const original = JSON.parse(store.exportData());
       let wrapper = mount(LearningLanding, { global: { stubs } });
-      await wrapper.get('.playful-contact-links button').trigger('tap');
-      expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/learning/index' }));
+      expect(wrapper.find('.app-entry').exists()).toBe(true);
       expect(JSON.parse(store.exportData())).toEqual(original);
       wrapper.unmount();
       wrapper = mount(LearningPage, { global: { stubs: { ...stubs, LearningLab: true } } });
+      await wrapper.get('.mobile-menu').trigger('tap');
+      await wrapper.get('.new-session').trigger('tap');
       await wrapper.get('textarea[aria-label="消息或作答"]').setValue(goal);
       expect(JSON.parse(store.exportData())).toEqual(original);
       await wrapper.get('[aria-label="发送"]').trigger('tap');
@@ -2851,7 +2860,8 @@ describe('学习空间的实际入口与目录', () => {
         await flushPromises();
         expect(store.scienceRetest.day).toBe('2026-10-08');
         expect(control('已安排 10/08').attributes('disabled')).toBeDefined();
-        await control('停止当前任务').trigger('tap');
+        await wrapper.get('#learning-composer textarea').setValue('停止当前任务');
+        await wrapper.get('#learning-composer .muse-send').trigger('tap');
         await flushPromises();
         const stopped = store.exportData();
         for (const label of ['看计算方法', '换条件独立作答', '提交作答']) {
@@ -2867,10 +2877,10 @@ describe('学习空间的实际入口与目录', () => {
       }
     }
   );
-  it('首页直接开始真实学习、保留来源口径，私人资料入口进入校对面板', async () => {
+  it('首页直接开始真实学习、保留来源口径，私人资料进入资料库', async () => {
     let wrapper = mount(LearningLanding, { global: { stubs } });
     const store = useConversationLearningStore();
-    await wrapper.get('.playful-contact-links button').trigger('tap');
+    expect(wrapper.find('.app-entry').exists()).toBe(true);
     expect(store.state.conversations).toHaveLength(0);
     wrapper.unmount();
     wrapper = mount(LearningPage, { global: { stubs } });
@@ -2880,25 +2890,26 @@ describe('学习空间的实际入口与目录', () => {
     expect(store.active.goal).toBe('12 + 8');
     expect(store.activeQuestion.validation.type).toBe('number');
     expect(store.summary.validAnswers).toBe(0);
-    expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/learning/index' }));
     await wrapper
-      .findAll('.space-nav-item')
-      .find((button) => button.text().trim() === '私人资料')
+      .findAll('.rail-item')
+      .find((button) => button.attributes('aria-label') === '资料库')
       .trigger('tap');
     await flushPromises();
-    expect(wrapper.find('#material-intake').exists()).toBe(true);
+    expect(uni.navigateTo).toHaveBeenCalledWith(
+      expect.objectContaining({ url: '/pages/archive/index?view=materials' })
+    );
     wrapper.unmount();
   });
-  it('目录打开聚焦关闭按钮，Escape 关闭并恢复原按钮焦点', async () => {
+  it('目录打开聚焦搜索，Escape 关闭并恢复原按钮焦点', async () => {
     const wrapper = mount(LearningShell, { attachTo: document.body, global: { stubs } });
     await wrapper.find('.mobile-menu').trigger('tap');
     await flushPromises();
     expect(wrapper.find('.space-sidebar').classes()).toContain('sidebar-open');
-    expect(document.activeElement).toBe(wrapper.find('.sidebar-close').element);
-    expect(wrapper.find('.space-main').attributes()).toHaveProperty('inert');
-    await wrapper.find('.sidebar-close').trigger('keydown', { key: 'Escape' });
+    expect(document.activeElement).toBe(wrapper.find('.space-sidebar input').element);
+    expect(wrapper.find('.space-main').attributes()).not.toHaveProperty('inert');
+    await wrapper.find('.space-sidebar input').trigger('keydown', { key: 'Escape' });
     await flushPromises();
-    expect(wrapper.find('.space-sidebar').classes()).not.toContain('sidebar-open');
+    expect(wrapper.find('.space-sidebar.sidebar-open').exists()).toBe(false);
     expect(document.activeElement).toBe(wrapper.find('.mobile-menu').element);
     wrapper.unmount();
   });
@@ -2939,5 +2950,155 @@ it('统一学习页显示保存的完整阅读、指定片段和待核对来源�
   } finally {
     wrapper.unmount();
     store.$dispose();
+  }
+});
+
+it('Muse settings preview appearance in a draft and save only on confirmation', async () => {
+  const theme = useThemeStore();
+  theme.setDarkMode(false);
+  const store = useConversationLearningStore();
+  const before = store.exportData();
+  const wrapper = mount(ProfilePage, { global: { stubs } });
+  try {
+    await wrapper.get('[aria-label="深色"]').trigger('tap');
+    expect(theme.isDark).toBe(false);
+    const save = wrapper.findAll('.settings-actions button').find((button) => button.text() === '保存');
+    await save.trigger('tap');
+    expect(theme.isDark).toBe(true);
+    expect(store.exportData()).toBe(before);
+  } finally {
+    wrapper.unmount();
+  }
+});
+it('Muse directory width is keyboard bounded and Escape restores focus', async () => {
+  const wrapper = mount(LearningShell, { global: { stubs }, attachTo: document.body });
+  try {
+    await wrapper.get('.mobile-menu').trigger('tap');
+    const separator = wrapper.get('[role="separator"]');
+    await separator.trigger('keydown', { key: 'End' });
+    expect(separator.attributes('aria-valuenow')).toBe('420');
+    await separator.trigger('keydown', { key: 'ArrowRight' });
+    expect(separator.attributes('aria-valuenow')).toBe('420');
+    await separator.trigger('keydown', { key: 'Home' });
+    await separator.trigger('keydown', { key: 'ArrowRight', shiftKey: true });
+    expect(separator.attributes('aria-valuenow')).toBe('304');
+    await separator.trigger('keydown', { key: 'Home' });
+    await separator.trigger('keydown', { key: 'ArrowLeft' });
+    expect(separator.attributes('aria-valuenow')).toBe('240');
+    await separator.trigger('keydown', { key: 'Escape' });
+    await flushPromises();
+    expect(wrapper.get('.mobile-menu').attributes('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(wrapper.get('.mobile-menu').element);
+  } finally {
+    wrapper.unmount();
+  }
+});
+
+it('Muse search focuses the query instead of the close button', async () => {
+  const wrapper = mount(LearningShell, { global: { stubs }, attachTo: document.body });
+  try {
+    await wrapper.get('.rail-item[aria-label="搜索题目、原答或对话"]').trigger('tap');
+    await flushPromises();
+    expect(document.activeElement).toBe(wrapper.get('.space-sidebar input').element);
+  } finally {
+    wrapper.unmount();
+  }
+});
+
+it('Muse drawer resize cancellation preserves width and facts; a handle click closes it', async () => {
+  const store = useConversationLearningStore();
+  const before = store.exportData();
+  const wrapper = mount(LearningShell, { global: { stubs }, attachTo: document.body });
+  const pointer = (type, clientX) => new PointerEvent(type, { pointerId: 7, clientX, button: 0 });
+  try {
+    await wrapper.get('.mobile-menu').trigger('tap');
+    const separator = wrapper.get('[role="separator"]');
+    await separator.trigger('pointerdown', { pointerId: 7, clientX: 240, button: 0 });
+    window.dispatchEvent(pointer('pointermove', 320));
+    await flushPromises();
+    expect(separator.attributes('aria-valuenow')).toBe('320');
+    expect(wrapper.classes()).toContain('is-resizing');
+    window.dispatchEvent(pointer('pointercancel', 320));
+    await flushPromises();
+    expect(separator.attributes('aria-valuenow')).toBe('240');
+    expect(wrapper.get('.space-sidebar').classes()).toContain('sidebar-open');
+    expect(wrapper.classes()).not.toContain('is-resizing');
+    await separator.trigger('pointerdown', { pointerId: 7, clientX: 240, button: 0 });
+    window.dispatchEvent(pointer('pointerup', 240));
+    await flushPromises();
+    expect(wrapper.get('.mobile-menu').attributes('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(wrapper.get('.mobile-menu').element);
+    expect(store.exportData()).toBe(before);
+  } finally {
+    wrapper.unmount();
+  }
+});
+
+it('Muse edge drag previews the original threshold, ignores other pointers and cancels without opening or saving facts', async () => {
+  const store = useConversationLearningStore();
+  const before = store.exportData();
+  const wrapper = mount(LearningShell, { global: { stubs }, attachTo: document.body });
+  const pointer = (type, clientX, pointerId = 8) => new PointerEvent(type, { pointerId, clientX, button: 0 });
+  try {
+    const edge = () => wrapper.get('.directory-edge');
+    await edge().trigger('pointerdown', { pointerId: 8, clientX: 78, button: 0 });
+    window.dispatchEvent(pointer('pointermove', 200, 9));
+    await flushPromises();
+    expect(wrapper.find('.directory-edge-preview').exists()).toBe(false);
+    window.dispatchEvent(pointer('pointermove', 142));
+    await flushPromises();
+    expect(wrapper.get('.directory-edge-preview').attributes('style')).toContain('width: 64px');
+    window.dispatchEvent(pointer('pointerup', 142));
+    await flushPromises();
+    expect(wrapper.get('.mobile-menu').attributes('aria-expanded')).toBe('false');
+    await edge().trigger('pointerdown', { pointerId: 8, clientX: 78, button: 0 });
+    window.dispatchEvent(pointer('pointermove', 320));
+    window.dispatchEvent(pointer('pointercancel', 320));
+    await flushPromises();
+    expect(wrapper.find('.directory-edge-preview').exists()).toBe(false);
+    expect(wrapper.get('.mobile-menu').attributes('aria-expanded')).toBe('false');
+    await edge().trigger('pointerdown', { pointerId: 8, clientX: 78, button: 0 });
+    window.dispatchEvent(pointer('pointermove', 143));
+    window.dispatchEvent(pointer('pointerup', 143));
+    await flushPromises();
+    expect(wrapper.get('.space-sidebar').classes()).toContain('sidebar-open');
+    expect(document.activeElement).toBe(wrapper.get('.space-sidebar input').element);
+    expect(store.exportData()).toBe(before);
+  } finally {
+    wrapper.unmount();
+  }
+  window.dispatchEvent(pointer('pointermove', 400));
+  expect(store.exportData()).toBe(before);
+});
+
+it('Muse desktop pin preserves chat interaction while the mobile drawer remains modal', async () => {
+  const store = useConversationLearningStore();
+  const before = store.exportData();
+  const wrapper = mount(LearningShell, { global: { stubs }, attachTo: document.body });
+  try {
+    await wrapper.get('.mobile-menu').trigger('tap');
+    await flushPromises();
+    expect(wrapper.get('.space-main').attributes()).not.toHaveProperty('inert');
+    await wrapper.get('.sidebar-options').trigger('tap');
+    await wrapper.get('.directory-options-menu [aria-pressed]').trigger('tap');
+    await wrapper.get('.space-content').trigger('pointerdown');
+    await flushPromises();
+    expect(wrapper.find('.space-sidebar.sidebar-open').exists()).toBe(true);
+    await wrapper.get('.sidebar-options').trigger('tap');
+    await wrapper.get('.directory-options-menu [aria-pressed]').trigger('tap');
+    await wrapper.get('.space-content').trigger('pointerdown');
+    await flushPromises();
+    expect(wrapper.find('.space-sidebar.sidebar-open').exists()).toBe(false);
+    const width = window.innerWidth;
+    window.innerWidth = 390;
+    window.dispatchEvent(new Event('resize'));
+    await wrapper.get('.mobile-menu').trigger('tap');
+    await flushPromises();
+    expect(wrapper.get('.space-main').attributes()).toHaveProperty('inert');
+    window.innerWidth = width;
+    window.dispatchEvent(new Event('resize'));
+    expect(store.exportData()).toBe(before);
+  } finally {
+    wrapper.unmount();
   }
 });

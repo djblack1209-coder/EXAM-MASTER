@@ -91,6 +91,30 @@ describe('教学输出违规的字段路径', () => {
 });
 
 describe('模型响应解析的字段路径', () => {
+  it('新回复的优点需要逐字原答证据，历史记录保持原样', () => {
+    const request = requestFor('feedback');
+    const value = { ...coachFixture(request), strengths: ['句子结构完整'] };
+    const parse = (coach) => parseCoachModelOutput(JSON.stringify({ message: '继续', coach }), request).coach;
+    expect(normalizeCoachOutput(value, request).strengths).toEqual(['句子结构完整']);
+    expect(parse(value).strengths).toEqual([]);
+    expect(
+      parse({ ...value, strengthEvidence: [{ label: '句子结构完整', quote: 'Fabricated answer.' }] }).strengths
+    ).toEqual([]);
+    const grounded = parse({ ...value, strengthEvidence: [{ label: '句子结构完整', quote: request.input }] });
+    expect(grounded.strengths).toEqual(['句子结构完整']);
+    expect(normalizeCoachOutput(grounded, request).strengthEvidence).toEqual([
+      { label: '句子结构完整', quote: request.input }
+    ]);
+    expect(parse({ ...value, strengths: [{ label: '句子结构完整', quote: request.input }] }).strengths).toEqual([
+      '句子结构完整'
+    ]);
+    expect(parse({ ...value, strengths: [{ label: '句子结构完整', quote: 'Fabricated answer.' }] }).strengths).toEqual(
+      []
+    );
+    expect(() =>
+      parse({ ...value, strengths: [{ label: '句子结构完整', quote: request.input, tool: 'finish' }] })
+    ).toThrow();
+  });
   it('JSON 无法解析时定位原始响应，不猜测内部字段', () => {
     expectViolation(
       () => parseCoachModelOutput('{', requestFor('summary')),

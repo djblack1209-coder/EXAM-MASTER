@@ -17,9 +17,14 @@ use tauri::{AppHandle, Manager, State};
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_opener::OpenerExt;
 mod notifications;
+mod voice;
+use voice::{voice_capability, voice_start, voice_stop, voice_cancel};
+mod workspace_windows;
+use workspace_windows::*;
 use notifications::{
     begin_learning_notifications, learning_notification_permission, replace_learning_notifications,
-    take_learning_notification_actions, LearningNotifications,
+    take_learning_notification_actions, test_learning_notification, open_learning_notification_settings,
+    LearningNotifications,
 };
 
 const MAX_BYTES: u64 = 48_000_000;
@@ -232,6 +237,7 @@ fn filename(kind: &str) -> Result<&'static str, String> {
     match kind {
         "records" => Ok("learning-records.json"),
         "locator" => Ok("wenli-upload-locator.json"),
+        "poster" => Ok("Yozi-AI-study.png"),
         _ => Err("不支持此文件类型".into()),
     }
 }
@@ -277,6 +283,7 @@ fn validate_content(kind: &str, content: &str) -> Result<(), String> {
         return Err("学习文件超过容量上限".into());
     }
     let value: Value = serde_json::from_str(content).map_err(|_| "文件不是有效 JSON")?;
+    if kind == "poster" { return poster_bytes(&value).map(|_| ()); }
     check_keys(&value, 0)?;
     let valid = if kind == "locator" {
         value["format"] == "wenli-upload-locator-v1"
@@ -292,6 +299,18 @@ fn validate_content(kind: &str, content: &str) -> Result<(), String> {
         return Err("文件不是受支持的学习记录或定位登记".into());
     }
     Ok(())
+}
+fn poster_bytes(value: &Value) -> Result<Vec<u8>, String> {
+    let fields = value.as_object().ok_or("图片数据无效")?;
+    if fields.len() != 2 || value["format"] != "yozi-learning-poster-v1" { return Err("图片格式无效".into()); }
+    let raw = value["png"].as_array().ok_or("图片数据无效")?;
+    if raw.len() < 33 || raw.len() > 2_000_000 { return Err("图片大小超过上限".into()); }
+    let bytes: Vec<u8> = raw.iter().map(|item| item.as_u64().filter(|n| *n <= 255).map(|n| n as u8).ok_or("图片数据无效".to_string())).collect::<Result<_, _>>()?;
+    if bytes[..8] != [137, 80, 78, 71, 13, 10, 26, 10] || bytes[8..16] != [0, 0, 0, 13, 73, 72, 68, 82] { return Err("图片不是 PNG".into()); }
+    let width = u32::from_be_bytes(bytes[16..20].try_into().unwrap());
+    let height = u32::from_be_bytes(bytes[20..24].try_into().unwrap());
+    if width != 1080 || height != 1440 || !bytes.ends_with(&[0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130]) { return Err("图片尺寸或结尾无效".into()); }
+    Ok(bytes)
 }
 fn take_selection(files: &LearningFiles, id: &str, kind: &str) -> Result<Selection, String> {
     let mut entry = files.selection.lock().map_err(|_| "文件选择状态不可用")?;
@@ -311,6 +330,7 @@ async fn choose_learning_save(
     kind: String,
 ) -> Result<Option<SelectionReceipt>, String> {
     let name = filename(&kind)?;
+    let extension = if kind == "poster" { "png" } else { "json" };
     if files.choosing.swap(true, Ordering::SeqCst) {
         return Err("请先完成当前文件选择".into());
     }
@@ -320,7 +340,7 @@ async fn choose_learning_save(
             .file()
             .set_title("保存Yozi AI学习文件")
             .set_file_name(name)
-            .add_filter("JSON", &["json"])
+            .add_filter(if extension == "png" { "PNG" } else { "JSON" }, &[extension])
             .blocking_save_file()
     })
     .await
@@ -332,10 +352,10 @@ async fn choose_learning_save(
     if path
         .extension()
         .and_then(|x| x.to_str())
-        .map(|x| x.eq_ignore_ascii_case("json"))
+        .map(|x| x.eq_ignore_ascii_case(extension))
         != Some(true)
     {
-        return Err("请使用 .json 文件扩展名".into());
+        return Err(format!("请使用 .{extension} 文件扩展名"));
     }
     let id = uuid::Uuid::new_v4().to_string();
     let receipt = SelectionReceipt {
@@ -363,6 +383,7 @@ async fn write_learning_selection(
     content: String,
 ) -> Result<(), String> {
     validate_content(&kind, &content)?;
+    let bytes = if kind == "poster" { poster_bytes(&serde_json::from_str::<Value>(&content).map_err(|_| "图片数据无效")?)? } else { content.into_bytes() };
     let chosen = take_selection(&files, &selection, &kind)?;
     tauri::async_runtime::spawn_blocking(move || {
         if let Ok(meta) = fs::symlink_metadata(&chosen.path) {
@@ -374,7 +395,7 @@ async fn write_learning_selection(
         let mut temporary =
             tempfile::NamedTempFile::new_in(parent).map_err(|_| "无法创建保存文件")?;
         temporary
-            .write_all(content.as_bytes())
+            .write_all(&bytes)
             .map_err(|_| "学习文件写入失败")?;
         temporary
             .as_file()
@@ -580,6 +601,7 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             if let Some(window) = app.get_webview_window("main") {
+                let _ = window.show();
                 let _ = window.set_focus();
             }
         }))
@@ -589,9 +611,30 @@ fn main() {
                 .open_js_links_on_click(false)
                 .build(),
         )
+        .on_window_event(|window, event| {
+            if window.label() == "main" {
+                if matches!(event, tauri::WindowEvent::CloseRequested { .. } | tauri::WindowEvent::Destroyed) {
+                    voice::cancel_all();
+                }
+                if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                    if window.app_handle().get_webview_window("settings").is_some() {
+                        api.prevent_close();
+                        let _ = window.hide();
+                    }
+                }
+            }
+        })
+        .on_page_load(|webview, payload| {
+            if webview.label() == "main" && payload.event() == tauri::webview::PageLoadEvent::Started {
+                voice::cancel_all();
+            }
+        })
         .manage(LearningFiles::default())
         .manage(LearningNotifications::default())
+        .manage(SettingsRefresh::default())
         .setup(|app| {
+            #[cfg(target_os = "macos")]
+            install_chinese_menu(app.handle())?;
             notifications::initialize(app.handle().clone());
             let config = app
                 .config()
@@ -602,7 +645,15 @@ fn main() {
                 .ok_or("main window configuration missing")?;
             let builder = tauri::WebviewWindowBuilder::from_config(app, config)?;
             #[cfg(target_os = "macos")]
-            let builder = if app.config().identifier == "cn.wangshiliang.wenli.qa.journey" {
+            let builder = builder.title_bar_style(tauri::TitleBarStyle::Overlay).hidden_title(true);
+            #[cfg(target_os = "macos")]
+            let builder = if app.config().identifier == "cn.wangshiliang.wenli.localqa93d5ef76c442" {
+                // 日常入口沿用既有资料域，主窗和设置窗必须一致。
+                builder.data_store_identifier([
+                    0x93, 0xd5, 0xef, 0x76, 0xc4, 0x42, 0x47, 0x05, 0x81, 0xc9, 0x5c, 0x9a, 0xd9,
+                    0x2f, 0x1d, 0xfe,
+                ])
+            } else if app.config().identifier == "cn.wangshiliang.wenli.qa.journey" {
                 // 仅受限本机候选标识采用独立WebKit资料域；正式入口和用户资料域不变。
                 builder.data_store_identifier([
                     0x51, 0x92, 0x20, 0x26, 0x10, 0x10, 0x42, 0x72, 0x91, 0x29, 0x35, 0x73, 0x88,
@@ -631,14 +682,44 @@ fn main() {
             begin_learning_notifications,
             learning_notification_permission,
             replace_learning_notifications,
-            take_learning_notification_actions
+            take_learning_notification_actions,
+            test_learning_notification,
+            open_learning_notification_settings,
+            open_desktop_settings,
+            close_desktop_settings,
+            open_desktop_workspace,
+            complete_desktop_model_intake,
+            set_desktop_appearance,
+            request_settings_notification_refresh,
+            complete_settings_notification_refresh,
+            voice_capability,
+            voice_start,
+            voice_stop,
+            voice_cancel
         ])
-        .run(tauri::generate_context!())
-        .expect("Yozi AI desktop could not start");
+        .build(tauri::generate_context!())
+        .expect("Yozi AI desktop could not start")
+        .run(|_, event| {
+            if matches!(event, tauri::RunEvent::Exit) { voice::cancel_all(); }
+        });
 }
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn poster_export_is_bounded_png_and_keeps_record_validation() {
+        assert_eq!(filename("poster").unwrap(), "Yozi-AI-study.png");
+        assert!(validate_content("poster", "{\"format\":\"yozi-learning-poster-v1\",\"png\":[1,2,3]}").is_err());
+        assert!(validate_content("poster", "{\"version\":1,\"owner\":\"owner\",\"events\":[]}").is_err());
+        let mut bytes = vec![137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82];
+        bytes.extend(1080u32.to_be_bytes()); bytes.extend(1440u32.to_be_bytes());
+        bytes.extend([8, 6, 0, 0, 0, 0, 0, 0, 0]);
+        bytes.extend([0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130]);
+        assert!(poster_bytes(&serde_json::json!({"format":"yozi-learning-poster-v1","png":bytes})).is_ok());
+        bytes[16] = 1;
+        assert!(poster_bytes(&serde_json::json!({"format":"yozi-learning-poster-v1","png":bytes})).is_err());
+        assert!(validate_content("records", "{\"format\":\"yozi-learning-poster-v1\",\"png\":[]}").is_err());
+    }
     #[test]
     fn material_consent_expiry_and_one_use_are_required() {
         let files = LearningFiles::default();

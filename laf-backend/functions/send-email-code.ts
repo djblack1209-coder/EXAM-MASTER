@@ -12,6 +12,7 @@ import { getClientIp, clientIpUnavailable } from './_shared/client-ip.js';
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
 import { assertTrialEmail, TrialError } from './_shared/learning-trial.js';
+import { DEV_TEST } from './_shared/build-channel.js';
 import { createLogger } from './_shared/api-response.js';
 
 const logger = createLogger('[SendEmailCode]');
@@ -86,6 +87,8 @@ export default async function (ctx) {
         requestId
       };
     }
+
+    if (DEV_TEST) return { code: 0, success: true, message: '测试验证码：000000', retryAfter: 0, requestId };
 
     if (isReservedEmailDomain(email)) {
       return {

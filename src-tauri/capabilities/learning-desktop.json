@@ -6,6 +6,10 @@
   "local": true,
   "platforms": ["macOS", "windows"],
   "permissions": [
+    "allow-voice-capability",
+    "allow-voice-start",
+    "allow-voice-stop",
+    "allow-voice-cancel",
     "allow-choose-learning-save",
     "allow-write-learning-selection",
     "allow-discard-learning-selection",
@@ -20,7 +24,14 @@
     "allow-learning-notification-permission",
     "allow-replace-learning-notifications",
     "allow-take-learning-notification-actions",
+    "allow-test-learning-notification",
+    "allow-open-learning-notification-settings",
     "core:event:allow-listen",
-    "core:event:allow-unlisten"
+    "core:event:allow-unlisten",
+    "allow-open-desktop-settings",
+    "allow-complete-desktop-model-intake",
+    "allow-set-desktop-appearance",
+    "allow-complete-settings-notification-refresh",
+    "core:window:allow-start-dragging"
   ]
 }

@@ -96,7 +96,10 @@ export function learningInsights(state, now = Date.now(), conversationId = null)
   const scope = session?.goal;
   const profile = {};
   for (const entry of state.profile) {
-    if (session && entry.source === 'self_report' && entry.scope === scope) profile[entry.field] = entry;
+    if (entry.retractedBy || entry.supersededBy || (entry.conversationId && entry.conversationId !== session?.id))
+      continue;
+    if (session && entry.source === 'self_report' && (entry.scope === scope || entry.conversationId === session.id))
+      profile[entry.field] = entry;
   }
   const today = dayKey(now, state.timezone);
   const deadline = profile.deadline?.value || null;

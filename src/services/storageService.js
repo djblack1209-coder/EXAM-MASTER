@@ -1519,6 +1519,164 @@ class StorageService {
     }
   }
 
+  // Explicit device reset only. Rollback images stay in memory, never in a backup/log.
+  // The identity generation remains monotonic after a successful commit, revoking late writes.
+  localResetNeedsRecovery() {
+    return Boolean(this._localResetRecovery);
+  }
+
+  resetLocalData(session, { assertWritable = () => undefined } = {}) {
+    const identity = JSON.stringify([session?.owner, session?.epoch, session?.proof]);
+    if (this._localReset?.identity === identity) return this._localReset.promise;
+    const transaction = { identity };
+    const run = async () => {
+      const perform = () => {
+        assertSession(session);
+        assertWritable();
+        const generation = readIdentityGeneration();
+        const keys = uni.getStorageInfoSync().keys;
+        if (!Array.isArray(keys)) throw sessionUnavailable();
+        const before = new Map(
+          keys.map((key) => [
+            key,
+            JSON.parse(JSON.stringify(readStorageStrict(getRuntimeUni(), key, true, { allowEmpty: true })))
+          ])
+        );
+        const keep = new Set(IDENTITY_CONTROL_KEYS);
+        // uni H5 preferences and older records can use its physical storage,
+        // alongside the compatibility runtime. Limit this to Yozi-owned keys.
+        const physical = new Map();
+        if (typeof localStorage !== 'undefined')
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (
+              key &&
+              (key.startsWith(LOCAL_COMPAT_PREFIX) ||
+                GLOBAL_KEYS.has(identityStorageKey(key)) ||
+                /^(?:yozi_|wenli_|exam_master_|u_|_enc_|EXAM_|conversation_learning_|learning_|v30_|quiz_|__DC_STAT_)/.test(
+                  key
+                ))
+            )
+              physical.set(key, localStorage.getItem(key));
+          }
+        this._localResetRecovery = { records: before, physical, generation };
+        identityWriteDepth++;
+        try {
+          for (const key of keys) if (!keep.has(key)) uni.removeStorageSync(key);
+          for (const key of physical.keys()) if (!keep.has(identityStorageKey(key))) localStorage.removeItem(key);
+          if (
+            uni.getStorageInfoSync().keys.some((key) => !keep.has(key)) ||
+            [...physical.keys()].some((key) => !keep.has(identityStorageKey(key)) && localStorage.getItem(key) !== null)
+          )
+            throw new Error('RESET_NOT_CLEARED');
+          const revoked = this._clearRevokedCredentialsLocked(undefined, false, generation);
+          if (!revoked || captureSession()?.owner !== 'guest') throw new Error('RESET_NOT_REVOKED');
+          clearPendingWrites();
+          this._localResetRecovery = null;
+          transaction.committed = true;
+          return { success: true };
+        } catch {
+          // All keys are restored and verified before returning a retryable failure.
+          let restored = true;
+          for (const key of uni.getStorageInfoSync().keys)
+            if (!before.has(key)) {
+              try {
+                uni.removeStorageSync(key);
+              } catch {
+                restored = false;
+              }
+            }
+          for (const [key, value] of before) {
+            try {
+              uni.setStorageSync(key, value);
+            } catch {
+              restored = false;
+            }
+          }
+          for (const [key, value] of before) {
+            try {
+              if (
+                JSON.stringify(readStorageStrict(getRuntimeUni(), key, true, { allowEmpty: true })) !==
+                JSON.stringify(value)
+              )
+                restored = false;
+            } catch {
+              restored = false;
+            }
+          }
+          for (const [key, value] of physical) {
+            try {
+              localStorage.setItem(key, value);
+              if (localStorage.getItem(key) !== value) restored = false;
+            } catch {
+              restored = false;
+            }
+          }
+          if (restored) this._localResetRecovery = null;
+          else {
+            try {
+              this._localResetRecovery.generation = readIdentityGeneration();
+            } catch {
+              /* Keep the original fence. */
+            }
+          }
+          return { success: false, code: restored ? 'RESET_ROLLED_BACK' : 'RESET_RECOVERY_REQUIRED' };
+        } finally {
+          identityWriteDepth--;
+          pendingIdentityChange = undefined;
+          if (transaction.committed) notifyIdentityChange({ type: 'logout' });
+        }
+      };
+      // Respect the existing whole-window learning lease, including other accounts on this device.
+      const keys = uni.getStorageInfoSync().keys || [];
+      const owners = new Set(['guest']);
+      for (const key of keys) {
+        const owner = key.match(/^(?:_enc_)?u_(.+)_conversation_learning_v1(?:_|$)/)?.[1];
+        if (owner) owners.add(owner);
+      }
+      owners.delete(session?.owner);
+      const locks = globalThis.navigator?.locks;
+      const acquire = (remaining) => {
+        if (!locks?.request || !remaining.length) return withIdentityLock(perform);
+        const [owner, ...rest] = remaining;
+        return locks.request(`exam-master:learning-v1:${owner}`, { mode: 'exclusive', ifAvailable: true }, (lock) => {
+          if (!lock) return { success: false, code: 'OTHER_WINDOW_ACTIVE' };
+          return acquire(rest);
+        });
+      };
+      if (this._localResetRecovery) {
+        // A failed physical rollback must be recovered before another reset can be attempted.
+        return withIdentityLock(() => {
+          if (readIdentityGeneration() !== this._localResetRecovery.generation)
+            return { success: false, code: 'RESET_RECOVERY_REQUIRED' };
+          for (const [key, value] of this._localResetRecovery.records) uni.setStorageSync(key, value);
+          for (const [key, value] of this._localResetRecovery.records)
+            if (
+              JSON.stringify(readStorageStrict(getRuntimeUni(), key, true, { allowEmpty: true })) !==
+              JSON.stringify(value)
+            )
+              return { success: false, code: 'RESET_RECOVERY_REQUIRED' };
+          for (const [key, value] of this._localResetRecovery.physical) {
+            localStorage.setItem(key, value);
+            if (localStorage.getItem(key) !== value) return { success: false, code: 'RESET_RECOVERY_REQUIRED' };
+          }
+          this._localResetRecovery = null;
+          return { success: false, code: 'RESET_ROLLED_BACK' };
+        });
+      }
+      return acquire([...owners].sort());
+    };
+    transaction.promise = Promise.resolve()
+      .then(run)
+      .catch(() => ({ success: false, code: 'RESET_UNAVAILABLE' }))
+      .then((result) => {
+        if (!result.success && this._localReset === transaction) this._localReset = null;
+        return result;
+      });
+    this._localReset = transaction;
+    return transaction.promise;
+  }
+
   /**
    * 检查指定键是否存在
    * @param {string} key - 要检查的键名

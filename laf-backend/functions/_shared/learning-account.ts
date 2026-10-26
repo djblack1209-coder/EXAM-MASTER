@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { DEV_TEST } from './build-channel.js';
 import {
   modelResultPolicy,
   maintainModelResources,
@@ -19,7 +20,186 @@ export class AccountError extends Error {
 const requireValue = (condition: any, code: string, message: string) => {
   if (!condition) throw new AccountError(code, message);
 };
+// Diagnostics keep schema coordinates, never arbitrary model-provided field names or reply text.
+const VALIDATION_FIELDS = new Set(
+  'context turns item profile goal-category-subjects exam-minutes exam minutes deadline foundation reply first json raw option options profile-evidence root turn-limit cards id kind title prompt example sourceId sourceQuote sourcePage source writing patterns learned tomorrow target lines original advice rewrite dimensions name comment weaknesses phrases strengths strengthEvidence weaknessEvidence classification feedbackVersion finish_reason bandResult bandCandidate contract binding submissionId answerHash taskId taskVersion rubricId rubricVersion requestId status nullReason band bandRange scoreEstimate maxScore taskCoverage observations key evidenceSpans start end note integrityFlags label quote coach message tools question'.split(
+    ' '
+  )
+);
+export function modelValidationPath(code: unknown, path: unknown) {
+  if ((code !== 'COACH_INVALID' && code !== 'INTAKE_INVALID') || typeof path !== 'string' || !path || path.length > 160)
+    return null;
+  return path
+    .split('.')
+    .map((part) => {
+      const field = /^([a-zA-Z][a-zA-Z0-9_-]*)(?:\[\d{1,4}\])*$/.exec(part);
+      return field && VALIDATION_FIELDS.has(field[1]) ? part : 'unknown';
+    })
+    .join('.')
+    .slice(0, 160);
+}
+export const DIAGNOSTIC_VERSION = 'diag-meta-1';
+export const DIAGNOSTIC_TTL_MS = 86400000;
+export type DiagnosticPolicy = {
+  devTest: boolean;
+  production: boolean;
+  capture: boolean;
+  ownerRead: boolean;
+  owners: readonly string[];
+};
+export function responseDiagnosticPolicy(): DiagnosticPolicy {
+  return {
+    devTest: DEV_TEST,
+    production: process.env.NODE_ENV === 'production',
+    capture: process.env.LEARNING_DIAGNOSTICS_CAPTURE_ENABLED === 'true',
+    ownerRead: process.env.LEARNING_DIAGNOSTICS_OWNER_READ_ENABLED === 'true',
+    owners: ['6adb8c775a0254ee25d2e062']
+  };
+}
+export function canReadResponseDiagnostics(owner: string, policy = responseDiagnosticPolicy()) {
+  return (
+    policy.devTest && !policy.production && policy.ownerRead && policy.owners.length === 1 && policy.owners[0] === owner
+  );
+}
+export function canCaptureResponseDiagnostics(owner: string, policy = responseDiagnosticPolicy()) {
+  return policy.capture && canReadResponseDiagnostics(owner, policy);
+}
+const DIAGNOSTIC_TYPES = [
+  'missing',
+  'null',
+  'array',
+  'object',
+  'string',
+  'number',
+  'boolean',
+  'json_object',
+  'invalid_json'
+];
+const DIAGNOSTIC_TYPE_FIELDS = [
+  'envelopeType',
+  'choicesType',
+  'choiceType',
+  'messageType',
+  'contentType',
+  'reasoning_contentType',
+  'reasoningType',
+  'thinkingType',
+  'finishReasonType',
+  'expectedType',
+  'actualType'
+];
+const DIAGNOSTIC_COUNT_FIELDS = [
+  'responseBytes',
+  'contentChars',
+  'reasoning_contentChars',
+  'reasoningChars',
+  'thinkingChars',
+  'syntaxPosition'
+];
+const DIAGNOSTIC_ENUMS: Record<string, string[]> = {
+  version: [DIAGNOSTIC_VERSION],
+  failureStage: ['http_envelope', 'json_parse', 'schema', 'secret_guard', 'unknown'],
+  positionUnit: ['utf16_code_unit', 'byte'],
+  networkStage: ['headers', 'received'],
+  mimeCategory: ['json', 'sse', 'text', 'other', 'missing'],
+  envelopeJson: ['valid', 'invalid'],
+  finishReason: ['stop', 'length', 'content_filter', 'tool_calls', 'function_call', 'end_turn', 'max_tokens', 'other'],
+  startToken: ['object', 'array', 'string', 'other', 'empty']
+};
+const DIAGNOSTIC_BOOLEANS = ['syntaxEnd', 'hasJsonFence', 'hasThinkingPrefix', 'hasBom'];
+const DIAGNOSTIC_FIELDS = [
+  'version',
+  'capturedAt',
+  'failureStage',
+  ...DIAGNOSTIC_TYPE_FIELDS,
+  'httpStatus',
+  ...DIAGNOSTIC_COUNT_FIELDS,
+  ...Object.keys(DIAGNOSTIC_ENUMS).filter((k) => !['version', 'failureStage'].includes(k)),
+  ...DIAGNOSTIC_BOOLEANS
+];
+export function checkResponseDiagnostics(value: any) {
+  const rejected = (event = 'DIAG_OMITTED_SCHEMA') => ({ diagnostic: null, event });
+  try {
+    if (
+      !value ||
+      typeof value !== 'object' ||
+      Array.isArray(value) ||
+      ![Object.prototype, null].includes(Object.getPrototypeOf(value))
+    )
+      return rejected();
+    const descriptors = Object.getOwnPropertyDescriptors(value);
+    if (
+      Reflect.ownKeys(value).some(
+        (key) =>
+          typeof key !== 'string' || !DIAGNOSTIC_FIELDS.includes(key) || !Object.hasOwn(descriptors[key], 'value')
+      )
+    )
+      return rejected();
+    if (!['version', 'capturedAt', 'failureStage'].every((key) => Object.hasOwn(descriptors, key))) return rejected();
+    const result: Record<string, any> = {};
+    for (const field of DIAGNOSTIC_FIELDS) {
+      if (!Object.hasOwn(descriptors, field)) continue;
+      const item = descriptors[field].value;
+      const valid =
+        field === 'capturedAt'
+          ? Number.isSafeInteger(item) && item >= 0
+          : field === 'httpStatus'
+            ? Number.isInteger(item) && item >= 100 && item <= 599
+            : DIAGNOSTIC_TYPE_FIELDS.includes(field)
+              ? DIAGNOSTIC_TYPES.includes(item)
+              : DIAGNOSTIC_COUNT_FIELDS.includes(field)
+                ? Number.isSafeInteger(item) && item >= 0 && item <= 2 * 1048576
+                : DIAGNOSTIC_BOOLEANS.includes(field)
+                  ? typeof item === 'boolean'
+                  : DIAGNOSTIC_ENUMS[field]?.includes(item);
+      if (!valid) return rejected();
+      result[field] = item;
+    }
+    if (
+      Object.hasOwn(result, 'syntaxPosition') !== Object.hasOwn(result, 'positionUnit') ||
+      (Object.hasOwn(result, 'syntaxPosition') &&
+        (result.failureStage !== 'json_parse' ||
+          (result.positionUnit === 'utf16_code_unit' &&
+            (!Number.isSafeInteger(result.contentChars) || result.syntaxPosition > result.contentChars))))
+    )
+      return rejected();
+    if (Buffer.byteLength(JSON.stringify(result)) > 1024) return rejected('DIAG_OMITTED_SIZE');
+    return { diagnostic: result, event: null };
+  } catch {
+    return rejected();
+  }
+}
+export function boundedResponseDiagnostics(value: any) {
+  return checkResponseDiagnostics(value).diagnostic;
+}
+export function isDiagReadable(value: any, now = Date.now()) {
+  const diagnostic = boundedResponseDiagnostics(value);
+  return Boolean(
+    diagnostic &&
+    Number.isSafeInteger(now) &&
+    diagnostic.capturedAt <= now &&
+    now - diagnostic.capturedAt < DIAGNOSTIC_TTL_MS
+  );
+}
+export function projectResponseDiagnostics(
+  account: any,
+  requestId: string,
+  owner: string,
+  now = Date.now(),
+  policy = responseDiagnosticPolicy()
+) {
+  if (!canReadResponseDiagnostics(owner, policy) || account?.user_id !== owner) return {};
+  const call = account.calls?.find((item: any) => item.id === requestId);
+  const diagnostic =
+    call?.status === 'failed' && isDiagReadable(call.responseDiagnostics, now)
+      ? boundedResponseDiagnostics(call.responseDiagnostics)
+      : null;
+  return diagnostic
+    ? { responseDiagnostics: diagnostic, diagnosticsState: 'available' }
+    : { diagnosticsState: 'unavailable' };
+}
 export function byokCallLimit(value = process.env.LEARNING_BYOK_CALL_LIMIT || '500') {
+  if (DEV_TEST) return 1000000;
   const limit = Number(value);
   requireValue(Number.isInteger(limit) && limit > 0 && limit <= 500, 'POLICY_INVALID', '自带API调用预算不合法');
   return limit;
@@ -75,17 +255,17 @@ export function reserveCall(account: any, input: any, now = Date.now(), policy =
     requireValue(previous.fingerprint === input.fingerprint, 'IDEMPOTENCY_CONFLICT', '同一请求标识对应不同输入');
     return { account, call: previous, reused: true };
   }
-  requireValue(account.calls.length < 500, 'RESOURCE_LIMIT', '用量账达到开发上限，需要归档');
+  requireValue(DEV_TEST || account.calls.length < 500, 'RESOURCE_LIMIT', '用量账达到开发上限，需要归档');
   requireValue(['platform', 'byok'].includes(input.source), 'INPUT_INVALID', '费用来源不合法');
   if (input.source === 'byok') {
     const callLimit = input.callLimit ?? 500;
     requireValue(
-      Number.isInteger(callLimit) && callLimit > 0 && callLimit <= 500,
+      Number.isInteger(callLimit) && callLimit > 0 && (DEV_TEST || callLimit <= 500),
       'POLICY_INVALID',
       '自带API调用预算不合法'
     );
     requireValue(
-      account.calls.filter((c: any) => c.source === 'byok').length < callLimit,
+      DEV_TEST || account.calls.filter((c: any) => c.source === 'byok').length < callLimit,
       'BYOK_LIMIT',
       '自带API请求预算已用完，已有学习记录仍可使用'
     );
@@ -103,7 +283,8 @@ export function reserveCall(account: any, input: any, now = Date.now(), policy =
       result.entitlement = { ...result.entitlement, week, spent: 0, reserved: 0 };
     }
     requireValue(
-      result.entitlement.spent + result.entitlement.reserved + input.units <= result.entitlement.weeklyUnits,
+      DEV_TEST ||
+        result.entitlement.spent + result.entitlement.reserved + input.units <= result.entitlement.weeklyUnits,
       'QUOTA_EXHAUSTED',
       '本周平台模型额度不足，可主动选择自带 API 或本地连接'
     );
@@ -154,7 +335,8 @@ export function settleCall(
   id: string,
   settlement: any,
   now = Date.now(),
-  policy: ModelResultPolicy = modelResultPolicy()
+  policy: ModelResultPolicy = modelResultPolicy(),
+  diagnosticPolicy: DiagnosticPolicy = responseDiagnosticPolicy()
 ) {
   const result = structuredClone(account);
   const call = result.calls.find((item: any) => item.id === id);
@@ -185,6 +367,27 @@ export function settleCall(
     call.resultPolicyVersion = policy.version;
   }
   call.errorCode = cancelled ? 'CANCELLED' : settlement.errorCode || null;
+  const validationPath =
+    call.status === 'failed' ? modelValidationPath(call.errorCode, settlement.validationPath) : null;
+  if (validationPath) call.validationPath = validationPath;
+  else delete call.validationPath;
+  if (
+    call.status === 'failed' &&
+    canCaptureResponseDiagnostics(account.user_id, diagnosticPolicy) &&
+    settlement.responseDiagnostics !== undefined
+  ) {
+    const checked = checkResponseDiagnostics(settlement.responseDiagnostics);
+    if (checked.event) console.warn(checked.event);
+    else if (result.calls.filter((item: any) => boundedResponseDiagnostics(item.responseDiagnostics)).length >= 32)
+      console.warn('DIAG_OMITTED_CAPACITY');
+    else if (
+      checked.diagnostic &&
+      checked.diagnostic.capturedAt <= now &&
+      modelResourceBytes(result) + Buffer.byteLength(JSON.stringify(checked.diagnostic)) <=
+        MODEL_ACCOUNT_RESERVE_MAX_BYTES
+    )
+      call.responseDiagnostics = checked.diagnostic;
+  }
   if (call.source === 'platform') {
     if (actualCost !== null) {
       result.cost.reserved = Math.max(0, result.cost.reserved - call.maxCost);
@@ -210,6 +413,14 @@ export function eraseModelResultCache(account: any, now = Date.now()) {
     erasedResults = 0;
   const pendingRequests: string[] = [];
   for (const call of result.calls) {
+    if (Object.hasOwn(call, 'responseDiagnostics')) {
+      delete call.responseDiagnostics;
+      changed = true;
+    }
+    if (Object.hasOwn(call, 'validationPath')) {
+      delete call.validationPath;
+      changed = true;
+    }
     if (call.result) {
       erasedResults++;
       call.result = null;

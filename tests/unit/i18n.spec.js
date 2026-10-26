@@ -118,6 +118,43 @@ describe('lightweight i18n', () => {
     }
     expect(pages.tabBar).toBeUndefined();
   });
+  it('updates the knowledge map native title when switching languages', () => {
+    vi.stubGlobal('getCurrentPages', () => [{ route: 'pages/learning/knowledge' }]);
+    expect(setLanguage('en')).toBe(true);
+    expect(uni.setNavigationBarTitle).toHaveBeenLastCalledWith({ title: 'Knowledge map' });
+    expect(setLanguage('zh-CN')).toBe(true);
+    expect(uni.setNavigationBarTitle).toHaveBeenLastCalledWith({ title: '知识框架' });
+  });
+  it.each([
+    ['materials', 'muse.library'],
+    ['plan', 'muse.goals'],
+    ['all', 'muse.activity'],
+    ['phrases', 'muse.phrases'],
+    ['usage', 'muse.usage']
+  ])('keeps the %s workspace title when a global onShow runs after search closes', async (view, key) => {
+    await import('@/i18n/muse.js');
+    const app = { config: { globalProperties: {} }, mixin: vi.fn() };
+    installI18n(app);
+    for (const page of [
+      { route: 'pages/archive/index', options: { view } },
+      { route: 'pages/archive/index', $page: { options: { view } } }
+    ]) {
+      vi.stubGlobal('getCurrentPages', () => [page]);
+      setLanguage('en');
+      expect(uni.setNavigationBarTitle).toHaveBeenLastCalledWith({ title: t(key) });
+      app.mixin.mock.calls[0][0].onShow();
+      expect(uni.setNavigationBarTitle).toHaveBeenLastCalledWith({ title: t(key) });
+      setLanguage('zh-CN');
+      expect(uni.setNavigationBarTitle).toHaveBeenLastCalledWith({ title: t(key) });
+    }
+  });
+  it('updates the batch review native title through the same locale contract', () => {
+    vi.stubGlobal('getCurrentPages', () => [{ route: 'pages/learning/review' }]);
+    expect(setLanguage('en')).toBe(true);
+    expect(uni.setNavigationBarTitle).toHaveBeenLastCalledWith({ title: 'Batch review' });
+    expect(setLanguage('zh-CN')).toBe(true);
+    expect(uni.setNavigationBarTitle).toHaveBeenLastCalledWith({ title: '分批复习' });
+  });
   it('installs the translator and navigation lifecycle bridge', () => {
     const app = { config: { globalProperties: {} }, mixin: vi.fn() };
     installI18n(app);

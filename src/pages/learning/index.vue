@@ -1,10 +1,20 @@
 <template>
-  <WritingCoach v-if="writingCoachActive" @advanced="showConnections = true" @general="beginGeneralQuestion" />
+  <WritingCoach
+    v-if="writingCoachActive"
+    :materials-open="showMaterial"
+    :connection-label="emptyConnectionLabel"
+    :connection-action="emptyConnectionAction"
+    :connection-tone="connectionTone"
+    @advanced="openAIConnectors"
+    @general="beginGeneralQuestion"
+  />
   <LearningShell
     v-else
     active="learning"
+    :style="{ '--muse-composer-height': `${composerHeight || 80}px` }"
     :title="$t('pages.learning')"
     @materials="showMaterial = true"
+    @connections="openAIConnectors"
     @new="newConversation"
   >
     <!-- #ifdef MP-WEIXIN -->
@@ -12,46 +22,91 @@
     <!-- #endif -->
     <template #controls>
       <BaseButton
+        v-if="learning.active"
         variant="quiet"
         icon="user"
         icon-only
         :label="t('tutor.intake.title')"
-        :title="t('tutor.intake.title')"
         :aria-expanded="showIntake"
-        :disabled="!learning.active || learning.busy"
+        :disabled="learning.busy"
         @tap="showIntake = !showIntake"
-        >{{ t('tutor.intake.title') }}</BaseButton
-      >
+      />
       <BaseButton
+        v-if="learning.active"
         variant="quiet"
         icon="chart"
         icon-only
         :label="t('tutor.archive.title')"
-        :title="t('tutor.archive.title')"
         :aria-expanded="showInsights"
         @tap="showInsights = !showInsights"
-        >{{ t('tutor.archive.title') }}</BaseButton
-      >
+      />
       <BaseButton
         class="connection-pill"
-        :label="learningText(connectionLabel)"
-        :title="learningText(connectionLabel)"
         :aria-expanded="showConnections"
         variant="quiet"
-        @tap="showConnections = !showConnections"
-      >
-        <BaseTag :tone="connectionTone"
-          ><view class="connection-dot" aria-hidden="true" /><text>{{ learningText(connectionLabel) }}</text></BaseTag
-        >
-        <BaseIcon name="settings" tone="ink-3" />
-      </BaseButton>
+        icon="shapes"
+        icon-only
+        label="AI 连接器"
+        title="AI 连接器"
+        @tap="openAIConnectors"
+      />
+    </template>
+    <template #composer>
+      <MuseComposer
+        id="learning-composer"
+        v-model="draft"
+        :get-voice-context="dictationContext"
+        class="composer"
+        :stop-label="t('learning.cancelRequest')"
+        :attachment-label="t('learning.import')"
+        :placeholder="
+          learning.batchTrainingActive
+            ? t('learning.kkk')
+            : learning.activeQuestion?.writingExercise
+              ? t('learning.ki2', { v0: learningText(activeWritingGenre.label) })
+              : learning.active
+                ? t('learning.kqa')
+                : t('learning.chatPlaceholder')
+        "
+        :label="
+          learning.batchTrainingActive
+            ? t('learning.k95')
+            : learning.activeQuestion?.writingExercise
+              ? t('learning.kkv', { v0: learningText(activeWritingGenre.label) })
+              : t('learning.kai')
+        "
+        :maxlength="
+          learning.activeQuestion?.writingExercise || learning.activeQuestion?.vocabularyReview?.phase === 'usage'
+            ? writingAnswerLimit(learning.activeQuestion)
+            : 8000
+        "
+        :busy="learning.busy"
+        :disabled="!!learning.active?.stopped || learning.accountRecordState !== 'ready'"
+        @attach="showMaterial = !showMaterial"
+        @stop="learning.cancel()"
+        @submit="send"
+        @height="composerHeight = $event"
+      />
     </template>
     <view
       ref="learningRoot"
       class="learning-page"
-      :class="{ 'chat-empty': !learning.active, 'with-insights': showInsights }"
+      :class="{ 'with-insights': showInsights }"
       :style="composerHeight ? { '--learning-composer-height': `${composerHeight}px` } : undefined"
     >
+      <BaseCard v-if="learning.accountRecordState !== 'ready'" class="panel">
+        <text :role="learning.accountRecordState === 'error' ? 'alert' : 'status'">{{ accountRecordMessage }}</text>
+        <BaseButton
+          v-if="['pending', 'error'].includes(learning.accountRecordState)"
+          :disabled="learning.syncBusy"
+          variant="quiet"
+          @tap="run(readAccountRecords)"
+          >重试读取</BaseButton
+        >
+        <BaseButton v-if="learning.accountRecordState === 'remote'" variant="quiet" @tap="openAccountData">
+          查看已同步记录
+        </BaseButton>
+      </BaseCard>
       <LearningInsights v-if="showInsights" compact class="chat-insights" />
       <LearningProfileDraft
         v-if="showIntake && learning.active"
@@ -64,10 +119,6 @@
       <!-- #ifdef H5 -->
       <text v-if="!learningWriteProtectionSupported" class="warning">{{ t('learning.k59') }}</text>
       <!-- #endif -->
-      <view v-if="!learning.active" class="welcome-copy"
-        ><YoziMascot pose="think" play="loop" size="medium" />
-        <text class="welcome-title">{{ t('learning.ks3') }}</text>
-      </view>
       <BaseCard v-if="showConnections" class="panel" padding="none">
         <text class="section-title">{{ t('tutor.model.title') }}</text>
         <text class="subtle"
@@ -136,25 +187,27 @@
         <BaseButton v-else-if="learning.modelListState.phase === 'error'" variant="quiet" @tap="loadModels">{{
           t('learning.kul')
         }}</BaseButton>
-        <view v-for="model in learning.models" :key="model.id" class="model-row">
+        <view v-for="model in visibleModels" :key="model.id" class="model-row">
           <text>
             {{ model.provider }} / {{ model.model }} ·
             {{ model.source === 'byok' ? t('learning.kgc') : t('learning.kab') }}
           </text>
-          <text class="subtle">{{ learningText(connectionStatusLabel(model.connectionStatus)) }}</text>
+          <text class="subtle">{{
+            learningText(connectionStatusLabel(model.configured === false ? 'unconfigured' : model.connectionStatus))
+          }}</text>
           <text v-if="model.terms" class="subtle">{{ model.terms }}</text>
           <text v-if="model.privacy" class="subtle">{{ model.privacy }}</text>
           <BaseButton
-            :disabled="learning.modelListState.phase === 'loading'"
-            :aria-disabled="learning.modelListState.phase === 'loading'"
+            :disabled="learning.modelListState.phase === 'loading' || model.configured === false"
+            :aria-disabled="learning.modelListState.phase === 'loading' || model.configured === false"
             variant="quiet"
             @tap="selectModel(model.id)"
           >
             {{ learning.modelId === model.id ? t('learning.ke4') : t('learning.k3y') }}
           </BaseButton>
           <BaseButton
-            :disabled="learning.modelListState.phase === 'loading'"
-            :aria-disabled="learning.modelListState.phase === 'loading'"
+            :disabled="learning.modelListState.phase === 'loading' || model.configured === false"
+            :aria-disabled="learning.modelListState.phase === 'loading' || model.configured === false"
             variant="quiet"
             @tap="testModel(model.id)"
             >{{ t('learning.k1p') }}</BaseButton
@@ -211,6 +264,7 @@
           />
           <BaseInput
             v-model="profile.apiKey"
+            :maxlength="MODEL_API_KEY_MAX_LENGTH"
             :placeholder="t('learning.kba')"
             :label="t('learning.kba')"
             type="password"
@@ -324,7 +378,7 @@
           role="region"
           :aria-label="t('learning.keb')"
           class="button-row"
-          ><YoziMascot pose="sleep" play="none" size="small" />
+          ><AnimatedAvatar :size="48" />
           <text class="warning">{{ t('learning.keb') }}</text>
           <BaseButton
             :disabled="learning.busy"
@@ -399,7 +453,10 @@
             :class="[message.role, { 'sentence-hint-target': message.id === sentenceHintTargetId }]"
             :tabindex="message.id === sentenceHintTargetId ? -1 : undefined"
             :author="message.role === 'user' ? 'user' : 'assistant'"
+            :group="message.groupPosition"
+            :rich="message.rich"
           >
+            <template v-if="message.groupTime" #time>{{ message.groupTime }}</template>
             <text v-if="sentenceAnswersByFeedback[message.id]" class="message-content sentence-saved-answer" selectable
               >{{ t('learning.kcd') }}{{ sentenceAnswersByFeedback[message.id] }}</text
             >
@@ -428,10 +485,10 @@
             t(topic)
           }}</BaseButton>
         </view>
-        <view v-if="learning.busy && !learning.error" class="reply-state" role="status"
-          ><YoziMascot pose="think" play="loop" size="state" :decorative="false" /><text>{{
-            t('learning.replying')
-          }}</text></view
+        <view v-if="learning.busy && !learning.error && !learning.streamPreview" class="reply-state" role="status"
+          ><YoziMascot pose="think" play="loop" size="state" /><view class="reply-dots" aria-hidden="true"
+            ><view /><view /><view /></view
+          ><text class="reply-state__label">{{ t('learning.replying') }}</text></view
         >
 
         <BaseCard
@@ -471,7 +528,7 @@
         >
           <view class="lesson-card-heading"
             ><BaseIcon name="edit" /><text>{{ t('tutor.card.question') }}</text
-            ><YoziMascot pose="think" size="small"
+            ><AnimatedAvatar :size="48"
           /></view>
           <text class="subtle">
             {{
@@ -916,84 +973,6 @@
           :next-task="learning.startSentenceTask"
           :schedule-retest="learning.scheduleSentenceRetest"
         />
-      </view>
-      <view
-        id="learning-composer"
-        ref="composer"
-        class="composer"
-        role="group"
-        :aria-label="t('learning.chatPlaceholder')"
-        ><BaseButton
-          variant="quiet"
-          icon-only
-          icon="paperclip"
-          :label="t('learning.import')"
-          @tap="showMaterial = !showMaterial"
-        />
-        <BaseInput
-          :model-value="draft"
-          class="field"
-          auto-grow
-          :max-rows="5"
-          hide-label
-          :placeholder="
-            learning.batchTrainingActive
-              ? t('learning.kkk')
-              : learning.activeQuestion?.writingExercise
-                ? t('learning.ki2', { v0: learningText(activeWritingGenre.label) })
-                : learning.active
-                  ? t('learning.kqa')
-                  : t('learning.chatPlaceholder')
-          "
-          :maxlength="
-            learning.activeQuestion?.writingExercise || learning.activeQuestion?.vocabularyReview?.phase === 'usage'
-              ? writingAnswerLimit(learning.activeQuestion)
-              : 8000
-          "
-          :label="
-            learning.batchTrainingActive
-              ? t('learning.k95')
-              : learning.activeQuestion?.writingExercise
-                ? t('learning.kkv', { v0: learningText(activeWritingGenre.label) })
-                : t('learning.kai')
-          "
-          multiline
-          :disabled="!!learning.active?.stopped"
-          @input="draft = textInputValue($event)"
-        />
-        <view class="button-row">
-          <BaseButton
-            v-if="learning.active && !conversationStopped"
-            variant="quiet"
-            icon-only
-            icon="pause"
-            :label="t('learning.chatStop')"
-            @tap="sendDirective('停止当前任务')"
-          />
-          <BaseButton
-            v-if="learning.busy"
-            variant="quiet"
-            icon-only
-            icon="square"
-            :label="t('learning.cancelRequest')"
-            @tap="learning.cancel()"
-          />
-          <BaseButton
-            v-else
-            variant="primary"
-            icon-only
-            icon="arrow-up"
-            :label="t('learning.send')"
-            :title="!draft.trim() ? t('learning.chatPlaceholder') : t('learning.send')"
-            :disabled="!draft.trim() || !!learning.active?.stopped"
-            @tap="send"
-          />
-        </view>
-      </view>
-      <view v-if="!learning.active" class="starter-row chat-starters" :aria-label="t('learning.chatExamples')">
-        <BaseChip v-for="starter in chatStarters" :key="starter" action surface="glass" @tap="draft = t(starter)">{{
-          t(starter)
-        }}</BaseChip>
       </view>
       <LearningLab
         v-if="
@@ -1959,15 +1938,19 @@
   </LearningShell>
 </template>
 <script setup>
+import { ENTRY_EVENTS } from '../../../laf-backend/functions/_shared/learning-entries.js';
 import BaseTag from '@/components/base/base-tag/base-tag.vue';
 import BaseBubble from '@/components/base/base-bubble/base-bubble.vue';
 import BaseOptions from '@/components/base/base-options/base-options.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
+import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
 import { answerFeedback, answerOptionState } from '@/components/business/learning/learning-feedback.js';
 import './messages.js';
 import { learningText } from '@/i18n/learning.js';
 import {
   MODEL_CONNECTION_PRESETS,
+  MODEL_API_KEY_MAX_LENGTH,
+  visibleModelChoices,
   completeModelEndpoint
 } from '../../../laf-backend/functions/_shared/ai-providers/model-endpoints.js';
 import { publicError, t } from '@/i18n/index.js';
@@ -1978,6 +1961,7 @@ import BaseCheckbox from '@/components/base/base-checkbox/base-checkbox.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
 
+import { workspaceDrafts } from '@/services/learning/workspace-drafts.js';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { isDesktopRuntime } from '@/services/desktop/runtime.js';
 // #ifdef H5
@@ -1993,9 +1977,13 @@ import { chooseBrowserLearningBackup } from '@/services/learning/record-files.js
 import { learningWriteProtectionSupported } from '@/services/learning/learning-write-lease.js';
 import { HISTORY_LIMITS } from '../../../laf-backend/functions/_shared/learning-history.js';
 import { ref, shallowRef, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
+import { DEV_TEST } from '@/config/build-channel.js';
 import { onShow, onHide, onLoad, onBackPress } from '@dcloudio/uni-app';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
-import WritingCoach from '@/components/business/learning/writing-coach.vue';
+import WritingCoach from '@/pages/learning/components/writing-coach.vue';
+import MuseComposer from '@/components/business/learning/muse-composer.vue';
+import { groupLearningMessages } from '@/services/learning/message-groups.js';
+import { requestProfilePanel } from '@/utils/safe-navigate.js';
 import CustomModal from '@/components/common/CustomModal.vue';
 import { createLearningDialog } from '@/services/learning/learning-dialog.js';
 // #ifdef MP-WEIXIN
@@ -2003,8 +1991,9 @@ import PrivacyPopup from '@/components/common/privacy-popup.vue';
 // #endif
 import { learningRhythms, currentRhythm } from '@/services/learning/learning-rhythm.js';
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
-import LearningJourney from '@/components/business/learning/learning-journey.vue';
-import LearningMessage from '@/components/business/learning/learning-message.vue';
+import LearningJourney from '@/pages/learning/components/learning-journey.vue';
+import { learningLeaveOperation } from './learning-adherence-view.js';
+import LearningMessage from '@/pages/learning/components/learning-message.vue';
 import LearningProfileDraft from '@/components/business/learning/learning-profile-draft.vue';
 import LearningInsights from '@/components/business/learning/learning-insights.vue';
 import LearningProposalCard from '@/components/business/learning/learning-proposal-card.vue';
@@ -2264,8 +2253,11 @@ const visibleChapters = computed(() =>
   learning.timeline
     .map((chapter) => ({
       ...chapter,
-      messages: chapter.messages.filter(
-        (message) => message.index >= messageStart.value && message.index < messageStart.value + 50
+      messages: groupLearningMessages(
+        chapter.messages.filter(
+          (message) => message.index >= messageStart.value && message.index < messageStart.value + 50
+        ),
+        learning.active?.journey?.timezone || learning.state.timezone
       )
     }))
     .filter(
@@ -2285,13 +2277,15 @@ watch(
     } else if (!location.day) messageStart.value = Math.max(0, learning.active.messages.length - 50);
     await nextTick();
     if (learning.conversationLocation !== location) return;
-    const id = location.groupId
-      ? 'learning-journey-workspace'
-      : location.day
-        ? `learning-day-${location.day}`
-        : learning.active?.stopped
-          ? 'learning-stop-state'
-          : 'learning-composer';
+    const id = location.messageId
+      ? location.messageId
+      : location.groupId
+        ? 'learning-journey-workspace'
+        : location.day
+          ? `learning-day-${location.day}`
+          : learning.active?.stopped
+            ? 'learning-stop-state'
+            : 'learning-composer';
     revealLearningTarget(id, () => learning.conversationLocation === location);
   },
   { immediate: true }
@@ -2400,7 +2394,6 @@ const showJourney = ref(false);
 const hasConversationAttempts = computed(() =>
   learning.state.attempts.some((attempt) => attempt.conversationId === learning.active?.id)
 );
-const chatStarters = ['learning.chatStarterReview', 'learning.chatStarterQuestion'];
 const chatTopicGoal = computed(() => {
   const messages = learning.active?.messages || [];
   for (let index = messages.length - 1; index >= 0; index--) {
@@ -2431,44 +2424,33 @@ const objectiveFromLabel = computed(() =>
 );
 const objectiveToLabel = computed(() => (objectiveKind.value === 'share_percent' ? '整体数据' : '现期数据'));
 const draft = ref('');
+const navigationDrafts = workspaceDrafts(learning);
+let navigationDraftBinding;
+let activeDraftSends = 0;
+function saveNavigationDraft() {
+  if (navigationDraftBinding?.context === learning.recordContext())
+    navigationDrafts.save(navigationDraftBinding.context, navigationDraftBinding.key, { draft: draft.value });
+}
+watch(
+  () => [learning.recordContext(), learning.selectedConversationId],
+  ([context, id]) => {
+    const migrating =
+      activeDraftSends > 0 &&
+      navigationDraftBinding?.context === context &&
+      navigationDraftBinding?.key === 'chat:new' &&
+      id;
+    const currentDraft = draft.value;
+    saveNavigationDraft();
+    navigationDraftBinding = { context, key: `chat:${id || 'new'}` };
+    const saved = navigationDrafts.read(context, navigationDraftBinding.key);
+    draft.value = saved.draft ?? (migrating ? currentDraft : '');
+  },
+  { immediate: true, flush: 'sync' }
+);
+watch(draft, saveNavigationDraft, { flush: 'sync' });
 const showIntake = ref(false),
   showInsights = ref(false);
-const composer = ref(null);
-const composerHeight = ref(0);
-let composerObserver;
-function measureComposer() {
-  // #ifdef H5
-  const element = composer.value?.$el || composer.value;
-  if (element?.getBoundingClientRect) {
-    composerHeight.value = Math.ceil(element.getBoundingClientRect().height);
-    return;
-  }
-  // #endif
-  // #ifndef H5
-  if (composer.value)
-    uni
-      .createSelectorQuery?.()
-      ?.select?.('#learning-composer')
-      ?.boundingClientRect?.((rect) => {
-        if (rect?.height) composerHeight.value = Math.ceil(rect.height);
-      })
-      ?.exec?.();
-  // #endif
-}
-watch(composer, async () => {
-  composerObserver?.disconnect();
-  await nextTick();
-  measureComposer();
-  // #ifdef H5
-  const element = composer.value?.$el || composer.value;
-  if (element && typeof ResizeObserver !== 'undefined') {
-    composerObserver = new ResizeObserver(measureComposer);
-    composerObserver.observe(element);
-  }
-  // #endif
-});
-watch(draft, () => nextTick(measureComposer));
-onUnmounted(() => composerObserver?.disconnect());
+const composerHeight = ref(60);
 function textInputValue(event) {
   return event?.detail?.value ?? event?.target?.value ?? '';
 }
@@ -2562,6 +2544,7 @@ const legacyLearningEnabled = import.meta.env.VITE_ENABLE_LEGACY_LEARNING === 't
 const writingCoachActive = computed(
   () =>
     import.meta.env.VITE_ENABLE_WRITING_COACH !== 'false' &&
+    learning.accountRecordState === 'ready' &&
     !showConnections.value &&
     (!learning.active || learning.active.coach)
 );
@@ -2569,6 +2552,27 @@ const showMaterial = ref(false);
 const showProfile = ref(false);
 const showData = ref(false);
 const showRestore = ref(false);
+const accountRecordMessage = computed(() =>
+  learning.accountRecordState === 'remote'
+    ? '账号已有学习记录，请在数据面板确认采用云端记录后继续。'
+    : learning.accountRecordState === 'error'
+      ? learning.syncState.message || '账号学习记录暂不可读，请重试。'
+      : '正在读取账号学习记录…'
+);
+function openAccountData() {
+  showConnections.value = true;
+  showData.value = true;
+}
+async function readAccountRecords() {
+  await learning.readAccountRecords();
+  if (learning.accountRecordState === 'remote') openAccountData();
+}
+watch(showConnections, (open) => {
+  if (!open) {
+    showData.value = false;
+    showRestore.value = false;
+  }
+});
 const backupText = ref('');
 const backupExpanded = ref(false);
 const uploadMaintenancePreview = ref(null),
@@ -2697,6 +2701,17 @@ async function prepareRecordPreview(kind) {
   }
 }
 const showRubric = ref(false);
+function dictationContext() {
+  const context = learning.recordContext();
+  return context
+    ? JSON.stringify([
+        context,
+        learning.selectedConversationId,
+        learning.active?.activeQuestionKey,
+        learning.batchTrainingActive
+      ])
+    : '';
+}
 const rubricCriteria = ref([]);
 const rubricAttempt = computed(
   () =>
@@ -2739,27 +2754,31 @@ const selectedRhythm = computed(() =>
     ? currentRhythm(learning.state.profile, learning.selectedConversationId, learning.activeStrategy.method)
     : null
 );
-const connectionLabel = computed(() => {
-  if (learning.selectedMode === 'offline') return t('learning.offline');
-  if (learning.selectedMode === 'local') {
-    const status = learning.localConnection?.status;
-    return t(
-      status === 'model_verified'
-        ? 'learning.localConnected'
-        : status === 'connector_verified'
-          ? 'learning.localConnectorReady'
-          : 'learning.notConnected'
-    );
-  }
+const emptyConnectionLabel = computed(() => {
+  if (learning.modelListState.phase === 'loading') return t('learning.k15');
   if (learning.modelListState.phase === 'error') return t('learning.modelListUnavailable');
-  const status = learning.models.find((m) => m.id === learning.modelId)?.connectionStatus;
-  return status && status !== 'untested' ? learningText(connectionStatusLabel(status)) : t('learning.notConnected');
+  if (connectionTone.value !== 'mint') return '未连接';
+  const model =
+    learning.selectedMode === 'local'
+      ? learning.localConnection?.model
+      : learning.models.find((item) => item.id === learning.modelId)?.model;
+  return model ? `已连接 · ${model}` : '已连接';
 });
+// 未连接时点明状态胶囊通往右上同名入口，不推断登录或网络原因。
+const emptyConnectionAction = computed(() =>
+  learning.modelListState.phase !== 'loading' && connectionTone.value !== 'mint' ? 'AI 连接器' : ''
+);
 const byokForm = ref(false);
-const connectionPresets = computed(() => [
-  ...MODEL_CONNECTION_PRESETS,
-  ...learning.modelPresets.filter((preset) => !MODEL_CONNECTION_PRESETS.some((item) => item.id === preset.id))
-]);
+const visibleModels = computed(() => visibleModelChoices(learning.models, learning.models));
+const connectionPresets = computed(() =>
+  visibleModelChoices(
+    [
+      ...MODEL_CONNECTION_PRESETS,
+      ...learning.modelPresets.filter((preset) => !MODEL_CONNECTION_PRESETS.some((item) => item.id === preset.id))
+    ],
+    learning.models
+  )
+);
 const localForm = ref(false);
 const profile = ref({
   id: '',
@@ -3007,7 +3026,8 @@ async function chooseRhythm(id) {
 }
 onLoad((options) => {
   if (options.panel === 'materials') showMaterial.value = true;
-  if (options.panel === 'connections') showConnections.value = true;
+  if (options.panel === 'connections') openAIConnectors();
+  if (options.panel === 'legacyConnections') showConnections.value = true;
   if (options.panel === 'profile') showProfile.value = true;
 });
 async function run(action) {
@@ -3047,15 +3067,26 @@ function newConversation() {
   showIntake.value = false;
   showJourney.value = false;
 }
-function beginGeneralQuestion(text) {
+function beginGeneralQuestion(input) {
+  if (learning.accountRecordState !== 'ready') return;
+  const acceptedId = typeof input === 'object' ? input?.conversationId : null;
+  if (acceptedId) {
+    learning.selectedConversationId = acceptedId;
+    learning.selectedMode = 'cloud';
+    draft.value = '开始学习';
+    return;
+  }
+  const text = String(input || '').trim();
+  if (!text) return;
+  if (DEV_TEST) {
+    learning.startCoach(text);
+    learning.selectedMode = 'cloud';
+    return;
+  }
   learning.start(text);
+  showIntake.value = true;
   learning.selectedMode = 'cloud';
   draft.value = text;
-  learning.commit('message.add', {
-    conversationId: learning.active.id,
-    role: 'notice',
-    content: '当前重点支持考研英语写作；这个问题可以正常答疑，暂不安排整套计划。'
-  });
   const id = learning.active.id;
   if (getToken())
     void learning
@@ -3066,6 +3097,7 @@ function beginGeneralQuestion(text) {
       })
       .catch(() => undefined);
 }
+
 let pendingSubmission = null;
 function submissionKey() {
   return JSON.stringify([
@@ -3106,9 +3138,15 @@ async function send() {
   if (!input || learning.active?.stopped) return;
   const ticket = prepareSubmission('send', input);
   const previousQuestion = learning.active?.activeQuestionKey;
-  const result = await run(() =>
-    learning.send(input, { id: ticket.id, chatEntry: true, discussionOnly: learning.batchTrainingActive })
-  );
+  let result;
+  activeDraftSends++;
+  try {
+    result = await run(() =>
+      learning.send(input, { id: ticket.id, chatEntry: true, discussionOnly: learning.batchTrainingActive })
+    );
+  } finally {
+    activeDraftSends--;
+  }
   if (!finishSubmission(ticket)) return;
   if (
     !feedback.value &&
@@ -3122,9 +3160,11 @@ async function send() {
   await nextTick();
   if (!feedback.value && !learning.error)
     revealLearningTarget(
-      learning.active?.activeQuestionKey && previousQuestion !== learning.active.activeQuestionKey
-        ? 'active-learning-question'
-        : 'learning-chat-latest'
+      learning.active?.stopped
+        ? 'learning-stop-state'
+        : learning.active?.activeQuestionKey && previousQuestion !== learning.active.activeQuestionKey
+          ? 'active-learning-question'
+          : 'learning-chat-latest'
     );
 }
 async function sendDirective(action) {
@@ -3175,6 +3215,7 @@ function setMode(mode) {
 function selectModel(id) {
   setMode('cloud');
   learning.modelId = id;
+  learning.streamEnabled = learning.streamSupported;
 }
 function interpretImage() {
   const owner = learning.state.owner,
@@ -3236,9 +3277,22 @@ async function readModelResource(action) {
 }
 function connectionStatusLabel(status) {
   return (
-    { untested: '尚未确认可用', connected: '最近调用成功', failed: '最近调用失败', stale: '连接需重新验证' }[status] ||
-    '连接未知'
+    {
+      unconfigured: '未连接',
+      untested: '尚未确认可用',
+      connected: '最近调用成功',
+      failed: '最近调用失败',
+      stale: '连接需重新验证'
+    }[status] || '连接未知'
   );
+}
+function openAIConnectors() {
+  if (legacyLearningEnabled) {
+    showConnections.value = !showConnections.value;
+    return;
+  }
+  requestProfilePanel('connectors');
+  safeNavigateTo('/pages/profile/index');
 }
 function usePreset(preset) {
   profile.value = {
@@ -3957,7 +4011,7 @@ function resolveProposal(message, action) {
       !learning.active?.messages.some((item) => item.id === message.id)
     )
       throw Object.assign(new Error('建议已变化'), { code: 'CONTEXT_CHANGED' });
-    if (!['profile.set', 'plan.set'].includes(message.proposal?.type))
+    if (!['profile.set', 'plan.set', 'reminder.set', ...ENTRY_EVENTS].includes(message.proposal?.type))
       throw Object.assign(new Error('建议类型不支持'), { code: 'FORBIDDEN' });
     if (action === 'accept')
       return learning.commit(
@@ -4267,9 +4321,20 @@ function removeConflict() {
 onShow(() => {
   labVisible.value = true;
   appPageVisible = true;
-  return run(() => learning.refresh());
+  return run(async () => {
+    learning.refresh();
+    await readAccountRecords();
+    if (learning.accountRecordState !== 'ready') return;
+    if (getToken() && !learning.intakeBusy && !learning.busy) await learning.loadModels();
+  });
 });
 onHide(() => {
+  try {
+    const leave = learningLeaveOperation(learning.state, learning.active?.id);
+    if (leave) learning.commit(leave.type, leave.data, leave.id);
+  } catch {
+    // Locked/stale sessions do not write an observation or claim it was saved.
+  }
   labVisible.value = false;
   appPageVisible = false;
   cancelRecordFile();
@@ -4317,113 +4382,24 @@ onUnmounted(() => {
 });
 </script>
 <style scoped>
+.conversation-day .message {
+  scroll-margin-top: calc(124px + var(--space-status-top, 0px));
+}
 .record-original {
-  margin-bottom: var(--s-5);
-  scroll-margin-top: var(--s-6);
+  margin-bottom: 20px;
+  scroll-margin-top: 24px;
 }
 .record-original .form {
   margin-top: 0;
 }
 .sentence-saved-answer {
   display: block;
-  margin-bottom: var(--s-2);
-}
-.chat-empty .welcome-copy {
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-  margin: 0 0 var(--s-8);
-}
-.chat-empty .composer {
-  position: relative;
-  bottom: auto;
-  max-width: calc(var(--dialog-width) * 2);
-  margin-inline: auto;
-}
-.chat-starters {
-  justify-content: center;
-  margin: var(--s-5) auto;
-  max-width: calc(var(--dialog-width) * 2);
-}
-.chat-starters :deep(.base-button) {
-  white-space: normal;
-  text-align: start;
-}
-.composer .field {
-  min-width: 0;
+  margin-bottom: 8px;
 }
 #learning-stop-state,
 #active-learning-question,
 .sentence-hint-target {
-  scroll-margin-top: var(--s-6);
-}
-</style>
-
-<style scoped>
-.chat-empty {
-  min-height: calc(100svh - 176px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.chat-empty .welcome-title {
-  width: 100%;
-  max-width: 640px;
-  text-wrap: balance;
-  white-space: normal;
-}
-.chat-empty .composer {
-  width: 100%;
-}
-.composer {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--s-2);
-  border-radius: var(--r-lg);
-  background: var(--glass);
-  border: var(--border-control) solid var(--control-line);
-  box-shadow: var(--lift-2);
-}
-.composer:focus-within {
-  outline: var(--border-selected) solid var(--focus);
-  outline-offset: var(--focus-offset);
-}
-.composer .field {
-  flex: 1;
-}
-.composer :deep(.base-field__group) {
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-}
-.composer :deep(.base-field__input) {
-  padding-inline: var(--s-1);
-}
-.composer .button-row {
-  margin: 0;
-  gap: var(--s-1);
-  flex-wrap: nowrap;
-}
-.chat-starters {
-  gap: var(--s-3);
-}
-.chat-starters :deep(.base-button) {
-  border-radius: var(--r-pill);
-  background: var(--glass);
-  font-size: var(--size-small);
-}
-@media (max-width: 767px) {
-  .chat-empty {
-    min-height: calc(100svh - 230px);
-  }
-  .chat-empty .welcome-title {
-    max-width: 320px;
-    font-size: var(--size-title-2);
-    line-height: var(--leading-title-2);
-  }
-  .chat-starters {
-    margin-bottom: var(--s-5);
-  }
+  scroll-margin-top: 24px;
 }
 </style>
 
@@ -4464,24 +4440,5 @@ onUnmounted(() => {
 .material-reading-card {
   display: grid;
   gap: var(--s-3);
-}
-</style>
-
-<style scoped>
-@media (max-width: 767px) {
-  .connection-pill {
-    width: 44px;
-    min-width: 44px;
-    height: 44px;
-    padding: 0;
-  }
-  .connection-pill :deep(.base-tag) {
-    display: none;
-  }
-  .connection-pill :deep(.base-button__content) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 }
 </style>

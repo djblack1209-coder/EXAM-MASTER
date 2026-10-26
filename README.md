@@ -1,8 +1,8 @@
 # Yozi AI
 
-![Yozi AI 吉祥物](src/static/brand/yozi-mascot.webp)
+![Yozi AI 吉祥物](src/static/images/logo.png)
 
-中国学生的 AI 学习教练，先从考研英语写作带练开始。一个对话窗口记住进度，安排每日训练、逐段写作和到期复习；可上传自己的资料。默认中文，网页优先，兼顾微信内置浏览器与 390px 窄屏。
+中国学生的 AI 学习教练，先从考研英语写作带练开始。一个对话窗口记住进度，安排每日训练、逐段写作和到期复习；可上传自己的资料。App 承载核心学习；官网提供下载、注册登录和个人同步进度，兼顾微信内置浏览器与 390px 窄屏。
 
 ## 当前用户路径
 
@@ -22,6 +22,6 @@ npm run build:h5
 npm run build:mp-weixin
 ```
 
-保留用户的作答、错题、收藏、复习、备份和旧记录回看；账户、存储键与应用标识遵守 [兼容合同](docs/08C-SCRIPTS-REFERENCE.md#名称与兼容边界2026-10-16)。App 与桌面后置，当前日常入口保留。真实模型、设备、长期效果和公开发布分别验收。
+保留用户的作答、错题、收藏、复习、备份和旧记录回看；账户、存储键与应用标识遵守 [兼容合同](docs/08C-SCRIPTS-REFERENCE.md#名称与兼容边界2026-10-16)。官网与 App 的现行设计及素材入口见 [样式规则](docs/07-STYLING-SYSTEM.md)，当前日常入口保留。真实模型、设备、长期效果和公开发布分别验收。
 
 [产品定义](docs/01-PRODUCT-VISION.md) · [当前计划](docs/13-DEVELOPMENT-PLAN.md) · [文档索引](docs/00-INDEX.md) · [项目约定](AGENTS.md)

@@ -43,9 +43,6 @@
     "lint:fix": "eslint --cache --cache-location node_modules/.cache/eslint/ src/ --fix",
     "format": "prettier --write \"src/**/*.{js,vue,css,scss,json}\" \"scripts/**/*.{js,mjs,cjs}\" \"tests/**/*.{js,ts}\" \"laf-backend/{functions,standalone,utils,triggers,types}/**/*.{js,mjs,ts}\" \"*.{js,json}\" \".github/**/*.{yml,yaml}\" \"docs/**/*.md\" \"README.md\" \"AGENTS.md\" \"deploy/**/*.{js,cjs,json,yml,yaml}\" \"laf-backend/{package,tsconfig}.json\" \"laf-backend/standalone/*.json\" \"laf-backend/functions/*.yaml\" \"public/*.js\"",
     "format:check": "prettier --check \"src/**/*.{js,vue,css,scss,json}\" \"scripts/**/*.{js,mjs,cjs}\" \"tests/**/*.{js,ts}\" \"laf-backend/{functions,standalone,utils,triggers,types}/**/*.{js,mjs,ts}\" \"*.{js,json}\" \".github/**/*.{yml,yaml}\" \"docs/**/*.md\" \"README.md\" \"AGENTS.md\" \"deploy/**/*.{js,cjs,json,yml,yaml}\" \"laf-backend/{package,tsconfig}.json\" \"laf-backend/standalone/*.json\" \"laf-backend/functions/*.yaml\" \"public/*.js\"",
-    "assets:png:dry-run": "node scripts/assets/generate-png-assets.mjs --dry-run",
-    "assets:png:generate": "node scripts/assets/generate-png-assets.mjs",
-    "assets:png:validate": "node scripts/assets/generate-png-assets.mjs --validate-only",
     "baidu:manifest:self-test": "python3 scripts/baidu/source_manifest.py --self-test",
     "baidu:manifest:quality:self-test": "python3 scripts/baidu/manifest_quality.py --self-test",
     "baidu:manifest:quality": "python3 scripts/baidu/manifest_quality.py",
@@ -93,7 +90,6 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^20.4.1",
-    "@csstools/postcss-color-mix-function": "^3.0.12",
     "@dcloudio/types": "^3.4.32",
     "@dcloudio/uni-app": "3.0.0-alpha-5030120260930001",
     "@dcloudio/uni-cli-shared": "3.0.0-alpha-5030120260930001",

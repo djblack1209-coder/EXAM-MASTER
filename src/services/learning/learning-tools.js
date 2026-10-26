@@ -1,3 +1,13 @@
+import { proposalStatus } from '../../../laf-backend/functions/_shared/learning-proposals.js';
+import {
+  ENTRY_TOOL_NAMES,
+  ENTRY_TOOL_SCHEMAS,
+  validateEntryCall,
+  entryCandidateOperation,
+  queryEntries,
+  aggregateEntries
+} from '../../../laf-backend/functions/_shared/learning-entries.js';
+export { ENTRY_TOOL_SCHEMAS };
 import {
   assert,
   questionKey,
@@ -46,6 +56,18 @@ export {
 
 // 权限是宿主授予的，模型只能请求下面的工具，不能提升权限或修改参考答案。
 export const LEARNING_TOOLS = Object.freeze({
+  ...Object.fromEntries(
+    ENTRY_TOOL_NAMES.map((name) => [
+      name,
+      {
+        version: '1.0',
+        permission: ['entry.query', 'entry.aggregate'].includes(name) ? 'read' : 'learn',
+        writes: ['entry.create', 'entry.update'].includes(name),
+        costs: false,
+        timeoutMs: 2000
+      }
+    ])
+  ),
   progress: { version: '1.0', permission: 'read', writes: false, costs: false, timeoutMs: 2000 },
   visualize: { version: '1.0', permission: 'read', writes: false, costs: false, timeoutMs: 2000 },
   focus: { version: '1.0', permission: 'learn', writes: true, costs: false, timeoutMs: 2000 },
@@ -68,28 +90,30 @@ export function executeLearningTool(repository, call, context) {
     'INVALID_INPUT',
     '工具参数不合法'
   );
-  const allowed = {
-    progress: [],
-    visualize: [
-      'points',
-      'template',
-      'outward',
-      'backward',
-      'direction',
-      'massKg',
-      'netForceN',
-      'initialVelocityMps',
-      'physicalSeconds',
-      'segments'
-    ],
-    focus: ['questionKey'],
-    submit: ['answer'],
-    hint: ['content', 'level'],
-    method: ['method', 'difficulty', 'reason'],
-    assess: ['attemptId', 'outcome', 'dimensions', 'feedback', 'rubricId'],
-    plan: ['tasks', 'reason'],
-    stop: []
-  }[call.name];
+  if (ENTRY_TOOL_NAMES.includes(call.name)) validateEntryCall(call.name, call.arguments);
+  const allowed =
+    {
+      progress: [],
+      visualize: [
+        'points',
+        'template',
+        'outward',
+        'backward',
+        'direction',
+        'massKg',
+        'netForceN',
+        'initialVelocityMps',
+        'physicalSeconds',
+        'segments'
+      ],
+      focus: ['questionKey'],
+      submit: ['answer'],
+      hint: ['content', 'level'],
+      method: ['method', 'difficulty', 'reason'],
+      assess: ['attemptId', 'outcome', 'dimensions', 'feedback', 'rubricId'],
+      plan: ['tasks', 'reason'],
+      stop: []
+    }[call.name] || Object.keys(ENTRY_TOOL_SCHEMAS[call.name]?.properties || call.arguments);
   assert(
     Object.keys(call.arguments).every((key) => allowed.includes(key)),
     'FORBIDDEN',
@@ -126,7 +150,30 @@ export function executeLearningTool(repository, call, context) {
         '计划不能关联不存在的题目'
       );
     }
-    if (call.name === 'visualize') result = visualRecipe(call.arguments);
+    if (call.name === 'entry.query') result = queryEntries(repository.read(), call.arguments, context);
+    else if (call.name === 'entry.aggregate') result = aggregateEntries(repository.read(), call.arguments, context);
+    else if (['entry.create', 'entry.update'].includes(call.name)) {
+      const state = repository.read();
+      if (context.sourceMessageId)
+        assert(
+          call.arguments.sourceRefs.every((r) => r.messageId === context.sourceMessageId),
+          'FORBIDDEN',
+          '候选必须来自本次用户消息'
+        );
+      const operation = entryCandidateOperation(state, call.name, call.arguments, context.conversationId);
+      if (!operation.duplicate) {
+        context.assertCurrent?.();
+        repository.commit(
+          { id: operation.id, type: operation.type, data: operation.data, at: operation.at },
+          state.revision
+        );
+      }
+      result = {
+        proposalId: operation.proposalId,
+        status: operation.proposalId ? proposalStatus(repository.read(), operation.proposalId) : 'unchanged',
+        duplicate: !!operation.duplicate
+      };
+    } else if (call.name === 'visualize') result = visualRecipe(call.arguments);
     else if (call.name === 'progress') {
       const state = repository.read();
       result = {
@@ -210,7 +257,7 @@ export function executeLearningTool(repository, call, context) {
         'IDEMPOTENCY_CONFLICT',
         '原工具收据与重试任务不一致'
       );
-    if (!priorReceipt) {
+    if (!priorReceipt && !['entry.query', 'entry.aggregate'].includes(call.name)) {
       context.assertCurrent?.();
       repository.commit({
         id: `${call.id}:receipt`,

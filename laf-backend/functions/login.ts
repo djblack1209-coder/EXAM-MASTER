@@ -2,6 +2,7 @@ import { getClientIp, clientIpUnavailable } from './_shared/client-ip.js';
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
 import { assertTrialEmail, TrialError } from './_shared/learning-trial.js';
+import { DEV_TEST } from './_shared/build-channel.js';
 import {
   LoginError,
   fail,
@@ -62,7 +63,7 @@ if (missingEnvVars.length > 0) {
 
 // ==================== 登录频率限制配置 ====================
 const LOGIN_RATE_LIMIT_WINDOW = 60 * 1000; // 频率限制窗口：60秒
-const LOGIN_RATE_LIMIT_MAX = 5; // 每个IP每分钟最多5次登录尝试
+const LOGIN_RATE_LIMIT_MAX = DEV_TEST ? 1000000 : 5; // 隔离测试避免反复登录触发封禁
 const LOGIN_BLOCK_DURATION = 15 * 60 * 1000; // 超限后封禁15分钟
 const loginRateLimitCache = new Map<
   string,
@@ -466,7 +467,11 @@ export default async function (ctx) {
   logger.info(`[${requestId}] 登录请求开始`);
 
   try {
-    if (process.env.LEARNING_FRIEND_TRIAL_ENABLED === 'true' && !['email', 'capabilities'].includes(loginType))
+    if (
+      !DEV_TEST &&
+      process.env.LEARNING_FRIEND_TRIAL_ENABLED === 'true' &&
+      !['email', 'capabilities'].includes(loginType)
+    )
       return { code: 403, success: false, message: '朋友试用请使用受邀邮箱验证码登录', requestId };
     if (loginType === 'qq' || ctx.body?.provider === 'qq')
       return { ...fail('UNSUPPORTED_LOGIN'), message: '不支持的登录方式', requestId };
@@ -651,7 +656,11 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
       ? ctx.body.email.trim().toLowerCase()
       : ctx.body?.email;
   assertTrialEmail(email);
-  if (process.env.LEARNING_FRIEND_TRIAL_ENABLED === 'true' && (!verifyCode || password || ctx.body?.region !== 'CN'))
+  if (
+    !DEV_TEST &&
+    process.env.LEARNING_FRIEND_TRIAL_ENABLED === 'true' &&
+    (!verifyCode || password || ctx.body?.region !== 'CN')
+  )
     return { code: 403, success: false, message: '请使用受邀邮箱验证码登录', requestId };
 
   // 1. 参数校验
@@ -671,7 +680,7 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
   }
 
   // 验证码注册/设置密码时，先校验密码强度，避免错误消耗验证码
-  if (verifyCode && password) {
+  if (!DEV_TEST && verifyCode && password) {
     const strengthResult = validatePasswordStrength(password);
     if (!strengthResult.valid) {
       return {
@@ -686,7 +695,8 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
 
   // ✅ B005: 验证码校验逻辑
   if (verifyCode) {
-    const codeValid = await validateEmailCode(email, verifyCode, requestId);
+    const codeValid =
+      DEV_TEST && verifyCode === '000000' ? { valid: true } : await validateEmailCode(email, verifyCode, requestId);
     if (!codeValid.valid) {
       return { code: 401, success: false, message: codeValid.error || '验证码错误', requestId };
     }
@@ -1334,7 +1344,7 @@ async function regionalLogin(ctx: any, requestId: string) {
                 ? !!(WX_GZH_APPID && WX_GZH_SECRET)
                 : !!(WX_WEB_APPID && WX_WEB_SECRET),
         sms: false,
-        friendTrial: process.env.LEARNING_FRIEND_TRIAL_ENABLED === 'true'
+        friendTrial: !DEV_TEST && process.env.LEARNING_FRIEND_TRIAL_ENABLED === 'true'
       }
     };
   }

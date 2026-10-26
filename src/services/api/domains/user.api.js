@@ -1,5 +1,12 @@
 import { storageService } from '../../storageService.js';
-import { isSessionUnavailable, captureSession, assertSession, sessionForRequest } from '../../auth-storage.js';
+import { DEV_TEST } from '@/config/build-channel.js';
+import {
+  isSessionUnavailable,
+  captureSession,
+  checkSession,
+  assertSession,
+  sessionForRequest
+} from '../../auth-storage.js';
 /**
  * 用户服务 API
  * 职责：账号注销、用户统计概览、
@@ -225,6 +232,29 @@ export async function unlockAchievement() {
  * @param {Object} data - 请求参数（action, userId, 等）
  * @returns {Promise} 返回更新结果
  */
+export async function readCurrentProfile(options = {}) {
+  try {
+    const session = options.session || captureSession();
+    if (!session || session.owner === 'guest') return { success: false, code: 401, uid: null };
+    const result = await request(
+      '/user-profile',
+      { action: 'get', userId: session.owner },
+      { session, skipCache: true, suppressAuthFailure: true, maxRetries: 0, coldStartRetries: 0 }
+    );
+    if (checkSession(session) !== 'current') return { success: false, code: 409, uid: null };
+    if (result?.success === true && result.code === 0 && result.data?._id === session.owner)
+      return {
+        success: true,
+        code: 0,
+        uid: result.data._id,
+        ...(DEV_TEST && typeof result.data.email === 'string' ? { email: result.data.email } : {})
+      };
+    return { success: false, code: Number(result?.code) || 502, uid: null };
+  } catch (error) {
+    return { success: false, code: Number(error?.statusCode || error?.code) || 503, uid: null };
+  }
+}
+
 export async function updateProfile(data, options = { session: captureSession() }) {
   const session = options.session;
   try {

@@ -7,10 +7,10 @@ const host = vi.hoisted(() => ({ desktop: false, listener: null, native: null })
 vi.mock('@/services/desktop/runtime.js', () => ({ isDesktopRuntime: () => host.desktop }));
 vi.mock('@tauri-apps/api/core', () => ({ invoke: (...args) => host.native(...args) }));
 vi.mock('@tauri-apps/api/event', () => ({
-  listen: async (_event, callback) => {
-    host.listener = callback;
+  listen: async (event, callback) => {
+    if (event === 'learning-notification-action') host.listener = callback;
     return () => {
-      host.listener = null;
+      if (event === 'learning-notification-action') host.listener = null;
     };
   }
 }));
@@ -76,6 +76,20 @@ function setup() {
   return s;
 }
 describe('提醒日期、原任务、权限与回执', () => {
+  it('tests the OS channel without changing learning consent or replacing saved jobs', async () => {
+    host.desktop = true;
+    host.native = vi.fn(async (command) =>
+      command === 'learning_notification_permission' ? { permission: 'granted' } : { ok: true }
+    );
+    const s = useConversationLearningStore(), before = JSON.stringify(s.state);
+    controller = createLearningNotifications(s);
+    await controller.test();
+    expect(host.native.mock.calls.map(([command]) => command)).toEqual([
+      'learning_notification_permission', 'test_learning_notification'
+    ]);
+    expect(JSON.stringify(s.state)).toBe(before);
+    expect(storageService.get('learning_notification_consent_v1', null)).toBeNull();
+  });
   it('夏令时切换按原时区日历，缺失时刻不猜测或提前触发', () => {
     expect(reminderInstant('2026-03-08', '08:00', 'America/Los_Angeles')).toBe(Date.parse('2026-03-08T15:00:00Z'));
     expect(reminderInstant('2026-11-01', '08:00', 'America/Los_Angeles')).toBe(Date.parse('2026-11-01T16:00:00Z'));
@@ -183,6 +197,17 @@ describe('提醒日期、原任务、权限与回执', () => {
     const before = native.mock.calls.filter(([command]) => command === 'replace_learning_notifications').length;
     await vi.advanceTimersByTimeAsync(2000);
     expect(native.mock.calls.filter(([command]) => command === 'replace_learning_notifications').length).toBe(before);
+  });
+  it('测试通知的送达只采用系统真实布尔回执，接纳或缺失字段都不冒充送达', async () => {
+    host.desktop = true;
+    const native = vi.fn().mockResolvedValue({ ok: true, permission: 'granted' });
+    controller = createLearningNotifications(setup(), undefined, native);
+    expect(await controller.testDelivered()).toBe(false);
+    native.mockResolvedValue({ ok: true, permission: 'granted', testDelivered: 1 });
+    expect(await controller.testDelivered()).toBe(false);
+    native.mockResolvedValue({ ok: true, permission: 'granted', testDelivered: true });
+    expect(await controller.testDelivered()).toBe(true);
+    expect(native).toHaveBeenLastCalledWith('learning_notification_permission', { request: false, consent: false });
   });
   it('冷启动领取系统点击只返回原任务一次，不替用户作答', async () => {
     host.desktop = true;

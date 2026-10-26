@@ -1,265 +1,406 @@
 <template>
   <view
     ref="root"
-    class="learning-space"
+    class="learning-space muse-space"
     :class="{
       'space-dark': theme.isDark,
       'space-light': !theme.isDark,
       'reduce-motion': reducedMotion,
-      'space-future': theme.visualStyle === 'future',
-      'space-playful': theme.visualStyle === 'playful'
+      'has-directory': menuOpen && !searchOnOpen,
+      'has-side-panel':
+        (sidePanel && viewportWidth > 760) || ((menuOpen || menuLeaving || panelOpening) && !searchOnOpen),
+      'has-search': searchOnOpen && (menuOpen || menuLeaving),
+      'has-conversation': Boolean(learning.active),
+      'is-workspace': layout === 'workspace',
+      'is-resizing': panelResizing || panelOpening,
+      'is-chat': active === 'learning',
+      'is-library': ['archive', 'plan', 'phrases', 'materials', 'usage'].includes(active),
+      'is-settings': active === 'settings' || active === 'profile',
+      'has-composer': !!$slots.composer
     }"
-    :style="platformInsets"
+    :style="[platformInsets, dockStyle, { '--muse-panel-width': `${panelWidth}px` }]"
   >
+    <view class="native-titlebar" data-tauri-drag-region aria-hidden="true" />
+    <MuseLaunch :scope="learning" :ready="['ready', 'error'].includes(learning.recordReadState)" />
     <view class="space-frame">
+      <view
+        class="muse-rail"
+        role="navigation"
+        :aria-label="t('nav.learningViews')"
+        :inert="(menuOpen && directoryModal) || undefined"
+        :aria-hidden="(searchOnOpen && (menuOpen || menuLeaving)) || undefined"
+      >
+        <BaseButton
+          v-if="active !== 'learning'"
+          class="rail-brand"
+          variant="quiet"
+          :label="BRAND.name"
+          @tap="openView('learning')"
+          ><AnimatedAvatar :size="56" autoplay perceptible :business="avatarBusiness"
+        /></BaseButton>
+        <view class="rail-body">
+          <view class="rail-group">
+            <BaseButton
+              v-for="(item, index) in navigation"
+              :key="item.id"
+              class="rail-item rail-reveal"
+              :style="{ '--reveal-index': index }"
+              :class="{ 'is-current': railActive(item.id) }"
+              variant="quiet"
+              :label="item.label"
+              :aria-current="railActive(item.id) ? 'page' : undefined"
+              @tap="openView(item.id)"
+              ><view class="rail-item-surface"><BaseIcon :name="item.icon" size="24px" /></view
+              ><text class="rail-item-tip" aria-hidden="true"
+                >{{ viewportWidth <= 760 ? item.shortLabel || item.label : item.label
+                }}<text v-if="item.id === 'search'" class="rail-shortcut">⌘K</text></text
+              >
+            </BaseButton>
+          </view>
+          <view class="rail-divider" />
+          <BaseButton
+            class="rail-item rail-usage"
+            :class="{ 'is-current': active === 'usage' }"
+            variant="quiet"
+            :label="t('muse.usage')"
+            :aria-current="active === 'usage' ? 'page' : undefined"
+            @tap="openView('usage')"
+            ><view class="rail-item-surface"><BaseIcon name="chart" size="24px" /></view
+            ><text class="rail-item-tip" aria-hidden="true">{{
+              t(viewportWidth <= 760 ? 'muse.nav.usage' : 'muse.usage')
+            }}</text></BaseButton
+          >
+          <view class="rail-spacer" />
+          <BaseButton
+            class="rail-item rail-settings"
+            :class="{ 'is-current': active === 'settings' || active === 'profile' }"
+            variant="quiet"
+            :label="t('nav.settings')"
+            :aria-current="active === 'settings' || active === 'profile' ? 'page' : undefined"
+            @tap="openView('settings')"
+            ><view class="rail-item-surface"><BaseIcon name="equal" size="24px" /></view
+            ><text class="rail-item-tip" aria-hidden="true"
+              >{{ t('nav.settings') }}<text class="rail-shortcut">⌘,</text></text
+            ></BaseButton
+          >
+        </view>
+      </view>
       <button
-        v-if="menuOpen || menuLeaving"
+        v-if="(menuOpen || menuLeaving) && directoryModal"
         class="sidebar-scrim"
-        :class="{ 'is-closing': menuLeaving }"
-        role="button"
+        :class="{ 'is-closing': menuLeaving, 'is-search': searchOnOpen }"
         tabindex="-1"
         :disabled="menuLeaving"
-        :aria-disabled="menuLeaving"
         :aria-label="t('learning.kh3')"
         @tap="closeMenu"
       ></button>
-      <BaseCard
-        surface="glass"
-        padding="none"
+      <view
+        v-if="menuOpen || menuLeaving"
         class="space-sidebar"
-        :class="{ 'sidebar-open': menuOpen, 'sidebar-leaving': menuLeaving }"
+        :class="{ 'sidebar-open': menuOpen, 'sidebar-leaving': menuLeaving, 'search-palette': searchOnOpen }"
         :inert="menuLeaving || undefined"
+        :role="directoryModal ? 'dialog' : 'complementary'"
+        :aria-modal="directoryModal || undefined"
+        :aria-label="t(searchOnOpen ? 'learning.ki6' : 'learning.openDirectory')"
       >
-        <view class="brand-row">
-          <BaseButton
-            class="brand-link"
-            align="start"
-            :aria-label="t('learning.kej')"
-            variant="quiet"
-            @tap="safeNavigateTo('/pages/index/index')"
-          >
-            <image
-              class="brand-mark"
-              :src="theme.isDark ? BRAND.markOnDark : BRAND.mark"
-              mode="aspectFit"
-              :alt="BRAND.name"
-            />
-            <view class="brand-copy">
-              <text class="brand-name">
-                {{ BRAND.name }}
-              </text>
-            </view>
-          </BaseButton>
-          <BaseButton
-            ref="closeButton"
-            class="sidebar-close"
-            icon-only
-            icon="close"
-            :label="t('learning.closeDirectory')"
-            :aria-label="t('learning.kh3')"
-            variant="quiet"
-            @tap="closeMenu"
-          />
-        </view>
-        <BaseButton
-          class="new-session"
-          :label="t('learning.k8t')"
-          block
-          :disabled="learning.busy"
-          :aria-disabled="learning.busy"
-          variant="primary"
-          icon="plus"
-          @tap="newSession"
-        >
-          <text>{{ t('learning.k8t') }}</text>
-        </BaseButton>
-        <view class="library-search">
-          <BaseInput
-            ref="searchInput"
-            v-model="query"
-            input-class="search-input"
-            hide-label
-            focus-visible-only
-            :placeholder="t('learning.ki6')"
-            maxlength="120"
-            :label="t('learning.ki6')"
-          />
-        </view>
-        <view
-          v-if="learning.recordReadState === 'ready' && learning.state.attempts.length"
-          class="button-row record-filters"
-          role="group"
-          :aria-label="t('learning.records.filter')"
-        >
-          <BaseChip
-            v-for="filter in learning.recordFilters"
-            :key="filter"
-            :model-value="recordFilter === filter"
-            @update:model-value="recordFilter = recordFilter === filter ? 'all' : filter"
-            >{{ t(`learning.records.${filter}`) }}</BaseChip
-          >
-        </view>
-        <view v-if="learning.recordReadState !== 'ready'" class="recent-list" role="status">
-          <text class="sidebar-caption">{{ recordReadMessage }}</text>
-        </view>
-        <view v-else-if="queryPending" class="recent-list" role="status">
-          <text class="sidebar-caption">{{ t('learning.records.loading') }}</text>
-        </view>
-        <view v-else-if="recordSearch" class="recent-list" :aria-label="t('learning.records.results')">
-          <text class="sidebar-caption" role="status">{{
-            t('learning.records.count', { count: recordSearch.total })
-          }}</text>
-          <BaseButton
-            v-for="record in recordSearch.items"
-            :key="record.id"
-            class="recent-item"
-            align="start"
-            variant="quiet"
-            :disabled="learning.busy"
-            :aria-disabled="learning.busy"
-            @tap="openRecord(record.id, recordSearch.context)"
-          >
-            <BaseIcon :name="record.kind === 'conversation' ? 'chat' : 'book-open'" tone="ink-3" />
-            <view class="material-copy">
-              <text class="sidebar-label">{{ record.label }}</text>
-              <text class="sidebar-caption">{{ record.day }} · {{ record.excerpt }}</text>
-              <view v-if="record.kind === 'answer'" class="button-row">
-                <BaseTag tone="neutral">{{
-                  t(`learning.records.${record.gradeStatus === 'reliable' ? record.outcome : 'pending'}`)
-                }}</BaseTag>
-                <BaseTag v-if="record.helped" tone="neutral">{{ t('learning.records.helped') }}</BaseTag>
-              </view>
-            </view>
-          </BaseButton>
-          <BaseEmpty
-            v-if="!recordSearch.total"
-            :title="t('learning.records.empty')"
-            show-button
-            :button-text="t(recordFilter === 'all' ? 'learning.records.clear' : 'learning.records.reset')"
-            @action="
-              query = '';
-              recordFilter = 'all';
-            "
-          />
-          <BaseButton v-if="recordPage" variant="quiet" @tap="recordPage--">{{
-            t('learning.records.previous')
-          }}</BaseButton>
-          <BaseButton v-if="recordSearch.hasMore" variant="quiet" @tap="recordPage++">{{
-            t('learning.records.next')
-          }}</BaseButton>
-        </view>
-        <view v-else class="recent-list" :aria-label="t('learning.k5p')">
-          <view v-for="conversation in recent" :key="conversation.id" class="recent-conversation">
-            <BaseButton
-              class="recent-item"
-              align="start"
-              :selected="learning.selectedConversationId === conversation.id"
-              :class="{ current: learning.selectedConversationId === conversation.id }"
-              :disabled="learning.busy"
-              :aria-disabled="learning.busy"
-              variant="quiet"
-              @tap="resume(conversation.id)"
-            >
-              <BaseIcon name="chat" tone="ink-3" />
-              <text class="sidebar-label">{{ conversation.goal }}</text>
-            </BaseButton>
-            <view v-if="learning.selectedConversationId === conversation.id" class="conversation-directory">
-              <view v-for="chapter in directoryDays" :key="chapter.day" class="directory-day">
-                <BaseButton
-                  class="directory-date"
-                  align="start"
-                  :disabled="learning.busy"
-                  :aria-disabled="learning.busy"
-                  variant="quiet"
-                  @tap="locate(conversation.id, chapter.day)"
-                >
-                  {{ chapter.day.slice(5).replace('-', ' / ') }}
-                </BaseButton>
-                <BaseButton
-                  v-for="group in chapter.groups"
-                  :key="group.id"
-                  class="directory-module"
-                  align="start"
-                  :disabled="learning.busy"
-                  :aria-disabled="learning.busy"
-                  :aria-label="t('learning.kv1', { v0: chapter.day, v1: learningText(group.label) })"
-                  variant="quiet"
-                  @tap="locate(conversation.id, chapter.day, group.id)"
-                >
-                  <text>{{ learningText(group.label) }}</text>
-                  <BaseIcon name="arrow-right" tone="ink-3" />
-                </BaseButton>
-              </view>
+        <view class="directory-clip"
+          ><view class="directory-surface">
+            <view class="directory-top">
+              <view class="directory-search"
+                ><BaseIcon name="search" :size="searchOnOpen ? '18px' : '16px'" tone="ink-3" />
+                <BaseInput
+                  ref="searchInput"
+                  v-model="query"
+                  input-class="search-input"
+                  hide-label
+                  focus-visible-only
+                  :placeholder="t(searchOnOpen ? 'learning.ki6' : 'muse.searchChats')"
+                  maxlength="120"
+                  :label="t('learning.ki6')"
+              /></view>
               <BaseButton
-                v-if="learning.timeline.length > directoryDayLimit"
-                class="directory-earlier"
-                align="start"
-                :disabled="learning.busy"
-                :aria-disabled="learning.busy"
-                data-test="earlier-learning-days"
+                class="sidebar-close"
+                icon-only
+                icon="close"
+                :label="t('learning.closeDirectory')"
                 variant="quiet"
-                @tap="directoryDayLimit += 7"
-                >{{ t('learning.kjp') }}</BaseButton
-              >
+                @tap="closeMenu"
+              />
+              <BaseButton
+                v-if="!searchOnOpen"
+                ref="closeButton"
+                class="sidebar-options"
+                icon-only
+                icon="ellipsis"
+                label="会话选项"
+                variant="quiet"
+                aria-haspopup="menu"
+                :aria-expanded="directoryOptions"
+                @tap="directoryOptions = !directoryOptions"
+              />
             </view>
-          </view>
-        </view>
-        <view class="desktop-navigation" :aria-label="t('nav.learningViews')">
-          <BaseButton
-            v-for="item in navigation"
-            :key="item.id"
-            class="space-nav-item"
-            align="start"
-            :label="learningText(item.label)"
-            :title="learningText(item.label)"
-            :selected="active === item.id"
-            :class="{ selected: active === item.id }"
-            :aria-current="active === item.id ? 'page' : undefined"
-            variant="quiet"
-            @tap="openView(item.id)"
-          >
-            <BaseIcon
-              :name="item.icon"
-              :label="learningText(item.label)"
-              :title="learningText(item.label)"
-              :selected="active === item.id"
-              :tone="active === item.id ? 'violet-ink' : 'ink-3'"
-            />
-            <text class="sidebar-label">{{ learningText(item.label) }}</text>
-            <text v-if="item.id === 'mistake' && learning.summary.mistakes.length" class="nav-count">
-              {{ learning.summary.mistakes.length }}
-            </text>
-          </BaseButton>
-        </view>
-        <view class="sidebar-footer">
-          <BaseButton
-            :label="theme.isDark ? t('learning.kfr') : t('learning.kev')"
-            class="theme-button"
-            icon-only
-            :icon="theme.isDark ? 'sun' : 'moon'"
-            :aria-label="theme.isDark ? t('learning.kfr') : t('learning.kev')"
-            variant="quiet"
-            @tap="theme.toggleTheme()"
-          />
-        </view>
-      </BaseCard>
-      <view class="space-main" :inert="menuOpen || undefined">
-        <view class="space-header">
+            <view
+              v-if="directoryOptions && !searchOnOpen"
+              class="directory-options-menu"
+              role="group"
+              aria-label="会话选项"
+            >
+              <BaseButton
+                v-if="!directoryModal"
+                variant="quiet"
+                align="start"
+                :selected="panelPinned"
+                :aria-pressed="panelPinned"
+                @tap="panelPinned = !panelPinned"
+                ><BaseIcon :name="panelPinned ? 'checkbox-on' : 'checkbox-off'" size="16px" />固定会话列表</BaseButton
+              >
+              <BaseButton variant="quiet" align="start" icon="plus" :disabled="learning.busy" @tap="newSession"
+                >新建会话</BaseButton
+              >
+              <BaseButton variant="quiet" align="start" icon="chevron-left" @tap="closeMenu">收起会话列表</BaseButton>
+            </view>
+            <BaseButton
+              v-if="!searchOnOpen && recent.length"
+              class="new-session"
+              variant="quiet"
+              icon="plus"
+              align="start"
+              :disabled="learning.busy"
+              @tap="newSession"
+              >{{ t('learning.k8t') }}</BaseButton
+            >
+            <view class="directory-scroll">
+              <view
+                v-if="!searchOnOpen && learning.recordReadState === 'ready' && learning.state.attempts.length"
+                class="button-row record-filters"
+                role="group"
+                :aria-label="t('learning.records.filter')"
+              >
+                <BaseChip
+                  v-for="filter in learning.recordFilters"
+                  :key="filter"
+                  :model-value="recordFilter === filter"
+                  @update:model-value="recordFilter = recordFilter === filter ? 'all' : filter"
+                  >{{ t(`learning.records.${filter}`) }}</BaseChip
+                >
+              </view>
+              <view v-if="learning.recordReadState === 'error'" class="recent-list" role="status">
+                <text class="sidebar-caption">{{ recordReadMessage }}</text>
+              </view>
+              <view
+                v-else-if="learning.recordReadState !== 'ready' || queryPending"
+                class="muse-list-skeleton"
+                role="status"
+                :aria-label="t('learning.records.loading')"
+              >
+                <view v-for="line in 3" :key="line" class="muse-list-skeleton__row" aria-hidden="true">
+                  <view class="muse-list-skeleton__icon" /><view class="muse-list-skeleton__line" />
+                </view>
+              </view>
+              <view v-else-if="recordSearch" class="recent-list" :aria-label="t('learning.records.results')">
+                <text class="sidebar-caption" role="status">{{
+                  t('learning.records.count', { count: recordSearch.total })
+                }}</text>
+                <BaseButton
+                  v-for="record in recordSearch.items"
+                  :key="record.id"
+                  class="recent-item"
+                  align="start"
+                  variant="quiet"
+                  :disabled="learning.busy"
+                  :aria-disabled="learning.busy"
+                  @tap="openRecord(record.id, recordSearch.context)"
+                >
+                  <BaseIcon :name="record.kind === 'conversation' ? 'chat' : 'book-open'" tone="ink-3" />
+                  <view class="material-copy">
+                    <text class="sidebar-label">{{ record.label }}</text>
+                    <text class="sidebar-caption">{{ record.day }} · {{ record.excerpt }}</text>
+                    <view v-if="!searchOnOpen && record.kind === 'answer'" class="button-row">
+                      <BaseTag tone="neutral">{{
+                        t(`learning.records.${record.gradeStatus === 'reliable' ? record.outcome : 'pending'}`)
+                      }}</BaseTag>
+                      <BaseTag v-if="record.helped" tone="neutral">{{ t('learning.records.helped') }}</BaseTag>
+                    </view>
+                  </view>
+                </BaseButton>
+                <BaseEmpty
+                  v-if="!recordSearch.total"
+                  :title="t('learning.records.empty')"
+                  show-button
+                  :button-text="t(recordFilter === 'all' ? 'learning.records.clear' : 'learning.records.reset')"
+                  @action="
+                    query = '';
+                    recordFilter = 'all';
+                  "
+                />
+                <BaseButton v-if="recordPage" variant="quiet" @tap="recordPage--">{{
+                  t('learning.records.previous')
+                }}</BaseButton>
+                <BaseButton v-if="recordSearch.hasMore" variant="quiet" @tap="recordPage++">{{
+                  t('learning.records.next')
+                }}</BaseButton>
+              </view>
+              <view v-else-if="!recent.length && !searchOnOpen" class="directory-empty"
+                ><BaseIcon name="chat" size="32px" tone="ink-3" /><text class="directory-empty-title"
+                  >开始一段新对话</text
+                ><text class="directory-empty-copy">按主题整理你的学习</text
+                ><BaseButton variant="quiet" :disabled="learning.busy" @tap="newSession">新建会话</BaseButton></view
+              >
+              <view v-else class="recent-list" :aria-label="t('learning.k5p')">
+                <view v-for="conversation in recent" :key="conversation.id" class="recent-conversation">
+                  <BaseButton
+                    class="recent-item"
+                    align="start"
+                    :selected="learning.selectedConversationId === conversation.id"
+                    :class="{ current: learning.selectedConversationId === conversation.id }"
+                    :disabled="learning.busy"
+                    :aria-disabled="learning.busy"
+                    :aria-label="`${conversation.goal}，${new Date(conversation.at).toLocaleDateString()}${conversation.stopped ? '，已暂停' : ''}`"
+                    variant="quiet"
+                    @tap="resume(conversation.id)"
+                  >
+                    <text class="sidebar-label">{{ conversation.goal }}</text>
+                    <text class="thread-time">{{
+                      conversation.stopped ? '已暂停' : new Date(conversation.at).toLocaleDateString()
+                    }}</text>
+                  </BaseButton>
+                  <view
+                    v-if="!searchOnOpen && learning.selectedConversationId === conversation.id"
+                    class="conversation-directory"
+                  >
+                    <view v-for="chapter in directoryDays" :key="chapter.day" class="directory-day">
+                      <BaseButton
+                        class="directory-date"
+                        align="start"
+                        :disabled="learning.busy"
+                        :aria-disabled="learning.busy"
+                        variant="quiet"
+                        @tap="locate(conversation.id, chapter.day)"
+                      >
+                        {{ chapter.day.slice(5).replace('-', ' / ') }}
+                      </BaseButton>
+                      <BaseButton
+                        v-for="group in chapter.groups"
+                        :key="group.id"
+                        class="directory-module"
+                        align="start"
+                        :disabled="learning.busy"
+                        :aria-disabled="learning.busy"
+                        :aria-label="t('learning.kv1', { v0: chapter.day, v1: learningText(group.label) })"
+                        variant="quiet"
+                        @tap="locate(conversation.id, chapter.day, group.id)"
+                      >
+                        <text>{{ learningText(group.label) }}</text>
+                        <BaseIcon name="arrow-right" tone="ink-3" />
+                      </BaseButton>
+                    </view>
+                    <BaseButton
+                      v-if="learning.timeline.length > directoryDayLimit"
+                      class="directory-earlier"
+                      align="start"
+                      :disabled="learning.busy"
+                      :aria-disabled="learning.busy"
+                      data-test="earlier-learning-days"
+                      variant="quiet"
+                      @tap="directoryDayLimit += 7"
+                      >{{ t('learning.kjp') }}</BaseButton
+                    >
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view></view
+        >
+        <!-- #ifdef H5 -->
+        <component
+          :is="'div'"
+          v-if="!searchOnOpen"
+          class="directory-resize"
+          role="separator"
+          tabindex="0"
+          aria-orientation="vertical"
+          :aria-label="t('muse.resize')"
+          :aria-valuemin="240"
+          :aria-valuemax="420"
+          :aria-valuenow="panelWidth"
+          @pointerdown="startPanelResize"
+          @keydown="resizePanelKey"
+          @dblclick="panelWidth = 240"
+        />
+        <!-- #endif -->
+      </view>
+      <!-- #ifdef H5 -->
+      <component
+        :is="'div'"
+        v-if="active === 'learning' && !menuOpen && !menuLeaving"
+        class="directory-edge"
+        role="separator"
+        tabindex="0"
+        aria-orientation="vertical"
+        :aria-label="t('learning.openDirectory')"
+        @pointerdown="startPanelOpen"
+        @keydown="openPanelKey"
+      />
+      <view
+        v-if="panelReveal > 0"
+        class="directory-edge-preview"
+        :style="{ width: `${panelReveal}px` }"
+        aria-hidden="true"
+      />
+      <!-- #endif -->
+      <view
+        class="space-main"
+        :inert="(menuOpen && directoryModal) || undefined"
+        :aria-hidden="(searchOnOpen && (menuOpen || menuLeaving)) || undefined"
+      >
+        <view v-if="layout !== 'workspace'" class="space-header">
           <view class="space-heading">
             <BaseButton
+              v-if="active === 'learning' && !menuOpen"
               ref="menuButton"
-              class="mobile-menu"
-              icon-only
+              class="mobile-menu directory-pill"
               icon="menu"
               :label="t('learning.openDirectory')"
-              :aria-label="t('learning.ksq')"
               :aria-expanded="menuOpen"
               variant="quiet"
-              @tap="menuOpen = !menuOpen"
-            />
-            <text class="space-title">{{ title || t('pages.learning') }}</text>
+              @tap="toggleMenu"
+              >{{ t('muse.chats') }}</BaseButton
+            >
+            <text v-if="active !== 'learning'" class="space-title">{{ title }}</text>
           </view>
-          <view v-if="learning.recordReadState === 'ready'" class="space-header-actions"
+          <view v-if="active === 'learning'" class="muse-chat-identity"
+            ><AnimatedAvatar class="brand-mark" :size="56" autoplay perceptible :business="avatarBusiness" />
+            <view class="brand-label"
+              ><text class="brand-name" :title="BRAND.name">{{ BRAND.name }}</text>
+              <text
+                v-if="avatarBusiness.busy || avatarBusiness.stopped || avatarBusiness.error"
+                class="brand-status"
+                role="status"
+                >{{ avatarStatus }}</text
+              ></view
+            ></view
+          >
+          <BaseButton
+            v-if="compactHeader && learning.recordReadState === 'ready'"
+            ref="headerActionsButton"
+            class="header-actions-toggle"
+            variant="quiet"
+            icon="ellipsis"
+            icon-only
+            :label="t('muse.headerActions')"
+            :aria-expanded="headerActionsOpen"
+            aria-controls="learning-header-actions"
+            @tap="toggleHeaderActions"
+          />
+          <view
+            v-if="learning.recordReadState === 'ready'"
+            v-show="!compactHeader || headerActionsOpen"
+            id="learning-header-actions"
+            class="space-header-actions"
+            :class="{ 'is-compact': compactHeader }"
+            role="group"
+            :aria-label="t('muse.headerActions')"
+            @tap="closeHeaderActions(true)"
             ><slot name="controls"></slot
           ></view>
         </view>
@@ -273,19 +414,23 @@
             @action="learning.reloadRecords()"
           />
         </view>
+        <view v-if="$slots.composer" class="muse-composer-dock"><slot name="composer"></slot></view>
       </view>
     </view>
-    <BaseEmpty v-if="error" state="error" :title="learningText(error)" />
+    <BaseEmpty v-if="error" class="shell-error" state="error" :title="learningText(error)" />
   </view>
 </template>
 <script setup>
 import '@/i18n/tutor.js';
-import BaseCard from '@/components/base/base-card/base-card.vue';
+import '@/i18n/muse.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import { learningText } from '@/i18n/learning.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
+import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
+import MuseLaunch from './muse-launch.vue';
+import { avatarBusinessForLearning, avatarStateFor } from '@/design/avatar-state.js';
 
 import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -296,17 +441,193 @@ import { bindBusinessMotion } from '@/design/business-motion.js';
 import { BRAND } from '@/config/brand.js';
 import { publicError, t } from '@/i18n/index.js';
 const props = defineProps({
+  sidePanel: { type: Boolean, default: false },
   active: { type: String, default: 'learning' },
-  title: { type: String, default: '' }
+  title: { type: String, default: '' },
+  layout: { type: String, default: 'default' }
 });
-const emit = defineEmits(['materials', 'new']);
+const emit = defineEmits(['materials', 'new', 'connections']);
 const learning = useConversationLearningStore();
+const avatarEvent = ref(null);
+const avatarBusiness = computed(() => avatarBusinessForLearning(learning, avatarEvent.value));
+const avatarStatus = computed(() =>
+  t(
+    `muse.avatar.${learning.error || learning.coachError ? 'error' : learning.active?.stopped ? 'stopped' : avatarStateFor(avatarBusinessForLearning(learning))}`
+  )
+);
+watch(
+  () => learning.state?.events?.at(-1)?.id,
+  (id, previous) => {
+    if (previous && id !== previous) avatarEvent.value = learning.state.events.at(-1);
+  }
+);
 const theme = useThemeStore();
 const root = ref(null);
 const menuButton = ref(null);
 const closeButton = ref(null);
 const searchInput = ref(null);
 const menuOpen = ref(false);
+const searchOnOpen = ref(false);
+const directoryOptions = ref(false);
+const panelPinned = ref(false);
+const viewportWidth = ref(1024);
+const compactHeader = computed(() => props.active === 'learning' && viewportWidth.value <= 480);
+const headerActionsOpen = ref(false);
+const headerActionsButton = ref(null);
+let headerActionKeyboard = false;
+function closeHeaderActions(restoreFocus = false) {
+  if (!headerActionsOpen.value) return;
+  headerActionsOpen.value = false;
+  // #ifdef H5
+  if (restoreFocus) nextTick(() => (headerActionsButton.value?.$el || headerActionsButton.value)?.focus?.());
+  // #endif
+}
+async function toggleHeaderActions() {
+  if (headerActionsOpen.value) return closeHeaderActions();
+  headerActionsOpen.value = true;
+  await nextTick();
+  // #ifdef H5
+  const element = root.value?.$el || root.value;
+  element?.querySelector?.('.space-header-actions [role="button"]:not([disabled])')?.focus?.();
+  // #endif
+}
+function headerActionsFocusOut(event) {
+  if (!event.relatedTarget?.closest?.('.space-header-actions, .header-actions-toggle')) closeHeaderActions();
+}
+function headerActionKey(event) {
+  const activation = ['Enter', ' '].includes(event.key);
+  if (event.type === 'keydown') {
+    headerActionKeyboard =
+      activation &&
+      headerActionsOpen.value &&
+      !!event.target?.closest?.('.space-header-actions') &&
+      !event.target.hasAttribute('disabled');
+  } else if (activation && headerActionKeyboard) {
+    headerActionKeyboard = false;
+    closeHeaderActions(true);
+  }
+}
+watch([compactHeader, () => props.active, () => learning.selectedConversationId], () => closeHeaderActions());
+const directoryModal = computed(() => searchOnOpen.value || viewportWidth.value <= 760);
+let previousDirectoryFocus = null;
+function toggleMenu() {
+  searchOnOpen.value = false;
+  menuOpen.value = !menuOpen.value;
+}
+const panelWidth = ref(240);
+const panelResizing = ref(false);
+const panelOpening = ref(false);
+const panelReveal = ref(0);
+let releasePanelResize = () => undefined;
+let releasePanelOpen = () => undefined;
+function openPanelKey(event) {
+  if (!['Enter', ' '].includes(event.key)) return;
+  event.preventDefault();
+  searchOnOpen.value = false;
+  menuOpen.value = true;
+}
+function startPanelOpen(event) {
+  // #ifdef H5
+  if (
+    event.button !== 0 ||
+    (event.pointerType && event.isPrimary === false) ||
+    menuOpen.value ||
+    typeof window === 'undefined'
+  )
+    return;
+  event.preventDefault();
+  releasePanelOpen();
+  const startX = event.clientX,
+    startY = event.clientY;
+  let moved = false;
+  panelOpening.value = true;
+  const move = (next) => {
+    if (next.pointerId !== event.pointerId) return;
+    moved ||= Math.abs(next.clientX - startX) > 2 || Math.abs(next.clientY - startY) > 2;
+    panelReveal.value = Math.max(0, Math.min(panelWidth.value, next.clientX - startX));
+  };
+  const finish = (next) => {
+    if (next.pointerId !== event.pointerId) return;
+    moved ||= Math.abs(next.clientX - startX) > 2 || Math.abs(next.clientY - startY) > 2;
+    const open = !moved || next.clientX - startX > 64;
+    releasePanelOpen();
+    if (open) {
+      searchOnOpen.value = false;
+      menuOpen.value = true;
+    }
+  };
+  const cancel = (next) => {
+    if (next.pointerId === event.pointerId) releasePanelOpen();
+  };
+  const blur = () => releasePanelOpen();
+  window.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', finish);
+  window.addEventListener('pointercancel', cancel);
+  window.addEventListener('blur', blur);
+  releasePanelOpen = () => {
+    panelOpening.value = false;
+    panelReveal.value = 0;
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', finish);
+    window.removeEventListener('pointercancel', cancel);
+    window.removeEventListener('blur', blur);
+  };
+  // #endif
+}
+function resizePanelKey(event) {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  event.preventDefault();
+  const step = event.shiftKey ? 64 : 16;
+  panelWidth.value =
+    event.key === 'Home'
+      ? 240
+      : event.key === 'End'
+        ? 420
+        : Math.max(240, Math.min(420, panelWidth.value + (event.key === 'ArrowRight' ? step : -step)));
+}
+function startPanelResize(event) {
+  // #ifdef H5
+  if (event.button !== 0 || typeof window === 'undefined') return;
+  event.preventDefault();
+  releasePanelResize();
+  const startX = event.clientX,
+    startWidth = panelWidth.value;
+  let requested = startWidth;
+  let moved = false;
+  panelResizing.value = true;
+  const move = (next) => {
+    if (next.pointerId !== event.pointerId) return;
+    moved ||= Math.abs(next.clientX - startX) > 4;
+    requested = startWidth + next.clientX - startX;
+    panelWidth.value = Math.max(240, Math.min(420, requested));
+  };
+  const finish = (next) => {
+    if (next.pointerId !== event.pointerId) return;
+    releasePanelResize();
+    if (!moved || requested < 180) closeMenu();
+  };
+  const cancel = (next) => {
+    if (next.pointerId !== event.pointerId) return;
+    panelWidth.value = startWidth;
+    releasePanelResize();
+  };
+  const blur = () => {
+    panelWidth.value = startWidth;
+    releasePanelResize();
+  };
+  window.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', finish);
+  window.addEventListener('pointercancel', cancel);
+  window.addEventListener('blur', blur);
+  releasePanelResize = () => {
+    panelResizing.value = false;
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', finish);
+    window.removeEventListener('pointercancel', cancel);
+    window.removeEventListener('blur', blur);
+  };
+  // #endif
+}
 const menuLeaving = ref(false);
 const reducedMotion = ref(true);
 const query = ref('');
@@ -357,6 +678,21 @@ const directoryDays = computed(() => learning.timeline.slice(-directoryDayLimit.
 watch([() => learning.recordContext(), () => learning.selectedConversationId], () => {
   directoryDayLimit.value = 7;
 });
+const viewportHeight = ref(720);
+const dockStyle = computed(() => {
+  const item = Math.max(44, Math.min(56, Math.floor((Math.max(0, viewportHeight.value - 224) - 80) / 9)));
+  return { '--dock-item': `${item}px`, '--dock-surface': '44px', '--dock-glyph': '24px' };
+});
+function updateDockMetrics(event) {
+  const info =
+    typeof window !== 'undefined'
+      ? { windowHeight: window.innerHeight, windowWidth: window.innerWidth }
+      : event?.size || uni.getWindowInfo?.();
+  if (info?.windowHeight) viewportHeight.value = info.windowHeight;
+  if (info?.windowWidth) viewportWidth.value = info.windowWidth;
+}
+let releaseViewport = () => undefined;
+
 const platformInsets = ref({});
 // #ifdef MP-WEIXIN
 try {
@@ -372,15 +708,23 @@ try {
 // #endif
 const error = ref('');
 const navigation = computed(() => [
-  { id: 'archive', label: t('tutor.archive.title'), icon: 'chart-bar' },
-  { id: 'materials', label: t('learning.k5u'), icon: 'folder' },
-  { id: 'settings', label: t('nav.settings'), icon: 'settings' }
+  { id: 'learning', label: t('muse.chat'), icon: 'chat' },
+  { id: 'search', label: t('learning.ki6'), shortLabel: t('muse.nav.search'), icon: 'search' },
+  { id: 'archive', label: t('muse.activity'), icon: 'list' },
+  { id: 'phrases', label: t('muse.phrases'), shortLabel: t('muse.nav.phrases'), icon: 'bulb' },
+  { id: 'plan', label: t('muse.goals'), shortLabel: t('muse.nav.plan'), icon: 'checkbox-on' },
+  { id: 'materials', label: t('muse.library'), shortLabel: t('muse.nav.materials'), icon: 'shapes' }
 ]);
+function railActive(id) {
+  return props.active === id;
+}
 const recent = computed(() => [...learning.state.conversations].reverse().slice(0, 8));
 let unbind = () => undefined;
 let releaseMotion = () => undefined;
 let menuExitTimer = null;
 watch(menuOpen, async (open) => {
+  releasePanelResize();
+  releasePanelOpen();
   clearTimeout(menuExitTimer);
   menuLeaving.value = !open;
   if (!open) {
@@ -388,33 +732,86 @@ watch(menuOpen, async (open) => {
       () => {
         menuLeaving.value = false;
       },
-      reducedMotion.value ? 0 : 240
+      reducedMotion.value ? 0 : searchOnOpen.value ? 180 : 160
     );
     return;
   }
+  // #ifdef H5
+  const focused = typeof document !== 'undefined' ? document.activeElement : null;
+  previousDirectoryFocus = focused?.matches?.('button, uni-button, input, textarea, [role="button"]') ? focused : null;
+  // #endif
   await nextTick();
   // #ifdef H5
-  (closeButton.value?.$el || closeButton.value)?.focus?.();
+  if (menuOpen.value) (searchInput.value?.$el || searchInput.value)?.querySelector?.('input')?.focus?.();
   // #endif
 });
 async function closeMenu() {
+  directoryOptions.value = false;
   menuOpen.value = false;
   await nextTick();
   // #ifdef H5
-  (menuButton.value?.$el || menuButton.value)?.focus?.();
+  (previousDirectoryFocus?.isConnected ? previousDirectoryFocus : menuButton.value?.$el || menuButton.value)?.focus?.();
   // #endif
 }
 function escapeMenu(event) {
+  const element = root.value?.$el || root.value;
+  if (
+    event.defaultPrevented ||
+    !element?.getClientRects?.().length ||
+    event.target?.closest?.('.custom-modal-container')
+  )
+    return;
+  if (event.key === 'Escape' && headerActionsOpen.value) {
+    event.preventDefault();
+    closeHeaderActions(true);
+    return;
+  }
+  if (event.key === 'Escape' && panelOpening.value) {
+    event.preventDefault();
+    releasePanelOpen();
+    return;
+  }
+  if ((event.metaKey || event.ctrlKey) && ['k', 'j', ','].includes(event.key.toLowerCase())) {
+    event.preventDefault();
+    openView(event.key.toLowerCase() === 'k' ? 'search' : event.key === ',' ? 'settings' : 'learning');
+    return;
+  }
   if (!menuOpen.value) return;
+  if (event.key === 'Escape' && directoryOptions.value) {
+    event.preventDefault();
+    directoryOptions.value = false;
+    nextTick(() => (closeButton.value?.$el || closeButton.value)?.focus?.());
+    return;
+  }
+  // #ifdef H5
+  if (searchOnOpen.value && ['ArrowDown', 'ArrowUp', 'Enter'].includes(event.key)) {
+    const element = root.value?.$el || root.value;
+    const rows = [...(element?.querySelectorAll?.('.search-palette .recent-item') || [])].filter(
+      (node) => !node.hasAttribute('disabled')
+    );
+    if (rows.length) {
+      const index = rows.indexOf(event.target);
+      if (event.key !== 'Enter') {
+        event.preventDefault();
+        rows[Math.max(0, Math.min(rows.length - 1, index + (event.key === 'ArrowDown' ? 1 : -1)))]?.focus();
+      } else if (event.target?.tagName === 'INPUT') {
+        event.preventDefault();
+        rows[0].click();
+      }
+    }
+  }
+  // #endif
   if (event.key === 'Escape') {
     event.preventDefault();
     closeMenu();
   }
   // #ifdef H5
-  if (event.key === 'Tab') {
+  if (event.key === 'Tab' && directoryModal.value) {
     const element = root.value?.$el || root.value;
     const controls = [
-      ...(element?.querySelectorAll?.('.sidebar-open input, .sidebar-open button, .sidebar-open [role="button"]') || [])
+      ...(element?.querySelectorAll?.(
+        '.sidebar-open input, .sidebar-open button, .sidebar-open [role="button"], .sidebar-open [tabindex="0"]'
+      ) || [])
     ].filter((node) => node.getClientRects().length && !node.hasAttribute('disabled'));
     const first = controls[0];
     const last = controls.at(-1);
@@ -429,10 +826,21 @@ function escapeMenu(event) {
   // #endif
 }
 function openView(view) {
+  directoryOptions.value = false;
   menuOpen.value = false;
   const route = getCurrentPages().at(-1)?.route;
-  if (view === 'materials') {
-    openMaterials();
+  if (view === 'search') {
+    recordFilter.value = 'all';
+    searchOnOpen.value = true;
+    menuOpen.value = true;
+    nextTick(() => {
+      const el = searchInput.value?.$el || searchInput.value;
+      el?.querySelector?.('input')?.focus?.();
+    });
+    return;
+  }
+  if (view === 'connections' && props.active === 'learning') {
+    emit('connections');
     return;
   }
   if (['settings', 'profile'].includes(view)) {
@@ -441,8 +849,13 @@ function openView(view) {
     else safeNavigateTo('/pages/profile/index');
     return;
   }
-  const target = view === 'archive' ? '/pages/archive/index' : `/pages/${view}/index`;
-  if (route !== target.slice(1)) safeNavigateTo(target);
+  const target = ['archive', 'phrases', 'plan', 'materials', 'usage'].includes(view)
+    ? `/pages/archive/index?view=${view === 'archive' ? 'all' : view}`
+    : view === 'connections'
+      ? '/pages/learning/index?panel=connections'
+      : `/pages/${view}/index`;
+  if (route !== target.slice(1).split('?')[0]) safeNavigateTo(target);
+  else if (props.active !== view) uni.redirectTo({ url: target });
 }
 function newSession() {
   if (learning.busy) return;
@@ -472,12 +885,22 @@ function locate(id, day, groupId = null) {
   menuOpen.value = false;
   if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
 }
-function openMaterials() {
-  menuOpen.value = false;
-  if (props.active === 'learning') emit('materials');
-  else safeNavigateTo('/pages/learning/index?panel=materials');
+function outsideDirectory(event) {
+  if (!event.target?.closest?.('.space-header-actions, .header-actions-toggle')) closeHeaderActions();
+  if (directoryOptions.value && !event.target?.closest?.('.directory-options-menu, .sidebar-options'))
+    directoryOptions.value = false;
+  if (!menuOpen.value || directoryModal.value || panelPinned.value) return;
+  if (!event.target?.closest?.('.space-sidebar, .directory-pill')) closeMenu();
 }
 onMounted(() => {
+  updateDockMetrics();
+  if (typeof uni.onWindowResize === 'function') {
+    uni.onWindowResize(updateDockMetrics);
+    releaseViewport = () => uni.offWindowResize?.(updateDockMetrics);
+  } else if (typeof window !== 'undefined') {
+    window.addEventListener('resize', updateDockMetrics);
+    releaseViewport = () => window.removeEventListener('resize', updateDockMetrics);
+  }
   releaseMotion = bindBusinessMotion((reduced) => {
     reducedMotion.value = reduced;
     if (reduced && menuLeaving.value) {
@@ -487,7 +910,13 @@ onMounted(() => {
   });
   unbind = bindLearningKeyboard(root.value);
   const element = root.value?.$el || root.value;
-  element?.addEventListener?.('keydown', escapeMenu);
+  // #ifdef H5
+  document.addEventListener('keydown', escapeMenu);
+  // #endif
+  element?.addEventListener?.('focusout', headerActionsFocusOut);
+  element?.addEventListener?.('keydown', headerActionKey, true);
+  element?.addEventListener?.('keyup', headerActionKey);
+  element?.addEventListener?.('pointerdown', outsideDirectory);
   try {
     learning.refresh();
   } catch (e) {
@@ -495,11 +924,20 @@ onMounted(() => {
   }
 });
 onUnmounted(() => {
+  releaseViewport();
+  releasePanelResize();
+  releasePanelOpen();
   clearTimeout(searchTimer);
   clearTimeout(menuExitTimer);
   releaseMotion();
   unbind();
   const element = root.value?.$el || root.value;
-  element?.removeEventListener?.('keydown', escapeMenu);
+  // #ifdef H5
+  document.removeEventListener('keydown', escapeMenu);
+  // #endif
+  element?.removeEventListener?.('focusout', headerActionsFocusOut);
+  element?.removeEventListener?.('keydown', headerActionKey, true);
+  element?.removeEventListener?.('keyup', headerActionKey);
+  element?.removeEventListener?.('pointerdown', outsideDirectory);
 });
 </script>

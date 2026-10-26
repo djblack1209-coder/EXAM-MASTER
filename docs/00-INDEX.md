@@ -4,27 +4,30 @@
 
 ## 按问题查阅
 
-| 需要了解什么                  | 唯一主文档                                    |
-| ----------------------------- | --------------------------------------------- |
-| 产品、免费边界、教学方式      | [01 产品](01-PRODUCT-VISION.md)               |
-| 数据与模块如何协同            | [02 架构](02-ARCHITECTURE.md)                 |
-| 应该修改哪个文件              | [03 模块导航](03-MODULE-INDEX.md)             |
-| 客户端和后端接口合同          | [04 API](04-API-DOCUMENTATION.md)             |
-| 学习事实、统计、迁移和恢复    | [05 数据](05-DATABASE-SCHEMAS.md)             |
-| 页面、入口与平台能力          | [06 前端](06-FRONTEND-REFERENCE.md)           |
-| 名称、Logo 与视觉规则         | [07 品牌与设计](07-STYLING-SYSTEM.md)         |
-| 验证方法与评测职责            | [08 测试](08-TESTING-INFRA.md)                |
-| 通用工具与兼容模块            | [08B 工具导航](08B-UTILS-REFERENCE.md)        |
-| 命令副作用与自动依赖更新      | [08C 脚本](08C-SCRIPTS-REFERENCE.md)          |
-| 构建、空间清理与生产边界      | [09 构建与维护](09-DEPLOYMENT-GUIDE.md)       |
-| Laf 与独立后端适配            | [09A 后端运行](09A-LAF-BACKEND-DEPLOYMENT.md) |
-| 恢复、迁移与回滚              | [09B 迁移](09B-BACKEND-MIGRATION-GUIDE.md)    |
-| 写代码和审查的规则            | [10 开发规范](10-DEV-RULES.md)                |
-| 完整功能清单、证据与发布缺口  | [11 功能与验收](11-RELEASE-NOTES.md)          |
-| 重要变更记录                  | [12 变更](12-CHANGELOG.md)                    |
-| 当前四阶段与下一步            | [13 开发计划](13-DEVELOPMENT-PLAN.md)         |
-| 模型接入、隐私、费用和权益    | [14 模型与费用](14-MODEL-PRIVACY-COST.md)     |
-| 平台申请、扫码/证件接管与材料 | [15 人工操作指南](15-MANUAL-SETUP-GUIDE.md)   |
+| 需要了解什么                  | 唯一主文档                                        |
+| ----------------------------- | ------------------------------------------------- |
+| 产品、免费边界、教学方式      | [01 产品](01-PRODUCT-VISION.md)                   |
+| 数据与模块如何协同            | [02 架构](02-ARCHITECTURE.md)                     |
+| 应该修改哪个文件              | [03 模块导航](03-MODULE-INDEX.md)                 |
+| 客户端和后端接口合同          | [04 API](04-API-DOCUMENTATION.md)                 |
+| 学习事实、统计、迁移和恢复    | [05 数据](05-DATABASE-SCHEMAS.md)                 |
+| 页面、入口与平台能力          | [06 前端](06-FRONTEND-REFERENCE.md)               |
+| 名称、Logo 与视觉规则         | [07 品牌与设计](07-STYLING-SYSTEM.md)             |
+| App 按钮、看板与内容设计      | [07A 设计介入清单](07A-APP-FUNCTION-INVENTORY.md) |
+| 验证方法与评测职责            | [08 测试](08-TESTING-INFRA.md)                    |
+| 通用工具与兼容模块            | [08B 工具导航](08B-UTILS-REFERENCE.md)            |
+| 命令副作用与自动依赖更新      | [08C 脚本](08C-SCRIPTS-REFERENCE.md)              |
+| 构建、空间清理与生产边界      | [09 构建与维护](09-DEPLOYMENT-GUIDE.md)           |
+| Laf 与独立后端适配            | [09A 后端运行](09A-LAF-BACKEND-DEPLOYMENT.md)     |
+| 恢复、迁移与回滚              | [09B 迁移](09B-BACKEND-MIGRATION-GUIDE.md)        |
+| 写代码和审查的规则            | [10 开发规范](10-DEV-RULES.md)                    |
+| 完整功能清单、证据与发布缺口  | [11 功能与验收](11-RELEASE-NOTES.md)              |
+| 重要变更记录                  | [12 变更](12-CHANGELOG.md)                        |
+| 当前四阶段与下一步            | [13 开发计划](13-DEVELOPMENT-PLAN.md)             |
+| 模型接入、隐私、费用和权益    | [14 模型与费用](14-MODEL-PRIVACY-COST.md)         |
+| 平台申请、扫码/证件接管与材料 | [15 人工操作指南](15-MANUAL-SETUP-GUIDE.md)       |
+| 知识图谱候选与展示方向       | [16 框架图候选](16-KNOWLEDGE-MAPS-BACKLOG.md)     |
+| 自适应诊断引擎与种子边界     | [17 诊断验证版](17-KNOWLEDGE-GRAPH-DIAGNOSIS.md)   |
 
 ## 维护规则
 

@@ -2,13 +2,17 @@
   <BaseCard class="proposal-card" padding="large" data-test="learning-proposal">
     <view class="proposal-heading"
       ><BaseIcon :name="plan ? 'calendar' : 'user'" /><text>{{
-        t(plan ? 'tutor.proposal.plan' : 'tutor.proposal.profile')
+        proposal.entry ? entryTitle : t(plan ? 'tutor.proposal.plan' : 'tutor.proposal.profile')
       }}</text></view
     >
-    <template v-if="plan"
+    <view v-if="proposal.entry" class="proposal-row"
+      ><text>{{ entryTitle }}</text
+      ><text>{{ entryText }}</text></view
+    >
+    <template v-else-if="plan"
       ><text class="proposal-reason">{{ proposal.data.reason }}</text
-      ><view v-for="(task, index) in proposal.data.tasks" :key="index" class="proposal-row"
-        ><BaseIcon name="circle" tone="ink-3" /><text>{{ task.title }}</text></view
+      ><view v-for="(task, index) in proposal.data.tasks" :key="index" class="proposal-row proposal-task"
+        ><BaseIcon name="circle" tone="ink-3" /><text class="proposal-task-title">{{ task.title }}</text></view
       ></template
     >
     <view v-else class="proposal-row"
@@ -23,7 +27,9 @@
         t(plan ? 'tutor.proposal.adopt' : 'tutor.proposal.confirm')
       }}</BaseButton>
     </view>
-    <text v-else class="proposal-status" role="status">{{ t(`tutor.proposal.${status}`) }}</text>
+    <text v-else class="proposal-status" role="status">{{
+      statusLabels[status] || t(`tutor.proposal.${status}`)
+    }}</text>
   </BaseCard>
 </template>
 <script setup>
@@ -39,6 +45,35 @@ const props = defineProps({
   busy: Boolean
 });
 defineEmits(['resolve']);
+const statusLabels = { kept: '已保留', expired: '已过期', promoted: '已转计划' };
+const entryTitle = computed(
+  () => ({ Goal: '学习目标', Reminder: '学习提醒', Idea: '想法', Memory: '学习偏好' })[props.proposal.entry?.kind]
+);
+const entryText = computed(() => {
+  const d = props.proposal.data;
+  return d.patch
+    ? Object.entries(d.patch)
+        .filter(([, v]) => v != null)
+        .map(
+          ([k, v]) =>
+            `${{ goal: '目标', category: '方向', exam: '考试', subjects: '科目', minutes: '每日分钟', deadline: '目标日期', foundation: '基础' }[k] || k}：${Array.isArray(v) ? v.join('、') : v}`
+        )
+        .join(' · ')
+    : d.schedule
+      ? `${d.schedule.date || '每周'} ${d.schedule.time} ${d.schedule.timezone}`
+      : d.text ||
+        d.value ||
+        {
+          'goal.pause': '暂停目标',
+          'goal.resume': '继续目标',
+          'goal.reopen': '重开目标',
+          'goal.close': d.status === 'archived' ? '归档目标' : '完成目标',
+          'profile.retract': '撤回学习偏好',
+          'reminder.complete': '完成提醒',
+          'reminder.cancel': '取消提醒'
+        }[props.proposal.type] ||
+        d.action;
+});
 const plan = computed(() => props.proposal.type === 'plan.set');
 </script>
 <style scoped>
@@ -62,6 +97,15 @@ const plan = computed(() => props.proposal.type === 'plan.set');
   padding-block: var(--s-3);
   justify-content: space-between;
   overflow-wrap: anywhere;
+}
+.proposal-task {
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.proposal-task-title {
+  flex: 1;
+  min-width: 0;
+  line-height: var(--leading-body);
 }
 .proposal-reason,
 .proposal-status {

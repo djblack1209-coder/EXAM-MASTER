@@ -1,11 +1,18 @@
 import config from '../../../config/index.js';
+import { DEV_TEST } from '../../../config/build-channel.js';
 import { captureSession, sessionForRequest } from '../../auth-storage.js';
 import { generateLearningTurnStream } from '../../learning/learning-stream.js';
 
+const DISCOVERY_CLIENT_ENABLED = false;
+export const learningModelDiscoveryEnabled = () => DEV_TEST && DISCOVERY_CLIENT_ENABLED;
+const discoveryDisabled = () => ({ success: false, code: 503, errorCode: 'DISCOVERY_DISABLED' });
+
 // 学习模型请求固定到用户选择的后端，不使用跨服务自动故障切换，不记录消息和密钥。
 export function learningRequest(path, body, options = {}) {
+  if (path === '/learning-models' && body?.action === 'discover' && !learningModelDiscoveryEnabled())
+    return Promise.resolve(discoveryDisabled());
   const readOnly =
-    (path === '/learning-models' && ['list', 'usage', 'result'].includes(body?.action)) ||
+    (path === '/learning-models' && ['list', 'usage', 'result', 'discover'].includes(body?.action)) ||
     (path === '/learning-sync' && ['pull', 'page'].includes(body?.action));
   const session = options.session || (readOnly ? captureSession() : null);
   const failure = (error) => ({
@@ -48,7 +55,12 @@ export function learningRequest(path, body, options = {}) {
       url: `${config.api.baseUrl}${path}`,
       method: 'POST',
       data: body,
-      timeout: 35000,
+      timeout:
+        DEV_TEST && body.modelId === 'dev-zai-byok' && body.learningContext?.coach?.phase === 'essay'
+          ? 130000
+          : body.learningContext?.coach || body.intake
+            ? 70000
+            : 35000,
       header: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       success: (res) =>
         finish(
@@ -80,8 +92,36 @@ export const fetchLearningModels = (options) => learningRequest('/learning-model
 export const requestLearningComputation = (body, options) => learningRequest('/learning-compute', body, options);
 export const requestLearningGrammar = (body, options) => learningRequest('/learning-grammar', body, options);
 export const fetchLearningUsage = (options) => learningRequest('/learning-models', { action: 'usage' }, options);
+export function fetchLearningModelDiscovery(input, options) {
+  if (!learningModelDiscoveryEnabled()) return Promise.resolve(discoveryDisabled());
+  if (
+    !input ||
+    typeof input !== 'object' ||
+    Array.isArray(input) ||
+    Object.keys(input).some((key) => !['profileId', 'modelId', 'refresh'].includes(key)) ||
+    typeof input.profileId !== 'string' ||
+    !/^[a-zA-Z0-9_-]{1,60}$/.test(input.profileId) ||
+    typeof input.refresh !== 'boolean' ||
+    (input.modelId !== undefined && (typeof input.modelId !== 'string' || !/^[\x21-\x7e]{1,256}$/.test(input.modelId)))
+  )
+    return Promise.resolve({ success: false, code: 503, errorCode: 'DISCOVERY_INPUT_INVALID' });
+  return learningRequest(
+    '/learning-models',
+    {
+      action: 'discover',
+      profileId: input.profileId,
+      refresh: input.refresh,
+      ...(input.modelId === undefined ? {} : { modelId: input.modelId })
+    },
+    options
+  );
+}
 export const testLearningModel = (modelId, requestId, options) =>
-  learningRequest('/learning-models', { action: 'test', modelId, requestId, shareConsent: true }, options);
+  learningRequest(
+    '/learning-models',
+    { action: 'test', modelId, requestId, shareConsent: true, ...(options?.intake ? { intake: options.intake } : {}) },
+    options
+  );
 export const cancelLearningTurn = (requestId, options) =>
   learningRequest('/learning-models', { action: 'cancel', requestId }, options);
 export const fetchLearningResult = (requestId, options) =>

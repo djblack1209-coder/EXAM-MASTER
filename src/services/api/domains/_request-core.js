@@ -11,6 +11,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import { DEV_TEST } from '@/config/build-channel.js';
 import config from '../../../config/index.js';
 import {
   captureSession,
@@ -534,7 +535,7 @@ export async function request(path, data = {}, options = {}) {
   }
 
   // 前端限流 — 防止高频请求打爆后端
-  if (!options.skipRateLimit) {
+  if (!DEV_TEST && !options.skipRateLimit) {
     const rateCheck = _checkRateLimit(path);
     if (!rateCheck.allowed) {
       throw requestError({

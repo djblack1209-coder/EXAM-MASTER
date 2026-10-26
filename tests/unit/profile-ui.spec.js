@@ -15,6 +15,68 @@ describe('profile page static UI contract', () => {
 import ProfilePage from '@/pages/profile/index.vue';
 import { requestProfilePanel, consumeProfilePanel, safeNavigateTo } from '@/utils/safe-navigate.js';
 
+it('账户资料详情仅显示本次返回UID，401明确未认证且不触发退出或同步', async () => {
+  const { storageService } = await import('@/services/storageService.js');
+  uni.clearStorageSync();
+  storageService.saveLoginSession({
+    userId: 'profile-read-owner',
+    token: 'fixture-profile-read',
+    userInfo: { _id: 'profile-read-owner' }
+  });
+  const context = {
+    dialogSequence: 0,
+    showDialog: false,
+    userStore: {
+      userInfo: { _id: 'cached-owner' },
+      readCurrentProfile: vi.fn().mockResolvedValue({ success: true, code: 0, uid: 'profile-read-owner' }),
+      logout: vi.fn()
+    },
+    learning: { syncRecords: vi.fn() }
+  };
+  try {
+    await ProfilePage.methods.showAccountInfo.call(context);
+    expect(context.dialog.content).toBe('用户编号：profile-read-owner');
+    ProfilePage.methods.confirmDialog.call(context);
+    expect(context.showDialog).toBe(false);
+    context.userStore.readCurrentProfile.mockResolvedValue({ success: false, code: 401, uid: null });
+    await ProfilePage.methods.showAccountInfo.call(context);
+    expect(context.dialog.content).toBe('未认证，请重新登录');
+    expect(context.userStore.logout).not.toHaveBeenCalled();
+    expect(context.learning.syncRecords).not.toHaveBeenCalled();
+  } finally {
+    uni.clearStorageSync();
+  }
+});
+
+it('同步只在明确确认后执行，账户变化会作废旧确认', async () => {
+  const { storageService } = await import('@/services/storageService.js');
+  const login = (userId) =>
+    storageService.saveLoginSession({ userId, token: `fixture-${userId}`, userInfo: { id: userId } });
+  uni.clearStorageSync();
+  login('sync-owner-a');
+  const context = {
+    isLoggedIn: true,
+    dialogSequence: 0,
+    showDialog: false,
+    learning: {
+      busy: false,
+      syncBusy: false,
+      syncState: { message: '同步完成' },
+      syncRecords: vi.fn().mockResolvedValue({})
+    }
+  };
+  ProfilePage.methods.handleLearningSync.call(context);
+  expect(context.showDialog).toBe(true);
+  expect(context.learning.syncRecords).not.toHaveBeenCalled();
+  login('sync-owner-b');
+  await ProfilePage.methods.confirmDialog.call(context);
+  expect(context.learning.syncRecords).not.toHaveBeenCalled();
+  ProfilePage.methods.handleLearningSync.call(context);
+  await ProfilePage.methods.confirmDialog.call(context);
+  expect(context.learning.syncRecords).toHaveBeenCalledExactlyOnceWith(true);
+  uni.clearStorageSync();
+});
+
 describe('profile panel navigation across page registration', () => {
   afterEach(() => {
     consumeProfilePanel();
@@ -43,6 +105,24 @@ describe('profile panel navigation across page registration', () => {
     expect(context.settingsMode).toBe(true);
     expect(uni.setNavigationBarTitle).toHaveBeenLastCalledWith({ title: '设置' });
     expect(consumeProfilePanel()).toBeNull();
+  });
+  it('AI 连接器目标不会被面板交接归一成账户首页', () => {
+    const context = page();
+    requestProfilePanel('connectors');
+    ProfilePage.onLoad.call(context, {});
+    expect(context.settingsSection).toBe('connectors');
+    expect(context.settingsMode).toBe(true);
+    expect(consumeProfilePanel()).toBeNull();
+  });
+  it('复用原生设置窗从连接器返回通用，不残留上一分组', () => {
+    const context = page();
+    context.setProfilePanel('connectors');
+    context.setProfilePanel('settings');
+    expect(context.settingsMode).toBe(true);
+    expect(context.settingsSection).toBe('general');
+    context.setProfilePanel('profile');
+    expect(context.settingsMode).toBe(false);
+    expect(context.settingsSection).toBe('account');
   });
   it('a reused tab consumes each latest target once in onShow', () => {
     const context = page();

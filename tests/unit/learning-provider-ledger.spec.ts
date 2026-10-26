@@ -1,4 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+import https from 'node:https';
+import { EventEmitter } from 'node:events';
+import { Resolver } from 'node:dns/promises';
+import { parseCoachModelOutput } from '../../laf-backend/functions/_shared/learning-writing-coach.js';
 import {
   newAccount,
   reserveCall,
@@ -9,13 +13,15 @@ import {
   mutateAccount,
   recoverStaleReservations,
   cancelCall,
-  eraseModelResultCache
+  eraseModelResultCache,
+  boundedResponseDiagnostics
 } from '../../laf-backend/functions/_shared/learning-account';
 import {
   validateCloudEndpoint,
   isPublicAddress,
   resolveCloudEndpoint,
-  parseLearningOutput
+  parseLearningOutput,
+  callLearningProvider
 } from '../../laf-backend/functions/_shared/ai-providers/learning-provider';
 const funded = () => {
   const a = newAccount('u1');
@@ -233,4 +239,181 @@ describe('端点、结构化输出和工具安全', () => {
     expect(result.question.validation).toBeNull();
     expect(result.question.source.verified).toBe(false);
   });
+});
+
+it('malformed coach JSON retains its failure coordinate without retaining the reply', () => {
+  const raw = 'private malformed model fixture';
+  let failure: any;
+  try {
+    parseCoachModelOutput(raw, {});
+  } catch (error) {
+    failure = error;
+  }
+  expect(failure).toMatchObject({ code: 'COACH_INVALID', path: 'raw' });
+  const reserved = reserveCall(funded(), input('invalid-json'));
+  const settled = settleCall(reserved.account, 'invalid-json', {
+    success: false,
+    actualCost: null,
+    errorCode: failure.code,
+    validationPath: failure.path
+  });
+  expect(settled.call).toMatchObject({ validationPath: 'raw', costStatus: 'pending', actualCost: null });
+  expect(JSON.stringify(settled.account)).not.toContain(raw);
+});
+
+it('validation diagnostics retain only schema fields and are erased without changing cost facts', () => {
+  const reserved = reserveCall(funded(), input('invalid-path'));
+  const settled = settleCall(reserved.account, 'invalid-path', {
+    success: false,
+    actualCost: null,
+    errorCode: 'COACH_INVALID',
+    validationPath: 'cards[2].private_fixture_key'
+  });
+  expect(settled.call).toMatchObject({ validationPath: 'cards[2].unknown', costStatus: 'pending', actualCost: null });
+  expect(JSON.stringify(settled.account)).not.toContain('private_fixture_key');
+  const erased = eraseModelResultCache(settled.account);
+  expect(erased.account.calls[0]).not.toHaveProperty('validationPath');
+  expect(erased.account.cost).toEqual(settled.account.cost);
+  expect(erased.account.entitlement).toEqual(settled.account.entitlement);
+});
+
+it('received nonstream failures keep shape, usage and duration without reply or reasoning text', async () => {
+  const priorResolver = process.env.LEARNING_DNS_SERVERS;
+  vi.stubEnv('LEARNING_DNS_SERVERS', '8.8.8.8');
+  const ipv4 = vi.spyOn(Resolver.prototype, 'resolve4').mockResolvedValue(['8.8.8.8'] as any);
+  const ipv6 = vi.spyOn(Resolver.prototype, 'resolve6').mockResolvedValue([]);
+  const config: any = {
+    id: 'fixture',
+    provider: 'fixture',
+    model: 'explicit-model',
+    endpoint: 'https://model.example/chat',
+    source: 'byok',
+    apiKey: 'fixture-private-key',
+    maxOutput: 2000,
+    capabilities: { structured: false, tools: false, vision: false, stream: false }
+  };
+  const invalidEnvelope = '{"private_fixture_key":';
+  const invalidContent = JSON.stringify({
+    model: config.model,
+    usage: { prompt_tokens: 12, completion_tokens: 9 },
+    choices: [
+      {
+        finish_reason: 'length',
+        message: { content: null, reasoning_content: 'private_fixture_reasoning' }
+      }
+    ]
+  });
+  let responseText = invalidEnvelope;
+  let responseStatus = 200;
+  const request = vi.spyOn(https, 'request').mockImplementation(((_url: any, _options: any, receive: any) => {
+    const req: any = new EventEmitter();
+    req.end = () =>
+      queueMicrotask(() => {
+        const res: any = new EventEmitter();
+        res.statusCode = responseStatus;
+        res.headers = { 'content-type': 'application/json; charset=utf-8' };
+        receive(res);
+        res.emit('data', Buffer.from(responseText));
+        res.emit('end');
+        req.emit('close');
+      });
+    return req;
+  }) as any);
+  try {
+    for (const text of [invalidEnvelope, invalidContent]) {
+      responseText = text;
+      const error = await callLearningProvider(config, [], ['https://model.example'], undefined, undefined, true).catch(
+        (e) => e
+      );
+      expect(error.code).toBe('INVALID_RESPONSE');
+      expect(error.observed.durationMs).toBeGreaterThanOrEqual(0);
+      expect(error.observed.responseDiagnostics).toMatchObject({
+        httpStatus: 200,
+        mimeCategory: 'json',
+        networkStage: 'received',
+        responseBytes: Buffer.byteLength(text)
+      });
+      if (text === invalidEnvelope) {
+        expect(error.observed.responseDiagnostics).toMatchObject({
+          envelopeJson: 'invalid',
+          expectedType: 'json_object',
+          actualType: 'invalid_json'
+        });
+        expect(error.observed.usage).toBeNull();
+      } else {
+        expect(error.observed.responseDiagnostics).toMatchObject({
+          envelopeJson: 'valid',
+          contentType: 'null',
+          reasoning_contentType: 'string',
+          reasoning_contentChars: 25,
+          finishReason: 'length'
+        });
+        expect(error.observed.usage).toEqual({ prompt_tokens: 12, completion_tokens: 9 });
+      }
+      expect(JSON.stringify(error.observed)).not.toMatch(/private_fixture|fixture-private-key/);
+    }
+    const unchanged = await callLearningProvider(config, [], ['https://model.example']).catch((e) => e);
+    expect(unchanged.code).toBe('INVALID_RESPONSE');
+    expect(unchanged.observed).toBeUndefined();
+    responseStatus = 401;
+    responseText = JSON.stringify({ error: { code: config.apiKey } });
+    const rejected = await callLearningProvider(
+      config,
+      [],
+      ['https://model.example'],
+      undefined,
+      undefined,
+      true
+    ).catch((e) => e);
+    expect(rejected).toMatchObject({ code: 'KEY_REJECTED', upstreamStatus: 401 });
+    expect(rejected.upstreamCode).toBeUndefined();
+    expect(JSON.stringify(rejected)).not.toContain(config.apiKey);
+  } finally {
+    request.mockRestore();
+    ipv4.mockRestore();
+    ipv6.mockRestore();
+    vi.stubEnv('LEARNING_DNS_SERVERS', priorResolver);
+  }
+});
+
+it('coach JSON shape diagnostics use a closed whitelist and never retain syntax text', () => {
+  const raw = '```json\n{"private_fixture_key":\n```';
+  let failure: any;
+  try {
+    parseCoachModelOutput(raw, {}, true);
+  } catch (error) {
+    failure = error;
+  }
+  expect(failure).toMatchObject({
+    code: 'COACH_INVALID',
+    path: 'raw',
+    responseDiagnostics: {
+      expectedType: 'json_object',
+      actualType: 'invalid_json',
+      hasJsonFence: true,
+      syntaxEnd: true
+    }
+  });
+  expect(
+    boundedResponseDiagnostics({
+      ...failure.responseDiagnostics,
+      content: raw,
+      authorization: 'private_fixture_auth',
+      finishReason: 'private_fixture_reason',
+      syntaxPosition: Infinity
+    })
+  ).toBeNull();
+  const diagnostic = boundedResponseDiagnostics({
+    ...failure.responseDiagnostics,
+    version: 'diag-meta-1',
+    capturedAt: 1000
+  });
+  expect(diagnostic).toMatchObject({ expectedType: 'json_object', actualType: 'invalid_json', hasJsonFence: true });
+  expect(failure.responseDiagnostics).not.toHaveProperty('syntaxPosition');
+  expect(JSON.stringify(diagnostic)).not.toMatch(/private_fixture/);
+  const original = reserveCall(funded(), input('shape-erasure')).account;
+  original.calls[0].responseDiagnostics = diagnostic;
+  const erased = eraseModelResultCache(original);
+  expect(erased.account.calls[0]).not.toHaveProperty('responseDiagnostics');
+  expect(erased.account.cost).toEqual(original.cost);
 });

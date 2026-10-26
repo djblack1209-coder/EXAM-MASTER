@@ -7,7 +7,7 @@ const zh = {
   cn: '中国',
   language: '语言',
   chinese: '中文',
-  english: 'English',
+  english: '英语',
   back: '返回',
   authorizationExpired: '授权已过期，请重新登录',
   apple: '通过 Apple 继续',
@@ -29,8 +29,8 @@ const zh = {
   continue: '继续',
   blocked: '美国区目前仅开放给 13 岁以上用户。',
   blockedHelp: '本次无法创建账户，请稍后再来。',
-  smsClosed: '短信暂未开放，请使用其他登录方式。',
-  providerClosed: '此登录方式暂未开放。',
+  smsClosed: '此登录方式暂时不可用，请使用其他方式。',
+  providerClosed: '登录服务暂时不可用，请稍后再试',
   verifying: '正在登录',
   verifyingHelp: '正在验证微信授权',
   authorized: '授权已完成',
@@ -40,7 +40,7 @@ const zh = {
   failed: '登录失败',
   signInAgain: '重新登录',
   retry: '登录未完成，请重试。',
-  trialClosed: '暂未获得朋友试用资格，请联系邀请人。',
+  trialClosed: '此账户暂时无法登录，请联系邀请人。',
   rate: '操作太频繁，请稍后再试。',
   confirmAgain: '请重新确认年龄后继续。',
   invalidBirth: '请选择有效的出生年月。',
@@ -69,7 +69,6 @@ const zh = {
   browser: '请在系统浏览器完成授权后返回。',
   learner: '学习者',
   welcome: '欢迎，每天学明白一点',
-  phoneClosed: '手机号登录 {prefix} · 暂未开放',
   onboard: '开始学习',
   direction: '备考方向',
   subjects: '选择科目',
@@ -117,8 +116,8 @@ const en = {
   continue: 'Continue',
   blocked: 'US accounts are currently available to users aged 13 and older.',
   blockedHelp: 'An account cannot be created in this session. Please come back later.',
-  smsClosed: 'SMS is not available yet. Please use another sign-in option.',
-  providerClosed: 'This sign-in option is not available yet.',
+  smsClosed: 'This sign-in option is temporarily unavailable. Please use another option.',
+  providerClosed: 'Sign-in is temporarily unavailable. Please try again later.',
   verifying: 'Signing in',
   verifyingHelp: 'Verifying WeChat authorization',
   authorized: 'Authorization complete',
@@ -128,7 +127,7 @@ const en = {
   failed: 'Sign-in failed',
   signInAgain: 'Sign in again',
   retry: 'Sign-in did not finish. Please try again.',
-  trialClosed: 'Contact your inviter for access to the trial.',
+  trialClosed: 'This account cannot sign in right now. Please contact your inviter.',
   rate: 'Too many attempts. Please try again later.',
   confirmAgain: 'Please confirm your age again to continue.',
   invalidBirth: 'Choose a valid birth month and year.',
@@ -157,7 +156,6 @@ const en = {
   browser: 'Complete sign-in in your browser, then return here.',
   learner: 'Learner',
   welcome: 'Welcome. A little clearer, every day.',
-  phoneClosed: 'Phone sign-in {prefix} · unavailable',
   onboard: 'Start learning',
   direction: 'Exam goal',
   subjects: 'Choose subjects',
@@ -176,6 +174,34 @@ const en = {
   perDay: '{count} questions/day'
 };
 registerMessages('login', { 'zh-CN': zh, en });
+
+// The public website keeps its English presentation and Chinese controls in either app language.
+const websiteControls = new Set([
+  'back',
+  'apple',
+  'google',
+  'wechat',
+  'email',
+  'phone',
+  'providerClosed',
+  'continue',
+  'submit',
+  'other',
+  'showPassword',
+  'hidePassword',
+  'register',
+  'existing',
+  'create',
+  'privacy',
+  'terms',
+  'signInAgain',
+  'send'
+]);
+export function websiteLoginText(key, values = {}) {
+  const name = key.replace(/^login\./, '');
+  const text = (websiteControls.has(name) ? zh[name] : en[name]) ?? t(key, values);
+  return text.replace(/\{(\w+)\}/g, (match, value) => values[value] ?? match);
+}
 
 export const loginPresentation = Object.freeze({
   get title() {

@@ -4,7 +4,7 @@ import { normalizeContentBlocks } from '../../laf-backend/functions/_shared/lear
 import { emptyLearningState, applyLearningOperation } from '../../laf-backend/functions/_shared/learning-domain.js';
 import { parseLearningOutput } from '../../laf-backend/functions/_shared/ai-providers/learning-provider.ts';
 import { executeLearningTool } from '@/services/learning/learning-tools.js';
-import LearningContentCards from '@/components/business/learning/learning-content-cards.vue';
+import LearningContentCards from '@/pages/learning/components/learning-content-cards.vue';
 import { synchronizeLearning } from '@/services/learning/learning-sync.js';
 import { proposalStatus } from '../../laf-backend/functions/_shared/learning-proposals.js';
 
@@ -52,7 +52,7 @@ function accept(repo, proposal, id = 'proposal') {
 describe('bounded teaching cards', () => {
   it('parses model cards, and preserves them through saved event replay', () => {
     const parsed = parseLearningOutput(JSON.stringify({ message: 'Let us learn.', tools: [], contentBlocks: cards }));
-    expect(parsed.contentBlocks).toEqual(cards);
+    expect(parsed.contentBlocks).toEqual(normalizeContentBlocks(cards));
     const repo = repository();
     repo.commit({
       id: 'reply',
@@ -67,11 +67,11 @@ describe('bounded teaching cards', () => {
     let restored = emptyLearningState('isolated-cards', 'UTC');
     for (const event of JSON.parse(JSON.stringify(repo.read().events)))
       restored = applyLearningOperation(restored, event).state;
-    expect(restored.conversations[0].messages[0].contentBlocks).toEqual(cards);
+    expect(restored.conversations[0].messages[0].contentBlocks).toEqual(normalizeContentBlocks(cards));
     expect(restored.attempts).toHaveLength(0);
   });
   it.each([
-    { ...cards, version: 2 },
+    { ...cards, version: 3 },
     { version: 1, items: [{ kind: 'knowledge', title: 'Score', body: 'Read', score: 100 }] },
     { version: 1, items: [{ kind: 'knowledge', title: 'Action', body: 'Read', tools: [{ name: 'submit' }] }] },
     { version: 1, items: [{ kind: 'progress', title: 'Progress', body: '100%' }] },

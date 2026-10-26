@@ -1,9 +1,57 @@
 import crypto from 'node:crypto';
+import { DEV_TEST } from '../build-channel.js';
 import { MODEL_CONNECTION_PRESETS } from './model-endpoints.js';
 // 只保存公开接入事实；密钥来自用户保险库，目录存在不代表账户额度可用。
 export const FREE_MODEL_PRESETS = MODEL_CONNECTION_PRESETS;
+// Only documented native chat routes; output bounds and other profiles stay unchanged.
+export function modelInferenceParameters(model: { model: string; endpoint?: string }) {
+  if (
+    model.model === 'glm-4.7-flash' &&
+    ['https://open.bigmodel.cn/api/paas/v4/chat/completions', 'https://api.z.ai/api/paas/v4/chat/completions'].includes(
+      model.endpoint || ''
+    )
+  )
+    return { thinking: { type: 'enabled' } };
+  if (model.model === 'agnes-2.5-flash' && model.endpoint === 'https://apihub.agnes-ai.com/v1/chat/completions')
+    return { chat_template_kwargs: { enable_thinking: true } };
+  if (
+    (model.model === 'openai/gpt-oss-20b' || (DEV_TEST && model.model === 'openai/gpt-oss-120b')) &&
+    model.endpoint === 'https://api.groq.com/openai/v1/chat/completions'
+  )
+    return {
+      reasoning_effort: 'high',
+      ...(DEV_TEST && model.model === 'openai/gpt-oss-120b' ? { include_reasoning: false } : {})
+    };
+  if (
+    model.model === 'nvidia/nemotron-3-ultra-550b-a55b:free' &&
+    model.endpoint === 'https://openrouter.ai/api/v1/chat/completions'
+  )
+    return { reasoning: { effort: 'high' } };
+  return null;
+}
+// Exact zero-price routes checked against the provider's public catalog.
+// This does not assign a free price to account trials or arbitrary model names.
+const REVIEWED_FREE_ROUTES = ['google/gemma-4-26b-a4b-it:free', 'nvidia/nemotron-3-super-120b-a12b:free'];
 
 export function freeModelPricing(model: { model: string; endpoint: string }, now = Date.now()) {
+  if (
+    model.endpoint === 'https://openrouter.ai/api/v1/chat/completions' &&
+    model.model === 'nvidia/nemotron-3-ultra-550b-a55b:free' &&
+    now < Date.parse('2026-10-30')
+  )
+    return { inputPerMillion: 0, outputPerMillion: 0, priceVersion: 'openrouter-nemotron-3-ultra-free-2026-10-24' };
+  if (
+    model.endpoint === 'https://api.z.ai/api/paas/v4/chat/completions' &&
+    model.model === 'glm-4.7-flash' &&
+    now < Date.parse('2026-10-30')
+  )
+    return { inputPerMillion: 0, outputPerMillion: 0, priceVersion: 'zai-glm-4.7-flash-free-2026-09-30' };
+  if (
+    model.endpoint === 'https://openrouter.ai/api/v1/chat/completions' &&
+    REVIEWED_FREE_ROUTES.includes(model.model) &&
+    now < Date.parse('2026-11-19')
+  )
+    return { inputPerMillion: 0, outputPerMillion: 0, priceVersion: 'openrouter-free-routes-2026-10-20' };
   const preset = FREE_MODEL_PRESETS.find(
     (p) => p.pricing === 'official_free_model' && p.model === model.model && p.endpoint === model.endpoint
   );
@@ -21,6 +69,8 @@ export function modelConfigurationVersion(model: any): string {
     model.maxOutput,
     model.capabilities
   ];
+  const inference = modelInferenceParameters(model);
+  if (inference) fields.push(inference);
   // 无新策略时哈希逐字保持旧定义，旧连接测试与缓存不因升级失效。
   if (model.writingOutput)
     fields.push(

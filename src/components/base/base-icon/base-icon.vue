@@ -1,5 +1,5 @@
 <template>
-  <view class="base-icon" :style="wrapperStyle" aria-hidden="true">
+  <view ref="iconRoot" class="base-icon" :style="wrapperStyle" aria-hidden="true">
     <!-- #ifdef H5 -->
     <!-- eslint-disable-next-line vue/no-v-html -- Only trusted static registry SVG, no caller markup. -->
     <span v-if="iconMarkup" class="base-icon__svg" v-html="iconMarkup"></span>
@@ -31,6 +31,9 @@ import { getIconPath, getIconMarkup } from './icons.js';
 import { tokens } from '@/design/tokens.js';
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+// #ifdef H5
+import { bindIconMotion } from '@/design/icon-motion.js';
+// #endif
 
 const props = defineProps({
   name: { type: String, default: 'info' },
@@ -42,6 +45,8 @@ const props = defineProps({
 });
 
 const themeMode = ref('light');
+const iconRoot = ref(null);
+let releaseMotion;
 
 const sizeRpx = computed(() => {
   if (typeof props.size === 'string' && /^(var\(|calc\(|[\d.]+(px|rpx|rem|%))/.test(props.size)) return props.size;
@@ -86,6 +91,9 @@ function syncTheme() {
 let _themeHandler;
 
 onMounted(() => {
+  // #ifdef H5
+  releaseMotion = bindIconMotion(iconRoot.value?.$el || iconRoot.value, props.name);
+  // #endif
   syncTheme();
   _themeHandler = (mode) => {
     themeMode.value = mode === 'dark' ? 'dark' : 'light';
@@ -97,6 +105,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  releaseMotion?.();
   if (_themeHandler && typeof uni !== 'undefined' && typeof uni.$off === 'function') {
     uni.$off('themeUpdate', _themeHandler);
     uni.$off('updateTheme', _themeHandler);

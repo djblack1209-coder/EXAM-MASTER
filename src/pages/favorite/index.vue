@@ -6,11 +6,9 @@
     :style="$yoziInsets"
     :class="['container', { 'dark-mode': isDark, 'theme-light': !isDark }]"
   >
-    <view class="aurora-bg" />
-
     <!-- 导航栏 -->
     <template #controls>
-      <BaseButton icon="arrow-left" icon-only variant="quiet" :label="$t('ui.back')" @tap="goBack" />
+      <BaseButton icon="chevron-left" icon-only variant="quiet" :label="$t('ui.back')" @tap="goBack" />
       <BaseButton icon="plus" icon-only variant="secondary" :label="t('favorite.copy0')" @tap="openFolderModal()" />
     </template>
     <!-- ✅ F018: 加载状态 -->

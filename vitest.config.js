@@ -62,6 +62,7 @@ export default defineConfig({
 
     // 设置别名
     alias: {
+      '@yozi-home': resolve(__dirname, 'src/components/business/learning/learning-landing.vue'),
       '@': resolve(__dirname, 'src'),
       '@components': resolve(__dirname, 'src/components'),
       '@pages': resolve(__dirname, 'src/pages'),
@@ -90,6 +91,7 @@ export default defineConfig({
   resolve: {
     extensions: ['.mjs', '.ts', '.js', '.mts', '.jsx', '.tsx', '.json'],
     alias: {
+      '@yozi-home': resolve(__dirname, 'src/components/business/learning/learning-landing.vue'),
       '@': resolve(__dirname, 'src'),
       '@components': resolve(__dirname, 'src/components'),
       '@pages': resolve(__dirname, 'src/pages'),

@@ -61,6 +61,8 @@ vi.mock('../../laf-backend/functions/_shared/ai-providers/learning-provider', as
   }))
 }));
 import models from '../../laf-backend/functions/learning-models';
+import { newAccount, reserveCall, decryptModelKey } from '../../laf-backend/functions/_shared/learning-account';
+import { MODEL_API_KEY_MAX_LENGTH } from '../../laf-backend/functions/_shared/ai-providers/model-endpoints.js';
 import ai, { costFromUsage, runLearningModelTask } from '../../laf-backend/functions/proxy-ai';
 import stream from '../../laf-backend/functions/proxy-ai-stream';
 import sync from '../../laf-backend/functions/learning-sync';
@@ -181,6 +183,86 @@ it('保存已知基础地址时补齐真实请求路径，继续检查白名单�
   });
   expect(account.profiles[0]).not.toHaveProperty('apiKey');
   expect(callLearningProvider).not.toHaveBeenCalled();
+});
+
+it('现有长凭据按原文加密保存，超过共享有界上限仍拒绝且不改变旧连接', async () => {
+  const profile = {
+    id: 'long-opaque',
+    provider: 'synthetic',
+    model: 'explicit-test-id',
+    endpoint: 'https://provider.example/v1/chat/completions'
+  };
+  for (const length of [1207, MODEL_API_KEY_MAX_LENGTH]) {
+    const key = 'synthetic-only-'.padEnd(length, 'x');
+    expect(
+      (await models(context({ action: 'save', profile: { ...profile, apiKey: key }, shareConsent: true }))).success
+    ).toBe(true);
+    const saved = [...mock.rows.entries()].find(([id]) => id.startsWith('learning_model_keys:'))?.[1];
+    expect(decryptModelKey(saved.vault, 'u1', profile.id, 'a'.repeat(64))).toBe(key);
+  }
+  const before = JSON.stringify([...mock.rows]);
+  expect(
+    (
+      await models(
+        context({
+          action: 'save',
+          profile: { ...profile, apiKey: 'x'.repeat(MODEL_API_KEY_MAX_LENGTH + 1) },
+          shareConsent: true
+        })
+      )
+    ).code
+  ).toBe(400);
+  expect(JSON.stringify([...mock.rows])).toBe(before);
+  expect(callLearningProvider).not.toHaveBeenCalled();
+});
+
+it('国内无密钥添加只保存本账号元数据，不能覆盖已有连接或绕过外国端点规则', async () => {
+  vi.stubEnv('LEARNING_ALLOWED_ORIGINS', '');
+  vi.stubEnv('LEARNING_VAULT_KEY', '');
+  const profile = {
+    id: 'domestic-draft',
+    provider: '智谱',
+    model: 'glm-4.7-flash',
+    endpoint: 'https://open.bigmodel.cn/api/paas/v4'
+  };
+  const result = await models(context({ action: 'save', profile, shareConsent: true }));
+  expect(result).toMatchObject({ success: true, data: { id: profile.id, keySaved: false } });
+  expect([...mock.rows.keys()].some((id) => id.startsWith('learning_model_keys:'))).toBe(false);
+  const listed = await models(context({ action: 'list' }));
+  expect(listed.data.models[0]).toMatchObject({ id: profile.id, configured: false, connectionStatus: 'untested' });
+  expect((await models(context({ action: 'list' }, 'u2'))).data.models).toEqual([]);
+  const before = JSON.stringify([...mock.rows]);
+  expect(
+    (await models(context({ action: 'save', profile: { ...profile, model: 'replacement' }, shareConsent: true })))
+      .success
+  ).toBe(false);
+  expect(JSON.stringify([...mock.rows])).toBe(before);
+  expect(
+    (
+      await models(
+        context({
+          action: 'save',
+          profile: { ...profile, id: 'foreign', provider: 'Z.ai', endpoint: 'https://api.z.ai/api/paas/v4' },
+          shareConsent: true
+        })
+      )
+    ).success
+  ).toBe(false);
+  vi.stubEnv('LEARNING_VAULT_KEY', 'a'.repeat(64));
+  expect(
+    (await models(context({ action: 'save', profile: { ...profile, apiKey: 'synthetic-only' }, shareConsent: true })))
+      .success
+  ).toBe(false);
+  vi.stubEnv('LEARNING_ALLOWED_ORIGINS', 'https://open.bigmodel.cn');
+  expect(
+    (await models(context({ action: 'save', profile: { ...profile, apiKey: 'synthetic-only' }, shareConsent: true })))
+      .success
+  ).toBe(true);
+  const configured = JSON.stringify([...mock.rows]);
+  expect((await models(context({ action: 'save', profile, shareConsent: true }))).success).toBe(false);
+  expect(JSON.stringify([...mock.rows])).toBe(configured);
+  expect(callLearningProvider).not.toHaveBeenCalled();
+  expect(callStreamingLearningProvider).not.toHaveBeenCalled();
 });
 
 it.each([
@@ -830,7 +912,7 @@ function streamResponse(backpressure = false) {
   };
   return response;
 }
-async function streamProfile(enabled = true, owner = 'u1') {
+async function streamProfile(enabled = true, owner = 'u1', fixtureKey = 'fixture-only-stream-key') {
   await models(
     context(
       {
@@ -839,7 +921,7 @@ async function streamProfile(enabled = true, owner = 'u1') {
         profile: {
           id: 'fixture-stream',
           model: 'explicit-test-id',
-          apiKey: 'fixture-only-stream-key',
+          apiKey: fixtureKey,
           endpoint: 'https://provider.example/chat',
           stream: enabled
         }
@@ -863,6 +945,60 @@ const streamCompleted = {
   usageComplete: true,
   durationMs: 2
 };
+it('原请求查询将中断的过期预留收敛到终态，保留未知费用和幂等，不触发供应商', async () => {
+  const now = Date.now();
+  let account = newAccount('u1');
+  for (const [id, at] of [
+    ['stale-intake', now - 120001],
+    ['active-intake', now]
+  ] as const) {
+    account = reserveCall(
+      account,
+      { id, fingerprint: id, model: 'fixture', source: 'byok', maxCost: 0, units: 0 },
+      at
+    ).account;
+  }
+  mock.rows.set(`learning_accounts:${account._id}`, account);
+  const cost = structuredClone(account.cost);
+  expect(await models(context({ action: 'result', requestId: 'stale-intake' }, 'u2'))).toMatchObject({ code: 404 });
+  expect(account.calls[0].status).toBe('reserved');
+  expect(await models(context({ action: 'result', requestId: 'stale-intake' }))).toMatchObject({
+    success: false,
+    code: 503,
+    status: 'failed'
+  });
+  const saved = () => mock.rows.get(`learning_accounts:${account._id}`);
+  expect(saved().calls[0]).toMatchObject({
+    id: 'stale-intake',
+    status: 'failed',
+    errorCode: 'EXECUTION_INTERRUPTED',
+    costStatus: 'pending',
+    actualCost: null,
+    result: null
+  });
+  expect(saved().cost).toEqual(cost);
+  const revision = saved().revision;
+  expect(await models(context({ action: 'result', requestId: 'stale-intake' }))).toMatchObject({ status: 'failed' });
+  expect(await models(context({ action: 'result', requestId: 'active-intake' }))).toMatchObject({
+    success: false,
+    code: 409,
+    status: 'reserved'
+  });
+  expect(saved().revision).toBe(revision);
+  expect(saved().calls).toHaveLength(2);
+  expect(
+    reserveCall(saved(), {
+      id: 'stale-intake',
+      fingerprint: 'stale-intake',
+      model: 'fixture',
+      source: 'byok',
+      maxCost: 0,
+      units: 0
+    }).reused
+  ).toBe(true);
+  expect(callLearningProvider).not.toHaveBeenCalled();
+  expect(callStreamingLearningProvider).not.toHaveBeenCalled();
+});
 it('原缓存过期后恢复/同ID重试都明确不可用，保留账单且不再发起模型调用', async () => {
   await streamProfile();
   const body = streamBody('cache-expiry');
@@ -1068,14 +1204,17 @@ describe('流式实际预算、终止收据与取消隔离', () => {
     mock.response = response;
     vi.mocked(callStreamingLearningProvider).mockImplementationOnce(async (_model, _messages, _origins, options) => {
       options?.onPreview?.('{"message":"先讲解 fixture-only-stream-key 已经调整计划，之后继续教学","tools":[]}');
+      options?.onPreview?.('{"message":"这是正常的流式教学预览","tools":[]}');
       return streamCompleted;
     });
     expect(await stream(context(streamBody()))).toBeNull();
     expect(response.writableEnded).toBe(true);
     const text = response.parts.join('');
     expect(text).toContain('event: preview');
+    expect(text).toContain('这是正常的流式教学预览');
     expect(text).toContain('event: result');
     expect(text).not.toContain('fixture-only-stream-key');
+    expect(text).not.toContain('[REDACTED_MODEL_KEY]');
     expect(text).not.toContain('已经调整计划');
     const before = structuredClone([...mock.rows.values()]);
     const read = await models(context({ action: 'result', requestId: 'stream-fixture' }));
@@ -1255,6 +1394,9 @@ describe('明确写作反馈在预留前约束输出，收到后仍校验原答'
         )
       ).success
     ).toBe(true);
+    // Exercise an existing 1000-token profile. New connections now default to
+    // 2000, but request-specific preparation must not rewrite saved profiles.
+    account().profiles[0].maxOutput = 1000;
     vi.mocked(callLearningProvider).mockImplementation(async () => ({
       content: JSON.stringify(output()),
       actualModel: 'openai/gpt-oss-20b',
@@ -1380,4 +1522,135 @@ describe('明确写作反馈在预留前约束输出，收到后仍校验原答'
     expect(callLearningProvider).not.toHaveBeenCalled();
     expect(callStreamingLearningProvider).not.toHaveBeenCalled();
   });
+});
+
+it.each(['literal', 'unicode', 'escaped_leaf', 'escaped_property'])(
+  'coach key echo stays blocked before results or tools: %s',
+  async (kind) => {
+    const sentinel = kind.startsWith('escaped_') ? 'fixture-only-quote"key' : 'fixture-only-stream-key';
+    await streamProfile(false, 'u1', sentinel);
+    const request = {
+      contract: 'kaoyan-writing-coach-v1',
+      phase: 'summary',
+      target: 'summary',
+      exam: 'english2',
+      day: '2026-10-24',
+      input: 'Synthetic answer.',
+      sources: []
+    };
+    const { coachFixture } = await import('../fixtures/writing-coach.js');
+    let content = JSON.stringify({
+      message: kind === 'escaped_property' ? '合成讲解' : sentinel,
+      ...(kind === 'escaped_property' ? { [sentinel]: 'Synthetic metadata.' } : {}),
+      tools: [],
+      question: null,
+      coach: coachFixture(request)
+    });
+    const encoded = [...sentinel].map((c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`).join('');
+    if (kind === 'unicode') content = content.replace(sentinel, encoded);
+    const { modelValueHasKeyEcho } = await import('../../laf-backend/functions/_shared/ai-providers/learning-provider');
+    if (kind.startsWith('escaped_')) expect(modelValueHasKeyEcho(content, sentinel)).toBe(false);
+    const logs = ['error', 'warn', 'info', 'log'].map((method) =>
+      vi.spyOn(console, method as 'error').mockImplementation(() => {})
+    );
+    try {
+      vi.mocked(callLearningProvider).mockResolvedValueOnce({ ...streamCompleted, content });
+      const result = await ai(
+        context({ ...streamBody(`coach-secret-${kind}`), learningContext: { owner: 'u1', coach: request } })
+      );
+      expect(result).toMatchObject({ success: false, error: 'COACH_INVALID', validationPath: 'raw' });
+      expect(result).not.toHaveProperty('data');
+      const usage = await models(context({ action: 'usage' }));
+      expect(usage.data.calls[0]).toMatchObject({ status: 'failed', costStatus: 'pending', actualCost: null });
+      const account = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && Array.isArray(row.calls));
+      expect(account.calls[0].result).toBeNull();
+      const exported = JSON.stringify([result, usage.data.calls, account.calls]);
+      expect(exported).not.toContain(sentinel);
+      expect(exported).not.toContain(encoded);
+      expect(callLearningProvider).toHaveBeenCalledOnce();
+      logs.forEach((spy) => expect(spy).not.toHaveBeenCalled());
+    } finally {
+      logs.forEach((spy) => spy.mockRestore());
+    }
+  }
+);
+
+it('coach safe original input retains strict JSON and unchanged teaching text', async () => {
+  await streamProfile(false);
+  const request = {
+    contract: 'kaoyan-writing-coach-v1',
+    phase: 'summary',
+    target: 'summary',
+    exam: 'english2',
+    day: '2026-10-24',
+    input: 'Synthetic answer.',
+    sources: []
+  };
+  const { coachFixture } = await import('../fixtures/writing-coach.js');
+  const message = '合成内容包含内部 ``` 和普通中文。';
+  const coach = coachFixture(request);
+  vi.mocked(callLearningProvider).mockResolvedValueOnce({
+    ...streamCompleted,
+    content: '```json\n' + JSON.stringify({ message, tools: [], question: null, coach }) + '\n```'
+  });
+  const result = await ai(
+    context({ ...streamBody('coach-safe-original'), learningContext: { owner: 'u1', coach: request } })
+  );
+  expect(result).toMatchObject({
+    success: true,
+    data: {
+      message,
+      coach: { kind: 'summary', learned: coach.learned, tomorrow: coach.tomorrow },
+      tools: [],
+      question: null
+    }
+  });
+  expect(callLearningProvider).toHaveBeenCalledOnce();
+});
+
+it('failed coach query preserves the validation path and pending cost without a second provider call', async () => {
+  await streamProfile();
+  const request = {
+    contract: 'kaoyan-writing-coach-v1',
+    phase: 'diagnostic',
+    target: 'diagnostic',
+    exam: 'english2',
+    day: '2026-10-23',
+    input: '开始摸底',
+    sources: []
+  };
+  const { coachFixture } = await import('../fixtures/writing-coach.js');
+  const invalid = coachFixture(request);
+  invalid.cards[2].prompt = '';
+  vi.mocked(callLearningProvider).mockResolvedValueOnce({
+    ...streamCompleted,
+    content: JSON.stringify({ message: '合成摸底', tools: [], question: null, coach: invalid })
+  });
+  const body = { ...streamBody('coach-path-recovery'), learningContext: { owner: 'u1', coach: request } };
+  expect(await ai(context(body))).toMatchObject({
+    success: false,
+    error: 'COACH_INVALID',
+    validationPath: 'cards[2].prompt'
+  });
+  expect(vi.mocked(callLearningProvider).mock.calls[0][0].maxOutput).toBe(2000);
+  const read = await models(context({ action: 'result', requestId: body.requestId }));
+  expect(read).toMatchObject({
+    success: false,
+    status: 'failed',
+    error: 'COACH_INVALID',
+    validationPath: 'cards[2].prompt'
+  });
+  const usage = await models(context({ action: 'usage' }));
+  expect(usage.data.calls[0]).toMatchObject({
+    status: 'failed',
+    errorCode: 'COACH_INVALID',
+    validationPath: 'cards[2].prompt',
+    actualCost: null,
+    costStatus: 'pending'
+  });
+  expect(usage.data.calls[0]).not.toHaveProperty('result');
+  const ledger = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && Array.isArray(row.calls));
+  expect(ledger.calls[0].result).toBeNull();
+  expect(await models(context({ action: 'result', requestId: body.requestId }, 'u2'))).toMatchObject({ code: 404 });
+  expect(callLearningProvider).toHaveBeenCalledOnce();
 });

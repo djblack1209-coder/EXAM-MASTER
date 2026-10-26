@@ -1,0 +1,3 @@
+DeepSeek brand mark. Copyright DeepSeek.
+Source: https://api-docs.deepseek.com/img/favicon.svg
+Used solely to identify the user-selected DeepSeek connector. Not a Yozi brand asset.

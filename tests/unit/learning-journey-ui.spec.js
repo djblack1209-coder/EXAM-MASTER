@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, getActivePinia, setActivePinia } from 'pinia';
 import { mount, flushPromises } from '@vue/test-utils';
 vi.mock('@dcloudio/uni-app', () => ({ onShow: () => {}, onHide: () => {}, onLoad: () => {}, onBackPress: () => {} }));
-import LearningJourney from '@/components/business/learning/learning-journey.vue';
-import LearningMessage from '@/components/business/learning/learning-message.vue';
+import LearningJourney from '@/pages/learning/components/learning-journey.vue';
+import LearningMessage from '@/pages/learning/components/learning-message.vue';
 import LearningPage from '@/pages/learning/index.vue';
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -232,8 +232,10 @@ describe('学习路线的明确操作与阅读', () => {
     const before = s.exportData();
     wrapper = mount(LearningPage, { global: { stubs: { ...stubs, PrivacyPopup: true, LearningLab: true } } });
     await flushPromises();
-    expect(wrapper.findAll('.message').some((m) => m.text() === '第2日讨论-0')).toBe(true);
+    expect(wrapper.findAll('.message .base-bubble__content').some((m) => m.text() === '第2日讨论-0')).toBe(true);
     expect(wrapper.findAll('.message').length).toBeLessThanOrEqual(50);
+    await wrapper.get('.directory-pill').trigger('tap');
+    await flushPromises();
     expect(wrapper.findAll('.directory-date').map((e) => e.text())).not.toContain('10 / 02');
     await wrapper.find('[data-test="earlier-learning-days"]').trigger('tap');
     expect(wrapper.findAll('.directory-date').map((e) => e.text())).toContain('10 / 02');
@@ -270,6 +272,8 @@ describe('学习路线的明确操作与阅读', () => {
     s.commit('task.stop', { conversationId: id });
     const before = s.exportData();
     wrapper = mount(LearningPage, { global: { stubs: { ...stubs, PrivacyPopup: true, LearningLab: true } } });
+    await wrapper.get('.directory-pill').trigger('tap');
+    await flushPromises();
     const directory = wrapper.findAll('.directory-module').find((b) => b.text() === '整数加法');
     await directory.trigger('tap');
     await flushPromises();
@@ -295,9 +299,19 @@ describe('学习路线的明确操作与阅读', () => {
     const s = useConversationLearningStore();
     s.start('12 + 8');
     s.submit('20', true);
+    const mathId = s.active.id;
+    const mathPlan = JSON.parse(JSON.stringify(s.currentPlan));
     s.start('英文说明写作');
     s.submit('An original pending explanation.', true);
+    const writingId = s.active.id;
+    expect(s.currentPlan.conversationId).toBe(writingId);
+    expect(s.currentPlan.tasks).toHaveLength(1);
+    expect(s.state.plans.find((plan) => plan.id === mathPlan.id)).toEqual(mathPlan);
+    expect(s.scopedSummary('day', mathId).tasks).toMatchObject({ numerator: 1, denominator: 1 });
     const before = s.exportData();
+    s.locateConversation(mathId);
+    expect(s.scopedSummary('day', mathId).tasks.planId).toBe(mathPlan.id);
+    s.locateConversation(writingId);
     wrapper = mount(LearningOverview, {
       props: { inline: true, conversationId: s.active.id, showNavigation: false },
       global: { stubs }
@@ -313,6 +327,21 @@ describe('学习路线的明确操作与阅读', () => {
     expect(wrapper.find('.answer-distribution').attributes('aria-label')).toContain('待核对1次');
     await wrapper.find('.learning-summary').trigger('tap');
     expect(s.exportData()).toBe(before);
+  });
+  it('聊天建题只沿用当前目标的计划，同一目标换题保留已有任务', async () => {
+    const s = useConversationLearningStore();
+    s.start('12 + 8');
+    s.submit('20', true);
+    const mathPlan = JSON.parse(JSON.stringify(s.currentPlan));
+    s.start('自选目标');
+    const conversationId = s.active.id;
+    await s.send('题目：2x+3=9', { chatEntry: true, id: 'plan-isolation-first' });
+    const firstKey = s.active.activeQuestionKey;
+    expect(s.currentPlan.conversationId).toBe(conversationId);
+    expect(s.currentPlan.tasks.map((task) => task.questionKey)).toEqual([firstKey]);
+    await s.send('题目：-2x+6>0', { chatEntry: true, id: 'plan-isolation-second' });
+    expect(s.currentPlan.tasks.map((task) => task.questionKey)).toEqual([firstKey, s.active.activeQuestionKey]);
+    expect(s.state.plans.find((plan) => plan.id === mathPlan.id)).toEqual(mathPlan);
   });
   it('选择节奏和模块仅改变草稿，明确保存后显示目标且可完成一次整批交卷', async () => {
     const s = useConversationLearningStore();

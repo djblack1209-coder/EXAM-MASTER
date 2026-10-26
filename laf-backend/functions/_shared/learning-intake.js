@@ -1,0 +1,169 @@
+// Model-authored onboarding; a proposed profile takes effect only on confirmation.
+export const INTAKE_CHOICES = Object.freeze([
+  { value: 'cet', label: '四六级' },
+  { value: 'kaoyan', label: '考研' },
+  { value: 'civil', label: '考公' },
+  { value: 'ielts', label: '雅思' },
+  { value: 'toefl', label: '托福' },
+  { value: 'other', label: '其他' }
+]);
+const fail = (path = 'intake') => {
+  const e = new Error('模型建档回复未通过检查，请查询原请求');
+  e.code = 'INTAKE_INVALID';
+  e.path = path;
+  throw e;
+};
+const short = (v, n) => typeof v === 'string' && v.trim().length > 0 && v.trim().length <= n;
+export function normalizeIntakeContext(value) {
+  if (!value || !Array.isArray(value.turns) || value.turns.length > 5) return fail('context.turns');
+  return {
+    turns: value.turns.map((item) => {
+      if (!item || !short(item.question, 180) || !short(item.answer, 500)) return fail('context.turns.item');
+      return { question: item.question.trim(), answer: item.answer.trim() };
+    })
+  };
+}
+export function normalizeStudyProfile(value) {
+  if (
+    !value ||
+    !short(value.goal, 300) ||
+    !INTAKE_CHOICES.some((item) => item.value === value.category) ||
+    !Array.isArray(value.subjects) ||
+    value.subjects.length > 12 ||
+    value.subjects.some((item) => !short(item, 40))
+  )
+    return fail('profile.goal-category-subjects');
+  if (!['english1', 'english2', 'cs408', 'general'].includes(value.exam)) return fail('profile.exam');
+  const exam = value.exam;
+  if (
+    exam !== 'general' &&
+    (value.category !== 'kaoyan' || (value.minutes !== null && (value.minutes < 10 || value.minutes > 90)))
+  )
+    return fail('profile.exam-minutes');
+  if (value.minutes !== null && (!Number.isInteger(value.minutes) || value.minutes < 5 || value.minutes > 120))
+    return fail('profile.minutes');
+  if (
+    value.deadline !== null &&
+    (typeof value.deadline !== 'string' ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(value.deadline) ||
+      !Number.isFinite(Date.parse(value.deadline + 'T12:00:00Z')) ||
+      new Date(value.deadline + 'T12:00:00Z').toISOString().slice(0, 10) !== value.deadline)
+  )
+    return fail('profile.deadline');
+  if (value.foundation !== null && !short(value.foundation, 300)) return fail('profile.foundation');
+  return {
+    goal: value.goal.trim(),
+    category: value.category,
+    exam,
+    subjects: [...new Set(value.subjects.map((s) => s.trim()))],
+    minutes: value.minutes,
+    deadline: value.deadline,
+    foundation: value.foundation
+  };
+}
+export function normalizeIntakeReply(value, first = false, context) {
+  if (
+    !value ||
+    !short(value.message, 180) ||
+    !value.intake ||
+    value.question !== null ||
+    !Array.isArray(value.tools) ||
+    value.tools.length ||
+    Object.keys(value).some((k) => !['message', 'intake', 'question', 'tools'].includes(k))
+  )
+    return fail('reply.root');
+  const draft = value.intake,
+    seen = new Set();
+  if (!Array.isArray(draft.options) || draft.options.length > 6) return fail('reply.options');
+  const options = draft.options.map((item) => {
+    if (!item || !short(item.value, 40) || !short(item.label, 60) || seen.has(item.value)) return fail('reply.option');
+    seen.add(item.value);
+    return { value: item.value, label: item.label.trim() };
+  });
+  const profile = draft.profile === null ? null : normalizeStudyProfile(draft.profile);
+  if (!first) {
+    const finished = context?.turns.length >= 4;
+    if (!profile && !(finished && !options.length && draft.input === false)) {
+      if (finished) return fail('reply.turn-limit');
+      // Deployed model-intake-v1 receipts used “其他” for the open choice.
+      // Keep those receipts readable; the UI offers an explicit skip separately.
+      if (
+        options.length < 2 ||
+        options.length > 4 ||
+        !options.some((item) => /尚未确定|不确定|跳过|^其他$/.test(item.label))
+      )
+        return fail('reply.options');
+    }
+    // Only explicit subject evidence can unlock a proposal; category/skip choices are not subjects.
+    if (profile && context) {
+      const subjects = profile.subjects.filter(
+        (subject) =>
+          !INTAKE_CHOICES.some((item) => [item.label, item.value].includes(subject)) &&
+          !/^(尚未确定|不确定|跳过|其他)$/.test(subject)
+      );
+      if (
+        !subjects.length ||
+        subjects.length !== profile.subjects.length ||
+        !subjects.every((subject) => context.turns.some((turn) => turn.answer.includes(subject)))
+      )
+        return fail('reply.profile-evidence');
+    }
+  }
+  if (
+    first &&
+    (value.message !== '你在准备什么？' ||
+      draft.input !== true ||
+      profile ||
+      JSON.stringify(options) !== JSON.stringify(INTAKE_CHOICES))
+  )
+    return fail('reply.first');
+  return {
+    message: value.message.trim(),
+    intake: {
+      options: profile ? [] : options,
+      input: !profile && (context?.turns.length >= 4 ? false : draft.input === true || !options.length),
+      profile
+    },
+    question: null,
+    tools: []
+  };
+}
+export function parseIntakeOutput(raw, context) {
+  let value;
+  try {
+    value = JSON.parse(raw.trim().replace(/^```(?:json)?\s*|\s*```$/g, ''));
+  } catch {
+    return fail('reply.json');
+  }
+  const checked = normalizeIntakeContext(context);
+  return normalizeIntakeReply(value, !checked.turns.length, checked);
+}
+export const MODEL_INTAKE_CONTRACT = 'model-intake-v1';
+export function intakeSystemPrompt(context) {
+  if (!context.turns.length)
+    return `你是刚连接成功的学习教练。现在做真实连接测试并发出第一条消息。只返回这个JSON结构，文字和顺序逐字一致：${JSON.stringify({ message: '你在准备什么？', intake: { options: INTAKE_CHOICES, input: true, profile: null }, question: null, tools: [] })}。不教学、不调用工具、不声称已建档。`;
+  const profile = {
+    message: '请确认学习目标',
+    intake: {
+      options: [],
+      input: false,
+      profile: {
+        goal: '用户实际目标',
+        category: 'kaoyan',
+        exam: 'general',
+        subjects: ['用户明确准备的学科'],
+        minutes: null,
+        deadline: null,
+        foundation: null
+      }
+    },
+    question: null,
+    tools: []
+  };
+  return `你是学习教练，正在通过真实一问一答了解用户。现在优先根据最后的用户回答生成待确认学习档案，不能反复确认同一事实。
+当用户已经说出具体学科或技能，必须立即返回格式A：${JSON.stringify(profile)}。
+将格式A的示例文字替换成用户实际表达的内容。category只能是cet/kaoyan/civil/ielts/toefl/other；exam仅在明确考研英语一时用english1，英语二用english2，计算机408用cs408，其余general。subjects只写用户明确说出的学科或技能原词，须逐字出现在用户回答中，不能预设整个考试目录或替用户补全。用户已说每天几分钟时minutes为那个整数，未说则null；用户已说基础时foundation为其原话，未说则null；deadline只在用户提供明确完整日期时填写YYYY-MM-DD，否则null。禁止推算考试日期。考研英语/408的minutes为10至90，其他5至120。所有数字不加引号。
+只有用户尚未明确具体方向（例如仅回答“考研”）时，才返回格式B：{"message":"一个明确科目的短问题","intake":{"options":[{"value":"english","label":"英语"},{"value":"major","label":"专业课"},{"value":"skip","label":"尚未确定"}],"input":false,"profile":null},"question":null,"tools":[]}。格式B一次只问一个必要问题，2–4个选项，必须含“尚未确定/跳过”类选项；能点选就不要input:true，不出阅读题、写作题或长文本框。选项按真实语境调整，不能把考研都当成英语写作。不要问基础、每天分钟、考试日期、动机等非必要信息。只回答“考研”不允许生成档案或推断科目。跳过不写事实，不再追问已跳过或已确认的项。
+最多4轮（含首问），当前已回答${context.turns.length}轮。${context.turns.length >= 4 ? '本轮不再提问；有明确学科才用格式A，否则返回message为“方向尚未确定，可稍后重新选择。”、intake为{options:[],input:false,profile:null}，question:null，tools:[]。未答保持未知，不强制产档案。' : '已经明确学科时只允许格式A；仍不明确时仅问影响出题的必要方向。'}
+只返回一个有效JSON对象，不教学，不出题，不调用工具。这是待确认档案，禁止声称已保存或已掌握。`;
+}

@@ -1,0 +1,73 @@
+import { invoke } from '@tauri-apps/api/core';
+import { getCurrentWindow } from '@tauri-apps/api/window';
+import { isDesktopRuntime } from './runtime.js';
+
+export function isDesktopSettingsWindow() {
+  if (!isDesktopRuntime()) return false;
+  try {
+    return getCurrentWindow().label === 'settings';
+  } catch {
+    return false;
+  }
+}
+export function openDesktopSettings(panel) {
+  return invoke('open_desktop_settings', { panel });
+}
+export function closeDesktopSettings() {
+  return invoke('close_desktop_settings');
+}
+export function openDesktopWorkspace(route) {
+  return invoke('open_desktop_workspace', { route });
+}
+// The main window holds the learning write lease. Settings saves the connection,
+// then hands off only its model identity; API keys never enter window events.
+export function startDesktopModelIntake(modelId, owner) {
+  return invoke('open_desktop_workspace', { route: '/pages/learning/index', modelId, owner });
+}
+export async function receiveDesktopModelIntake(intent, { owner, currentRoute, navigate, learning }) {
+  if (!intent || intent.owner !== owner()) return null;
+  // Reopening the current page runs its onHide hook and cancels model reads.
+  // When coming from another page, finish that transition before starting a call.
+  if (currentRoute() !== 'pages/learning/index') await navigate();
+  if (intent.owner !== owner()) return null;
+  learning.refresh();
+  const result = await learning.beginModelIntake(intent.modelId);
+  if (intent.owner !== owner()) return null;
+  if (result.success) {
+    const catalog = await learning.loadModels();
+    if (intent.owner !== owner()) return null;
+    if (!catalog.success) return catalog;
+  }
+  if (result.success) {
+    learning.modelId = intent.modelId;
+    learning.selectedMode = 'cloud';
+    learning.streamEnabled = learning.streamSupported === true;
+    if (!learning.active?.coach?.profile && !learning.active?.studyProfile) learning.selectedConversationId = null;
+  }
+  return result;
+}
+export function completeDesktopModelIntake(id, success) {
+  return invoke('complete_desktop_model_intake', { id, success });
+}
+export function syncDesktopAppearance(dark) {
+  if (isDesktopRuntime()) void invoke('set_desktop_appearance', { dark }).catch(() => undefined);
+}
+export async function bindDesktopWorkspace({ onRoute, onPreferences, onModelIntake }) {
+  if (!isDesktopRuntime()) return () => undefined;
+  document.documentElement.classList.add('desktop-overlay');
+  document.documentElement.classList.toggle('desktop-settings', isDesktopSettingsWindow());
+  const { listen } = await import('@tauri-apps/api/event');
+  const releases = [];
+  if (isDesktopSettingsWindow())
+    releases.push(await listen('desktop-settings-panel', (event) => uni.$emit('profilePanel', event.payload)));
+  else {
+    releases.push(await listen('desktop-workspace-route', (event) => onRoute(event.payload)));
+    releases.push(await listen('desktop-model-intake', (event) => onModelIntake?.(event.payload)));
+  }
+  releases.push(await listen('desktop-preferences-changed', onPreferences));
+  window.addEventListener('focus', onPreferences);
+  return () => {
+    releases.forEach((release) => release());
+    window.removeEventListener('focus', onPreferences);
+  };
+}

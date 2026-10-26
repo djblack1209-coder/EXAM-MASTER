@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { AccountError, mutateAccount } from './learning-account.js';
+import { DEV_TEST } from './build-channel.js';
 const need = (ok: any, code: string, message: string) => {
   if (!ok) throw new AccountError(code, message);
 };
@@ -39,11 +40,11 @@ export function reserveDailyBudget(account: any, input: any, policy: ReturnType<
   }
   need(!rows.some((r: any) => r.status === 'pending'), 'COST_PENDING', '平台有用量待结算，请稍后再试');
   need(
-    rows.filter((r: any) => r.owner === input.owner).length < policy.userCalls,
+    DEV_TEST || rows.filter((r: any) => r.owner === input.owner).length < policy.userCalls,
     'USER_DAILY_LIMIT',
     '今日调用次数已用完，明天再来'
   );
-  need(rows.length < policy.globalCalls, 'GLOBAL_DAILY_LIMIT', '今日平台服务额度已用完，明天再来');
+  need(DEV_TEST || rows.length < policy.globalCalls, 'GLOBAL_DAILY_LIMIT', '今日平台服务额度已用完，明天再来');
   need(Number.isFinite(input.maxCost) && input.maxCost >= 0, 'POLICY_INVALID', '费用预算不合法');
   const committed = rows.reduce(
     (n: number, r: any) => n + (r.status === 'reserved' ? r.maxCost : r.actualCost || 0),

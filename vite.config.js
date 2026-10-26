@@ -1,6 +1,8 @@
 import { BRAND } from './src/config/brand.js';
 import { readYoziTokens, readYoziNativeTheme } from './scripts/build/read-yozi-tokens.mjs';
 import { publicImageMatch, publicFontMatch, appShellNavigationAllowlist } from './scripts/build/pwa-cache-policy.mjs';
+import { websiteRoutes } from './scripts/build/website-routes.mjs';
+import { appBootPlugin } from './scripts/build/app-boot.mjs';
 import { defineConfig, loadEnv } from 'vite';
 import uniModule from '@dcloudio/vite-plugin-uni';
 import path from 'path';
@@ -131,14 +133,19 @@ function copyCustomTabBar() {
 }
 
 // Add the preview only to an explicitly requested H5 development/isolated build.
-export function guardYoziPreviewRoute(enabled = false) {
+export function guardYoziPreviewRoute(enabled = false, homepageFirst = false) {
   return {
     name: 'yozi-preview-route-guard',
     enforce: 'pre',
     transform(code, id) {
       if (!id.endsWith('pages-json-js')) return null;
-      const pages = JSON.parse(code);
+      let pages = JSON.parse(code);
       pages.pages = pages.pages.filter((page) => page.path !== 'platforms/h5/components');
+      if (homepageFirst) {
+        pages = websiteRoutes(pages);
+        const homeIndex = pages.pages.findIndex((page) => page.path === 'pages/index/index');
+        if (homeIndex > 0) pages.pages.unshift(...pages.pages.splice(homeIndex, 1));
+      }
       if (enabled) pages.pages.push({ path: 'platforms/h5/components', style: { navigationStyle: 'custom' } });
       return { code: JSON.stringify(pages), map: null };
     }
@@ -242,7 +249,7 @@ function forceAppInlineDynamicImports() {
   };
 }
 
-function copyH5PwaIcons({ enableUpdates = false } = {}) {
+function copyH5PwaIcons({ enableUpdates = false, website = false } = {}) {
   return {
     name: 'copy-h5-pwa-icons',
     transformIndexHtml() {
@@ -255,7 +262,18 @@ function copyH5PwaIcons({ enableUpdates = false } = {}) {
 
         for (const directory of ['fonts', 'visual']) {
           const source = path.resolve(__dirname, 'public', directory);
-          if (fs.existsSync(source)) fs.cpSync(source, path.join(outDir, 'public', directory), { recursive: true });
+          if (fs.existsSync(source))
+            fs.cpSync(source, path.join(outDir, 'public', directory), {
+              recursive: true,
+              filter(file) {
+                const group = path.relative(source, file).split(path.sep)[0];
+                return directory !== 'visual' || !website || !group || ['nomi', 'avatar'].includes(group);
+              }
+            });
+        }
+        if (website) {
+          const downloads = path.resolve(__dirname, 'public/downloads');
+          if (fs.existsSync(downloads)) fs.cpSync(downloads, path.join(outDir, 'downloads'), { recursive: true });
         }
 
         const oauthSource = path.resolve(__dirname, 'public/oauth');
@@ -323,15 +341,16 @@ export default defineConfig(({ command, mode }) => {
     base: isAppPlus ? './' : '/',
 
     plugins: [
-      guardYoziPreviewRoute(enablePreview),
+      guardYoziPreviewRoute(enablePreview, isH5 && !isDesktop),
       adaptH5SlotFlags(isH5),
+      appBootPlugin(isDesktop),
       guardRuntimeBuildDependencies(),
       uni(),
       copyCustomTabBar(),
       emitAppPackManifest(),
       normalizeAppRuntimeIndex(),
       forceAppInlineDynamicImports(),
-      copyH5PwaIcons({ enableUpdates: isH5 && !isDesktop && command === 'build' }),
+      copyH5PwaIcons({ enableUpdates: isH5 && !isDesktop && command === 'build', website: isH5 && !isDesktop }),
       // Phase 3-6: PWA 离线体验（仅 H5 平台启用）
       ...(isH5 && !isDesktop
         ? [
@@ -372,6 +391,8 @@ export default defineConfig(({ command, mode }) => {
                 navigateFallbackAllowlist: appShellNavigationAllowlist,
                 // 预缓存 app shell
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+                // The exact template poster exceeds 2 MiB; cache on first use instead of precaching.
+                globIgnores: ['**/public/visual/nomi/kitten.png'],
                 // 运行时缓存策略
                 runtimeCaching: [
                   {
@@ -425,12 +446,24 @@ export default defineConfig(({ command, mode }) => {
       'process.env.NODE_ENV': JSON.stringify(mode),
       __YOZI_PREVIEW__: JSON.stringify(enablePreview),
       'process.env.SENTRY_DSN': JSON.stringify(env.VITE_SENTRY_DSN || ''),
-      __YOZI_DESKTOP__: JSON.stringify(isDesktop)
+      __YOZI_DEV_TEST__: JSON.stringify(
+        ['dev', 'test'].includes(
+          process.env.YOZI_BUILD_CHANNEL || env.YOZI_BUILD_CHANNEL || (isDevelopment ? 'dev' : 'release')
+        )
+      ),
+      __YOZI_DESKTOP__: JSON.stringify(isDesktop),
+      __YOZI_WEBSITE__: JSON.stringify(isH5 && !isDesktop)
     },
 
     // 路径别名
     resolve: {
       alias: {
+        '@yozi-home': path.resolve(
+          appInputDir,
+          isH5 && !isDesktop
+            ? 'components/business/website/website-home.vue'
+            : 'components/business/learning/learning-landing.vue'
+        ),
         // ✅ P008: @ 映射到 src/，子路径自动解析无需重复声明
         '@': appInputDir
       }

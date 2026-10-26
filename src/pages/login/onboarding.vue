@@ -5,7 +5,8 @@
   </LearningLanding>
 </template>
 <script setup>
-import { ref, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { DEV_TEST } from '@/config/build-channel.js';
 import LearningLanding from '@/components/business/learning/learning-landing.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
@@ -15,6 +16,9 @@ import { t } from '@/i18n/index.js';
 const saveError = ref('');
 let active = true;
 const timers = new Set();
+onMounted(() => {
+  if (DEV_TEST) openLearningEntry({ isCurrent: () => active });
+});
 onBeforeUnmount(() => {
   active = false;
   for (const timer of timers) clearTimeout(timer);

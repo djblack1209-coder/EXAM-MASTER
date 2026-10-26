@@ -44,6 +44,27 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.useRealTimers();
 });
+it('B客户端发现默认关闭：guest真实Store入口零请求且不改模型和学习事实', async () => {
+  uni.clearStorageSync();
+  const request = vi.spyOn(uni, 'request').mockImplementation(() => {
+    throw new Error('Default-off discovery must not request');
+  });
+  store = useConversationLearningStore();
+  expect(store.state.owner).toBe('guest');
+  store.modelId = 'fixture-kept';
+  store.models = [{ id: 'fixture-kept', provider: 'fixture', model: 'fixture-model', capabilities: {} }];
+  store.usage = { spent: 7 };
+  const facts = JSON.stringify(store.state);
+  const models = JSON.stringify(store.models);
+  const result = await store.loadModelDiscovery({ profileId: 'fixture-kept', refresh: true });
+  expect(result).toEqual({ success: false, code: 503, errorCode: 'DISCOVERY_DISABLED' });
+  expect(request).not.toHaveBeenCalled();
+  expect(store.modelId).toBe('fixture-kept');
+  expect(JSON.stringify(store.models)).toBe(models);
+  expect(store.usage).toEqual({ spent: 7 });
+  expect(store.modelDiscovery).toBeNull();
+  expect(JSON.stringify(store.state)).toBe(facts);
+});
 it('regress-2: swallowed runtime read is unavailable and never revokes credentials', () => {
   const session = captureSession();
   unreadable('empty');

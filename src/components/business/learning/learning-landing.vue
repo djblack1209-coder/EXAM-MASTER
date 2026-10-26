@@ -1,137 +1,66 @@
 <template>
-  <view>
-    <FutureLanding v-if="theme.visualStyle === 'future'" :welcome="welcome" @open="open" />
-    <PlayfulLanding v-else :welcome="welcome" @open="open" />
+  <view
+    class="app-entry muse-space"
+    :class="theme.isDark ? 'space-dark' : 'space-light'"
+    :aria-busy="!welcome && !entryFailed"
+  >
+    <AnimatedAvatar :size="64" /><text>{{ BRAND.name }}</text>
+    <BaseButton v-if="welcome || entryFailed" variant="primary" @tap="welcome ? $emit('start') : open()">{{
+      t('landing.start')
+    }}</BaseButton>
     <slot></slot>
   </view>
 </template>
 <script setup>
-import FutureLanding from './future-landing.vue';
-import PlayfulLanding from './playful-landing.vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
+import BaseButton from '@/components/base/base-button/base-button.vue';
+import { BRAND } from '@/config/brand.js';
+import { t } from '@/i18n/index.js';
+import '@/i18n/messages/landing.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
-import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
-import { safeNavigateTo, requestProfilePanel } from '@/utils/safe-navigate.js';
+import { openLearningEntry } from '@/utils/home-navigation.js';
 const props = defineProps({ welcome: Boolean });
-const emit = defineEmits(['start']);
+defineEmits(['start']);
 const theme = useThemeStore();
-const learning = useConversationLearningStore();
-function open(target) {
-  if (target === 'start') {
-    if (props.welcome) {
-      emit('start');
-      return;
+const entryFailed = ref(false);
+const timers = new Set();
+let active = true;
+function open() {
+  entryFailed.value = false;
+  openLearningEntry({
+    isCurrent: () => active,
+    onFail: () => {
+      entryFailed.value = true;
+    },
+    schedule(callback, delay) {
+      const timer = setTimeout(() => {
+        timers.delete(timer);
+        if (active) callback();
+      }, delay);
+      timers.add(timer);
     }
-    learning.selectedConversationId = null;
-    safeNavigateTo('/pages/learning/index');
-    return;
-  }
-  if (target === 'desktop' || target === 'web') {
-    theme.setVisualStyle(target === 'desktop' ? 'future' : 'playful');
-    return;
-  }
-  if (target === 'materials' || target === 'connections') {
-    safeNavigateTo('/pages/learning/index?panel=' + target);
-    return;
-  }
-  if (target === 'account') requestProfilePanel('profile');
-  safeNavigateTo(target === 'account' ? '/pages/profile/index' : '/pages/' + target + '/index');
+  });
 }
+onMounted(() => {
+  if (!props.welcome) open();
+});
+onBeforeUnmount(() => {
+  active = false;
+  for (const timer of timers) clearTimeout(timer);
+  timers.clear();
+});
 </script>
 <style scoped>
-.landing-welcome {
-  padding: var(--s-4) 0 var(--s-8);
-}
-.landing-title {
-  white-space: pre-line;
-  display: block;
-  font-size: var(--size-number);
-  letter-spacing: -0.03em;
-  line-height: 1.3;
-  font-weight: var(--weight-regular);
-}
-.landing-start {
-  padding: var(--s-6);
-}
-.landing-actions {
+.app-entry {
+  min-height: 100vh;
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
   align-items: center;
-  gap: var(--s-4);
-  margin-top: var(--s-3);
-  margin-bottom: var(--s-4);
-}
-.landing-start .button-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-2);
-}
-.landing-below {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--s-4);
-  margin-top: var(--s-5);
-}
-.landing-below-single {
-  grid-template-columns: 1fr;
-}
-.continue-panel {
-  padding: var(--s-5);
-}
-.continue-panel .section-title {
-  font-size: var(--size-body);
-}
-.learning-space .continue-session {
-  width: 100%;
-  justify-content: space-between;
-  text-align: left;
-  padding: var(--s-5) 0;
-}
-.continue-session .continue-copy {
-  flex: 1;
-  min-width: 0;
-}
-.continue-title {
-  display: block;
-  font-size: var(--size-title-3);
-  overflow-wrap: anywhere;
-  margin-bottom: var(--s-2);
-}
-.landing-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--s-4);
-  margin-top: var(--s-6);
-  font-size: var(--size-caption);
-  color: var(--ink-3);
-}
-.learning-space .account-link {
-  font-size: var(--size-caption);
-}
-@media (max-width: 1100px) {
-  .landing-below {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 520px) {
-  .landing-title {
-    white-space: pre-line;
-    font-size: var(--size-number);
-  }
-  .landing-start {
-    padding: var(--s-5);
-  }
-  .landing-actions {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: var(--s-3);
-  }
-  .landing-footer {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: var(--s-2);
-  }
-}
-@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  justify-content: center;
+  gap: 20px;
+  background: var(--canvas);
+  color: var(--ink);
+  font: 600 20px/28px var(--font-ui);
 }
 </style>

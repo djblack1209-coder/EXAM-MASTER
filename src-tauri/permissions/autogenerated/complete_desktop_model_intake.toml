@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-complete-desktop-model-intake"
+description = "Enables the complete_desktop_model_intake command without any pre-configured scope."
+commands.allow = ["complete_desktop_model_intake"]
+
+[[permission]]
+identifier = "deny-complete-desktop-model-intake"
+description = "Denies the complete_desktop_model_intake command without any pre-configured scope."
+commands.deny = ["complete_desktop_model_intake"]

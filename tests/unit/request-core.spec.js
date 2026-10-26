@@ -43,6 +43,56 @@ describe('request core', () => {
     vi.useRealTimers();
   });
 
+  it('只读账户资料只返回服务器UID，业务与HTTP401不成功且保留会话', async () => {
+    const { readCurrentProfile } = await import('@/services/api/domains/user.api.js');
+    const session = captureSession();
+    uni.$on('authFailure', () => delete global.__mockStorage.EXAM_USER_ID);
+    let response = {
+      statusCode: 200,
+      data: { code: 0, success: true, data: { _id: 'user_123', nickname: 'fixture', email: 'owner@example.test' } }
+    };
+    uni.request.mockImplementation(({ data, success }) => {
+      expect(data).toEqual({ action: 'get', userId: 'user_123' });
+      success(response);
+      return { abort: vi.fn() };
+    });
+    expect(await readCurrentProfile()).toEqual({ success: true, code: 0, uid: 'user_123' });
+    response = { statusCode: 200, data: { code: 401, success: false, data: { _id: 'user_123' } } };
+    expect(await readCurrentProfile()).toEqual({ success: false, code: 401, uid: null });
+    response = { statusCode: 401, data: {} };
+    expect(await readCurrentProfile()).toEqual({ success: false, code: 401, uid: null });
+    response = { statusCode: 200, data: { code: 0, success: true, data: { _id: 'different-owner' } } };
+    expect(await readCurrentProfile()).toEqual({ success: false, code: 502, uid: null });
+    expect(uni.request).toHaveBeenCalledTimes(4);
+    expect(captureSession()).toEqual(session);
+    expect(uni.$emit.mock.calls.some(([name]) => name === 'authFailure')).toBe(false);
+  });
+
+  it('开发账户资料仅返回本次认证用户的邮箱', async () => {
+    vi.stubGlobal('__YOZI_DEV_TEST__', true);
+    try {
+      const { readCurrentProfile } = await import('@/services/api/domains/user.api.js');
+      let owner = 'user_123';
+      uni.request.mockImplementation(({ success }) => {
+        success({
+          statusCode: 200,
+          data: { code: 0, success: true, data: { _id: owner, email: 'owner@example.test' } }
+        });
+        return { abort: vi.fn() };
+      });
+      expect(await readCurrentProfile()).toEqual({
+        success: true,
+        code: 0,
+        uid: 'user_123',
+        email: 'owner@example.test'
+      });
+      owner = 'different-owner';
+      expect(await readCurrentProfile()).toEqual({ success: false, code: 502, uid: null });
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('legacy list reads after confirmed import see current records instead of the pre-write cache', async () => {
     let saved = false;
     uni.request.mockImplementation(({ data, success }) => {

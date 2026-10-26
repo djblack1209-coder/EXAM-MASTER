@@ -231,3 +231,6 @@ asset-inbox/
 
 # Temporary local rendering / PDF inspection artifacts
 tmp/
+
+# Built application downloads are packaged locally, not source assets.
+/public/downloads/*.zip

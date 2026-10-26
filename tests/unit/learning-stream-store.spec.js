@@ -9,6 +9,7 @@ import { createLearningRepository } from '@/services/learning/learning-repositor
 import { emptyLearningState } from '@/services/learning/learning-domain.js';
 import config from '@/config/index.js';
 import { onHide } from '@dcloudio/uni-app';
+import { coachFixture } from '../fixtures/writing-coach.js';
 vi.mock('@dcloudio/uni-app', () => ({ onShow: vi.fn(), onLoad: vi.fn(), onBackPress: vi.fn(), onHide: vi.fn() }));
 let previousBaseUrl;
 const stores = [];
@@ -32,6 +33,37 @@ afterEach(async () => {
   vi.clearAllMocks();
   vi.unstubAllGlobals();
 });
+it('访客明确提交学习目标后进入现有建档，确认后显示待采用计划且不调用模型', async () => {
+  const store = useConversationLearningStore();
+  stores.push(store);
+  const wrapper = mount(LearningPage, { global: { stubs: { BaseIcon: true, PrivacyPopup: true } } });
+  wrappers.push(wrapper);
+  const request = vi.spyOn(uni, 'request');
+  await wrapper.get('textarea[aria-label="发送消息"]').setValue('浮力概念自建练习');
+  await wrapper.get('button[aria-label="发送"]').trigger('tap');
+  await flushPromises();
+  expect(store.active.goal).toBe('浮力概念自建练习');
+  expect(store.active.studyProfile).toBeFalsy();
+  for (let step = 0; step < 5; step++) {
+    await wrapper
+      .get('[data-test="profile-draft"]')
+      .findAll('button')
+      .find((button) => button.text() === (step === 0 ? '下一步' : '跳过'))
+      .trigger('tap');
+    await flushPromises();
+  }
+  await wrapper
+    .get('[data-test="profile-draft"]')
+    .findAll('button')
+    .find((button) => button.text() === '确认保存')
+    .trigger('tap');
+  await flushPromises();
+  expect(wrapper.find('[data-test="profile-draft"]').exists()).toBe(false);
+  expect(wrapper.find('[data-test="learning-proposal"]').exists()).toBe(true);
+  expect(store.state.plans).toHaveLength(0);
+  expect(request).not.toHaveBeenCalled();
+});
+
 function setup(platform = 'h5') {
   let bridge;
   if (platform === 'app') {
@@ -201,6 +233,40 @@ function setup(platform = 'h5') {
     }
   };
 }
+it('带练复用流式片段，预览不写学习事实，最终校验后保存当前会话', async () => {
+  const harness = setup(),
+    { store } = harness;
+  store.startCoach('考研英语二写作');
+  store.coachSave('profile', { profile: { exam: 'english2', minutes: 25, deadline: null } });
+  vi.spyOn(uni, 'request').mockImplementation((options) => {
+    options.success({
+      data: {
+        success: true,
+        data: {
+          platformEnabled: true,
+          models: [
+            { id: 'fixture', provider: 'synthetic', model: 'explicit', source: 'byok', capabilities: { stream: true } }
+          ]
+        }
+      }
+    });
+    return { abort: vi.fn() };
+  });
+  const pending = store.requestCoach('diagnostic');
+  await flushPromises();
+  const snapshot = store.exportData();
+  harness.preview();
+  await flushPromises();
+  expect(store.streamPreview).toBe('先用一个映射的例子理解函数');
+  expect(store.exportData()).toBe(snapshot);
+  expect(store.active.coach.diagnostic).toBeNull();
+  harness.complete({ tools: [], coach: coachFixture(harness.request.learningContext.coach) });
+  expect((await pending).success).toBe(true);
+  expect(store.streamPreview).toBe('');
+  expect(store.active.coach.requests[0].status).toBe('completed');
+  expect(store.active.coach.diagnostic.cards.length).toBeGreaterThan(0);
+});
+
 it('合法提示后无效计划保留部分成功、失败收据和重开重试的幂等边界', async () => {
   const harness = setup(),
     { store } = harness;
@@ -553,7 +619,7 @@ it.each(['stop', 'hide'])('取消后的迟到错误不抢走%s页面焦点，原
       stubs: {
         view: { template: '<div><slot /></div>' },
         text: { template: '<span><slot /></span>' },
-        LearningShell: { template: '<div><slot /></div>' },
+        LearningShell: { template: '<div><slot /><slot name="composer" /></div>' },
         NumberLine: true,
         BaseIcon: true,
         LearningOverview: true
@@ -564,27 +630,44 @@ it.each(['stop', 'hide'])('取消后的迟到错误不抢走%s页面焦点，原
   const otherPage = document.createElement('button');
   otherPage.textContent = '另一页面当前操作';
   document.body.append(otherPage);
-  let expected;
+  let expected, expectedError;
   try {
     const pending = store.send('直接讲解');
     await flushPromises();
     harness.preview();
     await flushPromises();
     if (change === 'stop') {
-      const stop = wrapper.findAll('button').find((button) => button.attributes('aria-label') === '停止当前任务');
+      expect(wrapper.findAll('#learning-composer .muse-send[aria-label="取消请求"]')).toHaveLength(1);
+      expect(wrapper.find('#learning-composer [aria-label="停止当前任务"]').exists()).toBe(false);
+      const stop = wrapper.get('#learning-composer .muse-send[aria-label="取消请求"]');
       await stop.trigger('keydown', { key: 'Enter' });
+      // The square cancels this request; stopping the task is a separate idle action.
+      await flushPromises();
+      expect(store.active.stopped).toBeFalsy();
+      expect(store.error).toContain('取消');
+      expect(wrapper.find('#learning-composer .muse-send[aria-label="取消请求"]').exists()).toBe(false);
+      // 批次 12A：不恢复 pause 插槽，沿唯一输入区提交停止。
+      expect(wrapper.find('#learning-composer [aria-label="停止当前任务"]').exists()).toBe(false);
+      await wrapper.get('#learning-composer textarea').setValue('停止当前任务');
+      await wrapper.get('#learning-composer [aria-label="发送"]').trigger('keydown', { key: 'Enter' });
+      await flushPromises();
+      expect(store.active.stopped).toBe(true);
       expected = wrapper.get('#learning-stop-state').element;
+      expectedError = store.error;
     } else {
       otherPage.focus();
       expected = otherPage;
       onHide.mock.calls.at(-1)[0]();
     }
+    harness.push(harness.frame('error', 3, { success: false, error: '迟到的模型错误', errorCode: 'UPSTREAM_FAILED' }));
+    harness.end();
     await pending;
     await flushPromises();
     expect(document.activeElement).toBe(expected);
     expect(JSON.stringify(store.state.attempts)).toBe(originals);
     expect(store.streamPreview).toBe('');
-    expect(store.error).toContain('取消');
+    if (change === 'stop') expect(store.error).toBe(expectedError);
+    else expect(store.error).toContain('取消');
     expect(bridge.cancel).toHaveBeenCalledOnce();
     expect(bridge.stream).toHaveBeenCalledOnce();
     expect(harness.fetch).not.toHaveBeenCalled();

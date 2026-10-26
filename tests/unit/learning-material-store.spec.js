@@ -41,7 +41,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
           stubs: {
             view: { template: '<div><slot /></div>' },
             text: { template: '<span><slot /></span>' },
-            LearningShell: { template: '<div><slot /></div>' },
+            LearningShell: { template: '<div><slot name="controls" /><slot /><slot name="composer" /></div>' },
             LearningOverview: true,
             NumberLine: true
           }
@@ -74,7 +74,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
         stubs: {
           view: { template: '<div><slot /></div>' },
           text: { template: '<span><slot /></span>' },
-          LearningShell: { template: '<div><slot /></div>' },
+          LearningShell: { template: '<div><slot name="controls" /><slot /><slot name="composer" /></div>' },
           LearningOverview: true,
           NumberLine: true
         }
@@ -130,7 +130,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
         stubs: {
           view: { template: '<div><slot /></div>' },
           text: { template: '<span><slot /></span>' },
-          LearningShell: { template: '<div><slot /></div>' },
+          LearningShell: { template: '<div><slot name="controls" /><slot /><slot name="composer" /></div>' },
           LearningOverview: true,
           NumberLine: true
         }
@@ -229,7 +229,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
         stubs: {
           view: { template: '<div><slot /></div>' },
           text: { template: '<span><slot /></span>' },
-          LearningShell: { template: '<div><slot /></div>' },
+          LearningShell: { template: '<div><slot name="controls" /><slot /><slot name="composer" /></div>' },
           LearningOverview: true,
           NumberLine: true
         }
@@ -746,7 +746,7 @@ describe('资料重试、来源版本与真正取消', () => {
         stubs: {
           view: { template: '<div><slot /></div>' },
           text: { template: '<span><slot /></span>' },
-          LearningShell: { template: '<div><slot /></div>' },
+          LearningShell: { template: '<div><slot name="controls" /><slot /><slot name="composer" /></div>' },
           LearningOverview: true,
           NumberLine: true
         }

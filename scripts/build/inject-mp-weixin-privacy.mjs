@@ -7,7 +7,17 @@
  * 用法: node scripts/build/inject-mp-weixin-privacy.mjs
  * 或在 package.json 的 build:mp-weixin 后自动执行
  */
-import { copyFileSync, existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'fs';
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  renameSync,
+  rmSync,
+  statSync,
+  writeFileSync
+} from 'fs';
 import { dirname, extname, relative, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -29,13 +39,7 @@ const mediaExtensions = new Set([
   '.mp4',
   '.webm'
 ]);
-const runtimeLocalKeepFiles = new Set([
-  'static/images/default-avatar.png',
-  'static/images/logo.png',
-  ...readdirSync(resolve(__dirname, '../../src/static/yozi-mascot'))
-    .filter((name) => name.endsWith('-256.webp'))
-    .map((name) => `static/yozi-mascot/${name}`)
-]);
+const runtimeLocalKeepFiles = new Set(['static/images/logo.png', 'static/brand/mascot-256.webp']);
 
 function applyWechatBrandExports() {
   // custom tabBar is rendered using BaseIcon. Its native placeholder needs page/text only;
@@ -47,18 +51,6 @@ function applyWechatBrandExports() {
       delete item.selectedIconPath;
     }
     writeFileSync(appJsonPath, JSON.stringify(app, null, 2));
-  }
-  // 微信显示尺寸的同图导出；网页/App原图保留。只改当前隔离/指定构建产物。
-  const brandPath = resolve(distRoot, 'config/brand.js');
-  if (!existsSync(brandPath) || !readFileSync(brandPath, 'utf8').includes('Yozi AI')) return;
-  for (const [source, target] of [
-    ['yozi-mini-icon.png', 'static/images/logo.png'],
-    ['learning-projector-mini.webp', 'static/brand/learning-projector.webp']
-  ]) {
-    const sourcePath = resolve(__dirname, '../../src/static/brand', source);
-    const targetPath = resolve(distRoot, target);
-    if (!existsSync(sourcePath)) throw new Error('缺少已批准的微信品牌导出：' + source);
-    if (existsSync(targetPath)) copyFileSync(sourcePath, targetPath);
   }
 }
 
@@ -158,6 +150,17 @@ try {
   // ====== 1. 注入 app.json ======
   const appJson = JSON.parse(readFileSync(appJsonPath, 'utf-8'));
 
+  const license = resolve(distRoot, 'static/brand/providers/LICENSE-llm7.txt');
+  if (
+    ['dev', 'test'].includes(process.env.YOZI_BUILD_CHANNEL) &&
+    appJson.subPackages?.some((item) => item.root === 'pages/settings') &&
+    existsSync(license)
+  ) {
+    const bundledLicense = resolve(distRoot, 'pages/settings/static/licenses/LICENSE-llm7.txt');
+    mkdirSync(dirname(bundledLicense), { recursive: true });
+    renameSync(license, bundledLicense);
+  }
+
   // requiredPrivateInfos 仅接受 8 个地理位置相关 API（chooseAddress/chooseLocation 等）
   // chooseMessageFile 不属于此字段范围，其隐私保护由 __usePrivacyCheck__ 机制管理
   // 本项目未使用任何地理位置 API，故设为空数组
@@ -238,6 +241,20 @@ try {
   // 微信开发者工具的 IMAGE_AND_AUDIO_LIMIT 按代码包内图片/音频总量检测，
   // 不是单文件大小；因此构建产物需要只保留当前版本真实会本地加载的资源。
   pruneUnusedMediaForWechatQuality();
+
+  // 测试包压缩空白，并清除不参与运行的构建占位和重复文件。
+  if (['dev', 'test'].includes(process.env.YOZI_BUILD_CHANNEL)) {
+    for (const filePath of walkFiles(distRoot)) {
+      if (extname(filePath) === '.json')
+        writeFileSync(filePath, JSON.stringify(JSON.parse(readFileSync(filePath, 'utf8'))));
+      else if (extname(filePath) === '.js')
+        writeFileSync(filePath, readFileSync(filePath, 'utf8').replace(/[ \t\r\n]+$/, ''));
+      else if (filePath.endsWith(`${sep}.gitkeep`)) rmSync(filePath);
+    }
+    const duplicateSitemap = resolve(distRoot, 'static/sitemap.json');
+    if (existsSync(duplicateSitemap) && readFileSync(duplicateSitemap, 'utf8') === readFileSync(sitemapDst, 'utf8'))
+      rmSync(duplicateSitemap);
+  }
 } catch (err) {
   console.error('❌ 注入失败:', err.message);
   process.exit(1);

@@ -14,6 +14,8 @@
  * - switchTab: fade-in 200ms
  */
 
+import { isDesktopRuntime } from '@/services/desktop/runtime.js';
+import { isDesktopSettingsWindow, openDesktopSettings, openDesktopWorkspace } from '@/services/desktop/windows.js';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
 import { getCurrentRoute, isHomeRoute, openHomeTab } from '@/utils/home-navigation.js';
@@ -25,7 +27,7 @@ const TAB_BAR_PAGES = []; // Chat workspace uses normal routes and a mobile draw
 // Keep the requested panel until the receiving page consumes it.
 let pendingProfilePanel = null;
 export function requestProfilePanel(panel) {
-  pendingProfilePanel = panel === 'settings' ? 'settings' : 'profile';
+  pendingProfilePanel = ['settings', 'connectors'].includes(panel) ? panel : 'profile';
 }
 export function consumeProfilePanel() {
   const panel = pendingProfilePanel;
@@ -69,6 +71,17 @@ export function safeNavigateTo(url, options = {}) {
     return;
   }
 
+  if (isDesktopRuntime()) {
+    if (isDesktopSettingsWindow()) {
+      void openDesktopWorkspace(url).catch(() => toast.info('无法返回工作区'));
+      return;
+    }
+    if (url.split('?')[0] === '/pages/profile/index') {
+      const panel = url.includes('connectors') ? 'connectors' : consumeProfilePanel() || 'settings';
+      void openDesktopSettings(panel).catch(() => toast.info('设置窗口暂不可用'));
+      return;
+    }
+  }
   const { success, fail, complete, silent = false, ...rest } = options;
 
   // ✅ F014: tabBar 页面自动使用 switchTab

@@ -18,6 +18,7 @@ import BaseToast from '@/components/base/base-toast/base-toast.vue';
 import BaseListRow from '@/components/base/base-list-row/base-list-row.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
+import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
 import CustomModal from '@/components/common/CustomModal.vue';
 import { getIconPath, getIconMarkup } from '@/components/base/base-icon/icons.js';
 import { BOARD_ICONS } from '@/components/base/base-icon/board-icons.js';
@@ -275,7 +276,10 @@ describe('surfaces, feedback and translations', () => {
   it('statistics preserve denominators and message roles are accessible', () => {
     expect(render(BaseStat, { label: 'Tasks', value: 3, denominator: 5 }).text()).toContain('/ 5');
     expect(render(BaseBubble, { author: 'user' }, { default: 'Answer' }).attributes('aria-label')).toBe('你的消息');
-    expect(render(BaseBubble).getComponent(YoziMascot).props('play')).toBe('none');
+    expect(render(BaseBubble).findComponent(AnimatedAvatar).exists()).toBe(false);
+    const avatar = render(BaseBubble, { avatar: true }).getComponent(AnimatedAvatar);
+    expect(avatar.props('size')).toBe(48);
+    expect(avatar.attributes('aria-hidden')).toBe('true');
   });
   it.each(['empty', 'loading', 'error'])('state %s uses the same mascot and translated title', (state) => {
     const w = render(BaseEmpty, { state, showButton: true });

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { storageService } from '@/services/storageService.js';
 import { useAuthStore } from '@/stores/modules/auth.js';
@@ -13,6 +13,7 @@ import {
 import { synchronizeLearning, adoptRemoteConflict } from '@/services/learning/learning-sync.js';
 import { encodeHistory } from '../../laf-backend/functions/_shared/learning-history.js';
 import { parsePastedMaterial } from '@/services/learning/material-intake.js';
+import { learningWriteLease } from '@/services/learning/learning-write-lease.js';
 
 const at = Date.now() - 10000;
 const op = (state, id, type, data) => applyLearningOperation(state, { id, type, data, at }).state;
@@ -59,6 +60,105 @@ beforeEach(() => {
   uni.clearStorageSync();
   vi.clearAllMocks();
   setActivePinia(createPinia());
+});
+
+describe('account authority read', () => {
+  let store;
+  beforeEach(() => learningWriteLease.release());
+  afterEach(() => {
+    store?.$dispose();
+    store = null;
+    learningWriteLease.release();
+    vi.restoreAllMocks();
+  });
+  async function signedStore() {
+    await storageService.saveLoginSession({
+      userId: 'authority-fixture-owner',
+      token: 'fixture-only-authority',
+      userInfo: {}
+    });
+    store = useConversationLearningStore();
+    return store;
+  }
+  it('previews existing account records without adoption or push, then reuses explicit cloud adoption', async () => {
+    await signedStore();
+    const remote = op(emptyLearningState(store.state.owner), 'authority-conversation', 'conversation.start', {
+      goal: '考研英语二写作'
+    });
+    const actions = [];
+    vi.spyOn(uni, 'request').mockImplementation((options) => {
+      actions.push(options.data.action);
+      queueMicrotask(() => options.success({ statusCode: 200, data: { success: true, data: { state: remote } } }));
+      return { abort: vi.fn() };
+    });
+    const before = store.exportData();
+    expect(await store.readAccountRecords()).toBe(false);
+    expect(store.accountRecordState).toBe('remote');
+    expect(store.exportData()).toBe(before);
+    expect(store.syncConflict.remoteEvents).toBe(1);
+    store.clearSyncConflict(store.syncConflict);
+    expect(store.accountRecordState).toBe('pending');
+    expect(store.syncConflict).toBeNull();
+    expect(await store.readAccountRecords()).toBe(false);
+    expect((await store.beginModelIntake('unused-fixture-model')).success).toBe(false);
+    expect(actions).toEqual(['pull', 'pull']);
+    await store.adoptCloudRecords(store.syncConflict, true);
+    expect(store.accountRecordState).toBe('ready');
+    expect(store.state.conversations[0].id).toBe('authority-conversation');
+    expect(actions).toEqual(['pull', 'pull', 'pull']);
+  });
+  it('keeps failed reads unknown and permits first use only after an explicit successful empty read', async () => {
+    await signedStore();
+    let available = false;
+    const actions = [];
+    vi.spyOn(uni, 'request').mockImplementation((options) => {
+      actions.push(options.data.action);
+      queueMicrotask(() =>
+        options.success({
+          statusCode: 200,
+          data: available
+            ? { success: true, data: { state: emptyLearningState(store.state.owner) } }
+            : { success: false, code: 503, message: 'fixture-unavailable' }
+        })
+      );
+      return { abort: vi.fn() };
+    });
+    const before = store.exportData();
+    await expect(store.readAccountRecords()).rejects.toThrow();
+    expect(store.accountRecordState).toBe('error');
+    expect(store.exportData()).toBe(before);
+    expect(store.syncConflict).toBeNull();
+    available = true;
+    expect(await store.readAccountRecords()).toBe(true);
+    expect(store.accountRecordState).toBe('ready');
+    expect(store.exportData()).toBe(before);
+    expect(actions).toEqual(['pull', 'pull']);
+  });
+  it('discards a late account snapshot after identity changes without saving a conflict for the next owner', async () => {
+    await signedStore();
+    const remote = op(emptyLearningState(store.state.owner), 'late-authority', 'conversation.start', {
+      goal: '旧账号目标'
+    });
+    let reply;
+    vi.spyOn(uni, 'request').mockImplementation((options) => {
+      reply = () => options.success({ statusCode: 200, data: { success: true, data: { state: remote } } });
+      return { abort: vi.fn() };
+    });
+    const pending = store.readAccountRecords().catch((failure) => failure);
+    expect(typeof reply).toBe('function');
+    await storageService.saveLoginSession({
+      userId: 'next-authority-fixture',
+      token: 'fixture-only-next',
+      userInfo: {}
+    });
+    store.refresh();
+    reply();
+    expect((await pending).code).toBe('CONTEXT_CHANGED');
+    expect(store.state.owner).toBe('next-authority-fixture');
+    expect(store.state.conversations).toHaveLength(0);
+    expect(store.syncConflict).toBeNull();
+    expect(store.accountRecordState).toBe('pending');
+  });
 });
 
 describe('账户连续性与访客归属', () => {

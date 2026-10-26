@@ -5,3 +5,5 @@ export const tokens = Object.freeze({
   light: Object.freeze(primitives.light),
   dark: Object.freeze(primitives.dark)
 });
+
+export const museTokens = Object.freeze(primitives.muse);

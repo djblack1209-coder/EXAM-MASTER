@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chmodSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
@@ -11,7 +11,101 @@ import {
   validateCloudEndpoint,
   resolveCloudEndpoint
 } from '../../laf-backend/functions/_shared/ai-providers/learning-provider';
+import { MODEL_BRANDS } from '../../src/config/model-brands.js';
 import { readFreeApiCatalog } from '../../scripts/build/free-api-catalog.mjs';
+
+const domesticProviders = [
+  [
+    'dashscope',
+    '通义千问（阿里云百炼）',
+    'https://dashscope.aliyuncs.com/compatible-mode/v1',
+    'qwen3.8-max',
+    'https://help.aliyun.com/zh/model-studio/compatibility-of-openai-with-dashscope',
+    'qwen-color.svg',
+    false
+  ],
+  [
+    'moonshot',
+    '月之暗面 Kimi',
+    'https://api.moonshot.cn/v1',
+    'kimi-k3.1-pro',
+    'https://platform.kimi.com/docs/models',
+    'moonshot.svg',
+    true
+  ],
+  [
+    'ark',
+    '豆包（火山方舟）',
+    'https://ark.cn-beijing.volces.com/api/v3',
+    'doubao-seed-2.0-pro',
+    'https://console.volcengine.com/ark/region:cn-beijing/docs/ark/base-url-and-authentication',
+    'doubao-color.svg',
+    false
+  ],
+  [
+    'qianfan',
+    '百度文心（千帆）',
+    'https://qianfan.baidubce.com/v2',
+    'ernie-4.5-turbo',
+    'https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb',
+    'wenxin-color.svg',
+    false
+  ],
+  [
+    'hunyuan',
+    '腾讯混元',
+    'https://tokenhub.tencentmaas.com/v1',
+    'hy4-preview',
+    'https://cloud.tencent.com/document/product/1823/135872',
+    'hunyuan-color.svg',
+    false
+  ],
+  [
+    'minimax',
+    'MiniMax',
+    'https://api.minimax.cn/v1',
+    'MiniMax-M3.1-Flash',
+    'https://platform.minimax.cn/docs/guides/text-generation',
+    'minimax-color.svg',
+    false
+  ],
+  [
+    'stepfun',
+    '阶跃星辰',
+    'https://api.stepfun.com/v1',
+    'step-3.7-flash',
+    'https://platform.stepfun.com/docs/zh/guides/models/list',
+    'stepfun-color.svg',
+    false
+  ],
+  [
+    'spark',
+    '讯飞星火',
+    'https://spark-api-open.xf-yun.com/x2',
+    'spark-x',
+    'https://www.xfyun.cn/doc/spark/X1http.html',
+    'spark-color.svg',
+    false
+  ],
+  [
+    'yi',
+    '零一万物',
+    'https://api.lingyiwanwu.com/v1',
+    'yi-lightning',
+    'https://platform.lingyiwanwu.com/docs',
+    'yi-color.svg',
+    true
+  ],
+  [
+    'baichuan',
+    '百川智能',
+    'https://api.baichuan-ai.com/v1',
+    'Baichuan4-Turbo',
+    'https://platform.baichuan-ai.com/docs-v2/api',
+    'baichuan-color.svg',
+    false
+  ]
+];
 
 describe('模型基础地址与实际请求地址', () => {
   it.each([
@@ -22,6 +116,7 @@ describe('模型基础地址与实际请求地址', () => {
       'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'
     ],
     ['https://api.groq.com/openai/v1', 'https://api.groq.com/openai/v1/chat/completions'],
+    ['https://api.deepseek.com', 'https://api.deepseek.com/chat/completions'],
     ['https://ollama.com/v1', 'https://ollama.com/v1/chat/completions'],
     ['https://api.cohere.ai/compatibility/v1', 'https://api.cohere.ai/compatibility/v1/chat/completions'],
     [
@@ -56,8 +151,66 @@ describe('模型基础地址与实际请求地址', () => {
     ).rejects.toMatchObject({ code: 'SSRF_BLOCKED' });
   });
 
+  it.each(domesticProviders)(
+    '国内连接器 %s 保留精确端点、账户额度条件与实际品牌资源',
+    (id, provider, baseURL, model, docs, logo, mono) => {
+      const endpoint = `${baseURL}/chat/completions`;
+      const source = MODEL_ENDPOINTS.find((entry) => entry.id === id);
+      expect(source).toEqual({
+        id,
+        provider,
+        baseURL,
+        endpoint,
+        docs,
+        ...(id === 'minimax'
+          ? { legacyBaseURL: 'https://api.minimaxi.com/v1' }
+          : id === 'hunyuan'
+            ? { legacyBaseURL: 'https://api.hunyuan.cloud.tencent.com/v1' }
+            : {})
+      });
+      if (source.legacyBaseURL) {
+        const legacy = source.legacyBaseURL;
+        expect(completeModelEndpoint(legacy)).toBe(`${legacy}/chat/completions`);
+        expect(completeModelEndpoint(`${legacy}/chat/completions`)).toBe(`${legacy}/chat/completions`);
+      }
+      for (const raw of [baseURL, `${baseURL}/`, ` ${baseURL} `, endpoint])
+        expect(completeModelEndpoint(raw)).toBe(endpoint);
+      for (const raw of [
+        `${baseURL}?key=synthetic`,
+        `${baseURL}#hash`,
+        baseURL.replace('https:', 'http:'),
+        `${baseURL}/unknown`
+      ])
+        expect(completeModelEndpoint(raw)).toBe(raw);
+      expect(MODEL_CONNECTION_PRESETS.find((entry) => entry.id === `${id}-catalog`)).toEqual({
+        id: `${id}-catalog`,
+        provider,
+        model,
+        endpoint,
+        structured: false,
+        pricing: id === 'moonshot' ? 'provider_account' : 'account_free_tier_required',
+        terms: expect.stringMatching(/不自动/),
+        privacy: `当前学习上下文经本项目后端发送至${provider}；资料不默认整份上传。`,
+        docs
+      });
+      const brand = MODEL_BRANDS[provider];
+      expect(brand).toEqual({
+        logo: `/static/brand/providers/${logo}`,
+        group: 'general',
+        ...(mono ? { mono: true } : {})
+      });
+      const file = join(process.cwd(), 'src', brand.logo);
+      expect(existsSync(file)).toBe(true);
+      const svg = readFileSync(file, 'utf8');
+      expect(svg).toMatch(/<svg\b/);
+      expect(svg).toMatch(/<path\b/);
+      expect(svg).not.toMatch(/<text\b|placeholder/i);
+      if (mono) expect(svg).toContain('currentColor');
+    }
+  );
+
   it('公开预设不包含账户、凭据或匿名入口；新增试用模板不承诺零价格或视觉能力', () => {
-    expect(MODEL_ENDPOINTS).toHaveLength(19);
+    expect(MODEL_ENDPOINTS).toHaveLength(30);
     expect(new Set(MODEL_CONNECTION_PRESETS.map((p) => p.id)).size).toBe(MODEL_CONNECTION_PRESETS.length);
     for (const preset of MODEL_CONNECTION_PRESETS) {
       expect(preset.endpoint.endsWith('/chat/completions')).toBe(true);
@@ -65,9 +218,7 @@ describe('模型基础地址与实际请求地址', () => {
       if (preset.pricing !== 'official_free_model') expect(preset).not.toHaveProperty('priceVersion');
       if (preset.id.endsWith('-catalog')) expect(preset.structured).toBe(false);
     }
-    expect(
-      MODEL_CONNECTION_PRESETS.some((p) => /cohere|cerebras|sambanova|siliconflow|kilo|cloudflare|ovh/.test(p.id))
-    ).toBe(false);
+    expect(MODEL_CONNECTION_PRESETS.some((p) => /cloudflare|ovh/.test(p.id))).toBe(false);
   });
 });
 

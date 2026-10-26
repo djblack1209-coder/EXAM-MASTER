@@ -14,7 +14,7 @@ vi.mock('../../src/services/storageService.js', () => ({
   default: {
     get: vi.fn(),
     read: vi.fn((_key, fallback) => ({ status: 'ready', value: fallback })),
-    save: vi.fn(),
+    save: vi.fn().mockReturnValue(true),
     remove: vi.fn()
   }
 }));
@@ -42,6 +42,7 @@ describe('useThemeStore', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    storageService.save.mockReturnValue(true);
     setActivePinia(createPinia());
 
     // 动态导入以获取新鲜模块

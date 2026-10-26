@@ -1,0 +1,742 @@
+{
+  "schema_version": "diagnosis-validation-v1",
+  "version": "synthetic-arithmetic-v1",
+  "data_kind": "synthetic",
+  "primary_run_id": "baseline",
+  "source": {
+    "id": "t1-synthetic-fixture",
+    "version": "1",
+    "locator": "original synthetic fixture; no student data"
+  },
+  "subjects": [
+    {
+      "subject": "english",
+      "version": "fixture-v1",
+      "source": {
+        "id": "english",
+        "version": "1",
+        "locator": "original synthetic fixture; no student data"
+      },
+      "attributes": [
+        {
+          "id": "a",
+          "label": "Synthetic tense attribute",
+          "source": {
+            "id": "english-a",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          }
+        },
+        {
+          "id": "b",
+          "label": "Synthetic collocation attribute",
+          "source": {
+            "id": "english-b",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "main1",
+          "prompt": "Synthetic prompt for metric arithmetic only.",
+          "answer": "Synthetic reference answer.",
+          "source": {
+            "id": "main1",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          },
+          "attribute_ids": [
+            "a",
+            "b"
+          ],
+          "role": "primary",
+          "answer_review": {
+            "status": "approved",
+            "reviewer_id": "answer-expert"
+          },
+          "q_reviews": [
+            {
+              "method": "human",
+              "reviewer_id": "q-a",
+              "status": "approved",
+              "attribute_ids": [
+                "a",
+                "b"
+              ]
+            },
+            {
+              "method": "human",
+              "reviewer_id": "q-b",
+              "status": "approved",
+              "attribute_ids": [
+                "b",
+                "a"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "step1",
+          "prompt": "Synthetic prompt for metric arithmetic only.",
+          "answer": "Synthetic reference answer.",
+          "source": {
+            "id": "step1",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          },
+          "attribute_ids": [
+            "a"
+          ],
+          "role": "step_down",
+          "answer_review": {
+            "status": "approved",
+            "reviewer_id": "answer-expert"
+          },
+          "q_reviews": []
+        },
+        {
+          "id": "step2",
+          "prompt": "Synthetic prompt for metric arithmetic only.",
+          "answer": "Synthetic reference answer.",
+          "source": {
+            "id": "step2",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          },
+          "attribute_ids": [
+            "b"
+          ],
+          "role": "step_down",
+          "answer_review": {
+            "status": "approved",
+            "reviewer_id": "answer-expert"
+          },
+          "q_reviews": [
+            {
+              "method": "strong_model",
+              "reviewer_id": "synthetic-review-model",
+              "model_version": "frozen-fixture-v1",
+              "status": "approved",
+              "attribute_ids": [
+                "b"
+              ]
+            },
+            {
+              "method": "human",
+              "reviewer_id": "q-a",
+              "status": "approved",
+              "attribute_ids": [
+                "b"
+              ]
+            }
+          ]
+        }
+      ],
+      "trajectories": [
+        {
+          "id": "multi",
+          "anonymous_student_id": "synthetic-multi",
+          "source": {
+            "id": "multi",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          },
+          "mastery_attribute_ids": [
+            "a",
+            "b"
+          ],
+          "turns": [
+            {
+              "round": 1,
+              "item_id": "main1",
+              "answer": "Synthetic response.",
+              "reasoning": "Synthetic reasoning.",
+              "hints": []
+            },
+            {
+              "round": 2,
+              "item_id": "step1",
+              "answer": "Synthetic step-down response.",
+              "reasoning": "",
+              "hints": [
+                "Synthetic hint given before response."
+              ]
+            }
+          ],
+          "gold": {
+            "reviews": [
+              {
+                "reviewer_id": "expert-a",
+                "independent": true,
+                "root_cause": {
+                  "status": "attributed",
+                  "attribute_ids": [
+                    "a",
+                    "b"
+                  ]
+                },
+                "evidence_turns": [
+                  1,
+                  2
+                ],
+                "rationale": "Synthetic independent annotation for arithmetic checks only."
+              },
+              {
+                "reviewer_id": "expert-b",
+                "independent": true,
+                "root_cause": {
+                  "status": "attributed",
+                  "attribute_ids": [
+                    "a",
+                    "b"
+                  ]
+                },
+                "evidence_turns": [
+                  1,
+                  2
+                ],
+                "rationale": "Synthetic independent annotation for arithmetic checks only."
+              }
+            ],
+            "adjudication": {
+              "reviewer_id": "expert-c",
+              "root_cause": {
+                "status": "attributed",
+                "attribute_ids": [
+                  "a",
+                  "b"
+                ]
+              },
+              "evidence_turns": [
+                1,
+                2
+              ],
+              "rationale": "Synthetic adjudication, not expert validity evidence."
+            }
+          },
+          "predictions": [
+            {
+              "run_id": "baseline",
+              "model": "fixture-model-a",
+              "model_version": "frozen-v1",
+              "parameters_id": "preset-v1",
+              "root_cause": {
+                "status": "attributed",
+                "attribute_ids": [
+                  "b",
+                  "a"
+                ]
+              },
+              "mastery": [
+                {
+                  "attribute_id": "a",
+                  "classification": "not_mastered"
+                },
+                {
+                  "attribute_id": "b",
+                  "classification": "developing"
+                }
+              ]
+            },
+            {
+              "run_id": "contrast",
+              "model": "fixture-model-b",
+              "model_version": "frozen-v1",
+              "parameters_id": "preset-v1",
+              "root_cause": {
+                "status": "attributed",
+                "attribute_ids": [
+                  "a",
+                  "b"
+                ]
+              },
+              "mastery": [
+                {
+                  "attribute_id": "b",
+                  "classification": "developing"
+                },
+                {
+                  "attribute_id": "a",
+                  "classification": "not_mastered"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "insufficient",
+          "anonymous_student_id": "synthetic-insufficient",
+          "source": {
+            "id": "insufficient",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          },
+          "mastery_attribute_ids": [
+            "a"
+          ],
+          "turns": [
+            {
+              "round": 1,
+              "item_id": "main1",
+              "answer": "Synthetic response.",
+              "reasoning": "Synthetic reasoning.",
+              "hints": []
+            },
+            {
+              "round": 2,
+              "item_id": "step1",
+              "answer": "Synthetic step-down response.",
+              "reasoning": "",
+              "hints": [
+                "Synthetic hint given before response."
+              ]
+            }
+          ],
+          "gold": {
+            "reviews": [
+              {
+                "reviewer_id": "expert-a",
+                "independent": true,
+                "root_cause": {
+                  "status": "insufficient_evidence",
+                  "attribute_ids": []
+                },
+                "evidence_turns": [],
+                "rationale": "Synthetic independent annotation for arithmetic checks only."
+              },
+              {
+                "reviewer_id": "expert-b",
+                "independent": true,
+                "root_cause": {
+                  "status": "insufficient_evidence",
+                  "attribute_ids": []
+                },
+                "evidence_turns": [],
+                "rationale": "Synthetic independent annotation for arithmetic checks only."
+              }
+            ],
+            "adjudication": {
+              "reviewer_id": "expert-c",
+              "root_cause": {
+                "status": "insufficient_evidence",
+                "attribute_ids": []
+              },
+              "evidence_turns": [],
+              "rationale": "Synthetic adjudication, not expert validity evidence."
+            }
+          },
+          "predictions": [
+            {
+              "run_id": "baseline",
+              "model": "fixture-model-a",
+              "model_version": "frozen-v1",
+              "parameters_id": "preset-v1",
+              "root_cause": {
+                "status": "attributed",
+                "attribute_ids": [
+                  "a"
+                ]
+              },
+              "mastery": [
+                {
+                  "attribute_id": "a",
+                  "classification": "developing"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "missing",
+          "anonymous_student_id": "synthetic-missing",
+          "source": {
+            "id": "missing",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          },
+          "mastery_attribute_ids": [
+            "a"
+          ],
+          "turns": [
+            {
+              "round": 1,
+              "item_id": "main1",
+              "answer": "Synthetic response.",
+              "reasoning": "Synthetic reasoning.",
+              "hints": []
+            },
+            {
+              "round": 2,
+              "item_id": "step1",
+              "answer": "Synthetic step-down response.",
+              "reasoning": "",
+              "hints": [
+                "Synthetic hint given before response."
+              ]
+            }
+          ],
+          "gold": {
+            "reviews": [
+              {
+                "reviewer_id": "expert-a",
+                "independent": true,
+                "root_cause": {
+                  "status": "attributed",
+                  "attribute_ids": [
+                    "a"
+                  ]
+                },
+                "evidence_turns": [
+                  1,
+                  2
+                ],
+                "rationale": "Synthetic independent annotation for arithmetic checks only."
+              },
+              {
+                "reviewer_id": "expert-b",
+                "independent": true,
+                "root_cause": {
+                  "status": "attributed",
+                  "attribute_ids": [
+                    "a"
+                  ]
+                },
+                "evidence_turns": [
+                  1,
+                  2
+                ],
+                "rationale": "Synthetic independent annotation for arithmetic checks only."
+              }
+            ],
+            "adjudication": {
+              "reviewer_id": "expert-c",
+              "root_cause": {
+                "status": "attributed",
+                "attribute_ids": [
+                  "a"
+                ]
+              },
+              "evidence_turns": [
+                1,
+                2
+              ],
+              "rationale": "Synthetic adjudication, not expert validity evidence."
+            }
+          },
+          "predictions": []
+        },
+        {
+          "id": "no-cause",
+          "anonymous_student_id": "synthetic-no-cause",
+          "source": {
+            "id": "no-cause",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          },
+          "mastery_attribute_ids": [
+            "a"
+          ],
+          "turns": [
+            {
+              "round": 1,
+              "item_id": "main1",
+              "answer": "Synthetic response.",
+              "reasoning": "Synthetic reasoning.",
+              "hints": []
+            },
+            {
+              "round": 2,
+              "item_id": "step1",
+              "answer": "Synthetic step-down response.",
+              "reasoning": "",
+              "hints": [
+                "Synthetic hint given before response."
+              ]
+            }
+          ],
+          "gold": {
+            "reviews": [
+              {
+                "reviewer_id": "expert-a",
+                "independent": true,
+                "root_cause": {
+                  "status": "no_root_cause",
+                  "attribute_ids": []
+                },
+                "evidence_turns": [
+                  1,
+                  2
+                ],
+                "rationale": "Synthetic independent annotation for arithmetic checks only."
+              },
+              {
+                "reviewer_id": "expert-b",
+                "independent": true,
+                "root_cause": {
+                  "status": "no_root_cause",
+                  "attribute_ids": []
+                },
+                "evidence_turns": [
+                  1,
+                  2
+                ],
+                "rationale": "Synthetic independent annotation for arithmetic checks only."
+              }
+            ],
+            "adjudication": {
+              "reviewer_id": "expert-c",
+              "root_cause": {
+                "status": "no_root_cause",
+                "attribute_ids": []
+              },
+              "evidence_turns": [
+                1,
+                2
+              ],
+              "rationale": "Synthetic adjudication, not expert validity evidence."
+            }
+          },
+          "predictions": [
+            {
+              "run_id": "baseline",
+              "model": "fixture-model-a",
+              "model_version": "frozen-v1",
+              "parameters_id": "preset-v1",
+              "root_cause": {
+                "status": "no_root_cause",
+                "attribute_ids": []
+              },
+              "mastery": [
+                {
+                  "attribute_id": "a",
+                  "classification": "mastered"
+                }
+              ]
+            },
+            {
+              "run_id": "contrast",
+              "model": "fixture-model-b",
+              "model_version": "frozen-v1",
+              "parameters_id": "preset-v1",
+              "root_cause": {
+                "status": "no_root_cause",
+                "attribute_ids": []
+              },
+              "mastery": [
+                {
+                  "attribute_id": "a",
+                  "classification": "unknown"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "math",
+      "version": "fixture-v1",
+      "source": {
+        "id": "math",
+        "version": "1",
+        "locator": "original synthetic fixture; no student data"
+      },
+      "attributes": [
+        {
+          "id": "a",
+          "label": "Synthetic algebra attribute (separate namespace)",
+          "source": {
+            "id": "math-a",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": "main1",
+          "prompt": "Synthetic prompt for metric arithmetic only.",
+          "answer": "Synthetic reference answer.",
+          "source": {
+            "id": "main1",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          },
+          "attribute_ids": [
+            "a"
+          ],
+          "role": "primary",
+          "answer_review": {
+            "status": "approved",
+            "reviewer_id": "answer-expert"
+          },
+          "q_reviews": [
+            {
+              "method": "strong_model",
+              "reviewer_id": "synthetic-review-model",
+              "model_version": "frozen-fixture-v1",
+              "status": "approved",
+              "attribute_ids": [
+                "a"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "step1",
+          "prompt": "Synthetic prompt for metric arithmetic only.",
+          "answer": "Synthetic reference answer.",
+          "source": {
+            "id": "step1",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          },
+          "attribute_ids": [
+            "a"
+          ],
+          "role": "step_down",
+          "answer_review": {
+            "status": "approved",
+            "reviewer_id": "answer-expert"
+          },
+          "q_reviews": [
+            {
+              "method": "human",
+              "reviewer_id": "q-a",
+              "status": "approved",
+              "attribute_ids": [
+                "a"
+              ]
+            },
+            {
+              "method": "human",
+              "reviewer_id": "q-b",
+              "status": "approved",
+              "attribute_ids": [
+                "a"
+              ]
+            }
+          ]
+        }
+      ],
+      "trajectories": [
+        {
+          "id": "multi",
+          "anonymous_student_id": "synthetic-multi",
+          "source": {
+            "id": "multi",
+            "version": "1",
+            "locator": "original synthetic fixture; no student data"
+          },
+          "mastery_attribute_ids": [
+            "a"
+          ],
+          "turns": [
+            {
+              "round": 1,
+              "item_id": "main1",
+              "answer": "Synthetic response.",
+              "reasoning": "Synthetic reasoning.",
+              "hints": []
+            },
+            {
+              "round": 2,
+              "item_id": "step1",
+              "answer": "Synthetic step-down response.",
+              "reasoning": "",
+              "hints": [
+                "Synthetic hint given before response."
+              ]
+            }
+          ],
+          "gold": {
+            "reviews": [
+              {
+                "reviewer_id": "expert-a",
+                "independent": true,
+                "root_cause": {
+                  "status": "attributed",
+                  "attribute_ids": [
+                    "a"
+                  ]
+                },
+                "evidence_turns": [
+                  1,
+                  2
+                ],
+                "rationale": "Synthetic independent annotation for arithmetic checks only."
+              },
+              {
+                "reviewer_id": "expert-b",
+                "independent": true,
+                "root_cause": {
+                  "status": "attributed",
+                  "attribute_ids": [
+                    "a"
+                  ]
+                },
+                "evidence_turns": [
+                  1,
+                  2
+                ],
+                "rationale": "Synthetic independent annotation for arithmetic checks only."
+              }
+            ],
+            "adjudication": {
+              "reviewer_id": "expert-c",
+              "root_cause": {
+                "status": "attributed",
+                "attribute_ids": [
+                  "a"
+                ]
+              },
+              "evidence_turns": [
+                1,
+                2
+              ],
+              "rationale": "Synthetic adjudication, not expert validity evidence."
+            }
+          },
+          "predictions": [
+            {
+              "run_id": "baseline",
+              "model": "fixture-model-a",
+              "model_version": "frozen-v1",
+              "parameters_id": "preset-v1",
+              "root_cause": {
+                "status": "no_root_cause",
+                "attribute_ids": []
+              },
+              "mastery": [
+                {
+                  "attribute_id": "a",
+                  "classification": "mastered"
+                }
+              ]
+            },
+            {
+              "run_id": "contrast",
+              "model": "fixture-model-b",
+              "model_version": "frozen-v1",
+              "parameters_id": "preset-v1",
+              "root_cause": {
+                "status": "attributed",
+                "attribute_ids": [
+                  "a"
+                ]
+              },
+              "mastery": [
+                {
+                  "attribute_id": "a",
+                  "classification": "not_mastered"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

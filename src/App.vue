@@ -1,5 +1,5 @@
 <script>
-import { isSessionUnavailable, captureSession, checkSession } from '@/services/auth-storage.js';
+import { isSessionUnavailable, captureSession, checkSession, getUserId } from '@/services/auth-storage.js';
 import { toast } from '@/utils/toast.js';
 import { useUserStore } from '@/stores';
 import { applyTheme, getCurrentTheme, watchTheme } from '@/design/theme-runtime.js';
@@ -12,12 +12,20 @@ import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
-import { initI18n } from '@/i18n/index.js';
+import { initI18n, publicError } from '@/i18n/index.js';
 import { restoreUserParams as restoreFsrsParams } from '@/services/fsrs-service.js';
 import { storageService } from '@/services/storageService.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+import {
+  bindDesktopWorkspace,
+  receiveDesktopModelIntake,
+  completeDesktopModelIntake
+} from '@/services/desktop/windows.js';
+import { getCurrentRoute } from '@/utils/home-navigation.js';
+import { isDesktopRuntime } from '@/services/desktop/runtime.js';
 import { learningNotificationsFor } from '@/services/learning/learning-notifications.js';
 let notificationRuntime = null;
+let releaseDesktopWorkspace = () => undefined;
 let startupTimer = null;
 let authRedirectTimer = null,
   routeRedirectTimer = null;
@@ -75,7 +83,7 @@ export default {
       const result = this.performSilentLogin();
       return result;
     });
-    if (import.meta.env.VITE_ENABLE_LEGACY_LEARNING === 'true')
+    if (isDesktopRuntime() || import.meta.env.VITE_ENABLE_LEGACY_LEARNING === 'true')
       startup('notifications', () => {
         notificationRuntime ||= learningNotificationsFor(useConversationLearningStore(this.$pinia));
         return notificationRuntime.initialize().then(
@@ -84,6 +92,53 @@ export default {
         );
       });
     retryStartup();
+    void bindDesktopWorkspace({
+      onModelIntake: async (intent) => {
+        let success = false;
+        try {
+          const result = await receiveDesktopModelIntake(intent, {
+            owner: getUserId,
+            currentRoute: getCurrentRoute,
+            navigate: () =>
+              new Promise((resolve, reject) =>
+                safeNavigateTo('/pages/learning/index', { success: resolve, fail: reject })
+              ),
+            learning: useConversationLearningStore(this.$pinia)
+          });
+          success = result?.success === true;
+          if (result && !result.success) toast.info(publicError(result));
+        } catch (failure) {
+          toast.info(publicError(failure));
+        } finally {
+          if (intent?.id) await completeDesktopModelIntake(intent.id, success).catch(() => undefined);
+        }
+      },
+      onRoute: async (route) => {
+        const learning = useConversationLearningStore(this.$pinia);
+        learning.refresh();
+        if (route === '/pages/learning/index' && learning.state.intake) {
+          const intake = learning.state.intake;
+          learning.selectedConversationId = intake.acceptedConversationId || null;
+          await learning.loadModels().catch(() => undefined);
+          learning.modelId = intake.modelId;
+          learning.selectedMode = 'cloud';
+        }
+        safeNavigateTo(route);
+      },
+      onPreferences: () => {
+        useThemeStore(this.$pinia).refreshAppearance();
+        initI18n();
+        try {
+          useConversationLearningStore(this.$pinia).refresh();
+        } catch {
+          /* Storage may be locked during account transitions. */
+        }
+      }
+    })
+      .then((release) => {
+        releaseDesktopWorkspace = release;
+      })
+      .catch(() => undefined);
   },
   onError(error) {
     // 委托给统一错误处理器（避免重复注册 uni.onError）
@@ -115,6 +170,7 @@ export default {
     clearTimeout(authRedirectTimer);
     clearTimeout(routeRedirectTimer);
     authRedirectTimer = routeRedirectTimer = null;
+    releaseDesktopWorkspace();
     notificationRuntime?.dispose();
     notificationRuntime = null;
   },
@@ -208,7 +264,7 @@ export default {
       watchTheme((theme) => {
         // 如果用户没有手动设置主题，则跟随系统
         const userSetTheme = storageService.get('theme_mode', null);
-        if (!userSetTheme) {
+        if (!userSetTheme || userSetTheme === 'system') {
           this.switchTheme(theme);
         }
       });
@@ -383,7 +439,7 @@ export default {
 }
 @font-face {
   font-family: 'DM Sans';
-  src: url('/public/fonts/FutureDMSans-500.woff2') format('woff2');
+  src: url('/public/fonts/DMSans-Variable.woff2') format('woff2');
   font-weight: 500;
   font-display: swap;
 }
@@ -398,7 +454,7 @@ export default {
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url(/public/fonts/FutureDMSans-400.woff2) format('woff2');
+  src: url(/public/fonts/DMSans-Variable.woff2) format('woff2');
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
     U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -408,17 +464,7 @@ export default {
   font-style: normal;
   font-weight: 500;
   font-display: block;
-  src: url(/public/fonts/FutureDMSans-500.woff2) format('woff2');
-  unicode-range:
-    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
-    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: 'Playfair Display';
-  font-style: italic;
-  font-weight: 400;
-  font-display: block;
-  src: url(/public/fonts/PlayfairDisplay-italic-400.woff2) format('woff2');
+  src: url(/public/fonts/DMSans-Variable.woff2) format('woff2');
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
     U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -792,6 +838,10 @@ page[data-theme='dark'] .option-item:active {
 }
 
 /* #ifdef H5 */
+/* 取消 uni-app 屏外阴影图片的 CDN 预加载。 */
+html body::after {
+  animation: none;
+}
 /* H5 环境：隐藏原生 tabBar，使用自定义胶囊 tabBar (custom-tabbar.vue) */
 /* 原生 tabBar 和自定义 tabBar 同时显示会互相遮挡 */
 uni-tabbar,

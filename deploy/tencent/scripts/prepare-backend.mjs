@@ -957,10 +957,10 @@ async function stageCandidate(state, candidateSha) {
     await validateCandidate(db, 'http://127.0.0.1:3002');
     for (const [body, expected] of [
       [{ type: 'qq', platform: 'unknown', code: 'syntheticCode123' }, 400],
-      [{ type: 'qq', platform: 'app', accessToken: 'synthetic-stage-token' }, 500],
+      [{ type: 'qq', platform: 'app', accessToken: 'synthetic-stage-token' }, 400],
       [{ type: 'wechat', platform: 'app', code: 'syntheticCode123' }, 500],
       [{ type: 'wechat_web', code: 'syntheticCode123' }, 500],
-      [{ type: 'desktop_oauth', action: 'begin', provider: 'qq', challenge: 'a'.repeat(64) }, 503]
+      [{ type: 'desktop_oauth', action: 'begin', provider: 'qq', challenge: 'a'.repeat(64) }, 400]
     ]) {
       const probe = async () =>
         (
@@ -1824,7 +1824,7 @@ async function prepare(state, candidateSha) {
   }
 }
 
-async function validateCandidate(db, base) {
+export async function validateCandidate(db, base, users = [crypto.randomUUID(), crypto.randomUUID()]) {
   const fetchJSON = async (route, body, token) => {
     const response = await fetch(base + route, {
       method: 'POST',
@@ -1851,7 +1851,6 @@ async function validateCandidate(db, base) {
   const password = 'Validation-' + crypto.randomBytes(16).toString('hex');
   const salt = crypto.randomBytes(16).toString('hex');
   const derived = crypto.scryptSync(password, salt, 64, { N: 16384, r: 8, p: 1 }).toString('hex');
-  const users = [crypto.randomUUID(), crypto.randomUUID()];
   const tokens = [];
   for (const id of users) {
     const email = id + '@wenli.invalid';
@@ -1867,7 +1866,9 @@ async function validateCandidate(db, base) {
     assert.ok(result.data.token);
     tokens.push(result.data.token);
   }
-  assert.equal((await fetchJSON('/learning-models', { action: 'list' }, tokens[0])).data.platformEnabled, false);
+  const models = await fetchJSON('/learning-models', { action: 'list' }, tokens[0]);
+  assert.equal(models.data.platformEnabled, false);
+  assert.equal(models.data.intakeContract, 'model-intake-v1');
   const at = Date.now();
   const operations = candidateOperations(at);
   const first = await fetchJSON('/learning-sync', { action: 'push', operations }, tokens[0]);
@@ -1882,6 +1883,97 @@ async function validateCandidate(db, base) {
     (await fetchJSON('/learning-sync', { action: 'push', operations: [operations[3]] }, tokens[1])).success,
     false
   );
+  return tokens;
+}
+
+export async function validatePublicBackend(candidateSha) {
+  assert.match(candidateSha || '', /^[a-f0-9]{64}$/);
+  const release = path.join(releases, candidateSha.slice(0, 16));
+  const staged = json(path.join(release, '.wenli-stage.json'));
+  assert.equal(staged.candidateSha, candidateSha);
+  assert.deepEqual(staged.compiledFiles, stageCompiledFiles(release));
+  const rows = JSON.parse(run(['pm2', 'jlist'])).filter((row) => row.name === 'yozi-learning');
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].pm2_env.status, 'online');
+  assert.equal(rows[0].pm2_env.pm_exec_path, path.join(release, 'dist/standalone/server.js'));
+  assertStageListener(run(['ss', '-H', '-ltnp', 'sport = :3002']), rows[0].pid);
+  const prepared = preparedState();
+  const clients = await preparedClients(prepared);
+  const ids = [crypto.randomUUID(), crypto.randomUUID()];
+  const db = clients.app.db('exam-master');
+  try {
+    await validateCandidate(db, 'https://api.245334.xyz', ids);
+  } finally {
+    // Only generated deployment identities are disposable. User records and
+    // the real request/cost ledger never enter this selector.
+    for (const name of ['learning_states', 'learning_accounts', 'learning_model_keys'])
+      await db.collection(name).deleteMany({ user_id: { $in: ids } });
+    await db.collection('users').deleteMany({ _id: { $in: ids } });
+    await clients.close();
+  }
+}
+
+async function publicBackupSnapshot(db) {
+  const result = [];
+  for (const { name } of await db.listCollections({}, { nameOnly: true }).toArray()) {
+    const collection = db.collection(name);
+    const docs = await collection.find({}).sort({ _id: 1 }).limit(5001).toArray();
+    assert.ok(docs.length <= 5000, 'public backup exceeds bounded verification scope');
+    result.push({ name, count: docs.length, content: sha(JSON.stringify(docs)),
+      indexes: (await collection.indexes()).map(({ ns, ...index }) => index).sort((a, b) => a.name.localeCompare(b.name)) });
+  }
+  return result.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+async function publicBackup(mode) {
+  const state = json('/var/lib/vps-config/file-maintenance/state.json');
+  assert.match(state.id || '', /^[a-f0-9]{32}$/);
+  assert.ok(mode === 'backup-public' ? state.phase === 'quiescing' && state.deadline > Date.now() / 1000
+    : ['recovering', 'awaiting-local-restore', 'rolled-back'].includes(state.phase));
+  const root = path.join(data, 'public-backup');
+  assert.equal(fs.realpathSync(root), root);
+  const prepared = preparedState();
+  const clients = await preparedClients(prepared);
+  const primary = clients.admin.db('exam-master');
+  const namespace = 'wenli_public_restore_' + state.id;
+  const archiveFile = path.join(root, 'database.archive.gz');
+  const reportFile = path.join(root, 'database.json');
+  try {
+    if (mode === 'recover-public-backup') {
+      const report = json(reportFile);
+      assert.equal(report.transaction, state.id);
+      const bytes = fs.readFileSync(archiveFile);
+      assert.equal(sha(bytes), report.sha256);
+      // This first activation started from an empty prepared account database.
+      // A new real account/learning write blocks destructive rollback.
+      for (const name of ['users', 'learning_states', 'learning_accounts', 'learning_model_keys'])
+        assert.equal(await primary.collection(name).countDocuments(), 0, 'concurrent user data blocks recovery');
+      run(['docker', 'exec', '-i', container, 'mongorestore', '--config=/run/wenli-secrets/mongo-tools.yaml',
+        '--archive', '--gzip', '--drop', '--nsInclude=exam-master.*', '--stopOnError'], { encoding: null, input: bytes });
+      for (const { name } of await primary.listCollections({}, { nameOnly: true }).toArray())
+        if (!report.snapshot.some((row) => row.name === name)) await primary.collection(name).drop();
+      assert.deepEqual(await publicBackupSnapshot(primary), report.snapshot);
+      return;
+    }
+    assert.ok(!fs.existsSync(archiveFile) && !fs.existsSync(reportFile));
+    const snapshot = await publicBackupSnapshot(primary);
+    assert.ok(snapshot.every((row) => row.count === 0), 'first activation requires the verified empty prepared database');
+    const bytes = run(['docker', 'exec', container, 'mongodump', '--config=/run/wenli-secrets/mongo-tools.yaml',
+      '--db=exam-master', '--archive', '--gzip'], { encoding: null });
+    assert.ok(bytes.length > 0 && bytes.length < 32_000_000);
+    assert.ok(!(await clients.admin.db('admin').admin().listDatabases()).databases.some((row) => row.name === namespace));
+    run(['docker', 'exec', '-i', container, 'mongorestore', '--config=/run/wenli-secrets/mongo-tools.yaml',
+      '--archive', '--gzip', '--nsFrom=exam-master.*', '--nsTo=' + namespace + '.*', '--stopOnError'], { encoding: null, input: bytes });
+    assert.deepEqual(await publicBackupSnapshot(clients.admin.db(namespace)), snapshot);
+    assert.deepEqual(await publicBackupSnapshot(primary), snapshot);
+    const fd = fs.openSync(archiveFile, 'wx', 0o600);
+    try { fs.writeFileSync(fd, bytes); fs.fsyncSync(fd); } finally { fs.closeSync(fd); }
+    write(reportFile, JSON.stringify({ transaction: state.id, sha256: sha(bytes), snapshot, actualRestoreVerified: true }));
+    syncDirectory(root);
+  } finally {
+    if (mode === 'backup-public') await clients.admin.db(namespace).dropDatabase();
+    await clients.close();
+  }
 }
 
 export function candidateOperations(at) {
@@ -1918,6 +2010,14 @@ export function candidateOperations(at) {
 }
 
 export async function main(mode, candidateSha, backup) {
+  if (['backup-public', 'recover-public-backup'].includes(mode)) {
+    await publicBackup(mode);
+    return;
+  }
+  if (mode === 'check-public') {
+    await validatePublicBackend(candidateSha);
+    return;
+  }
   if (mode === 'check-prepared') {
     await checkPrepared();
     return;

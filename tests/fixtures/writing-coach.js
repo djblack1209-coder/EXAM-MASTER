@@ -1,5 +1,5 @@
 // Synthetic responses for isolated flow verification; never shipped as teaching content.
-import { WRITING_METHOD } from '../../laf-backend/functions/_shared/learning-writing-coach.js';
+import { WRITING_METHOD, COACH_FEEDBACK_VERSION } from '../../laf-backend/functions/_shared/learning-writing-coach.js';
 export function coachFixture(request) {
   if (request.phase === 'diagnostic')
     return {
@@ -51,6 +51,9 @@ export function coachFixture(request) {
       }
     ],
     weaknesses: ['主谓一致'],
+    ...(request.feedbackVersion === COACH_FEEDBACK_VERSION
+      ? { weaknessEvidence: [{ label: '主谓一致', quote: request.input.split('\n')[0], classification: 'error' }] }
+      : {}),
     phrases: ['I am writing to invite you to...'],
     dimensions: request.phase === 'essay' ? WRITING_METHOD.feedback.map((name) => ({ name, comment: '合成反馈' })) : []
   };

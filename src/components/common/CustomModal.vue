@@ -15,7 +15,7 @@
     <view
       ref="dialog"
       class="custom-modal-container"
-      :class="[{ dark: isDark, 'is-bottom': position === 'bottom', 'reduced-motion': reducedMotion }]"
+      :class="[containerClass, { dark: isDark, 'is-bottom': position === 'bottom', 'reduced-motion': reducedMotion }]"
       role="dialog"
       :aria-modal="visible ? 'true' : undefined"
       :aria-hidden="!visible || undefined"
@@ -95,6 +95,7 @@ const props = defineProps({
   type: { type: String, default: 'info' },
   icon: { type: String, default: '' },
   title: { type: String, default: '' },
+  containerClass: { type: String, default: '' },
   content: { type: String, default: '' },
   confirmText: { type: String, default: '' },
   cancelText: { type: String, default: '' },

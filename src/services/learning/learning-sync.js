@@ -191,6 +191,21 @@ async function pullSnapshot(send, timezone, owner) {
   }
   assert(false, 'CONFLICT', '云端持续更新，未采用混合分页；请稍后重新同步');
 }
+
+// Website projection: uses the existing pull/page contract and never adopts or pushes local facts.
+export async function readLearningSnapshot({
+  session = captureSession(),
+  signal,
+  timezone = 'Asia/Shanghai',
+  request = learningRequest
+} = {}) {
+  assertSession(session);
+  assert(session.owner !== 'guest', 'AUTH_REQUIRED', '请先登录');
+  const send = syncTransport(request, session.owner, signal, () => assertSession(session));
+  const state = await pullSnapshot(send, timezone, session.owner);
+  assertSession(session);
+  return state;
+}
 function operationBatches(events) {
   const batches = [];
   let batch = [],

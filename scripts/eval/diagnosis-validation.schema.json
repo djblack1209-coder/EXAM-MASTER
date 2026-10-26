@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Yozi diagnosis validation package v1 (offline, no effect threshold)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "version", "data_kind", "primary_run_id", "subjects"],
+  "properties": {
+    "schema_version": { "const": "diagnosis-validation-v1" },
+    "version": { "$ref": "#/$defs/id" },
+    "data_kind": { "enum": ["synthetic", "real"] },
+    "primary_run_id": { "$ref": "#/$defs/id" },
+    "source": { "$ref": "#/$defs/source" },
+    "subjects": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/subject" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "pattern": "\\S" },
+    "ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "source": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["id", "version", "locator"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "version": { "$ref": "#/$defs/id" },
+        "locator": { "$ref": "#/$defs/id" }
+      }
+    },
+    "root_cause": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "attribute_ids"],
+      "properties": {
+        "status": { "enum": ["attributed", "no_root_cause", "insufficient_evidence"] },
+        "attribute_ids": { "$ref": "#/$defs/ids" }
+      }
+    },
+    "annotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root_cause", "evidence_turns", "rationale"],
+      "properties": {
+        "reviewer_id": { "type": ["string", "null"], "minLength": 1, "pattern": "\\S" },
+        "independent": { "type": "boolean" },
+        "root_cause": { "$ref": "#/$defs/root_cause" },
+        "evidence_turns": {
+          "type": "array", "uniqueItems": true,
+          "items": { "type": "integer", "minimum": 1 }
+        },
+        "rationale": { "$ref": "#/$defs/id" }
+      }
+    },
+    "gold": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "reviews": { "type": "array", "maxItems": 2, "items": { "$ref": "#/$defs/annotation" } },
+        "adjudication": { "$ref": "#/$defs/annotation" }
+      }
+    },
+    "answer_review": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["approved", "pending", "rejected"] },
+        "reviewer_id": { "type": ["string", "null"], "minLength": 1, "pattern": "\\S" }
+      }
+    },
+    "q_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "status", "attribute_ids"],
+      "properties": {
+        "method": { "enum": ["human", "strong_model"] },
+        "reviewer_id": { "type": ["string", "null"], "minLength": 1, "pattern": "\\S" },
+        "model_version": { "$ref": "#/$defs/id" },
+        "status": { "enum": ["approved", "pending", "rejected"] },
+        "attribute_ids": { "$ref": "#/$defs/ids" }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "prompt", "answer", "attribute_ids", "role", "q_reviews"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "prompt": { "$ref": "#/$defs/id" },
+        "answer": { "$ref": "#/$defs/id" },
+        "source": { "$ref": "#/$defs/source" },
+        "attribute_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "role": { "enum": ["primary", "step_down"] },
+        "answer_review": { "$ref": "#/$defs/answer_review" },
+        "q_reviews": { "type": "array", "items": { "$ref": "#/$defs/q_review" } }
+      }
+    },
+    "prediction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "model", "model_version", "parameters_id", "mastery"],
+      "properties": {
+        "run_id": { "$ref": "#/$defs/id" },
+        "model": { "$ref": "#/$defs/id" },
+        "model_version": { "$ref": "#/$defs/id" },
+        "parameters_id": { "$ref": "#/$defs/id" },
+        "root_cause": { "$ref": "#/$defs/root_cause" },
+        "mastery": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["attribute_id", "classification"],
+            "properties": {
+              "attribute_id": { "$ref": "#/$defs/id" },
+              "classification": { "enum": ["mastered", "developing", "not_mastered", "unknown"] }
+            }
+          }
+        }
+      }
+    },
+    "trajectory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "anonymous_student_id", "mastery_attribute_ids", "turns"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "anonymous_student_id": { "$ref": "#/$defs/id" },
+        "source": { "$ref": "#/$defs/source" },
+        "mastery_attribute_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "turns": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["round", "item_id", "answer", "reasoning", "hints"],
+            "properties": {
+              "round": { "type": "integer", "minimum": 1 },
+              "item_id": { "$ref": "#/$defs/id" },
+              "answer": { "type": "string" },
+              "reasoning": { "type": "string" },
+              "hints": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "gold": { "$ref": "#/$defs/gold" },
+        "predictions": { "type": "array", "items": { "$ref": "#/$defs/prediction" } }
+      }
+    },
+    "subject": {
+      "type": "object", "additionalProperties": false,
+      "required": ["subject", "version", "attributes", "items", "trajectories"],
+      "properties": {
+        "subject": { "$ref": "#/$defs/id" },
+        "version": { "$ref": "#/$defs/id" },
+        "source": { "$ref": "#/$defs/source" },
+        "attributes": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["id", "label"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "label": { "$ref": "#/$defs/id" },
+              "source": { "$ref": "#/$defs/source" }
+            }
+          }
+        },
+        "items": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/item" } },
+        "trajectories": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/trajectory" } }
+      }
+    }
+  }
+}

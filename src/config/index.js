@@ -1,4 +1,5 @@
 import { BRAND } from './brand.js';
+import { DEV_TEST } from './build-channel.js';
 import { logger } from '@/utils/logger.js';
 
 /**
@@ -198,13 +199,13 @@ const config = {
      * 配置方式：VITE_API_BASE_URL=https://your-api.com
      * ⚠️ 必须通过环境变量配置，不再提供硬编码默认值
      */
-    baseUrl: getEnv('VITE_API_BASE_URL', ''),
+    baseUrl: DEV_TEST ? 'http://127.0.0.1:4382' : getEnv('VITE_API_BASE_URL', ''),
 
     /**
      * 备用 API 地址（主后端不可用时自动切换）
      * 配置方式：VITE_API_FALLBACK_URL=https://fallback-api.com
      */
-    fallbackUrl: getEnv('VITE_API_FALLBACK_URL', ''),
+    fallbackUrl: DEV_TEST ? '' : getEnv('VITE_API_FALLBACK_URL', ''),
 
     /**
      * API 请求超时时间（毫秒）

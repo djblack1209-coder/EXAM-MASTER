@@ -1,6 +1,7 @@
 import { captureSession, checkSession } from '../auth-storage.js';
 import { t, currentLanguage } from '@/i18n/index.js';
 import { invoke } from '@tauri-apps/api/core';
+import { isDesktopSettingsWindow } from '@/services/desktop/windows.js';
 import { isDesktopRuntime } from '@/services/desktop/runtime.js';
 import { storageService } from '@/services/storageService.js';
 import { assert } from './learning-domain.js';
@@ -39,6 +40,7 @@ export function notificationChannel() {
 // 只在用户明确授权后使用。平台接纳不等于真实显示；web不提供退出应用后的调度。
 export function createLearningNotifications(learning, onOpen, native = invoke, canOpen = () => true) {
   const channel = notificationChannel();
+  const settingsWindow = isDesktopSettingsWindow();
   let token = null,
     sequence = 0,
     disposed = false,
@@ -162,8 +164,14 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
     {
       learning.refresh();
       if (channel === 'macos') {
+        if (settingsWindow) {
+          const receipt = await native('request_settings_notification_refresh');
+          assert(receipt?.status !== 'failed', 'NOTIFICATION_FAILED', '系统提醒未确认，请返回主窗口核对');
+          learning.refresh();
+          return receipt;
+        }
         if (!token) token = await native('begin_learning_notifications');
-        const requested = consent() ? learning.reminderQueue().filter((j) => j.dueAt > Date.now()) : [];
+        const requested = consent() ? learning.reminderQueue().filter((j) => j.dueAt > Date.now() + 1000) : [];
         const jobs = requested.slice(0, 64);
         if (disposed || context() !== expected) return null;
         for (const job of jobs) delivered.set(job.id, { expected, session });
@@ -261,11 +269,15 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
       });
   }
   function show() {
+    if (settingsWindow) return;
     active = true;
     scheduleOpen();
     tick();
   }
   function hide() {
+    // A web page can still show its authorized notification in a background
+    // tab. Closing the page stops this timer; native scheduling is independent.
+    if (channel === 'web' && !disposed) return;
     active = false;
     clearTimer();
     if (openTimer !== null) clearTimeout(openTimer);
@@ -274,12 +286,26 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
   function initialize() {
     if (initialization) return initialization;
     initialization = (async () => {
-      if (channel === 'macos') {
+      if (channel === 'macos' && !settingsWindow) {
         const { listen } = await import('@tauri-apps/api/event');
         if (disposed) return;
-        stopListening = await listen('learning-notification-action', (event) => {
-          openNative(event.payload);
+        const actionListener = await listen('learning-notification-action', (event) => openNative(event.payload));
+        const refreshListener = await listen('desktop-notifications-refresh', async (event) => {
+          let receipt;
+          try {
+            receipt = await refresh();
+          } catch {
+            receipt = null;
+          }
+          await native('complete_settings_notification_refresh', {
+            id: event.payload,
+            receipt: receipt || { channel: 'macos', status: 'failed', count: 0, total: 0 }
+          }).catch(() => undefined);
         });
+        stopListening = () => {
+          actionListener();
+          refreshListener();
+        };
         if (disposed) stopListening();
       }
       show();
@@ -306,5 +332,33 @@ export function createLearningNotifications(learning, onOpen, native = invoke, c
       );
     }
   }
-  return { channel, allow, permission, refresh, show, hide, initialize, dispose, isDisposed: () => disposed };
+  async function test() {
+    if (channel !== 'macos') throw new Error('当前终端请保持页面打开，按保存的时间提醒');
+    const result = await permission(true);
+    assert(result === 'granted', 'NOTIFICATION_PERMISSION', '通知未获授权，请在系统设置中允许后重试');
+    return native('test_learning_notification', { consent: true });
+  }
+  async function openSettings() {
+    if (channel === 'macos') return native('open_learning_notification_settings');
+    throw new Error('请在浏览器网站设置中允许通知');
+  }
+  async function testDelivered() {
+    if (channel !== 'macos') return false;
+    const reply = await native('learning_notification_permission', { request: false, consent: false });
+    return reply.testDelivered === true;
+  }
+  return {
+    channel,
+    allow,
+    permission,
+    test,
+    testDelivered,
+    openSettings,
+    refresh,
+    show,
+    hide,
+    initialize,
+    dispose,
+    isDisposed: () => disposed
+  };
 }

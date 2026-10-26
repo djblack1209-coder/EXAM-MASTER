@@ -11,6 +11,7 @@ import { logger } from '@/utils/logger.js';
 
 import { useAuthStore } from './auth';
 import { useProfileStore } from './profile';
+import { readCurrentProfile } from '@/services/api/domains/user.api.js';
 
 // 同时导出子 store，允许直接使用
 export { useAuthStore } from './auth';
@@ -99,6 +100,7 @@ export const useUserStore = defineStore('user', () => {
     fetchFriends,
     fetchRankCenter,
     restoreUserInfo,
+    readCurrentProfile,
     silentLogin,
     $reset
   };

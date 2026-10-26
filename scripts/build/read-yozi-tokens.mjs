@@ -12,7 +12,23 @@ export function readYoziTokens() {
     );
   };
   const light = read('light');
-  return { light, dark: { ...light, ...read('dark') } };
+  const muse = Object.fromEntries(
+    ['light', 'dark'].map((theme) => {
+      const block = source.match(new RegExp(`\\.muse-space\\.space-${theme},[\\s\\S]*?\\{([\\s\\S]*?)\\n\\}`))?.[1];
+      if (!block) throw new Error(`Missing Muse ${theme} token block`);
+      const colors = Object.fromEntries(
+        [...block.matchAll(/(--[\w-]+):\s*([^;]+);/g)]
+          .filter(([, key]) =>
+            ['--violet', '--line-strong', '--muse-rich-success', '--muse-rich-warning', '--muse-rich-danger'].includes(
+              key
+            )
+          )
+          .map(([, key, value]) => [key, value.trim()])
+      );
+      return [theme, colors];
+    })
+  );
+  return { light, dark: { ...light, ...read('dark') }, muse };
 }
 
 /** Declarative native fallback, generated from the same source as runtime colors. */

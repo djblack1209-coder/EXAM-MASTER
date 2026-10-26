@@ -197,10 +197,13 @@ export async function generateLearningTurnStream(body, options = {}) {
     }
     if (platform === 'h5') {
       controller = new AbortController();
-      timer = setTimeout(() => {
-        timedOut = true;
-        controller.abort();
-      }, 45000);
+      timer = setTimeout(
+        () => {
+          timedOut = true;
+          controller.abort();
+        },
+        body.learningContext?.coach || body.intake ? 70000 : 45000
+      );
       assertCurrent();
       const response = await fetch(url, {
         method: 'POST',
