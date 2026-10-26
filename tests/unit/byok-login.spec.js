@@ -6,7 +6,12 @@ import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseCheckbox from '@/components/base/base-checkbox/base-checkbox.vue';
 import { setLanguage, t } from '@/i18n/index.js';
-const mock = vi.hoisted(() => ({ load: vi.fn(), login: vi.fn(), navigate: vi.fn(), needs: true }));
+const mock = vi.hoisted(() => ({ load: vi.fn(), login: vi.fn(), navigate: vi.fn(), needs: true, devTest: false }));
+vi.mock('@/config/build-channel.js', () => ({
+  get DEV_TEST() {
+    return mock.devTest;
+  }
+}));
 vi.mock('@dcloudio/uni-app', () => ({ onShow() {}, onHide() {}, onLoad() {} }));
 vi.mock('@/stores/modules/conversation-learning.js', () => ({
   useConversationLearningStore: () => ({
@@ -29,6 +34,7 @@ beforeEach(() => {
   setActivePinia(createPinia());
   setLanguage('zh-CN');
   mock.needs = true;
+  mock.devTest = false;
   mock.navigate.mockReset();
   mock.load.mockReset().mockResolvedValue({ success: true });
   mock.login.mockReset().mockResolvedValue({
@@ -47,6 +53,14 @@ const tap = async (label) => {
   button.vm.$emit('tap');
   await flushPromises();
 };
+it('opening the test login page keeps authentication explicit', async () => {
+  mock.devTest = true;
+  wrapper = mount(Login, { global: { stubs: { PrivacyPopup: true, YoziMascot: true } } });
+  await flushPromises();
+  expect(mock.login).not.toHaveBeenCalled();
+  expect(mock.load).not.toHaveBeenCalled();
+  expect(mock.navigate).not.toHaveBeenCalled();
+});
 it.each([false, true])('loads connections and guides after email authentication, registration=%s', async (register) => {
   wrapper = mount(Login, { global: { stubs: { PrivacyPopup: true, YoziMascot: true } } });
   await flushPromises();

@@ -701,7 +701,8 @@
   }
   .muse-space .muse-rail .rail-brand,
   .rail-divider,
-  .rail-spacer {
+  .rail-spacer,
+  .muse-space .muse-rail .narrow-guest-hidden {
     display: none;
   }
   .space-main {

@@ -78,19 +78,17 @@
           <ConversationEntries />
           <view v-if="current" class="goals-hero"
             ><view class="goal-hero-main"
-              ><text class="workspace-eyebrow">{{
-                current.coach.profile?.exam === 'cs408'
-                  ? '计算机专业课'
-                  : current.coach.profile?.exam === 'english2'
-                    ? '英语二'
-                    : current.coach.profile?.exam === 'english1'
-                      ? '英语一'
-                      : '通用应用文'
-              }}</text
-              ><text class="goal-hero-title">{{ current.goal }}</text
-              ><text class="hero-copy">{{
-                current.coach.profile?.minutes ? `${current.coach.profile.minutes} 分钟 / 天` : '每日时长未设置'
-              }}</text></view
+              ><text class="workspace-eyebrow">当前目标</text
+              ><text class="goal-hero-title">{{ goalTitle(current) }}</text
+              ><text class="hero-copy">{{ goalMeta(current) }}</text
+              ><text v-if="current.coach.profile?.foundation" class="hero-copy goal-foundation"
+                >困难：{{ current.coach.profile.foundation }}</text
+              ><view class="goal-hero-foot"
+                ><text class="hero-copy">{{ current.next }}</text
+                ><BaseButton variant="quiet" @tap="open(current.id)">{{
+                  current.stopped ? '查看记录' : '继续训练'
+                }}</BaseButton></view
+              ></view
             ><view
               v-if="current.percent !== null"
               class="goal-ring"
@@ -101,10 +99,10 @@
               ><text>已完成天数</text></view
             ></view
           >
-          <view class="goal-list"
-            ><view v-for="goal in goals" :key="goal.id" class="goal-card"
+          <view v-if="goals.length > 1" class="goal-list"
+            ><view v-for="goal in goals.slice(1)" :key="goal.id" class="goal-card"
               ><view class="goal-card-top"
-                ><text class="goal-name">{{ goal.goal }}</text
+                ><text class="goal-name">{{ goalTitle(goal) }}</text
                 ><text>{{ goal.completedDays }}{{ goal.totalDays ? ` / ${goal.totalDays}` : '' }} 天</text></view
               ><view
                 v-if="goal.percent !== null"
@@ -182,6 +180,22 @@ const filters = [
 ];
 const goals = computed(() => museGoals(context.state.value, learning.calendarTime));
 const current = computed(() => goals.value[0]);
+const EXAM_NAMES = { english1: '英语一', english2: '英语二' };
+// 短标题由已保存的档案派生；未建档时才回落到用户原话。
+function goalTitle(goal) {
+  const exam = goal.coach.profile?.exam;
+  if (!goal.coach.profile) return goal.goal;
+  return exam === 'cs408' ? '计算机专业课带练' : `${EXAM_NAMES[exam] || '应用文'}写作带练`;
+}
+function goalMeta(goal) {
+  const profile = goal.coach.profile || {};
+  const [year, month] = (profile.deadline || '').split('-');
+  const exam =
+    year && month
+      ? `${year} 年 ${Number(month)} 月考试`
+      : { this: '今年 12 月考试', next: '明年 12 月考试' }[profile.deadlineBucket] || '考试时间未定';
+  return `${exam} · ${profile.minutes ? `${profile.minutes} 分钟 / 天` : '每日时长未设置'}`;
+}
 const history = computed(() => museHistory(context.state.value));
 const subjectOptions = computed(() => museSubjectOptions(learning.state, history.value));
 const feed = computed(() =>

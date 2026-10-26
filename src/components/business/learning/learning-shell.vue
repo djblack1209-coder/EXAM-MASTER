@@ -60,7 +60,7 @@
           <view class="rail-divider" />
           <BaseButton
             class="rail-item rail-usage"
-            :class="{ 'is-current': active === 'usage' }"
+            :class="{ 'is-current': active === 'usage', 'narrow-guest-hidden': !loggedIn }"
             variant="quiet"
             :label="t('muse.usage')"
             :aria-current="active === 'usage' ? 'page' : undefined"
@@ -71,6 +71,15 @@
             }}</text></BaseButton
           >
           <view class="rail-spacer" />
+          <BaseButton
+            v-if="!loggedIn"
+            class="rail-item rail-login"
+            variant="quiet"
+            label="登录 / 注册"
+            @tap="safeNavigateTo('/pages/login/index')"
+            ><view class="rail-item-surface"><BaseIcon name="user" size="24px" /></view
+            ><text class="rail-item-tip" aria-hidden="true">登录</text></BaseButton
+          >
           <BaseButton
             class="rail-item rail-settings"
             :class="{ 'is-current': active === 'settings' || active === 'profile' }"
@@ -436,6 +445,8 @@ import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { safeNavigateTo, requestProfilePanel } from '@/utils/safe-navigate';
+import { getToken } from '@/services/auth-storage.js';
+import { storageService } from '@/services/storageService.js';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
 import { BRAND } from '@/config/brand.js';
@@ -448,6 +459,16 @@ const props = defineProps({
 });
 const emit = defineEmits(['materials', 'new', 'connections']);
 const learning = useConversationLearningStore();
+const loggedIn = ref(false);
+const syncLogin = () => {
+  try {
+    loggedIn.value = Boolean(getToken());
+  } catch {
+    // An unreadable session remains retryable; never break the learning shell.
+  }
+};
+syncLogin();
+let releaseIdentity = () => {};
 const avatarEvent = ref(null);
 const avatarBusiness = computed(() => avatarBusinessForLearning(learning, avatarEvent.value));
 const avatarStatus = computed(() =>
@@ -894,6 +915,8 @@ function outsideDirectory(event) {
 }
 onMounted(() => {
   updateDockMetrics();
+  syncLogin();
+  releaseIdentity = storageService.onIdentityChange(syncLogin);
   if (typeof uni.onWindowResize === 'function') {
     uni.onWindowResize(updateDockMetrics);
     releaseViewport = () => uni.offWindowResize?.(updateDockMetrics);
@@ -924,6 +947,7 @@ onMounted(() => {
   }
 });
 onUnmounted(() => {
+  releaseIdentity();
   releaseViewport();
   releasePanelResize();
   releasePanelOpen();

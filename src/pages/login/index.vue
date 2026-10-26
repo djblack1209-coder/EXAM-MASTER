@@ -707,18 +707,6 @@ function openTerms() {
   safeNavigateTo('/pages/settings/terms');
 }
 onMounted(async () => {
-  if (devTestBuild && !getToken()) {
-    await run(
-      () =>
-        authStore.loginByEmail({
-          email: `dev_student_${randomRequestId()}@example.test`,
-          verifyCode: '000000',
-          region: 'CN'
-        }),
-      true
-    );
-    return;
-  }
   if (platform === 'app')
     uni.getProvider({
       service: 'oauth',

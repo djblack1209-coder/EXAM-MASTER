@@ -2271,7 +2271,7 @@ describe('学习空间的实际入口与目录', () => {
     expect(wrapper.text()).toContain('历史题库记录');
     expect(wrapper.find('.stats-card').text()).toContain('7');
     await wrapper.get('.learning-archive-link').trigger('tap');
-    expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/archive/index' }));
+    expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/archive/index?view=plan' }));
     const statistics = mount(StudyDetailPage, {
       global: { stubs: { ...stubs, LearningOverview: false, image: true } }
     });
@@ -2953,6 +2953,29 @@ it('统一学习页显示保存的完整阅读、指定片段和待核对来源�
   }
 });
 
+it('学习侧栏跟随身份事务更新登录入口，不依赖当前窗口的登录事件', async () => {
+  const session = await storageService.saveLoginSession({
+    userId: 'shell-identity-fixture',
+    token: 'fixture-shell-identity-token',
+    userInfo: { id: 'shell-identity-fixture' }
+  });
+  const wrapper = mount(LearningShell, { global: { stubs } });
+  try {
+    expect(wrapper.find('.rail-login').exists()).toBe(false);
+    await storageService._clearRevokedCredentials(session);
+    await flushPromises();
+    expect(wrapper.find('.rail-login').exists()).toBe(true);
+    await storageService.saveLoginSession({
+      userId: 'shell-identity-fixture-next',
+      token: 'fixture-shell-identity-next-token',
+      userInfo: { id: 'shell-identity-fixture-next' }
+    });
+    await flushPromises();
+    expect(wrapper.find('.rail-login').exists()).toBe(false);
+  } finally {
+    wrapper.unmount();
+  }
+});
 it('Muse settings preview appearance in a draft and save only on confirmation', async () => {
   const theme = useThemeStore();
   theme.setDarkMode(false);

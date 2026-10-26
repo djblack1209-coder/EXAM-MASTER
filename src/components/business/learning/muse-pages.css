@@ -213,6 +213,20 @@
   flex: 1;
   min-width: 0;
 }
+.goal-foundation {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 2px;
+}
+.goal-hero-foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 10px;
+}
 .workspace-eyebrow {
   font-size: 11px;
   line-height: 16px;
