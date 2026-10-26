@@ -1,4 +1,15 @@
-import { copyFileSync, existsSync, readdirSync, readFileSync, realpathSync, unlinkSync, writeFileSync } from 'node:fs';
+import {
+  copyFileSync,
+  existsSync,
+  lstatSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  statSync,
+  symlinkSync,
+  unlinkSync,
+  writeFileSync
+} from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -12,11 +23,33 @@ if (values.output) {
   if (realpathSync(output) !== output) throw new Error('Isolated packaging output cannot follow a symbolic link');
 }
 if (!existsSync(path.join(output, 'standalone/server.js'))) throw new Error('Compile successfully before packaging.');
+// Isolated local packages lack an ancestor dependency directory. Container/dist packaging
+// keeps its existing ancestor resolution and must not embed a workstation-specific link.
+const dependencies = path.join(backend, 'standalone/node_modules');
+const dependencyLink = path.join(output, 'node_modules');
+let linked = false;
+if (values.output) {
+  if (!statSync(dependencies).isDirectory()) throw new Error('Install the existing backend dependencies first.');
+  let existing;
+  try {
+    existing = lstatSync(dependencyLink);
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
+  if (existing) {
+    if (!existing.isSymbolicLink() || realpathSync(dependencyLink) !== realpathSync(dependencies))
+      throw new Error('Isolated package dependencies must link to the existing backend dependencies.');
+    linked = true;
+  }
+}
 
 function walk(directory) {
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
     const file = path.join(directory, entry.name);
-    if (entry.isSymbolicLink()) throw new Error('Package the compiled files before linking runtime dependencies');
+    if (entry.isSymbolicLink()) {
+      if (file === dependencyLink && linked) continue;
+      throw new Error('Package the compiled files before linking runtime dependencies');
+    }
     if (entry.isDirectory()) walk(file);
     else if (entry.name.endsWith('.js') && entry.name !== 'ts-fsrs-bundle.js') {
       let content = readFileSync(file, 'utf8');
@@ -55,4 +88,5 @@ for (const entry of readdirSync(path.join(backend, 'functions'))) {
 }
 // Native ESM resolution searches ancestors, not NODE_PATH or a sibling node_modules.
 writeFileSync(path.join(output, 'package.json'), JSON.stringify({ type: 'module', private: true }) + '\n');
+if (values.output && !linked) symlinkSync(dependencies, dependencyLink, 'dir');
 console.log('Packaged native ESM functions, cloud adapter, metadata and unchanged CommonJS FSRS bundle.');

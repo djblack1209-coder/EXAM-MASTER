@@ -10,6 +10,10 @@ import { createRequire } from 'node:module';
 import { mkdtempSync, writeFileSync, chmodSync, symlinkSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import * as learningDomain from '../../laf-backend/functions/_shared/learning-domain.js';
+import * as writingCoach from '../../laf-backend/functions/_shared/learning-writing-coach.js';
+import { INTAKE_CHOICES } from '../../laf-backend/functions/_shared/learning-intake.js';
+import { coachFixture } from '../fixtures/writing-coach.js';
 // Load the inert Node CLI with Node's loader rather than Vite's browser asset transform.
 const { assertDevTest, cleanupOptions, readPrivateAccount, requireResult, verifyByokFrontend } = createRequire(
   import.meta.url
@@ -592,5 +596,195 @@ describe('BYOK verification script with an in-memory transport only', () => {
       requests(fetchImpl, 'learning-models').find((entry) => entry.body.action === 'discover').body.profileId
     ).toBe('dev-openrouter-byok');
     expect(report.steps.delete_new_account.status).toBe('passed');
+  });
+
+  function completeFlow({
+    failOperation,
+    pendingCost = false,
+    singleConnection = false,
+    missingListedModel = false
+  } = {}) {
+    const connections = [
+      { id: 'dev-openrouter-byok', providerId: 'openrouter', model: 'fixture-free-a' },
+      { id: 'dev-agnes-byok', providerId: 'agnes', model: 'agnes-2.5-flash' }
+    ];
+    const models = connections.map((item) => ({ ...item, source: 'byok', configured: true }));
+    const preferences = {};
+    const calls = [];
+    const operations = [];
+    let seeded = false;
+    const fetchImpl = transport((path, body) => {
+      if (path === 'health') return { status: 'ok' };
+      if (path === 'login') return body.email.startsWith('codex.byok.') ? { code: 0, data: credentials } : missing;
+      if (path === 'account-delete') return deleted;
+      if (path === 'learning-sync') {
+        // Replay the actual submitted operations through the real domain, rather than accepting arbitrary writes.
+        let state = learningDomain.emptyLearningState(credentials.userId, body.timezone);
+        for (const operation of body.operations) state = learningDomain.applyLearningOperation(state, operation).state;
+        expect(state.conversations[0].coach.days[0].completed).toBe(true);
+        return { code: 0, data: { accepted: body.operations.map((operation) => operation.id), revision: 1 } };
+      }
+      if (path === 'proxy-ai') {
+        calls.push({ source: 'byok', status: 'completed', executionStage: 'received', actualCost: 0 });
+        const request = body.learningContext.coach;
+        const coach = coachFixture(request);
+        if (request.phase === 'daily') coach.cards.forEach((card, index) => (card.id = `c${index + 1}`));
+        if (request.phase === 'summary') coach.learned = ['练习了邀请信写作'];
+        return {
+          code: 0,
+          data: { requestId: body.requestId, requestBinding: body.requestBinding, modelId: body.modelId, coach }
+        };
+      }
+      if (path !== 'learning-models') return;
+      if (body.action === 'list')
+        return { code: 0, data: { needsConnection: !seeded, models: seeded ? models : [], preferences } };
+      if (body.action === 'discover')
+        return {
+          code: 0,
+          data: {
+            models: missingListedModel ? [] : [{ modelId: models.find((item) => item.id === body.profileId).model }]
+          }
+        };
+      if (body.action === 'preferences') {
+        Object.assign(preferences, body.preferences);
+        return { code: 0, data: preferences };
+      }
+      if (body.action === 'usage') return { code: 0, data: { calls } };
+      if (body.action === 'save') return { code: 0, data: { keySaved: true } };
+      if (body.action === 'delete') return { code: 0, data: { removed: true } };
+      if (body.action === 'test' && body.modelId === 'invalid-key-probe')
+        return { code: 401, success: false, connectionError: 'KEY_INVALID' };
+      if (body.action === 'test') {
+        calls.push({ source: 'byok', status: 'completed', executionStage: 'received', actualCost: 0 });
+        const profile = body.intake.turns.length
+          ? {
+              goal: body.intake.turns[0].answer,
+              category: 'kaoyan',
+              subjects: ['考研英语二写作'],
+              exam: 'english2',
+              minutes: 25,
+              deadline: null,
+              foundation: '能写简单的英文句子'
+            }
+          : null;
+        return {
+          code: 0,
+          data: {
+            message: profile ? '确认学习档案。' : '你在准备什么？',
+            question: null,
+            tools: [],
+            intake: { options: profile ? [] : INTAKE_CHOICES, input: !profile, profile }
+          }
+        };
+      }
+    });
+    return {
+      fetchImpl,
+      operations,
+      args: {
+        env,
+        fetchImpl,
+        seedModels: async () => {
+          seeded = true;
+          calls.push({ source: 'byok', status: 'completed', actualCost: 0 });
+          calls.push({ source: 'byok', status: 'completed', actualCost: pendingCost ? null : 0 });
+          return singleConnection
+            ? { success: false, error: 'INSUFFICIENT_FREE_PROVIDERS', connections: connections.slice(1) }
+            : { success: true, connections, selectedModelId: models[0].id };
+        },
+        loadDomain: async (file) =>
+          file === 'learning-writing-coach.js'
+            ? writingCoach
+            : {
+                ...learningDomain,
+                applyLearningOperation: (state, operation) => {
+                  operations.push(operation);
+                  if (operation.type === failOperation)
+                    throw Object.assign(new Error('private failure text'), { code: 'EXPLICIT_REQUIRED' });
+                  return learningDomain.applyLearningOperation(state, operation);
+                }
+              }
+      }
+    };
+  }
+
+  it.each([false, true])(
+    'completes every remaining step with real domain replay; pending cost=%s',
+    async (pendingCost) => {
+      const flow = completeFlow({ pendingCost });
+      const report = await verifyByokFrontend(flow.args);
+      expect(report.steps).toEqual(
+        expect.objectContaining(
+          Object.fromEntries(
+            ['diagnostic', 'daily', 'writing', 'summary', 'relogin_restore', 'invalid_key', 'delete_new_account'].map(
+              (name) => [name, expect.objectContaining({ status: 'passed' })]
+            )
+          )
+        )
+      );
+      expect(Object.values(report.steps).every((step) => step.status === 'passed')).toBe(true);
+      for (const operation of flow.operations.filter((operation) => operation.type.startsWith('coach.')))
+        expect(operation.data.explicit, operation.type).toBe(true);
+      expect(flow.operations.filter((operation) => operation.type === 'coach.paragraph')).toHaveLength(4);
+      expect(requests(flow.fetchImpl, 'learning-sync')).toHaveLength(1);
+      expect(requests(flow.fetchImpl, 'login').filter((entry) => entry.body.password)).toHaveLength(2);
+      expect(
+        requests(flow.fetchImpl, 'learning-models').filter((entry) => entry.body.action === 'delete')
+      ).toHaveLength(1);
+      expect(report).toMatchObject({ actualCost: pendingCost ? null : 0, pendingCosts: pendingCost ? 1 : 0 });
+      expect(report.blocked).toEqual([]);
+      expect(JSON.stringify(report)).not.toContain(credentials.token);
+      expect(JSON.stringify(report)).not.toContain(requests(flow.fetchImpl, 'login')[0].body.password);
+    }
+  );
+
+  it('only explicitly continues independent learning checks with one free connection, never passing the two-provider gate', async () => {
+    const strict = completeFlow({ singleConnection: true });
+    const stopped = await verifyByokFrontend(strict.args);
+    expect(stopped.steps.two_connections.status).toBe('failed');
+    expect(stopped.steps.intake.status).toBe('unverified');
+    const flow = completeFlow({ singleConnection: true });
+    const report = await verifyByokFrontend({ ...flow.args, continueIndependentChecks: true });
+    expect(report.verificationMode).toBe('single-free-connection-learning');
+    expect(report.steps.two_connections.status).toBe('failed');
+    expect(report.steps.discovery_and_switch.status).toBe('unverified');
+    for (const name of [
+      'intake',
+      'diagnostic',
+      'daily',
+      'writing',
+      'summary',
+      'relogin_restore',
+      'invalid_key',
+      'delete_new_account'
+    ])
+      expect(report.steps[name].status, name).toBe('passed');
+    expect(requests(flow.fetchImpl, 'proxy-ai').every((request) => request.body.modelId === 'dev-agnes-byok')).toBe(
+      true
+    );
+  });
+
+  it('keeps an unlisted-model discovery failure visible while explicitly checking independent learning steps', async () => {
+    const strict = completeFlow({ missingListedModel: true });
+    const stopped = await verifyByokFrontend(strict.args);
+    expect(stopped.steps.discovery_and_switch.status).toBe('failed');
+    expect(stopped.steps.intake.status).toBe('unverified');
+    const flow = completeFlow({ missingListedModel: true });
+    const report = await verifyByokFrontend({ ...flow.args, continueIndependentChecks: true });
+    expect(report.steps.discovery_and_switch.status).toBe('failed');
+    expect(report.steps.summary.status).toBe('passed');
+    expect(report.steps.delete_new_account.status).toBe('passed');
+  });
+
+  it('reports the exact failed local operation and still cleans its account', async () => {
+    const flow = completeFlow({ failOperation: 'coach.answer' });
+    const report = await verifyByokFrontend(flow.args);
+    expect(report.steps.diagnostic).toEqual({
+      status: 'failed',
+      reason: 'QA_STEP_FAILED:learning-domain:coach.answer:EXPLICIT_REQUIRED'
+    });
+    expect(report.steps.delete_new_account.status).toBe('passed');
+    expect(report.steps.daily.status).toBe('unverified');
+    expect(JSON.stringify(report)).not.toContain('private failure text');
   });
 });

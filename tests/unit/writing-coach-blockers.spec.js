@@ -72,6 +72,8 @@ function freshStore() {
   setActivePinia(createPinia());
   const store = useConversationLearningStore();
   store.startCoach('考研英语二写作');
+  // BYOK-first no longer implicitly selects a platform model. This fixture explicitly opts in.
+  store.modelId = 'synthetic-model';
   store.sharingAllowed = true;
   return store;
 }
@@ -117,6 +119,11 @@ it('明确提交全文独立于共享和模型，快照重放保留；测试渠�
         authorship: 'user_typed'
       });
     }
+    expect(
+      store.state.events
+        .filter((event) => event.type.startsWith('coach.'))
+        .every((event) => event.data.explicit === true)
+    ).toBe(true);
     const input = JSON.parse(JSON.stringify(store.state));
     const operation = {
       id: 'synthetic-full-submission',
@@ -364,7 +371,7 @@ it('指定模型已不可用时拒绝带练，不静默回落平台模型', asyn
   try {
     store.coachSave('profile', { profile: { exam: 'english2', minutes: 25, deadline: null } });
     store.modelId = 'unavailable-selected-model';
-    await expect(store.requestCoach('diagnostic')).rejects.toMatchObject({ code: 'MODEL_DISABLED' });
+    await expect(store.requestCoach('diagnostic')).rejects.toMatchObject({ code: 'NEEDS_CONNECTION' });
     expect(generateLearningTurn.mock.calls.length).toBe(before);
     expect(store.active.coach.requests).toHaveLength(0);
   } finally {
@@ -416,12 +423,12 @@ it.each(['model', 'mode', 'consent'])('等待带练时变更%s，迟到回复不
   }
 });
 
-it('带练失败留在当前带练中；高级设置不误报失败，回读终态不重发模型且切换对话不残留错误', async () => {
+it('带练失败留在当前带练中；连接器入口不改学习事实，回读终态不重发模型且切换对话不残留错误', async () => {
   vi.stubEnv('VITE_ENABLE_WRITING_COACH', 'true');
   const message = '模型任务未完成或已取消，没有可应用的结果；请查看实际用量';
   vi.mocked(generateLearningTurn).mockClear().mockResolvedValueOnce({ success: false, code: 503, message });
   vi.mocked(fetchLearningResult)
-    .mockClear()
+    .mockReset()
     .mockResolvedValueOnce({ success: false, code: 503, status: 'failed', message });
   const store = freshStore();
   store.coachSave('profile', { profile: { exam: 'english2', minutes: 25, deadline: null } });
@@ -432,11 +439,14 @@ it('带练失败留在当前带练中；高级设置不误报失败，回读终�
     expect(store.error).toBe('');
     wrapper = mount(LearningPage, { global: { stubs: { BaseIcon: true, PrivacyPopup: true } } });
     await flushPromises();
-    expect(wrapper.get('[role="alert"]').text()).toBe(message);
+    expect(wrapper.get('[role="alert"]').text()).toContain('请求未完成，原答已保留，请先查询原请求');
+    expect(wrapper.findAll('button').some((button) => button.text().trim() === '查询原请求')).toBe(true);
     const before = store.exportData();
     await wrapper.get('button[aria-label="AI 连接器"]').trigger('tap');
     await flushPromises();
-    expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/profile/index' }));
+    expect(uni.navigateTo).toHaveBeenCalledWith(
+      expect.objectContaining({ url: '/pages/profile/index?panel=connectors' })
+    );
     wrapper.unmount();
     wrapper = null;
     expect(store.exportData()).toBe(before);
@@ -472,7 +482,7 @@ it('评估未知时仅查询，确认失败后次日点击重新评估才调用�
     }
   });
   vi.mocked(generateLearningTurn).mockClear().mockImplementation(response);
-  vi.mocked(fetchLearningResult).mockClear();
+  vi.mocked(fetchLearningResult).mockReset();
   try {
     store.coachSave('profile', { profile: { exam: 'english2', minutes: 25, deadline: null } });
     await store.requestCoach('diagnostic');

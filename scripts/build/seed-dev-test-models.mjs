@@ -228,7 +228,10 @@ export async function seedFreeModels({
       // account-trial providers and paid aliases are never candidates.
     }
     if (report.connections.length === 2) {
-      const primary = report.connections.find((item) => item.structured) || report.connections[0];
+      const primary =
+        report.connections.find((item) => item.providerId === 'agnes') ||
+        report.connections.find((item) => item.structured) ||
+        report.connections[0];
       await models({ action: 'preferences', preferences: { selectedModelId: primary.id } });
       report.selectedModelId = primary.id;
       report.success = true;
@@ -246,13 +249,7 @@ export async function seedFreeModels({
         report.actualCost = report.pendingCosts ? null : calls.reduce((sum, call) => sum + call.actualCost, 0);
         for (const attempt of report.attempts) {
           const receipts = calls.filter((call) => call.id === attempt.requestId || call.repairOf === attempt.requestId);
-          if (receipts.length)
-            attempt.receipts = receipts.map((call) => ({
-              requestId: call.id,
-              status: call.status,
-              executionStage: call.executionStage,
-              actualCost: call.actualCost ?? null
-            }));
+          if (receipts.length) attempt.receipts = receipts.map(seedCallReceipt);
           else if (attempt.testRequested) {
             attempt.receiptUnverified = true;
             report.providerCalls = report.actualCost = report.pendingCosts = null;
@@ -264,6 +261,31 @@ export async function seedFreeModels({
     }
   }
   return report;
+}
+
+// Only bounded billing classifications leave the private account. Never copy raw usage or provider text.
+export function seedCallReceipt(call) {
+  const usageEvidence = ['complete', 'missing', 'unsupported', 'truncated'].includes(call.usageEvidence?.status)
+    ? call.usageEvidence.status
+    : 'unverified';
+  const reason =
+    call.actualCost != null
+      ? 'SETTLED'
+      : call.status === 'reserved'
+        ? 'REQUEST_PENDING'
+        : {
+            missing: 'MISSING_USAGE',
+            unsupported: 'UNSUPPORTED_USAGE',
+            truncated: 'TRUNCATED_USAGE'
+          }[usageEvidence] || 'AWAITING_COST_RECEIPT';
+  return {
+    requestId: call.id,
+    status: call.status,
+    executionStage: call.executionStage,
+    actualCost: call.actualCost ?? null,
+    usageEvidence,
+    costReason: reason
+  };
 }
 
 async function main() {

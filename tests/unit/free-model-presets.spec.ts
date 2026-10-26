@@ -16,6 +16,17 @@ import { join } from 'node:path';
 import crypto from 'node:crypto';
 
 describe('免费型号是可核验接入事实，不是任意零价格声明', () => {
+  it('Agnes 仅精确 Flash 端点在本地复核期限内有零价，付费别名和未知来源仍拒绝', () => {
+    const model = { model: 'agnes-2.5-flash', endpoint: 'https://apihub.agnes-ai.com/v1/chat/completions' };
+    expect(freeModelPricing(model, Date.parse('2026-10-26'))).toEqual({
+      inputPerMillion: 0,
+      outputPerMillion: 0,
+      priceVersion: 'agnes-2.5-flash-free-2026-10-26'
+    });
+    expect(freeModelPricing(model, Date.parse('2026-10-30'))).toBeNull();
+    expect(freeModelPricing({ ...model, model: 'agnes-2.5-pro' }, Date.parse('2026-10-26'))).toBeNull();
+    expect(freeModelPricing({ ...model, endpoint: 'https://other.example/chat' }, Date.parse('2026-10-26'))).toBeNull();
+  });
   it('开发点评严格结构复用原协议和绑定，120B/high/8192不变，保留非流式边界', async () => {
     for (const [key, value] of Object.entries({
       YOZI_BUILD_CHANNEL: 'test',

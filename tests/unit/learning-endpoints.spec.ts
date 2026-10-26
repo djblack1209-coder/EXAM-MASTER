@@ -724,6 +724,106 @@ describe('真实 JWT 校验下的新接口隔离合同', () => {
     expect(costFromUsage({ ...usage, prompt_tokens: 100.5 }, model)).toBeNull();
     expect(costFromUsage({ ...usage, completion_tokens_details: { reasoning_tokens: 10 } }, model)).toBeNull();
   });
+  it.each([
+    [{ prompt_tokens: 35, completion_tokens: 58, total_tokens: 93 }, 0],
+    [{ prompt_tokens: 35, completion_tokens: 58, prompt_tokens_details: { cached_tokens: 10 } }, 0],
+    [{ prompt_tokens: 35, completion_tokens: 58, completion_tokens_details: { reasoning_tokens: 20 } }, 0],
+    [
+      {
+        prompt_tokens: 2901,
+        completion_tokens: 57,
+        total_tokens: 2958,
+        prompt_tokens_details: { cached_tokens: 256 },
+        completion_tokens_details: { reasoning_tokens: 42, text_tokens: 15 }
+      },
+      0
+    ],
+    [{ prompt_tokens: 35, completion_tokens: 58, completion_tokens_details: { text_tokens: 58 } }, 0],
+    [
+      {
+        prompt_tokens: 35,
+        completion_tokens: 58,
+        completion_tokens_details: { reasoning_tokens: 20, text_tokens: 39 }
+      },
+      null
+    ],
+    [
+      { prompt_tokens: 35, completion_tokens: 58, total_tokens: 1, completion_tokens_details: { text_tokens: 58 } },
+      null
+    ],
+    [
+      {
+        prompt_tokens: 35,
+        completion_tokens: 58,
+        prompt_tokens_details: { cached_tokens: 36 },
+        completion_tokens_details: { text_tokens: 58 }
+      },
+      null
+    ],
+    [
+      {
+        prompt_tokens: 35,
+        completion_tokens: 58,
+        completion_tokens_details: { text_tokens: 58, unknown_cost: 0 }
+      },
+      null
+    ],
+    [{ prompt_tokens: 35, completion_tokens: 58, completion_tokens_details: { text_tokens: -1 } }, null],
+    [{ prompt_tokens: 35, completion_tokens: 58, completion_tokens_details: { text_tokens: 58.5 } }, null],
+    [null, null],
+    [{ prompt_tokens: 35 }, null],
+    [{ prompt_tokens: 35, completion_tokens: 58, unknown_cost: 0 }, null],
+    [{ prompt_tokens: 35, completion_tokens: 58, billable_extra: { search: 1 } }, null],
+    [{ prompt_tokens: 35, completion_tokens: 58, prompt_tokens_details: { audio_tokens: 1 } }, null]
+  ])('Agnes 精确免费表经真实处理函数结算并保留原 usage：%j', async (usage, expected) => {
+    const clock = vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-10-26T12:00:00Z'));
+    try {
+      vi.stubEnv('LEARNING_ALLOWED_ORIGINS', 'https://apihub.agnes-ai.com');
+      expect(
+        (
+          await models(
+            context({
+              action: 'save',
+              shareConsent: true,
+              profile: {
+                id: 'agnes-free',
+                provider: 'Agnes AI',
+                model: 'agnes-2.5-flash',
+                endpoint: 'https://apihub.agnes-ai.com/v1/chat/completions',
+                apiKey: 'synthetic-agnes-key'
+              }
+            })
+          )
+        ).success
+      ).toBe(true);
+      vi.mocked(callLearningProvider).mockResolvedValueOnce({
+        content: '{"message":"合成回复","tools":[]}',
+        actualModel: 'agnes-2.5-flash',
+        usage,
+        durationMs: 1
+      });
+      expect(
+        await ai(
+          context({
+            modelId: 'agnes-free',
+            requestId: 'agnes-cost-fixture',
+            shareConsent: true,
+            messages: [{ role: 'user', content: 'Synthetic cost check' }]
+          })
+        )
+      ).toMatchObject({ success: true, data: { usageStatus: expected === 0 ? 'settled' : 'pending' } });
+      const account: any = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && row.calls);
+      expect(account.calls[0]).toMatchObject({
+        actualCost: expected,
+        priceVersion: 'agnes-2.5-flash-free-2026-10-26',
+        costStatus: expected === 0 ? 'settled' : 'pending',
+        usage
+      });
+      expect(callLearningProvider).toHaveBeenCalledTimes(1);
+    } finally {
+      clock.mockRestore();
+    }
+  });
   it('所有新入口拒绝缺失或篡改的 JWT，不触发外部模型', async () => {
     for (const endpoint of [models, ai, stream, sync, subscription]) {
       expect((await endpoint({ headers: {}, body: {} })).code).toBe(401);

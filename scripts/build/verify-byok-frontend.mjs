@@ -149,7 +149,10 @@ export async function verifyByokFrontend({
   args = [],
   fetchImpl = globalThis.fetch,
   readAccount = readPrivateAccount,
-  seedModels = runSeedProcess
+  seedModels = runSeedProcess,
+  continueIndependentChecks = false,
+  loadDomain = (file) =>
+    import(pathToFileURL(resolve(root, 'tmp/yozi-candidate-build/backend/functions/_shared', file)).href)
 } = {}) {
   assertDevTest(env);
   const cleanupRange = cleanupOptions(args);
@@ -367,14 +370,19 @@ export async function verifyByokFrontend({
     writeFileSync(accountFile, JSON.stringify({ token }), { mode: 0o600 });
     const seeded = await seedModels(accountFile, env);
     report.seed = seeded;
-    check(
+    const twoConnections =
       seeded.success === true &&
-        seeded.connections?.length === 2 &&
-        new Set(seeded.connections.map((item) => item.providerId)).size === 2,
-      'seed-dev-test-models',
-      'EXPECTED_TWO_FREE_PROVIDERS'
-    );
-    steps.two_connections = { status: 'passed' };
+      seeded.connections?.length === 2 &&
+      new Set(seeded.connections.map((item) => item.providerId)).size === 2;
+    const singleConnection =
+      continueIndependentChecks === true &&
+      seeded.error === 'INSUFFICIENT_FREE_PROVIDERS' &&
+      seeded.connections?.length === 1;
+    check(twoConnections || singleConnection, 'seed-dev-test-models', 'EXPECTED_TWO_FREE_PROVIDERS');
+    steps.two_connections = twoConnections
+      ? { status: 'passed' }
+      : { status: 'failed', reason: 'INSUFFICIENT_FREE_PROVIDERS; independent learning checks continue' };
+    if (singleConnection) report.verificationMode = 'single-free-connection-learning';
     stage = 'discovery_and_switch';
     let catalog = await models({ action: 'list' });
     const selectedConnections = seeded.connections.map((item) =>
@@ -382,15 +390,16 @@ export async function verifyByokFrontend({
         (model) => model.id === item.id && model.model === item.model && model.source === 'byok' && model.configured
       )
     );
-    const chosen = selectedConnections.find((model) => model?.id === seeded.selectedModelId);
+    const chosen =
+      selectedConnections.find((model) => model?.id === seeded.selectedModelId) ||
+      (singleConnection ? selectedConnections[0] : undefined);
     check(chosen && selectedConnections.every(Boolean), 'learning-models:list', 'SEEDED_CONNECTION_MISSING');
+    let missingListedModel = false;
     for (const model of selectedConnections) {
       const discovery = await models({ action: 'discover', profileId: model.id, refresh: true });
-      check(
-        discovery.models.some((row) => row.modelId === model.model),
-        'learning-models:discover',
-        'SELECTED_MODEL_NOT_LISTED'
-      );
+      const listed = discovery.models.some((row) => row.modelId === model.model);
+      missingListedModel ||= !listed;
+      check(listed || continueIndependentChecks === true, 'learning-models:discover', 'SELECTED_MODEL_NOT_LISTED');
       await models({ action: 'preferences', preferences: { selectedModelId: model.id } });
       check(
         (await models({ action: 'list' })).preferences.selectedModelId === model.id,
@@ -399,19 +408,26 @@ export async function verifyByokFrontend({
       );
     }
     await models({ action: 'preferences', preferences: { selectedModelId: chosen.id, sharingAllowed: true } });
-    steps.discovery_and_switch = { status: 'passed' };
-    const load = (file) =>
-      import(pathToFileURL(resolve(root, 'tmp/yozi-candidate-build/backend/functions/_shared', file)).href);
+    steps.discovery_and_switch = missingListedModel
+      ? { status: 'failed', reason: 'SELECTED_MODEL_NOT_LISTED; independent learning checks continue' }
+      : singleConnection
+        ? { status: 'unverified', reason: 'Discovery verified; switching requires two working providers' }
+        : { status: 'passed' };
     globalThis.__YOZI_DEV_TEST__ = true;
-    const domain = await load('learning-domain.js'),
-      coach = await load('learning-writing-coach.js');
+    const domain = await loadDomain('learning-domain.js'),
+      coach = await loadDomain('learning-writing-coach.js');
     let state = domain.emptyLearningState(userId, 'Asia/Shanghai'),
       sequence = 0;
     const operations = [],
       id = (prefix) => `${prefix}_${Date.now().toString(36)}_${++sequence}`;
     const apply = (type, data) => {
       const operation = { id: id('op'), type, data, at: Date.now() };
-      const next = domain.applyLearningOperation(state, operation);
+      let next;
+      try {
+        next = domain.applyLearningOperation(state, operation);
+      } catch (error) {
+        throw stepFailure(`learning-domain:${type}`, error.code || 'INVALID_OPERATION');
+      }
       state = next.state;
       operations.push(operation);
       return next.result;
@@ -511,6 +527,7 @@ export async function verifyByokFrontend({
     for (const card of currentCoach().diagnostic.cards)
       apply('coach.answer', {
         conversationId,
+        explicit: true,
         target: 'diagnostic',
         cardId: card.id,
         answer: card.options?.[0]?.label || card.options?.[0] || answer
@@ -522,6 +539,7 @@ export async function verifyByokFrontend({
     for (const card of currentDay().pack.cards) {
       apply('coach.answer', {
         conversationId,
+        explicit: true,
         cardId: card.id,
         answer: card.options?.[0]?.label || card.options?.[0] || answer
       });
@@ -531,6 +549,7 @@ export async function verifyByokFrontend({
     stage = 'writing';
     apply('coach.analysis', {
       conversationId,
+      explicit: true,
       fields: {
         genre: 'letter',
         recipient: 'a friend',
@@ -548,6 +567,7 @@ export async function verifyByokFrontend({
     for (let index = 0; index < currentDay().pack.writing.patterns.length; index++) {
       apply('coach.paragraph', {
         conversationId,
+        explicit: true,
         index,
         text: paragraphs[index],
         authorship: 'user_typed',
@@ -556,6 +576,7 @@ export async function verifyByokFrontend({
       await infer('feedback', `paragraph-${index}`);
       apply('coach.paragraph', {
         conversationId,
+        explicit: true,
         index,
         text: `${paragraphs[index]} Thank you for your time.`,
         authorship: 'user_typed',

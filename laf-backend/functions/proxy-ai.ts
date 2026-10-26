@@ -106,6 +106,32 @@ export function costFromUsage(usage: any, model: ModelConfig): number | null {
   // 官方明确免费的精确型号/端点且价格复核未过期，缓存/推理也为零；缺用量仍待结算。
   const free = freeModelPricing(model);
   if (
+    free &&
+    model.endpoint === 'https://apihub.agnes-ai.com/v1/chat/completions' &&
+    model.model === 'agnes-2.5-flash' &&
+    usage?.completion_tokens_details &&
+    Object.hasOwn(usage.completion_tokens_details, 'text_tokens')
+  ) {
+    // Agnes splits its output total into text and reasoning. Preserve the raw receipt;
+    // accept this extra field only when it exactly accounts for the known output total.
+    const { text_tokens: text, reasoning_tokens: reasoning = 0, ...details } = usage.completion_tokens_details;
+    if (
+      !Number.isSafeInteger(text) ||
+      text < 0 ||
+      !Number.isSafeInteger(reasoning) ||
+      reasoning < 0 ||
+      text + reasoning !== usage.completion_tokens ||
+      (usage.prompt_tokens_details?.cached_tokens ?? 0) > usage.prompt_tokens ||
+      (usage.total_tokens !== undefined && usage.total_tokens !== usage.prompt_tokens + usage.completion_tokens)
+    )
+      return null;
+    const tokens = {
+      ...usage,
+      completion_tokens_details: { ...details, reasoning_tokens: reasoning }
+    };
+    return supportedBillingUsage(tokens) ? 0 : null;
+  }
+  if (
     DEV_TEST &&
     free &&
     model.endpoint === 'https://openrouter.ai/api/v1/chat/completions' &&

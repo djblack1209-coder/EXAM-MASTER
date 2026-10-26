@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { freeModelPricing } from '../../laf-backend/functions/_shared/ai-providers/free-model-presets';
-const { seedFreeModels, FREE_SEED_CHOICES, FREE_SEED_ORIGINS } = createRequire(import.meta.url)(
+const { seedFreeModels, seedCallReceipt, FREE_SEED_CHOICES, FREE_SEED_ORIGINS } = createRequire(import.meta.url)(
   '../../scripts/build/seed-dev-test-models.mjs'
 );
 const env = {
@@ -120,6 +120,27 @@ afterEach(() => {
 });
 
 describe('reviewed free-provider seeding', () => {
+  it.each([
+    ['missing', 'MISSING_USAGE'],
+    ['unsupported', 'UNSUPPORTED_USAGE'],
+    ['truncated', 'TRUNCATED_USAGE'],
+    ['complete', 'AWAITING_COST_RECEIPT'],
+    ['private-provider-text', 'AWAITING_COST_RECEIPT']
+  ])('reports bounded pending-cost evidence %s without publishing raw usage', (status, costReason) => {
+    const receipt = seedCallReceipt({
+      id: 'seed_agnes_unit',
+      status: 'completed',
+      actualCost: null,
+      usage: { private_text: 'private-provider-text', key: 'synthetic-secret' },
+      usageEvidence: { status, sha256: 'private-hash' }
+    });
+    expect(receipt).toMatchObject({ actualCost: null, costReason });
+    expect(JSON.stringify(receipt)).not.toMatch(/private-provider-text|synthetic-secret|private-hash/);
+  });
+  it('keeps reservations pending and preserves real zero settlements without recalculating history', () => {
+    expect(seedCallReceipt({ status: 'reserved', actualCost: null }).costReason).toBe('REQUEST_PENDING');
+    expect(seedCallReceipt({ actualCost: 0 })).toMatchObject({ actualCost: 0, costReason: 'SETTLED' });
+  });
   it('tries distinct model IDs in the reviewed provider order', () => {
     expect(FREE_SEED_CHOICES.map((choice) => choice.providerId)).toEqual(['openrouter', 'agnes', 'zai', 'zhipu']);
     expect(new Set(FREE_SEED_CHOICES.map((choice) => choice.model)).size).toBe(FREE_SEED_CHOICES.length);
@@ -143,7 +164,7 @@ describe('reviewed free-provider seeding', () => {
     const report = await seedFreeModels(f.args);
     expect(report.success).toBe(true);
     expect(report.connections.map((item) => item.providerId)).toEqual(['agnes', 'zai']);
-    expect(report.selectedModelId).toBe('dev-zai-byok');
+    expect(report.selectedModelId).toBe('dev-agnes-byok');
     expect(report.attempts.map((item) => item.classification)).toEqual(['RATE_LIMITED', 'CONNECTED', 'CONNECTED']);
     expect(report).toMatchObject({ providerCalls: 3, actualCost: null, pendingCosts: 1 });
     expect(report.attempts[0].receipts[0]).toMatchObject({ status: 'failed', actualCost: null });
@@ -156,6 +177,7 @@ describe('reviewed free-provider seeding', () => {
     const report = await seedFreeModels(f.args);
     expect(report.success).toBe(true);
     expect(report.connections.map((item) => item.providerId)).toEqual(['openrouter', 'agnes']);
+    expect(report.selectedModelId).toBe('dev-agnes-byok');
     expect(report.attempts).toHaveLength(2);
     expect(report.providerCalls).toBe(2);
     expect(report.actualCost).toBe(0);
