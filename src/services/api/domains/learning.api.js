@@ -2,6 +2,7 @@ import config from '../../../config/index.js';
 import { DEV_TEST } from '../../../config/build-channel.js';
 import { captureSession, sessionForRequest } from '../../auth-storage.js';
 import { generateLearningTurnStream } from '../../learning/learning-stream.js';
+import { reportAuthenticationFailure, isAuthenticationFailure } from '../../auth-failure.js';
 
 export const learningModelDiscoveryEnabled = () => true;
 const discoveryDisabled = () => ({ success: false, code: 503, errorCode: 'DISCOVERY_DISABLED' });
@@ -29,13 +30,17 @@ export function learningRequest(path, body, options = {}) {
   if (options.signal?.aborted) return Promise.resolve({ success: false, code: 499, message: '请求已取消，未再次发送' });
   return new Promise((resolve) => {
     let abort;
-    const finish = (value) => {
+    const finish = (value, statusCode) => {
       if (abort) options.signal?.removeEventListener('abort', abort);
       try {
         options.assertCurrent?.();
         sessionForRequest(session);
         if (options.signal?.aborted) return resolve({ success: false, code: 499, message: '请求已取消，未读取旧响应' });
-        resolve(value);
+        const result = isAuthenticationFailure(value, statusCode)
+          ? { ...value, success: false, code: 401, errorCode: 'AUTH_REQUIRED', message: '登录已过期，请重新登录' }
+          : value;
+        resolve(result);
+        reportAuthenticationFailure(result, { session, credentialProof: snapshot.session.proof, path, statusCode });
       } catch (error) {
         resolve(failure(error));
       }
@@ -48,7 +53,7 @@ export function learningRequest(path, body, options = {}) {
     } catch (error) {
       return resolve(failure(error));
     }
-    if (!snapshot.token) return resolve({ success: false, code: 401, message: '登录后可连接云模型；本地学习无需登录' });
+    if (!snapshot.token) return finish({ success: false, code: 401, message: '登录后可连接云模型；本地学习无需登录' });
     const token = snapshot.token;
     const task = uni.request({
       url: `${config.api.baseUrl}${path}`,
@@ -65,7 +70,8 @@ export function learningRequest(path, body, options = {}) {
         finish(
           res.data && typeof res.data === 'object'
             ? res.data
-            : { success: false, code: 502, message: '模型服务响应无效' }
+            : { success: false, code: 502, message: '模型服务响应无效' },
+          res.statusCode
         ),
       fail: () =>
         finish({

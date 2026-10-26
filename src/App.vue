@@ -24,6 +24,7 @@ import {
 import { getCurrentRoute } from '@/utils/home-navigation.js';
 import { isDesktopRuntime } from '@/services/desktop/runtime.js';
 import { learningNotificationsFor } from '@/services/learning/learning-notifications.js';
+import { clearFailedAuthentication } from '@/services/auth-failure.js';
 let notificationRuntime = null;
 let releaseDesktopWorkspace = () => undefined;
 let startupTimer = null;
@@ -332,30 +333,31 @@ export default {
       // [Phase5] 启动保护：前 3 秒内不触发 authFailure 导航，避免 webviewId 竞态
       const appReadyTime = Date.now() + 3000;
 
-      uni.$on('authFailure', async () => {
+      uni.$on('authFailure', async (event) => {
         logger.log('[App] 认证失败拦截: statusCode=[省略], path=[省略]');
 
         // 防止重复跳转
         if (isRedirecting) return;
-
-        // 启动期静默忽略，页面 webview 尚未就绪
-        if (Date.now() < appReadyTime) {
-          logger.log('[App] 启动期忽略 authFailure，避免 routeDone 竞态');
-          return;
-        }
 
         isRedirecting = true;
 
         // 清除本地登录态
         try {
           const userStore = useUserStore();
-          const result = await userStore.logout?.();
-          if (result?.success === false) {
+          const cleared = await clearFailedAuthentication(event, (options) => userStore.logout(options));
+          if (!cleared) {
             isRedirecting = false;
             return;
           }
         } catch (_e) {
-          // 静默处理
+          isRedirecting = false;
+          return;
+        }
+
+        // Startup protects navigation only. Invalid credentials must still be revoked immediately.
+        if (Date.now() < appReadyTime || event?.silent) {
+          isRedirecting = false;
+          return;
         }
 
         const session = captureSession();

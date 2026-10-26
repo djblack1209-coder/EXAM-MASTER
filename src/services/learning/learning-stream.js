@@ -1,6 +1,7 @@
 import config from '../../config/index.js';
 import { getUserId, assertSession, sessionForRequest } from '../auth-storage.js';
 import { appLearningStreamSupported, streamAppConnector } from './app-connector.js';
+import { isAuthenticationFailure, reportAuthenticationFailure } from '../auth-failure.js';
 import {
   createEventStreamParser,
   createUtf8StreamDecoder,
@@ -113,6 +114,24 @@ export async function generateLearningTurnStream(body, options = {}) {
   const owner = options.expectedOwner || body.learningContext?.owner || getUserId();
   const session = options.session;
   let token;
+  let credentialProof, responseStatus;
+  const finishAuthentication = (value) => {
+    if (!isAuthenticationFailure(value, responseStatus)) return value;
+    const result = {
+      ...value,
+      success: false,
+      code: 401,
+      errorCode: 'AUTH_REQUIRED',
+      message: '登录已过期，请重新登录'
+    };
+    reportAuthenticationFailure(result, {
+      session,
+      credentialProof,
+      path: '/proxy-ai-stream',
+      statusCode: responseStatus
+    });
+    return result;
+  };
   const assertCurrent = () => {
     options.assertCurrent?.();
     check(!options.signal?.aborted, 'CANCELLED', '请求已取消');
@@ -141,7 +160,9 @@ export async function generateLearningTurnStream(body, options = {}) {
   };
   try {
     check(!options.signal?.aborted, 'CANCELLED', '请求已取消');
-    token = sessionForRequest(session).token;
+    const identity = sessionForRequest(session);
+    token = identity.token;
+    credentialProof = identity.session.proof;
     assertCurrent();
     check(token, 'AUTH_REQUIRED', '登录后可连接云模型，本地学习无需登录');
     const platform = options.platform || learningStreamPlatform();
@@ -170,6 +191,7 @@ export async function generateLearningTurnStream(body, options = {}) {
         body: JSON.stringify(body),
         onHeaders(value) {
           assertCurrent();
+          responseStatus = value.status;
           streaming =
             value.status >= 200 && value.status < 300 && /^text\/event-stream(?:;|$)/i.test(value.contentType);
         },
@@ -185,7 +207,7 @@ export async function generateLearningTurnStream(body, options = {}) {
       });
       assertCurrent();
       decoder.end();
-      if (streaming) return consumer.end();
+      if (streaming) return finishAuthentication(consumer.end());
       let rejected;
       try {
         rejected = JSON.parse(json);
@@ -193,7 +215,7 @@ export async function generateLearningTurnStream(body, options = {}) {
         throw new StreamError('INVALID_STREAM', '模型服务没有返回教学流');
       }
       check(rejected?.success === false, 'STREAM_TRANSPORT_UNAVAILABLE', '模型服务未提供所选教学流，不自动回退');
-      return rejected;
+      return finishAuthentication(rejected);
     }
     if (platform === 'h5') {
       controller = new AbortController();
@@ -213,6 +235,7 @@ export async function generateLearningTurnStream(body, options = {}) {
         signal: controller.signal
       });
       assertCurrent();
+      responseStatus = response.status;
       check(response.body?.getReader, 'STREAM_TRANSPORT_UNAVAILABLE', '此浏览器没有分块读取能力，未确认模型任务完成');
       reader = response.body.getReader();
       const streaming = /^text\/event-stream(?:;|$)/i.test(response.headers.get('content-type') || '');
@@ -233,7 +256,7 @@ export async function generateLearningTurnStream(body, options = {}) {
         const result = consumer.end();
         await releaseReader();
         assertCurrent();
-        return result;
+        return finishAuthentication(result);
       }
       let rejected;
       try {
@@ -242,7 +265,7 @@ export async function generateLearningTurnStream(body, options = {}) {
         throw new StreamError('INVALID_STREAM', '模型服务没有返回教学流');
       }
       check(rejected?.success === false, 'STREAM_TRANSPORT_UNAVAILABLE', '模型服务未提供所选流式传输，不自动回退');
-      return rejected;
+      return finishAuthentication(rejected);
     }
     // 微信使用原生wx RequestTask；uni.request包装不被假定具有onChunkReceived。
     return await new Promise((resolve, reject) => {
@@ -258,7 +281,7 @@ export async function generateLearningTurnStream(body, options = {}) {
         if (error) {
           task?.abort();
           reject(error);
-        } else resolve(value);
+        } else resolve(finishAuthentication(value));
       };
       const cancelled = () => finish(null, new StreamError('CANCELLED', '请求已取消'));
       options.signal?.addEventListener('abort', cancelled, { once: true });
@@ -276,6 +299,7 @@ export async function generateLearningTurnStream(body, options = {}) {
         success(res) {
           try {
             assertCurrent();
+            responseStatus = res.statusCode;
             if (!chunks || !streaming) {
               const value = JSON.parse(chunks ? json : decoder.feed(res.data));
               decoder.end();
@@ -326,7 +350,7 @@ export async function generateLearningTurnStream(body, options = {}) {
   } catch (error) {
     abort();
     const cancelled = options.signal?.aborted || error.code === 'CANCELLED';
-    return {
+    return finishAuthentication({
       success: false,
       code: cancelled ? 499 : 503,
       errorCode: cancelled ? 'CANCELLED' : timedOut ? 'TIMEOUT' : error.code || 'INCOMPLETE_STREAM',
@@ -343,7 +367,7 @@ export async function generateLearningTurnStream(body, options = {}) {
           : cancelled
             ? '请求已取消，实际模型用量可能仍待结算'
             : error.message || '教学流未完成，记录保留；不会自动重试或切换模型'
-    };
+    });
   } finally {
     clearTimeout(timer);
     options.signal?.removeEventListener('abort', abort);

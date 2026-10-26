@@ -16,6 +16,7 @@
 import cloud from '@lafjs/cloud';
 import type { FunctionContext } from '../types/cloud-functions.js';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { requireActiveUser } from './_shared/active-user.js';
 
 const db = cloud.database();
 
@@ -116,6 +117,9 @@ export default async function (ctx: FunctionContext) {
       logger.info(`[${requestId}] 访问控制验证通过: ${tokenUserId}`);
     }
 
+    const inactive = await requireActiveUser(db, tokenUserId);
+    if (inactive) return { ...inactive, requestId };
+
     // 频率限制：20次/分钟/用户
     const rateLimitResult = await checkRateLimitDistributed(`user_profile_${tokenUserId}`, 20, 60000);
     if (!rateLimitResult.allowed) {
@@ -191,10 +195,10 @@ async function handleGetProfile(body: UpdateProfileRequest, _requestId: string) 
 
   if (!user.data) {
     return {
-      code: 0,
-      success: true,
-      message: '获取成功',
-      data: createDefaultUserProfile(userId)
+      code: 401,
+      success: false,
+      errorCode: 'ACCOUNT_UNAVAILABLE',
+      message: '账户不可用，请重新登录'
     };
   }
 
@@ -210,17 +214,6 @@ async function handleGetProfile(body: UpdateProfileRequest, _requestId: string) 
       target_major: user.data.target_major,
       practice_config: user.data.practice_config || getDefaultPracticeConfig()
     }
-  };
-}
-
-function createDefaultUserProfile(userId: string) {
-  return {
-    _id: userId,
-    nickname: '考研用户',
-    avatar_url: '',
-    target_school: '',
-    target_major: '',
-    practice_config: getDefaultPracticeConfig()
   };
 }
 

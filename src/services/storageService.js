@@ -340,6 +340,7 @@ import {
   captureSession,
   checkSession,
   assertSession,
+  sessionForRequest,
   readSessionSnapshot,
   sessionCredentialProof,
   readStorageStrict,
@@ -593,16 +594,18 @@ class StorageService {
     onlyRevoked = false,
     generation = readIdentityGeneration(),
     onlyInterrupted = false,
-    receipt
+    receipt,
+    credentialProof
   ) {
     return withIdentityLock(() =>
-      this._clearRevokedCredentialsLocked(session, onlyRevoked, generation, onlyInterrupted, receipt)
+      this._clearRevokedCredentialsLocked(session, onlyRevoked, generation, onlyInterrupted, receipt, credentialProof)
     );
   }
 
   // Caller owns the exclusive identity lock (or the single-context synchronous turn).
-  _clearRevokedCredentialsLocked(session, onlyRevoked, generation, onlyInterrupted, receipt) {
+  _clearRevokedCredentialsLocked(session, onlyRevoked, generation, onlyInterrupted, receipt, credentialProof) {
     if (readIdentityGeneration() !== generation) return false;
+    if (credentialProof && (!session || sessionForRequest(session).session.proof !== credentialProof)) return false;
     const previousRevocation = onlyInterrupted ? uni.getStorageSync(SESSION_REVOCATION_KEY) || null : null;
     let record,
       recordReadable = false;

@@ -2,6 +2,7 @@ import cloud from '@lafjs/cloud';
 import { normalizeIntakeContext, MODEL_INTAKE_CONTRACT } from './_shared/learning-intake.js';
 import crypto from 'node:crypto';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { requireActiveUser } from './_shared/active-user.js';
 import { checkRateLimitDistributed } from './_shared/api-response.js';
 import { DEV_TEST } from './_shared/build-channel.js';
 import { createModelDiscovery } from './_shared/ai-providers/model-discovery.js';
@@ -70,6 +71,8 @@ const discoverModels = createModelDiscovery({
 export default async function (ctx: any) {
   const auth = requireAuth(ctx);
   if (isAuthError(auth)) return auth;
+  const inactive = await requireActiveUser(cloud.database(), auth.userId);
+  if (inactive) return inactive;
   const body = ctx.body || {};
   // Discovery has its own per-account rate limit, in addition to profile refresh cooldowns.
   if (body.action === 'discover') {

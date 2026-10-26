@@ -15,6 +15,7 @@ const env = {
 const endpoints = {
   zai: 'https://api.z.ai/api/paas/v4/chat/completions',
   openrouter: 'https://openrouter.ai/api/v1/chat/completions',
+  agnes: 'https://apihub.agnes-ai.com/v1/chat/completions',
   zhipu: 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
 };
 function fixture({ failures = {}, pending = false, lostResponse = false, saveForbidden = false } = {}) {
@@ -42,7 +43,7 @@ function fixture({ failures = {}, pending = false, lostResponse = false, saveFor
     let result;
     if (body.action === 'list') result = { code: 0, data: { models: [...profiles.values()] } };
     if (body.action === 'save') {
-      if (saveForbidden && body.profile.id === 'dev-openrouter-byok')
+      if (saveForbidden && body.profile.id === 'dev-agnes-byok')
         result = { code: 503, success: false, error: 'ENDPOINT_FORBIDDEN' };
       else {
         profiles.set(body.profile.id, { ...body.profile, configured: true });
@@ -51,7 +52,7 @@ function fixture({ failures = {}, pending = false, lostResponse = false, saveFor
     }
     if (body.action === 'test') {
       const classification = failures[body.modelId];
-      const isPending = pending && body.modelId === 'dev-zai-byok';
+      const isPending = pending && body.modelId === 'dev-openrouter-byok';
       calls.push({
         id: body.requestId,
         source: 'byok',
@@ -59,7 +60,8 @@ function fixture({ failures = {}, pending = false, lostResponse = false, saveFor
         actualCost: classification || isPending ? null : 0,
         executionStage: 'provider_called'
       });
-      if (lostResponse && body.modelId === 'dev-zai-byok') throw Object.assign(new Error(), { code: 'ETIMEDOUT' });
+      if (lostResponse && body.modelId === 'dev-openrouter-byok')
+        throw Object.assign(new Error(), { code: 'ETIMEDOUT' });
       result =
         classification || isPending
           ? {
@@ -118,6 +120,10 @@ afterEach(() => {
 });
 
 describe('reviewed free-provider seeding', () => {
+  it('tries distinct model IDs in the reviewed provider order', () => {
+    expect(FREE_SEED_CHOICES.map((choice) => choice.providerId)).toEqual(['openrouter', 'agnes', 'zai', 'zhipu']);
+    expect(new Set(FREE_SEED_CHOICES.map((choice) => choice.model)).size).toBe(FREE_SEED_CHOICES.length);
+  });
   it('restricts every candidate to the existing exact zero-price policy and its expiry', () => {
     expect(new Set(FREE_SEED_ORIGINS)).toEqual(
       new Set(Object.values(endpoints).map((endpoint) => new URL(endpoint).origin))
@@ -133,15 +139,15 @@ describe('reviewed free-provider seeding', () => {
     }
   });
   it('continues after a limited provider, gets two distinct alternatives and keeps the failed cost unknown', async () => {
-    const f = fixture({ failures: { 'dev-zai-byok': 'RATE_LIMITED' } });
+    const f = fixture({ failures: { 'dev-openrouter-byok': 'RATE_LIMITED' } });
     const report = await seedFreeModels(f.args);
     expect(report.success).toBe(true);
-    expect(report.connections.map((item) => item.providerId)).toEqual(['openrouter', 'zhipu']);
-    expect(report.selectedModelId).toBe('dev-zhipu-byok');
+    expect(report.connections.map((item) => item.providerId)).toEqual(['agnes', 'zai']);
+    expect(report.selectedModelId).toBe('dev-zai-byok');
     expect(report.attempts.map((item) => item.classification)).toEqual(['RATE_LIMITED', 'CONNECTED', 'CONNECTED']);
     expect(report).toMatchObject({ providerCalls: 3, actualCost: null, pendingCosts: 1 });
     expect(report.attempts[0].receipts[0]).toMatchObject({ status: 'failed', actualCost: null });
-    expect(f.profiles.has('dev-zai-byok')).toBe(false);
+    expect(f.profiles.has('dev-openrouter-byok')).toBe(false);
     expect(bodies(f.fetchImpl, 'test')).toHaveLength(3);
     expect(JSON.stringify(report)).not.toMatch(/unit-private/);
   });
@@ -149,7 +155,7 @@ describe('reviewed free-provider seeding', () => {
     const f = fixture();
     const report = await seedFreeModels(f.args);
     expect(report.success).toBe(true);
-    expect(report.connections.map((item) => item.providerId)).toEqual(['zai', 'openrouter']);
+    expect(report.connections.map((item) => item.providerId)).toEqual(['openrouter', 'agnes']);
     expect(report.attempts).toHaveLength(2);
     expect(report.providerCalls).toBe(2);
     expect(report.actualCost).toBe(0);
@@ -160,9 +166,9 @@ describe('reviewed free-provider seeding', () => {
     const report = await seedFreeModels(f.args);
     expect(report.success).toBe(true);
     expect(report.attempts[0]).toMatchObject({ classification: 'TIMEOUT', requestPending: true });
-    expect(f.profiles.has('dev-zai-byok')).toBe(true);
+    expect(f.profiles.has('dev-openrouter-byok')).toBe(true);
     expect(bodies(f.fetchImpl, 'result')).toHaveLength(1);
-    expect(bodies(f.fetchImpl, 'test').filter((body) => body.modelId === 'dev-zai-byok')).toHaveLength(1);
+    expect(bodies(f.fetchImpl, 'test').filter((body) => body.modelId === 'dev-openrouter-byok')).toHaveLength(1);
     expect(report.actualCost).toBeNull();
   });
   it('recovers a lost response by its original request id without another provider call', async () => {
@@ -178,22 +184,26 @@ describe('reviewed free-provider seeding', () => {
   it.each(['MODEL_UNAVAILABLE', 'SERVICE_UNAVAILABLE', 'KEY_INVALID'])(
     'records %s and tries the next reviewed free provider',
     async (classification) => {
-      const f = fixture({ failures: { 'dev-zai-byok': classification } });
+      const f = fixture({ failures: { 'dev-openrouter-byok': classification } });
       const report = await seedFreeModels(f.args);
       expect(report.success).toBe(true);
       expect(report.attempts[0].classification).toBe(classification);
-      expect(report.connections.map((item) => item.providerId)).toEqual(['openrouter', 'zhipu']);
+      expect(report.connections.map((item) => item.providerId)).toEqual(['agnes', 'zai']);
     }
   );
   it('reports an exhausted shortlist and an endpoint rejection without changing the server allowlist', async () => {
-    const f = fixture({ failures: { 'dev-zai-byok': 'RATE_LIMITED' }, saveForbidden: true });
+    const f = fixture({
+      failures: { 'dev-openrouter-byok': 'RATE_LIMITED', 'dev-zhipu-byok': 'MODEL_UNAVAILABLE' },
+      saveForbidden: true
+    });
     const report = await seedFreeModels(f.args);
     expect(report.success).toBe(false);
     expect(report.error).toBe('INSUFFICIENT_FREE_PROVIDERS');
     expect(report.attempts.map((item) => item.classification)).toEqual([
       'RATE_LIMITED',
       'ENDPOINT_FORBIDDEN',
-      'CONNECTED'
+      'CONNECTED',
+      'MODEL_UNAVAILABLE'
     ]);
     expect(report.connections).toHaveLength(1);
   });
@@ -217,17 +227,17 @@ describe('reviewed free-provider seeding', () => {
   );
   it('keeps a pre-existing incompatible profile and never overwrites its key', async () => {
     const f = fixture();
-    f.profiles.set('dev-zai-byok', {
-      id: 'dev-zai-byok',
+    f.profiles.set('dev-openrouter-byok', {
+      id: 'dev-openrouter-byok',
       configured: true,
       model: 'different-model',
-      endpoint: endpoints.zai
+      endpoint: endpoints.openrouter
     });
     const report = await seedFreeModels(f.args);
     expect(report.success).toBe(true);
     expect(report.attempts[0].classification).toBe('EXISTING_PROFILE_MISMATCH');
-    expect(f.profiles.get('dev-zai-byok').model).toBe('different-model');
-    expect(bodies(f.fetchImpl, 'save').some((body) => body.profile.id === 'dev-zai-byok')).toBe(false);
+    expect(f.profiles.get('dev-openrouter-byok').model).toBe('different-model');
+    expect(bodies(f.fetchImpl, 'save').some((body) => body.profile.id === 'dev-openrouter-byok')).toBe(false);
   });
   it('refuses production before reading any account or issuing requests', async () => {
     const f = fixture();
@@ -269,7 +279,7 @@ describe('reviewed free-provider seeding', () => {
     f.args.fetchImpl = async (url, options) => {
       const response = await normal(url, options),
         body = JSON.parse(options.body);
-      return body.action === 'test' && body.modelId === 'dev-zai-byok'
+      return body.action === 'test' && body.modelId === 'dev-openrouter-byok'
         ? { ...response, ok: false, status: 500 }
         : response;
     };

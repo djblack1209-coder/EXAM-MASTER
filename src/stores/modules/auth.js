@@ -192,8 +192,8 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * 登出
    */
-  const logout = () => {
-    const origin = boundSession;
+  const logout = (options = {}) => {
+    const origin = options.session || boundSession;
     const generation = origin ? readIdentityGeneration() : unboundGeneration;
     const pinia = getActivePinia();
     const receipt = {};
@@ -241,7 +241,14 @@ export const useAuthStore = defineStore('auth', () => {
       return { success: true };
     };
     try {
-      const revoked = storageService._clearRevokedCredentials(origin, false, generation, false, receipt);
+      const revoked = storageService._clearRevokedCredentials(
+        origin,
+        false,
+        generation,
+        false,
+        receipt,
+        options.credentialProof
+      );
       return revoked?.then ? revoked.then(finish).catch((error) => ({ success: false, error })) : finish(revoked);
     } catch (error) {
       return { success: false, error };

@@ -22,6 +22,7 @@ import {
   isSessionUnavailable
 } from '../../auth-storage.js';
 import { perfMonitor } from '@/utils/core/performance.js';
+import { isAuthenticationFailure, reportAuthenticationFailure } from '../../auth-failure.js';
 
 // ==================== 双服务器自动切换 ====================
 
@@ -92,7 +93,7 @@ function _requestSign(path, timestamp) {
  * @property {boolean} [skipNetworkCheck] - 是否跳过网络连通性检查
  * @property {boolean} [skipRateLimit] - 是否跳过前端限流
  * @property {boolean} [skipCache] - 是否跳过只读缓存
- * @property {boolean} [suppressAuthFailure] - 是否抑制全局 authFailure 广播
+ * @property {boolean} [suppressAuthFailure] - 是否抑制认证失败后的导航（仍清除已确认失效的凭据）
  * @property {boolean} [redactErrors] - 凭据请求只保留固定错误消息/数字状态，不保留原始错误
  * @property {number} [maxRetries] - 最大重试次数（默认2）
  * @property {number} [coldStartRetries] - Laf 冷启动重试次数（默认6）
@@ -634,6 +635,22 @@ export async function request(path, data = {}, options = {}) {
                     return;
                   }
                 }
+                if (!options.skipAuth && isAuthenticationFailure(responseData)) {
+                  reject({
+                    statusCode: 401,
+                    code: 401,
+                    message: '登录已过期，请重新登录',
+                    retryable: false,
+                    errorType: 'auth'
+                  });
+                  reportAuthenticationFailure(responseData, {
+                    session,
+                    credentialProof,
+                    path,
+                    silent: options.suppressAuthFailure === true
+                  });
+                  return;
+                }
                 markPrimarySuccess();
                 resolve(responseData);
               } else if (res.statusCode === 401 || res.statusCode === 403) {
@@ -641,15 +658,6 @@ export async function request(path, data = {}, options = {}) {
                 const current = readSessionSnapshot();
                 const renewed =
                   !options.skipAuth && current.status === 'current' && credentialProof !== current.session.proof;
-                if (
-                  res.statusCode === 401 &&
-                  !options.skipAuth &&
-                  current.status === 'current' &&
-                  !renewed &&
-                  !options.suppressAuthFailure
-                ) {
-                  uni.$emit('authFailure', { statusCode: res.statusCode, path });
-                }
                 reject({
                   statusCode: res.statusCode,
                   message: res.statusCode === 401 ? '登录已过期，请重新登录' : '没有访问权限',
@@ -657,6 +665,14 @@ export async function request(path, data = {}, options = {}) {
                   retryPolicy: renewed ? 'credential_changed' : undefined,
                   errorType: 'auth'
                 });
+                if (!options.skipAuth)
+                  reportAuthenticationFailure(res.data, {
+                    session,
+                    credentialProof,
+                    path,
+                    statusCode: res.statusCode,
+                    silent: options.suppressAuthFailure === true
+                  });
               } else if (nonRetryableStatuses.includes(res.statusCode)) {
                 const bodyText = typeof res.data === 'string' ? res.data : JSON.stringify(res.data || '');
                 const isLafColdStart404 =

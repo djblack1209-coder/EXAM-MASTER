@@ -43,10 +43,9 @@ describe('request core', () => {
     vi.useRealTimers();
   });
 
-  it('只读账户资料返回本人UID和邮箱，业务与HTTP401不成功且保留会话', async () => {
+  it('只读账户资料认证失败时发出静默清理事件，不采用任何账户数据', async () => {
     const { readCurrentProfile } = await import('@/services/api/domains/user.api.js');
     const session = captureSession();
-    uni.$on('authFailure', () => delete global.__mockStorage.EXAM_USER_ID);
     let response = {
       statusCode: 200,
       data: { code: 0, success: true, data: { _id: 'user_123', nickname: 'fixture', email: 'owner@example.test' } }
@@ -70,7 +69,9 @@ describe('request core', () => {
     expect(await readCurrentProfile()).toEqual({ success: false, code: 502, uid: null });
     expect(uni.request).toHaveBeenCalledTimes(4);
     expect(captureSession()).toEqual(session);
-    expect(uni.$emit.mock.calls.some(([name]) => name === 'authFailure')).toBe(false);
+    const failures = uni.$emit.mock.calls.filter(([name]) => name === 'authFailure');
+    expect(failures).toHaveLength(2);
+    expect(failures.every(([, event]) => event.silent === true && event.session.owner === 'user_123')).toBe(true);
   });
 
   it('账户资料仅返回本次认证用户的邮箱', async () => {

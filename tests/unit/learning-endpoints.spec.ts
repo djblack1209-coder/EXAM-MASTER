@@ -3,6 +3,7 @@ import { EventEmitter } from 'node:events';
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 const mock = vi.hoisted(() => ({
   rows: new Map(),
+  users: new Map(),
   allowed: true,
   queries: [] as any[],
   response: undefined as any,
@@ -23,7 +24,7 @@ vi.mock('@lafjs/cloud', () => ({
         where: (query: any) => {
           mock.queries.push({ name, query });
           const matches = () =>
-            [...mock.rows.entries()].filter(
+            [...new Map([...(name === 'users' ? mock.users.entries() : []), ...mock.rows.entries()]).entries()].filter(
               ([id, row]: any) =>
                 id.startsWith(`${name}:`) && Object.entries(query).every(([k, value]) => row[k] === value)
             );
@@ -89,6 +90,8 @@ const context = (body: any = {}, userId = 'u1') => {
 beforeEach(() => {
   mock.response = undefined;
   mock.rows.clear();
+  mock.users.clear();
+  for (const id of ['u1', 'u2', 'u3']) mock.users.set(`users:${id}`, { _id: id, status: 'active' });
   mock.queries.length = 0;
   mock.allowed = true;
   mock.failStateDelete = false;
@@ -107,6 +110,18 @@ beforeEach(() => {
   vi.stubEnv('LEARNING_PLATFORM_MODELS', '[]');
   vi.stubEnv('LEARNING_PLATFORM_CALLS_ENABLED', 'false');
   vi.stubEnv('LEARNING_PAYMENT_SANDBOX_ENABLED', 'false');
+});
+it.each([
+  ['sync', sync],
+  ['models', models],
+  ['ai', ai]
+] as const)('账号删除后有效签名也不能通过 %s 重建空档案或调用模型', async (_name, handler) => {
+  mock.users.delete('users:u1');
+  const before = [...mock.rows.keys()];
+  const result = await handler(context({ action: 'pull' }));
+  expect(result).toMatchObject({ code: 401, success: false, errorCode: 'ACCOUNT_UNAVAILABLE' });
+  expect([...mock.rows.keys()]).toEqual(before);
+  expect(callLearningProvider).not.toHaveBeenCalled();
 });
 it('登录身份与学习上下文不一致时，拒绝向模型发送旧用户内容或预留费用', async () => {
   const result = await ai(

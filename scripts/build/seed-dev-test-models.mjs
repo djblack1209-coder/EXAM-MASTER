@@ -10,16 +10,18 @@ const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 export const FREE_SEED_ORIGINS = Object.freeze([
   'https://api.z.ai',
   'https://openrouter.ai',
+  'https://apihub.agnes-ai.com',
   'https://open.bigmodel.cn'
 ]);
 export const FREE_SEED_CHOICES = Object.freeze([
-  { providerId: 'zai', id: 'dev-zai-byok', model: 'glm-4.7-flash', structured: true },
   {
     providerId: 'openrouter',
     id: 'dev-openrouter-byok',
     model: 'nvidia/nemotron-3-ultra-550b-a55b:free',
     structured: false
   },
+  { providerId: 'agnes', id: 'dev-agnes-byok', model: 'agnes-2.5-flash', structured: false },
+  { providerId: 'zai', id: 'dev-zai-byok', model: 'glm-4.5-flash', structured: true },
   { providerId: 'zhipu', id: 'dev-zhipu-byok', model: 'glm-4.7-flash', structured: true }
 ]);
 const machineCode = (value) => (typeof value === 'string' && /^[A-Z0-9_:-]{1,80}$/.test(value) ? value : 'UNAVAILABLE');

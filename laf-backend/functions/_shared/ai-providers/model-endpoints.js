@@ -9,6 +9,7 @@ export const MODEL_ENDPOINTS = [
     'https://ai.google.dev/gemini-api/docs/openai'
   ],
   ['groq', 'Groq', 'https://api.groq.com/openai/v1', 'https://console.groq.com/docs/api-reference'],
+  ['agnes', 'Agnes AI', 'https://apihub.agnes-ai.com/v1', 'https://wiki.agnes-ai.com/en/docs/quickstart'],
   [
     'openrouter',
     'OpenRouter',
@@ -230,6 +231,20 @@ export const MODEL_CONNECTION_PRESETS = [
     terms: '官方免费型号，仍受账户限流；不调用搜索等收费工具，不切换FlashX。',
     privacy: '当前目标、最近消息与题目经本项目后端发送至Z.ai；资料不默认整份上传。',
     docs: 'https://docs.z.ai/guides/overview/pricing'
+  },
+  {
+    id: 'agnes-flash-free',
+    provider: 'Agnes AI',
+    model: 'agnes-2.5-flash',
+    endpoint: endpointFor('agnes').endpoint,
+    structured: false,
+    pricing: 'official_free_model',
+    priceVersion: 'agnes-2.5-flash-free-2026-10-26',
+    verifiedAt: '2026-10-26',
+    expiresAt: '2026-10-30',
+    terms: '仅此精确 Flash 文本型号按官方当前零价使用；本地价格复核到期即停用，不回退 Pro、付费别名或其他端点。',
+    privacy: privacyFor('Agnes AI'),
+    docs: 'https://wiki.agnes-ai.com/en/docs/pricing'
   },
   {
     id: 'gemini-flash-lite',

@@ -14,6 +14,7 @@ import { reservePlatformDay, settlePlatformDay } from './_shared/learning-daily-
 import { assertTrialUser } from './_shared/learning-trial.js';
 import { DEV_TEST } from './_shared/build-channel.js';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { requireActiveUser } from './_shared/active-user.js';
 import { checkRateLimitDistributed } from './_shared/api-response.js';
 import {
   callLearningProvider,
@@ -185,6 +186,8 @@ export async function runLearningModelTask(
 ) {
   const auth = requireAuth(ctx);
   if (isAuthError(auth)) return auth;
+  const inactive = await requireActiveUser(cloud.database(), auth.userId);
+  if (inactive) return inactive;
   const limited = await checkRateLimitDistributed(`learning-ai:${auth.userId}`, DEV_TEST ? 1000000 : 20, 60000);
   if (!limited.allowed) return { code: 429, success: false, message: '模型请求过于频繁' };
   let reservation: any = null;

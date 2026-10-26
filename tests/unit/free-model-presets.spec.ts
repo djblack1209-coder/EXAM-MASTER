@@ -268,9 +268,9 @@ describe('免费型号是可核验接入事实，不是任意零价格声明', (
   it('普通和历史配置哈希保持旧定义，新输出策略只改变对应配置的出处', () => {
     const model = {
       id: 'fixture',
-      model: 'openai/gpt-oss-20b',
-      provider: 'Groq',
-      endpoint: 'https://api.groq.com/openai/v1/chat/completions',
+      model: 'plain-fixture',
+      provider: 'Fixture',
+      endpoint: 'https://provider.example/chat/completions',
       keyRef: 'synthetic-key-reference',
       maxOutput: 1000,
       capabilities: { structured: true, tools: false, vision: false, stream: true }

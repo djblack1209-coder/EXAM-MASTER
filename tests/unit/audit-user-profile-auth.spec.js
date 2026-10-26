@@ -18,6 +18,7 @@ const mocked = vi.hoisted(() => {
     collection: (name) => ({
       where: (_query) => ({
         getOne: async () => ({ data: name === 'users' ? scenario.userDoc : null }),
+        get: async () => ({ data: name === 'users' && scenario.userDoc ? [scenario.userDoc] : [] }),
         update: async () => ({ updated: 1 })
       }),
       doc: () => ({
@@ -92,6 +93,15 @@ describe('[安全审计] user-profile 鉴权响应语义', () => {
   beforeEach(() => {
     mocked.resetScenario();
   });
+  it('账号删除后返回认证失败，不生成默认资料冒充已登录', async () => {
+    mocked.scenario.userDoc.is_deleted = true;
+    const result = await userProfileHandler({
+      body: { action: 'get', userId: 'user_profile_1' },
+      headers: { authorization: 'Bearer fixture-only' }
+    });
+    expect(result).toMatchObject({ code: 401, success: false, errorCode: 'ACCOUNT_UNAVAILABLE' });
+    expect(result.data).toBeUndefined();
+  });
 
   it('缺少 Authorization 时应返回 401', async () => {
     const result = await userProfileHandler({
@@ -153,7 +163,7 @@ describe('[安全审计] user-profile 鉴权响应语义', () => {
     expect(result.requestId).toMatch(/^UP-/);
   });
 
-  it('已认证但用户档案缺失时应返回默认资料，避免新用户首屏阻塞', async () => {
+  it('用户主体已不存在时返回认证失败，不用默认资料掩盖删除状态', async () => {
     mocked.scenario.userDoc = null;
 
     const result = await userProfileHandler({
@@ -161,16 +171,8 @@ describe('[安全审计] user-profile 鉴权响应语义', () => {
       headers: { authorization: 'Bearer valid_token' }
     });
 
-    expect(result.code).toBe(0);
-    expect(result.success).toBe(true);
-    expect(result.data).toMatchObject({
-      _id: 'user_profile_1',
-      nickname: '考研用户',
-      avatar_url: '',
-      target_school: '',
-      target_major: ''
-    });
-    expect(result.data.practice_config).toBeDefined();
+    expect(result).toMatchObject({ code: 401, success: false, errorCode: 'ACCOUNT_UNAVAILABLE' });
+    expect(result.data).toBeUndefined();
   });
 });
 
