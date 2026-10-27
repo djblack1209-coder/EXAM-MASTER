@@ -13,6 +13,7 @@
     ]"
     :data-avatar-state="state?.current?.state || avatarStateFor(business || {})"
     :data-avatar-media="mediaStatus"
+    :data-avatar-renderer="perceptible ? 'kitten-rig' : 'media'"
     :data-avatar-fallback="fallbackReason || undefined"
     :title="fallbackReason || undefined"
     :style="{ width: size + 'px', height: size + 'px' }"
@@ -188,6 +189,10 @@ onBeforeUnmount(() => {
 }
 .animated-avatar__body {
   transform-origin: 50% 75%;
+}
+.animated-avatar.is-motion-enabled.is-perceptible .animated-avatar__body {
+  animation: none;
+  transform: none;
 }
 .is-motion-enabled.avatar-state-idle .animated-avatar__body {
   animation: kitten-breathe 4s ease-in-out infinite;

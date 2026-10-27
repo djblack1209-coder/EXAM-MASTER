@@ -75,7 +75,7 @@ describe('教学输出违规的字段路径', () => {
       'essay',
       'dimensions',
       '写作维度不合法',
-      (v) => v.dimensions.push({ name: '语法', comment: 'Synthetic feedback.' })
+      (v) => v.dimensions.push({ name: '额外维度', comment: 'Synthetic feedback.' })
     ],
     ['essay', 'dimensions[1].name', '写作维度不合法', (v) => (v.dimensions[1].name = '官方分数')],
     ['essay', 'dimensions[2].comment', '内容为空或过长', (v) => (v.dimensions[2].comment = '')],

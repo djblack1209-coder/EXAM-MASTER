@@ -310,7 +310,11 @@ it('新批改不能仅因可选润色降档，实际错误必须与本维引用�
   };
   expect(coachInferenceContext(request)).not.toHaveProperty('foundation');
   expect(coachInferenceContext(request).weaknesses).toEqual([]);
-  expect(coachInferenceContext(request).task).toBe(request.task);
+  expect(JSON.parse(coachInferenceContext(request).task)).toMatchObject({
+    kind: 'translate_en',
+    source: '活动将在周五下午举行'
+  });
+  expect(request.task).toBe('将“活动将在周五下午举行”译成英文');
   const model = prepareCoachFeedbackModel(config, request);
   const response = {
     quoteVersion: model.writingOutput.schema.properties.quoteVersion.enum[0],

@@ -247,6 +247,20 @@ export const MODEL_CONNECTION_PRESETS = [
     docs: 'https://wiki.agnes-ai.com/en/docs/pricing'
   },
   {
+    id: 'agnes-3-flash-free',
+    provider: 'Agnes AI',
+    model: 'agnes-3.0-flash',
+    endpoint: endpointFor('agnes').endpoint,
+    structured: false,
+    pricing: 'official_free_model',
+    priceVersion: 'agnes-3.0-flash-free-2026-10-27',
+    verifiedAt: '2026-10-27',
+    expiresAt: '2026-10-30',
+    terms: '仅此精确 Flash 文本型号按官方当前零价使用；复核到期即停用，不回退 Pro、付费别名或其他端点。',
+    privacy: privacyFor('Agnes AI'),
+    docs: 'https://wiki.agnes-ai.com/en/docs/pricing'
+  },
+  {
     id: 'gemini-flash-lite',
     provider: 'Google Gemini',
     model: 'gemini-2.5-flash-lite',

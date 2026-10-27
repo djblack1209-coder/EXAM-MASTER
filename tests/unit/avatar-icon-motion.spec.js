@@ -159,11 +159,11 @@ describe('avatar state mapping', () => {
     [{ producing: true }, 'idle'],
     [{ waiting: true }, 'waiting'],
     [{ stopped: true }, 'waiting'],
-    [{ error: true }, 'waiting'],
+    [{ error: true }, 'error'],
     [{ completed: true }, 'celebrate'],
     [{ completed: true, stopped: true }, 'waiting'],
     [{ resuming: true }, 'resume'],
-    [{ busy: true, waiting: true }, 'waiting'],
+    [{ busy: true, waiting: true }, 'working'],
     [{ completed: true, resuming: true }, 'celebrate']
   ])('%j maps to %s', (input, output) => expect(avatarStateFor(input)).toBe(output));
   it('maps all legacy poses and uses no waiting video', () => {
@@ -190,7 +190,7 @@ describe('avatar state mapping', () => {
     expect(avatarStateFor(avatarBusinessForLearning({}, { id: 'done-1', type: 'coach.finish' }))).toBe('celebrate');
     expect(avatarStateFor(avatarBusinessForLearning({}, { id: 'resume-1', type: 'task.resume' }))).toBe('resume');
     expect(avatarStateFor(avatarBusinessForLearning({}))).toBe('idle');
-    expect(avatarStateFor(avatarBusinessForLearning({ coachError: 'request failed' }))).toBe('waiting');
+    expect(avatarStateFor(avatarBusinessForLearning({ coachError: 'request failed' }))).toBe('error');
   });
 });
 

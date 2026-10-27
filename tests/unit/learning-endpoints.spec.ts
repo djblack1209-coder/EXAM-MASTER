@@ -2048,11 +2048,10 @@ it('局部批改只发送当前题干原答，不把整篇目标、建档与旧�
     content: JSON.stringify({
       quoteVersion: config.writingOutput.schema.properties.quoteVersion.enum[0],
       message: '本题翻译准确',
-      lines: [{ quoteId: 'q1', advice: '准确翻译本题时间', rewriteMode: 'keep', rewrite: null }],
-      weaknesses: [],
+      lines: [{ quoteId: 'q1', advice: '准确翻译本题时间' }],
+      errors: [],
       strengths: [],
-      strengthEvidence: [],
-      weaknessEvidence: [],
+      uncertainties: [],
       phrases: [],
       dimensions: [{ name: '任务完成', score: 2, comment: '本题翻译已完成，不要求邮件', evidenceIds: ['q1'] }]
     })
@@ -2078,7 +2077,7 @@ it('局部批改只发送当前题干原答，不把整篇目标、建档与旧�
   expect(messages).toHaveLength(2);
   expect(messages[1]).toEqual({ role: 'user', content: request.input });
   const serialized = JSON.stringify(messages);
-  expect(serialized).toContain(request.task);
+  expect(serialized).toContain('活动将在周五下午举行');
   for (const marker of [
     'GLOBAL_WHOLE_EMAIL',
     'PROFILE_WHOLE_EMAIL',
@@ -2113,14 +2112,25 @@ it('正式写作保留8192输出空间，非法档位保留失败收据且等待
   Object.assign(invalid, { strengths: [], strengthEvidence: [] });
   const { kind: _kind, target: _target, ...wireInvalid } = invalid;
   wireInvalid.lines = wireInvalid.lines.map(({ original, ...line }: any) => ({
-    ...line,
-    quoteId: 'q1',
-    rewriteMode: 'suggest'
+    advice: line.advice,
+    quoteId: 'q1'
   }));
   wireInvalid.dimensions = wireInvalid.dimensions.map(({ evidence, ...dimension }: any) => ({
     ...dimension,
     evidenceIds: ['q1']
   }));
+  for (const key of ['weaknesses', 'strengths', 'strengthEvidence', 'weaknessEvidence']) delete wireInvalid[key];
+  wireInvalid.dimensionReviews = Object.fromEntries(
+    ['grammar', 'collocation', 'expression', 'task'].map((key, index) => {
+      const { name: _name, ...review } = wireInvalid.dimensions[index];
+      return [key, review];
+    })
+  );
+  delete wireInvalid.dimensions;
+  wireInvalid.errors = [];
+  wireInvalid.strengths = [];
+  wireInvalid.uncertainties = [];
+  wireInvalid.phrases = [];
   vi.mocked(callLearningProvider).mockImplementation(async (config: any) => ({
     ...streamCompleted,
     finishReason: 'tool_calls',
@@ -2137,11 +2147,37 @@ it('正式写作保留8192输出空间，非法档位保留失败收据且等待
   expect(result).toMatchObject({
     success: false,
     error: 'COACH_INVALID',
-    validationPath: 'root.dimensions[0].score'
+    validationPath: 'root.dimensionReviews.grammar.score'
   });
   expect(callLearningProvider).toHaveBeenCalledOnce();
   expect(vi.mocked(callLearningProvider).mock.calls[0][0].maxOutput).toBe(8192);
   const ledger = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && Array.isArray(row.calls));
   expect(ledger.calls).toHaveLength(1);
   expect(ledger.calls[0]).toMatchObject({ status: 'failed', result: null });
+});
+
+it('Agnes 3.0 exact reviewed route costs zero only with supported, consistent usage', () => {
+  const model = { model: 'agnes-3.0-flash', endpoint: 'https://apihub.agnes-ai.com/v1/chat/completions' } as any;
+  const clock = vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-10-27T12:00:00Z'));
+  try {
+    const usage = { prompt_tokens: 100, completion_tokens: 50, total_tokens: 150 };
+    expect(costFromUsage(usage, model)).toBe(0);
+    expect(costFromUsage({ ...usage, prompt_tokens_details: { cached_tokens: 40 } }, model)).toBe(0);
+    expect(
+      costFromUsage({ ...usage, completion_tokens_details: { text_tokens: 30, reasoning_tokens: 20 } }, model)
+    ).toBe(0);
+    for (const bad of [
+      null,
+      { ...usage, total_tokens: 1 },
+      { ...usage, prompt_tokens_details: { cached_tokens: 101 } },
+      { ...usage, unknown_cost: 0 }
+    ])
+      expect(costFromUsage(bad, model)).toBeNull();
+    expect(costFromUsage(usage, { ...model, model: 'agnes-3.0-pro' })).toBeNull();
+    expect(costFromUsage(usage, { ...model, endpoint: 'https://example.test/v1/chat/completions' })).toBeNull();
+    clock.mockReturnValue(Date.parse('2026-10-30T00:00:00Z'));
+    expect(costFromUsage(usage, model)).toBeNull();
+  } finally {
+    clock.mockRestore();
+  }
 });

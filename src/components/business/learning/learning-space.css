@@ -1480,3 +1480,35 @@
   border-radius: 0;
   box-shadow: none;
 }
+
+/* Compiled only into an explicitly enabled dev/test acceptance build. */
+.avatar-qa {
+  position: fixed;
+  z-index: 80;
+  right: 20px;
+  bottom: 104px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 420px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--muse-popover);
+  color: var(--ink-2);
+  font-size: 12px;
+  box-shadow: 0 8px 28px #0002;
+}
+.avatar-qa > text {
+  flex-basis: 100%;
+}
+.avatar-qa button {
+  margin: 0;
+  padding: 3px 10px;
+  min-height: 32px;
+  line-height: 26px;
+  font-size: 12px;
+  color: inherit;
+  background: var(--muse-panel);
+  border-radius: 8px;
+}

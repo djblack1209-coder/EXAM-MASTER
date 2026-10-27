@@ -210,7 +210,7 @@ describe('模型基础地址与实际请求地址', () => {
   );
 
   it('公开预设不包含账户、凭据或匿名入口；新增试用模板不承诺零价格或视觉能力', () => {
-    expect(MODEL_ENDPOINTS).toHaveLength(30);
+    expect(MODEL_ENDPOINTS).toHaveLength(31);
     expect(new Set(MODEL_CONNECTION_PRESETS.map((p) => p.id)).size).toBe(MODEL_CONNECTION_PRESETS.length);
     for (const preset of MODEL_CONNECTION_PRESETS) {
       expect(preset.endpoint.endsWith('/chat/completions')).toBe(true);
@@ -219,6 +219,11 @@ describe('模型基础地址与实际请求地址', () => {
       if (preset.id.endsWith('-catalog')) expect(preset.structured).toBe(false);
     }
     expect(MODEL_CONNECTION_PRESETS.some((p) => /cloudflare|ovh/.test(p.id))).toBe(false);
+    expect(MODEL_CONNECTION_PRESETS.find((p) => p.model === 'agnes-3.0-flash')).toMatchObject({
+      endpoint: 'https://apihub.agnes-ai.com/v1/chat/completions',
+      pricing: 'official_free_model',
+      verifiedAt: '2026-10-27'
+    });
   });
 });
 

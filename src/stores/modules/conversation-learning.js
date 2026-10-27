@@ -13,6 +13,8 @@ import { coachMaterialContext } from '@/services/learning/coach-material-context
 import {
   WRITING_COACH_CONTRACT,
   COACH_FEEDBACK_VERSION,
+  COACH_EXERCISE_CONTRACT,
+  COACH_SUMMARY_CONTRACT,
   coachInputFor,
   coachWeaknesses,
   coachEssayType,
@@ -1749,9 +1751,13 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         minutes: coach.profile.minutes,
         ...(coach.profile.foundation ? { foundation: coach.profile.foundation } : {}),
         essayType: coachEssayType(coach, requestDay),
-        ...(DEV_TEST && ['feedback', 'essay'].includes(phase) && coach.profile.exam !== 'cs408'
+        ...(['feedback', 'essay'].includes(phase) && coach.profile.exam !== 'cs408'
           ? { feedbackVersion: COACH_FEEDBACK_VERSION }
           : {}),
+        ...(['diagnostic', 'daily'].includes(phase) && coach.profile.exam !== 'cs408'
+          ? { exerciseContract: COACH_EXERCISE_CONTRACT }
+          : {}),
+        ...(phase === 'summary' && coach.profile.exam !== 'cs408' ? { summaryContract: COACH_SUMMARY_CONTRACT } : {}),
         ...(['feedback', 'essay'].includes(phase) && coach.profile.exam !== 'cs408'
           ? { dimensionContract: 'writing-dimensions-v1' }
           : {}),

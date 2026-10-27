@@ -111,28 +111,29 @@ export function costFromUsage(usage: any, model: ModelConfig): number | null {
   if (
     free &&
     model.endpoint === 'https://apihub.agnes-ai.com/v1/chat/completions' &&
-    model.model === 'agnes-2.5-flash' &&
-    usage?.completion_tokens_details &&
-    Object.hasOwn(usage.completion_tokens_details, 'text_tokens')
+    ['agnes-2.5-flash', 'agnes-3.0-flash'].includes(model.model)
   ) {
-    // Agnes splits its output total into text and reasoning. Preserve the raw receipt;
-    // accept this extra field only when it exactly accounts for the known output total.
-    const { text_tokens: text, reasoning_tokens: reasoning = 0, ...details } = usage.completion_tokens_details;
     if (
-      !Number.isSafeInteger(text) ||
-      text < 0 ||
-      !Number.isSafeInteger(reasoning) ||
-      reasoning < 0 ||
-      text + reasoning !== usage.completion_tokens ||
+      !usage ||
       (usage.prompt_tokens_details?.cached_tokens ?? 0) > usage.prompt_tokens ||
       (usage.total_tokens !== undefined && usage.total_tokens !== usage.prompt_tokens + usage.completion_tokens)
     )
       return null;
-    const tokens = {
-      ...usage,
-      completion_tokens_details: { ...details, reasoning_tokens: reasoning }
-    };
-    return supportedBillingUsage(tokens) ? 0 : null;
+    if (usage.completion_tokens_details && Object.hasOwn(usage.completion_tokens_details, 'text_tokens')) {
+      const { text_tokens: text, reasoning_tokens: reasoning = 0, ...details } = usage.completion_tokens_details;
+      if (
+        !Number.isSafeInteger(text) ||
+        text < 0 ||
+        !Number.isSafeInteger(reasoning) ||
+        reasoning < 0 ||
+        text + reasoning !== usage.completion_tokens
+      )
+        return null;
+      return supportedBillingUsage({ ...usage, completion_tokens_details: { ...details, reasoning_tokens: reasoning } })
+        ? 0
+        : null;
+    }
+    return supportedBillingUsage(usage) ? 0 : null;
   }
   if (
     DEV_TEST &&
@@ -265,7 +266,8 @@ export async function runLearningModelTask(
     const intake = context.intake === undefined ? null : normalizeIntakeContext(context.intake);
     if (intake && coach) return { code: 422, success: false, message: '建档与教学请求不能混用' };
     const inferenceCoach = coach ? coachInferenceContext(coach) : null;
-    const gradingCoach = inferenceCoach && ['feedback', 'essay'].includes(inferenceCoach.phase) ? inferenceCoach : null;
+    const gradingCoach =
+      inferenceCoach && ['feedback', 'essay', 'summary'].includes(inferenceCoach.phase) ? inferenceCoach : null;
     const image =
       body.images !== undefined ? validateVisualInput(body.images, body.imageShareConsent, context.question) : null;
     visualCall = Boolean(image);
@@ -347,7 +349,7 @@ export async function runLearningModelTask(
       Boolean(coach);
     model = prepareWritingFeedbackModel(model, feedback, options.stream);
     const batchSummary = devCoach && coach?.phase === 'summary' && coach.target === 'summary';
-    model = prepareCoachFeedbackModel(model, coach, options.stream, batchSummary, devCoach);
+    model = prepareCoachFeedbackModel(model, inferenceCoach, options.stream, batchSummary, devCoach, true);
     // Validated writing feedback can exceed 2k with reasoning; account reservations still bound cost.
     if (coach && model.source === 'byok') model = { ...model, maxOutput: devCoach ? 32768 : 8192 };
     // These dev providers use the same complete local schema when native strict output is unavailable.
@@ -629,7 +631,7 @@ export async function runLearningModelTask(
           : coach
             ? parseCoachModelOutput(
                 nativeCoachReply ? decodeCoachResponse(model, rawResponse.content) : rawResponse.content,
-                coach,
+                inferenceCoach?.exerciseContract || inferenceCoach?.summaryContract ? inferenceCoach : coach,
                 captureDiagnostics,
                 (parsed: any) => {
                   assertCoachSafe(parsed);

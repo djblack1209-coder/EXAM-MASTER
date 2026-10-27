@@ -11,7 +11,9 @@ import {
   WRITING_METHOD,
   COACH_FEEDBACK_VERSION,
   COACH_FEEDBACK_CLASSES,
-  coachQuoteOptions
+  coachQuoteOptions,
+  coachAssessmentTask,
+  coachSummaryActivities
 } from '../learning-writing-coach.js';
 import {
   normalizeRubric,
@@ -170,6 +172,11 @@ export type ModelConfig = {
     reasoningEffort?: 'low' | 'high';
     quoteReferences?: Array<{ id: string; quote: string }>;
     responseBinding?: { kind: string; target: string };
+    correctionPolicy?: 'anchored-edits-v1';
+    responseMode?: 'generation';
+    generationEssayType?: string;
+    quoteRoles?: any[];
+    taskNumbers?: string[];
     schemaDigest: string;
     schema: any;
   };
@@ -303,8 +310,57 @@ export function prepareCoachFeedbackModel(
   request: any,
   stream = false,
   allowSummary = false,
-  allowPlain = false
+  allowPlain = false,
+  anchoredEdits = false
 ): ModelConfig {
+  if (
+    request?.exerciseContract === 'writing-exercises-v1' &&
+    !stream &&
+    config.source === 'byok' &&
+    config.capabilityCheck?.version === 1 &&
+    config.capabilityCheck.tools &&
+    config.capabilityCheck.structured
+  ) {
+    const string = { type: 'string' },
+      strings = { type: 'array', items: string };
+    const count = request.phase === 'daily' ? 8 : 5,
+      ids = Array.from({ length: count }, (_, i) => (request.phase === 'daily' ? 'c' : 'd') + (i + 1));
+    const source = {
+      sourceId: { type: ['string', 'null'], enum: [...(request.sources || []).map((s: any) => s.id), null] },
+      sourceQuote: { type: ['string', 'null'], maxLength: 200 },
+      sourcePage: { type: ['integer', 'null'], minimum: 1 }
+    };
+    const properties: any = {
+      message: { ...string, maxLength: 100 },
+      exercises: closed(
+        Object.fromEntries(
+          ids.map((id, index) => {
+            const chinese = request.phase === 'daily' ? [5, 6].includes(index) : index === 2;
+            return [
+              id,
+              closed({ [chinese ? 'chinese' : 'english']: { ...string, minLength: 1, maxLength: 600 }, ...source })
+            ];
+          })
+        )
+      )
+    };
+    if (request.phase === 'daily')
+      properties.writing = closed({ prompt: { ...string, minLength: 1, maxLength: 1500 }, ...source });
+    const schema = closed(properties);
+    return {
+      ...config,
+      writingOutput: {
+        contract: request.contract,
+        inferencePolicy: 'native-coach-tools-v1',
+        format: 'json_object',
+        responseMode: 'generation',
+        generationEssayType: request.essayType,
+        responseBinding: { kind: request.phase, target: request.target },
+        schemaDigest: crypto.createHash('sha256').update(JSON.stringify(schema)).digest('hex'),
+        schema
+      }
+    };
+  }
   const plain =
     allowPlain &&
     config.endpoint === 'https://openrouter.ai/api/v1/chat/completions' &&
@@ -338,11 +394,27 @@ export function prepareCoachFeedbackModel(
     quoteId = { type: 'string', enum: references.map((reference) => reference.id) };
   const coach: Record<string, any> =
     request.phase === 'summary'
-      ? {
-          kind: { type: 'string', enum: ['summary'] },
-          learned: { ...strings, items: { ...string, minLength: 1, maxLength: 400 }, minItems: 1, maxItems: 6 },
-          tomorrow: { ...strings, items: { ...string, minLength: 1, maxLength: 400 }, minItems: 1, maxItems: 4 }
-        }
+      ? request.summaryContract
+        ? {
+            kind: { type: 'string', enum: ['summary'] },
+            activityIds: {
+              type: 'array',
+              items: { type: 'string', enum: coachSummaryActivities(request).map((a) => a.id) },
+              minItems: 1,
+              maxItems: 6
+            },
+            nextActions: {
+              type: 'array',
+              items: { type: 'string', enum: ['check_due', 'read_feedback'] },
+              minItems: 1,
+              maxItems: 2
+            }
+          }
+        : {
+            kind: { type: 'string', enum: ['summary'] },
+            learned: { ...strings, items: { ...string, minLength: 1, maxLength: 400 }, minItems: 1, maxItems: 6 },
+            tomorrow: { ...strings, items: { ...string, minLength: 1, maxLength: 400 }, minItems: 1, maxItems: 4 }
+          }
       : {
           kind: { type: 'string', enum: [request.phase] },
           target: { type: 'string', enum: [request.target] },
@@ -432,26 +504,116 @@ export function prepareCoachFeedbackModel(
   const quoteVersion = native
     ? crypto
         .createHash('sha256')
-        .update(JSON.stringify([request.contract, request.day, request.target, request.task, request.input]))
+        .update(
+          JSON.stringify([
+            request.contract,
+            request.day,
+            request.target,
+            request.task,
+            request.input,
+            ...(anchoredEdits ? ['anchored-edits-v1'] : [])
+          ])
+        )
         .digest('hex')
         .slice(0, 24)
     : null;
   const { kind: _kind, target: _target, ...feedbackFields } = coach;
   if (native) {
+    const assessment = coachAssessmentTask(request);
+    const names = assessment?.kind === 'syntax_analysis' ? ['表达', '任务完成'] : WRITING_METHOD.feedback;
     feedbackFields.dimensions = {
       type: 'array',
       minItems: request.phase === 'essay' ? 4 : 0,
-      maxItems: request.target === 'analysis' ? 0 : 4,
+      maxItems: request.target === 'analysis' ? 0 : names.length,
       items: closed({
-        name: { type: 'string', enum: WRITING_METHOD.feedback },
+        name: {
+          type: 'string',
+          enum: names
+        },
         comment: { ...string, minLength: 1, maxLength: 500 },
         score: { type: ['integer', 'null'], enum: [0, 1, 2, null] },
         evidenceIds: { type: 'array', items: quoteId, maxItems: 3 }
       })
     };
+    if (anchoredEdits) {
+      for (const key of ['weaknesses', 'strengths', 'strengthEvidence', 'weaknessEvidence']) delete feedbackFields[key];
+      feedbackFields.lines = {
+        type: 'array',
+        minItems: 1,
+        maxItems: Math.min(3, references.length),
+        items: closed({
+          quoteId,
+          advice: {
+            ...string,
+            minLength: 1,
+            maxLength: 180,
+            description:
+              '一句简明中文判断和理由，尽量30至60字符，不复述英文原句。涉及结构名称时所有中英文与标点总长不得超过180字符。'
+          }
+        })
+      };
+      feedbackFields.errors = {
+        type: 'array',
+        maxItems: 6,
+        items: closed({
+          label: { ...string, minLength: 1, maxLength: 80 },
+          quoteId,
+          dimension: { type: 'string', enum: names },
+          errorText:
+            assessment?.kind === 'syntax_analysis'
+              ? { type: 'null' }
+              : assessment?.kind === 'cloze' && request.input.length <= 80
+                ? { type: ['string', 'null'], enum: [request.input, null] }
+                : { type: ['string', 'null'], minLength: 1, maxLength: 80 },
+          replacement: ['syntax_analysis', 'diagnostic_set'].includes(assessment?.kind)
+            ? { type: 'null' }
+            : { type: ['string', 'null'], minLength: 1, maxLength: 120 }
+        })
+      };
+      for (const field of ['strengths', 'uncertainties'])
+        feedbackFields[field] = {
+          type: 'array',
+          maxItems: 6,
+          items: closed({ label: { ...string, minLength: 1, maxLength: 80 }, quoteId })
+        };
+      const phraseIds = references
+        .filter((r) => r.quote.length >= 8 && r.quote.length <= 240 && !/[\u4e00-\u9fff]/u.test(r.quote))
+        .map((r) => r.id);
+      feedbackFields.phrases = {
+        type: 'array',
+        maxItems: phraseIds.length ? 3 : 0,
+        items: { type: 'string', ...(phraseIds.length ? { enum: phraseIds } : {}) }
+      };
+    }
+  }
+  if (
+    native &&
+    anchoredEdits &&
+    (request.phase === 'essay' || coachAssessmentTask(request)?.kind === 'diagnostic_set')
+  ) {
+    const { name: _name, ...review } = feedbackFields.dimensions.items.properties;
+    feedbackFields.dimensionReviews = closed(
+      Object.fromEntries(
+        ['grammar', 'collocation', 'expression', 'task'].map((key) => [key, closed(structuredClone(review))])
+      )
+    );
+    const roles = coachAssessmentTask(request)?.items;
+    if (roles)
+      for (const [index, key] of ['grammar', 'collocation', 'expression', 'task'].entries())
+        feedbackFields.dimensionReviews.properties[key].properties.evidenceIds.items = {
+          type: 'string',
+          enum: roles
+            .filter((role: any) => role.allowedDimensions.includes(WRITING_METHOD.feedback[index]))
+            .map((role: any) => role.quoteId)
+        };
+    delete feedbackFields.dimensions;
   }
   const schema: Record<string, any> = native
-    ? closed({ quoteVersion: { type: 'string', enum: [quoteVersion] }, message: string, ...feedbackFields })
+    ? closed({
+        quoteVersion: { type: 'string', enum: [quoteVersion] },
+        message: anchoredEdits ? { ...string, maxLength: 100 } : string,
+        ...feedbackFields
+      })
     : closed({
         message: string,
         question: { type: 'null' },
@@ -459,7 +621,7 @@ export function prepareCoachFeedbackModel(
         coach: closed(coach)
       });
   if (native)
-    schema.description = `原稿引用表（只返回编号）：${JSON.stringify(references)}。rewriteMode=keep时rewrite必须为null；suggest时rewrite必须为非空修改建议。`;
+    schema.description = `原稿引用表（只返回编号）：${JSON.stringify(references)}。${anchoredEdits ? '每个编号只点评一次。只在errors的唯一errorText片段上应用replacement，其他原文保留，不返回整段改写。' : 'rewriteMode=keep时rewrite必须为null；suggest时rewrite必须为非空修改建议。'}`;
   return {
     ...config,
     maxOutput: native ? config.maxOutput : 8192,
@@ -469,7 +631,19 @@ export function prepareCoachFeedbackModel(
       ...(plain || native ? { format: 'json_object' as const } : {}),
       ...(request.feedbackVersion === COACH_FEEDBACK_VERSION ? { feedbackVersion: COACH_FEEDBACK_VERSION } : {}),
       ...(native
-        ? { quoteReferences: references, responseBinding: { kind: request.phase, target: request.target } }
+        ? {
+            quoteReferences: references,
+            ...(coachAssessmentTask(request)?.kind === 'diagnostic_set'
+              ? { quoteRoles: coachAssessmentTask(request).items }
+              : {}),
+            responseBinding: { kind: request.phase, target: request.target },
+            ...(anchoredEdits
+              ? {
+                  correctionPolicy: 'anchored-edits-v1' as const,
+                  taskNumbers: [...new Set((request.task + '\n' + request.input).match(/\d+(?:[.:]\d+)*/gu) || [])]
+                }
+              : {})
+          }
         : { reasoningEffort: 'high' as const }),
       schemaDigest: crypto.createHash('sha256').update(JSON.stringify(schema)).digest('hex'),
       schema
@@ -495,6 +669,175 @@ export function decodeCoachResponse(config: ModelConfig, content: string): strin
     throw Object.assign(new ProviderError('COACH_INVALID', '批改数据不是完整JSON'), { path: 'raw' });
   }
   validateCoachSchema(config.writingOutput!.schema, value);
+  if (value.dimensionReviews) {
+    value.dimensions = ['grammar', 'collocation', 'expression', 'task'].map((key, index) => ({
+      name: WRITING_METHOD.feedback[index],
+      ...value.dimensionReviews[key]
+    }));
+    delete value.dimensionReviews;
+  }
+  if (config.writingOutput!.responseMode === 'generation') {
+    const { message, exercises, writing } = value,
+      phase = config.writingOutput!.responseBinding!.kind;
+    const order = [
+      'collocation',
+      'collocation',
+      'collocation',
+      'translate_zh',
+      'translate_zh',
+      'translate_en',
+      'translate_en',
+      'long_sentence'
+    ];
+    const ids = Array.from({ length: phase === 'daily' ? 8 : 5 }, (_, i) => (phase === 'daily' ? 'c' : 'd') + (i + 1));
+    const cards = ids.map((id, index) => {
+      const raw = exercises[id];
+      const { english, chinese, ...source } = raw;
+      return {
+        id,
+        kind: phase === 'daily' ? order[index] : 'diagnostic',
+        exercise: { source: english ?? chinese, options: [] },
+        ...source
+      };
+    });
+    const patterns =
+      config.writingOutput!.generationEssayType === 'large'
+        ? [
+            ['As is shown in the {picture/chart}, {observation}.'],
+            ['This suggests that {point}. For example, {support}.'],
+            ['To conclude, {summary}. We should {action}.']
+          ]
+        : [
+            ['I am writing to {purpose}.'],
+            ['The {event} will take place at {place} on {time}.', 'We will {details}.'],
+            ['Please {action}. We look forward to {response}.']
+          ];
+    return JSON.stringify({
+      message,
+      question: null,
+      tools: [],
+      coach: { kind: phase, cards, ...(writing ? { writing: { ...writing, patterns } } : {}) }
+    });
+  }
+  if (config.writingOutput!.correctionPolicy === 'anchored-edits-v1') {
+    const refs = new Map((config.writingOutput!.quoteReferences || []).map((r) => [r.id, r.quote]));
+    const reject = (path: string, message: string): never => {
+      throw Object.assign(new ProviderError('COACH_INVALID', message), { path });
+    };
+    const observations = [
+      ...value.errors.map((e: any) => ({ ...e, classification: 'error' })),
+      ...value.strengths.map((e: any) => ({
+        ...e,
+        classification: 'strength',
+        dimension: null,
+        errorText: null,
+        replacement: null
+      })),
+      ...value.uncertainties.map((e: any) => ({
+        ...e,
+        classification: 'uncertain',
+        dimension: null,
+        errorText: null,
+        replacement: null
+      }))
+    ];
+    observations.forEach((o: any, i: number) => {
+      if (o.classification === 'error' && o.dimension === null)
+        reject(`observations[${i}].dimension`, '错误必须绑定量表维度');
+      if (o.errorText !== null && (!refs.get(o.quoteId)?.includes(o.errorText) || o.classification !== 'error'))
+        reject(`observations[${i}].errorText`, '错误片段必须逐字出现在本条原答中');
+      const role = config.writingOutput!.quoteRoles?.find((r: any) => r.quoteId === o.quoteId);
+      if (o.classification === 'error' && role && !role.allowedDimensions.includes(o.dimension))
+        reject(`errors[${i}].dimension`, '中文分析不能当作英文语法或搭配错误');
+      if (role && !role.allowReplacement && o.replacement !== null)
+        reject(`errors[${i}].replacement`, '分析笔记只给提示，不代写或改写原答');
+      // Cambridge English Grammar Today: on + weekday + part of day is valid
+      // without an article. Adding "the" is not evidence of a grammar error.
+      const dayPart =
+        /\bthe\s+((?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+(?:morning|afternoon|evening)s?)\b/giu;
+      if (
+        o.classification === 'error' &&
+        o.errorText &&
+        o.replacement &&
+        o.replacement !== o.errorText &&
+        o.replacement.replace(dayPart, '$1') === o.errorText
+      )
+        reject(`errors[${i}]`, '星期加时段可不加冠词，不能因可选变体降档');
+    });
+    if (new Set(value.lines.map((line: any) => line.quoteId)).size !== value.lines.length)
+      reject('lines', '同一原答片段不能重复点评');
+    value.dimensions.forEach((d: any, i: number) => {
+      if (
+        (d.score === 0 || d.score === 1) &&
+        !observations.some(
+          (o: any) => o.classification === 'error' && o.dimension === d.name && d.evidenceIds.includes(o.quoteId)
+        )
+      )
+        reject(`dimensions[${i}].score`, '降档须有本维度的同引文错误，不能重复归因或用润色降档');
+    });
+    value.lines = value.lines.map((line: any, i: number) => {
+      const source = refs.get(line.quoteId)!;
+      if (observations.some((o: any) => o.quoteId === line.quoteId && o.replacement !== null && o.errorText === null))
+        reject(`lines[${i}]`, '缺项只能给提示，不能代填事实');
+      const edits = observations
+        .filter((o: any) => o.quoteId === line.quoteId && o.classification === 'error' && o.replacement !== null)
+        .map((o: any) => ({ before: o.errorText, after: o.replacement }))
+        .map((edit: any, j: number) => {
+          const start = source.indexOf(edit.before);
+          if (start < 0 || source.indexOf(edit.before, start + 1) >= 0)
+            reject(`lines[${i}].edits[${j}].before`, '修改片段必须在原答中唯一定位');
+          if (
+            !observations.some(
+              (o: any) => o.quoteId === line.quoteId && o.classification === 'error' && o.errorText === edit.before
+            )
+          )
+            reject(`lines[${i}].edits[${j}]`, '修改只能作用于具名错误片段，润色和缺失内容只给建议');
+          if (
+            (edit.after.match(/\d+(?:[.:]\d+)*/gu) || []).some(
+              (n: string) => !config.writingOutput!.taskNumbers?.includes(n)
+            )
+          )
+            reject(`lines[${i}].edits[${j}].after`, '修改不能擅加题目或原答没有的数字事实');
+          return { ...edit, start, end: start + edit.before.length };
+        })
+        .sort((a: any, b: any) => a.start - b.start);
+      for (let j = 1; j < edits.length; j++)
+        if (edits[j].start < edits[j - 1].end) reject(`lines[${i}].edits`, '修改片段重叠');
+      let rewrite = source;
+      for (const edit of [...edits].reverse())
+        rewrite = rewrite.slice(0, edit.start) + edit.after + rewrite.slice(edit.end);
+      return {
+        quoteId: line.quoteId,
+        advice: line.advice,
+        rewriteMode: edits.length ? 'suggest' : 'keep',
+        rewrite: edits.length ? rewrite : null
+      };
+    });
+    value.phrases = value.phrases.map((phrase: any, i: number) => {
+      const line = value.lines.find((l: any) => l.quoteId === phrase);
+      const phraseId = phrase;
+      const corrected = line?.rewriteMode === 'suggest' ? line.rewrite : refs.get(phraseId);
+      if (!corrected || corrected.length > 240) reject(`phrases[${i}]`, '句式只能来自本次原答或已校验的片段修正');
+      if (
+        observations.some(
+          (o: any) =>
+            o.classification === 'error' && o.quoteId === phraseId && o.errorText && corrected.includes(o.errorText)
+        )
+      )
+        reject(`phrases[${i}]`, '不能把尚未修正的已知错误沉淀为句式');
+      return corrected;
+    });
+    value.weaknesses = observations.filter((o: any) => o.classification === 'error').map((o: any) => o.label);
+    value.strengths = observations.filter((o: any) => o.classification === 'strength').map((o: any) => o.label);
+    value.strengthEvidence = observations
+      .filter((o: any) => o.classification === 'strength')
+      .map(({ label, quoteId }: any) => ({ label, quoteId }));
+    value.weaknessEvidence = observations
+      .filter((o: any) => o.classification !== 'strength')
+      .map(({ label, quoteId, classification }: any) => ({ label, quoteId, classification }));
+    delete value.errors;
+    delete value.uncertainties;
+  }
   if (config.writingOutput!.feedbackVersion === COACH_FEEDBACK_VERSION)
     value.dimensions.forEach((dimension: any, index: number) => {
       if (

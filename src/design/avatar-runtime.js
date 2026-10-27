@@ -1,6 +1,7 @@
 import { AVATAR_MEDIA, AVATAR_STATIC, avatarStateFor } from './avatar-state.js';
 import { createAvatarPlayer } from './avatar-player.js';
 import { bindBusinessMotion } from './business-motion.js';
+import { kittenPoseAt, paintKittenRig } from './kitten-rig.js';
 
 const players = new Map();
 let serial = 0;
@@ -246,6 +247,14 @@ export function acquireAvatar(identity = 'yozi') {
     fallback.src = AVATAR_STATIC;
   };
   const load = async (state, options) => {
+    if ([...views].some((view) => view.perceptible?.()))
+      return {
+        id: ++serial,
+        poster: fallback,
+        video: null,
+        canAnimate: false,
+        animationDuration: state === 'celebrate' ? 2400 : 1200
+      };
     const poster = await posterFor(state);
     let video = null;
     let fallbackReason = '';
@@ -297,7 +306,7 @@ export function acquireAvatar(identity = 'yozi') {
     for (const view of views) {
       if (view.visible?.() === false) continue;
       if (view.perceptible?.()) {
-        view.pose?.(state.reduced || !state.activated ? 'none' : avatarPoseAt(gestureTime, state.current.state));
+        view.pose?.('none');
       }
       for (const [key, layer] of [
         ['current', state.current],
@@ -305,6 +314,20 @@ export function acquireAvatar(identity = 'yozi') {
       ]) {
         const canvas = view[key]();
         if (!canvas || !layer) continue;
+        if (view.perceptible?.()) {
+          paintKittenRig(
+            canvas.getContext('2d'),
+            canvas.width,
+            canvas.height,
+            kittenPoseAt(gestureTime, layer.state, {
+              reduced: state.reduced || !state.activated,
+              age: Date.now() - layer.enteredAt
+            })
+          );
+          if (key === 'current')
+            view.painted?.(state.reduced ? 'fallback' : state.visible && state.focused ? 'playing' : 'paused');
+          continue;
+        }
         const image = !state.reduced && layer.video?.readyState >= 2 ? layer.video : layer.poster;
         if (!image || !(image.videoWidth || image.naturalWidth)) continue;
         const context = canvas.getContext('2d');
@@ -337,7 +360,7 @@ export function acquireAvatar(identity = 'yozi') {
       state.focused &&
       !state.reduced &&
       state.activated &&
-      Boolean(state.current.video || state.next?.video || AVATAR_DRIFT[state.current.state]);
+      Boolean(state.current.video || state.next?.video || [...views].some((view) => view.perceptible?.()));
     if (!moving) lastTick = null;
     if (!moving && frameId !== null) {
       cancelAnimationFrame(frameId);
@@ -346,6 +369,10 @@ export function acquireAvatar(identity = 'yozi') {
     if (moving && frameId === null) frameId = requestAnimationFrame(tick);
   }
   function tick(time) {
+    if (lastTick !== null && time - lastTick < 1000 / 30) {
+      frameId = requestAnimationFrame(tick);
+      return;
+    }
     // Use wall time even on a busy renderer; gates reset lastTick while paused.
     if (lastTick !== null) gestureTime += time - lastTick;
     lastTick = time;

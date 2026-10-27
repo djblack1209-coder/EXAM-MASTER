@@ -58,7 +58,7 @@ export function createAvatarPlayer({
         stillTimer = null;
         ended(layer);
       },
-      Math.max(0, AVATAR_MIN_STAY - (now() - current.enteredAt))
+      Math.max(0, (current.animationDuration ?? AVATAR_MIN_STAY) - (now() - current.enteredAt))
     );
   }
   function atRest() {
