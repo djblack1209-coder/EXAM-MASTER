@@ -1,5 +1,15 @@
 # 脚本与依赖维护
 
+## 当前 App 验收范围（2026-10-27 裁定）
+
+研发主线只做桌面与手机 App。小程序功能、界面适配、构建和验证全部暂停；保留既有小程序代码、依赖、脚本及构建产物，禁止以清理或构建前置准备为由删除／覆盖它们。下方历史微信步骤和大小回执只作历史记录，不构成当前工单。
+
+- 桌面继续使用现有 `build:desktop`／`build:desktop:web`，其公开产物检查已显式绑定本轮桌面输出目录；手机 App 按受影响范围使用 `build:app` 及 App 产物检查。
+- 不执行 `dev:mp-weixin`、`build:mp-weixin`、`audit:mp-main-usage`、`audit:wechat:artifacts`、`smoke:wechat:devtools`，不启动微信开发者工具，不做390px小程序适配。
+- `release:gate`／`release:gate:report` 是含微信步骤的旧聚合脚本，本阶段整条不运行；保留原脚本，App工单分别执行需要的现有检查。
+- 不使用默认会扫描微信目录的裸 `audit:public-build`／`ui-quality-gate.js --public-build`；App共享前端检查须显式传入本轮App输出目录。CI当前构建H5、桌面脚本已指定桌面目录，无需为了小程序追加验证。H5结果仍不替代App目标端验收。
+- 手机App的窄屏与键盘检查依App任务继续；本裁定停止的是小程序适配与验收，不停止App侧权限、批改契约、写作主链或桌面构建。
+
 ## dev/test 渠道本机验收
 
 沿用 `YOZI_BUILD_CHANNEL=dev/test`；未指定渠道的生产构建默认 release。测试包构建：`YOZI_BUILD_CHANNEL=test YOZI_ISOLATED_BUILD=1 npm run build:desktop -- --config '{"identifier":"cn.wangshiliang.wenli.qa.journey"}' --bundles app --no-sign -- --offline --locked --jobs 1`；核验签名后放入 `tmp/dev-test.noindex/Yozi AI.app`，立即删除被替代的测试包，不替换日常 App。
