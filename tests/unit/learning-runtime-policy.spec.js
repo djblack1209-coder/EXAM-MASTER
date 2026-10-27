@@ -14,7 +14,11 @@ import { dayKey, effectiveGrade } from '@/services/learning/learning-domain.js';
 import { newAccount, reserveCall } from '../../laf-backend/functions/_shared/learning-account.ts';
 import {
   buildLearningRequest,
-  parseLearningOutput
+  parseLearningOutput,
+  prepareCoachFeedbackModel,
+  readCoachFunctionResponse,
+  validateCoachSchema,
+  decodeCoachResponse
 } from '../../laf-backend/functions/_shared/ai-providers/learning-provider.ts';
 
 function repository() {
@@ -179,4 +183,116 @@ it('快照的网络投影丢弃历史、额外原答和额外工具权限', () =
   expect(JSON.stringify(result)).not.toContain('PRIVATE');
   expect(result.teaching).toEqual({ stopped: false, method: 'steps' });
   expect(result.dueCards).toEqual([{ id: 'card_1', due: 123 }]);
+});
+
+it('已实测能力的BYOK通过原生函数返回批改数据，原文枚举与非空字段仍强制校验，思考与输出上限保持', async () => {
+  const config = {
+    id: 'verified',
+    provider: 'Agnes AI',
+    model: 'agnes-2.5-flash',
+    endpoint: 'https://apihub.agnes-ai.com/v1/chat/completions',
+    source: 'byok',
+    maxOutput: 2000,
+    capabilities: { tools: true, structured: true, vision: false, stream: false },
+    capabilityCheck: { version: 1, tools: true, structured: true, checkedAt: 1 }
+  };
+  const request = {
+    contract: 'kaoyan-writing-coach-v1',
+    phase: 'essay',
+    target: 'essay',
+    exam: 'english2',
+    day: '2026-10-26',
+    input: 'We has arranged a visit.',
+    sources: [],
+    dimensionContract: 'writing-dimensions-v1',
+    feedbackVersion: 2
+  };
+  const prepared = prepareCoachFeedbackModel(config, request);
+  const wire = buildLearningRequest(prepared, []);
+  expect(prepared.maxOutput).toBe(2000);
+  expect(wire.chat_template_kwargs).toEqual({ enable_thinking: true });
+  expect(wire).not.toHaveProperty('reasoning_effort');
+  expect(wire).not.toHaveProperty('response_format');
+  expect(wire.tools.map((t) => t.function.name)).toEqual(['yozi_coach_response']);
+  expect(wire.tools[0].function.strict).toBe(true);
+  const { coachFixture } = await import('../fixtures/writing-coach.js');
+  const output = {
+    message: 'AI评估',
+    question: null,
+    tools: [],
+    coach: { ...coachFixture(request), strengths: [], strengthEvidence: [] }
+  };
+  const { kind: _kind, target: _target, ...feedbackFields } = structuredClone(output.coach);
+  const wireOutput = {
+    message: output.message,
+    ...feedbackFields,
+    quoteVersion: prepared.writingOutput.schema.properties.quoteVersion.enum[0]
+  };
+  wireOutput.lines = wireOutput.lines.map(({ original, ...line }) => ({
+    ...line,
+    quoteId: 'q1',
+    rewriteMode: 'suggest'
+  }));
+  wireOutput.dimensions = wireOutput.dimensions.map(({ evidence, ...dimension }) => ({
+    ...dimension,
+    evidenceIds: ['q1']
+  }));
+  wireOutput.weaknessEvidence = wireOutput.weaknessEvidence.map(({ quote, ...item }) => ({
+    ...item,
+    quoteId: 'q1'
+  }));
+  const raw = {
+    choices: [
+      {
+        finish_reason: 'tool_calls',
+        message: {
+          content: null,
+          tool_calls: [
+            {
+              id: 'reply',
+              type: 'function',
+              function: { name: 'yozi_coach_response', arguments: JSON.stringify(wireOutput) }
+            }
+          ]
+        }
+      }
+    ]
+  };
+  expect(JSON.parse(decodeCoachResponse(prepared, readCoachFunctionResponse(prepared, raw)))).toEqual(output);
+  expect(() => validateCoachSchema(prepared.writingOutput.schema, wireOutput)).not.toThrow();
+  const emptyRewrite = structuredClone(wireOutput);
+  emptyRewrite.lines[0].rewrite = '';
+  expect(() => validateCoachSchema(prepared.writingOutput.schema, emptyRewrite)).toThrow();
+  const inventedQuote = structuredClone(wireOutput);
+  inventedQuote.dimensions[0].evidenceIds = ['q999'];
+  expect(() => validateCoachSchema(prepared.writingOutput.schema, inventedQuote)).toThrow();
+  const keep = structuredClone(wireOutput);
+  keep.lines[0].rewriteMode = 'keep';
+  keep.lines[0].rewrite = null;
+  expect(JSON.parse(decodeCoachResponse(prepared, JSON.stringify(keep))).coach.lines[0].rewrite).toBe(request.input);
+  keep.lines[0].rewrite = 'invented replacement';
+  expect(() => decodeCoachResponse(prepared, JSON.stringify(keep))).toThrow();
+  expect(() => decodeCoachResponse(prepared, JSON.stringify({ ...wireOutput, tools: ['method'] }))).toThrow();
+  expect(() => decodeCoachResponse(prepared, JSON.stringify({ ...wireOutput, coach: {} }))).toThrow();
+  const staleVersion = structuredClone(wireOutput);
+  staleVersion.quoteVersion = 'old-draft';
+  expect(() => decodeCoachResponse(prepared, JSON.stringify(staleVersion))).toThrow();
+  const missingMode = structuredClone(wireOutput);
+  delete missingMode.lines[0].rewriteMode;
+  expect(() => decodeCoachResponse(prepared, JSON.stringify(missingMode))).toThrow();
+  raw.choices[0].message.tool_calls[0].function.name = 'method';
+  expect(() => readCoachFunctionResponse(prepared, raw)).toThrow();
+});
+
+it('未通过能力往返的连接不会获得教学数据函数', () => {
+  const config = {
+    source: 'byok',
+    model: 'synthetic',
+    endpoint: 'https://provider.example/chat',
+    maxOutput: 2000,
+    capabilities: { tools: false, structured: false },
+    capabilityCheck: { version: 1, tools: false, structured: false }
+  };
+  const request = { phase: 'essay', exam: 'english2', dimensionContract: 'writing-dimensions-v1' };
+  expect(prepareCoachFeedbackModel(config, request)).toBe(config);
 });

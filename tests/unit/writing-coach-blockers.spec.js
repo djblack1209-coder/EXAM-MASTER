@@ -11,6 +11,8 @@ import { learningWriteLease } from '@/services/learning/learning-write-lease.js'
 import { coachFixture } from '../fixtures/writing-coach.js';
 import WritingCoach from '@/pages/learning/components/writing-coach.vue';
 import MuseFeedbackCard from '@/components/business/learning/muse-feedback-card.vue';
+import MuseModelControl from '@/components/business/learning/muse-model-control.vue';
+import BaseInput from '@/components/base/base-input/base-input.vue';
 import { coachSavedRecords } from '../../laf-backend/functions/_shared/learning-coach-records.js';
 import { applyLearningOperation, emptyLearningState } from '@/services/learning/learning-domain.js';
 import { prepareLearningRestore } from '@/services/learning/learning-backup.js';
@@ -669,4 +671,72 @@ describe('资料保存与绑定是一个整体', () => {
     expect(store.active.coach.materialIds).toEqual(boundBefore);
     pending.catch(() => {});
   });
+});
+
+it('已验证连接的单次请求失败仍可手动切换，未通过能力门禁的连接不进入选择器', () => {
+  const store = freshStore();
+  const model = (id, tools, structured, connectionStatus) => ({
+    id,
+    source: 'byok',
+    provider: id,
+    model: 'synthetic-model',
+    configured: true,
+    connectionStatus,
+    capabilityCheck: { version: 1, tools, structured }
+  });
+  store.models = [
+    model('current', true, true, 'connected'),
+    model('verified-failed', true, true, 'failed'),
+    model('unsupported', false, true, 'connected'),
+    model('unverified', false, false, 'connected')
+  ];
+  store.modelId = 'current';
+  const wrapper = mount(MuseModelControl);
+  try {
+    const options = wrapper.findComponent(BaseInput).props('options');
+    expect(options.map((option) => option.value)).toEqual(['current', 'verified-failed']);
+    expect(options[1].label).toContain('上次请求失败');
+  } finally {
+    wrapper.unmount();
+  }
+});
+
+it('已提交审题后重新挂载恢复写作，不被待评日卡抢回，待评原答仍保留', async () => {
+  const store = freshStore();
+  const previousGenerate = generateLearningTurn.getMockImplementation();
+  let wrapper;
+  vi.mocked(generateLearningTurn).mockImplementation(async (body) => ({
+    success: true,
+    data: {
+      requestId: body.requestId,
+      requestBinding: body.requestBinding,
+      modelId: body.modelId,
+      coach: coachFixture(body.learningContext.coach)
+    }
+  }));
+  try {
+    store.coachSave('profile', { profile: { exam: 'english2', minutes: 25, deadline: null } });
+    await store.requestCoach('diagnostic');
+    for (const card of store.active.coach.diagnostic.cards)
+      store.coachSave('answer', { target: 'diagnostic', cardId: card.id, answer: 'Synthetic answer.' });
+    await store.requestCoach('feedback', 'diagnostic');
+    await store.requestCoach('daily');
+    for (const card of store.active.coach.days[0].pack.cards)
+      store.coachSave('answer', { cardId: card.id, answer: 'Original pending answer.' });
+    store.coachSave('analysis', {
+      fields: { genre: 'letter', recipient: 'friend', purpose: 'invite', points: 'event', words: '100' }
+    });
+    store.refresh();
+    wrapper = mount(WritingCoach);
+    await flushPromises();
+    expect(wrapper.text()).toContain('对照审题反馈');
+    expect(wrapper.find('[data-test="coach-practice-sheet"]').exists()).toBe(false);
+    expect(store.active.coach.days[0].answers).toHaveLength(8);
+    expect(store.active.coach.days[0].answers.every((answer) => answer.answer === 'Original pending answer.')).toBe(
+      true
+    );
+  } finally {
+    wrapper?.unmount();
+    vi.mocked(generateLearningTurn).mockImplementation(previousGenerate);
+  }
 });

@@ -7,7 +7,12 @@ import { isIP } from 'node:net';
 import crypto from 'node:crypto';
 import { modelInferenceParameters } from './free-model-presets.js';
 import { DEV_TEST } from '../build-channel.js';
-import { WRITING_METHOD, COACH_FEEDBACK_VERSION, COACH_FEEDBACK_CLASSES } from '../learning-writing-coach.js';
+import {
+  WRITING_METHOD,
+  COACH_FEEDBACK_VERSION,
+  COACH_FEEDBACK_CLASSES,
+  coachQuoteOptions
+} from '../learning-writing-coach.js';
 import {
   normalizeRubric,
   assessWithRubric,
@@ -157,11 +162,14 @@ export type ModelConfig = {
       | 'groq-writing-strict-v1'
       | 'groq-writing-json-object-v1'
       | 'groq-writing-plain-batch-v1'
-      | 'local-writing-plain-v1';
+      | 'local-writing-plain-v1'
+      | 'native-coach-tools-v1';
     format?: 'json_object';
     omitResponseFormatForRequest?: string;
     feedbackVersion?: number;
-    reasoningEffort: 'low' | 'high';
+    reasoningEffort?: 'low' | 'high';
+    quoteReferences?: Array<{ id: string; quote: string }>;
+    responseBinding?: { kind: string; target: string };
     schemaDigest: string;
     schema: any;
   };
@@ -301,13 +309,21 @@ export function prepareCoachFeedbackModel(
     allowPlain &&
     config.endpoint === 'https://openrouter.ai/api/v1/chat/completions' &&
     config.model === 'nvidia/nemotron-3-ultra-550b-a55b:free';
+  const native =
+    !allowPlain &&
+    config.source === 'byok' &&
+    request?.dimensionContract === 'writing-dimensions-v1' &&
+    config.capabilityCheck?.version === 1 &&
+    config.capabilityCheck.tools === true &&
+    config.capabilityCheck.structured === true;
   if (
-    !DEV_TEST ||
+    (!DEV_TEST && !native) ||
     !request ||
     (!['feedback', 'essay'].includes(request.phase) && !(allowSummary && request.phase === 'summary')) ||
     !['english1', 'english2', 'general'].includes(request.exam) ||
     (config.source !== 'byok' && !plain) ||
-    (!plain &&
+    (!native &&
+      !plain &&
       (config.endpoint !== 'https://api.groq.com/openai/v1/chat/completions' || config.model !== 'openai/gpt-oss-120b'))
   )
     return config;
@@ -315,7 +331,11 @@ export function prepareCoachFeedbackModel(
     throw new ProviderError('WRITING_FORMAT_UNSUPPORTED', '此点评路径需要结构化能力');
   if (stream) throw new ProviderError('WRITING_STREAM_UNSUPPORTED', '此严格格式不支持流式，请主动选择非流式');
   const string = { type: 'string' },
-    strings = { type: 'array', items: string };
+    strings = { type: 'array', items: string },
+    references = native
+      ? coachQuoteOptions(request.input, true).map((quote, index) => ({ id: `q${index + 1}`, quote }))
+      : [],
+    quoteId = { type: 'string', enum: references.map((reference) => reference.id) };
   const coach: Record<string, any> =
     request.phase === 'summary'
       ? {
@@ -328,12 +348,25 @@ export function prepareCoachFeedbackModel(
           target: { type: 'string', enum: [request.target] },
           lines: {
             type: 'array',
-            description: '1至6条，原文逐字引用，advice与rewrite必须非空。',
-            items: closed({ original: string, advice: string, rewrite: string })
+            description: native
+              ? '1至6条，quoteId只能选当前引用表；advice非空，keep时rewrite为null，suggest时rewrite非空。'
+              : '1至6条，原文逐字引用，advice与rewrite必须非空。',
+            ...(native ? { minItems: 1, maxItems: 6 } : {}),
+            items: native
+              ? closed({
+                  quoteId,
+                  advice: { ...string, minLength: 1, maxLength: 600 },
+                  rewriteMode: { type: 'string', enum: ['keep', 'suggest'] },
+                  rewrite: { type: ['string', 'null'], minLength: 1, maxLength: 1000 }
+                })
+              : closed({ original: string, advice: string, rewrite: string })
           },
           weaknesses: strings,
           strengths: strings,
-          strengthEvidence: { type: 'array', items: closed({ label: string, quote: string }) },
+          strengthEvidence: {
+            type: 'array',
+            items: closed({ label: string, ...(native ? { quoteId } : { quote: string }) })
+          },
           phrases: { ...strings, items: { ...string, minLength: 1, maxLength: 240 }, maxItems: 6 },
           dimensions: {
             type: 'array',
@@ -343,7 +376,9 @@ export function prepareCoachFeedbackModel(
               ...(request.dimensionContract
                 ? {
                     score: { type: ['integer', 'null'], enum: [0, 1, 2, null] },
-                    evidence: { type: 'array', items: string, maxItems: 3 }
+                    ...(native
+                      ? { evidenceIds: { type: 'array', items: quoteId, maxItems: 3 } }
+                      : { evidence: { type: 'array', items: string, maxItems: 3 } })
                   }
                 : {})
             })
@@ -352,7 +387,11 @@ export function prepareCoachFeedbackModel(
   if (request.feedbackVersion === COACH_FEEDBACK_VERSION)
     coach.weaknessEvidence = {
       type: 'array',
-      items: closed({ label: string, quote: string, classification: { type: 'string', enum: COACH_FEEDBACK_CLASSES } })
+      items: closed({
+        label: string,
+        ...(native ? { quoteId } : { quote: string }),
+        classification: { type: 'string', enum: COACH_FEEDBACK_CLASSES }
+      })
     };
   if (request.writingBand) {
     const example = writingBandExample(request.writingBand, request.input);
@@ -390,21 +429,48 @@ export function prepareCoachFeedbackModel(
       integrityFlags: { ...strings, description: '本次必须为空数组。' }
     });
   }
-  const schema = closed({
-    message: string,
-    question: { type: 'null' },
-    tools: { ...strings, description: '必须为空数组，不使用工具。' },
-    coach: closed(coach)
-  });
+  const quoteVersion = native
+    ? crypto
+        .createHash('sha256')
+        .update(JSON.stringify([request.contract, request.day, request.target, request.task, request.input]))
+        .digest('hex')
+        .slice(0, 24)
+    : null;
+  const { kind: _kind, target: _target, ...feedbackFields } = coach;
+  if (native) {
+    feedbackFields.dimensions = {
+      type: 'array',
+      minItems: request.phase === 'essay' ? 4 : 0,
+      maxItems: 4,
+      items: closed({
+        name: { type: 'string', enum: WRITING_METHOD.feedback },
+        comment: { ...string, minLength: 1, maxLength: 500 },
+        score: { type: ['integer', 'null'], enum: [0, 1, 2, null] },
+        evidenceIds: { type: 'array', items: quoteId, maxItems: 3 }
+      })
+    };
+  }
+  const schema: Record<string, any> = native
+    ? closed({ quoteVersion: { type: 'string', enum: [quoteVersion] }, message: string, ...feedbackFields })
+    : closed({
+        message: string,
+        question: { type: 'null' },
+        tools: { ...strings, description: '必须为空数组，不使用工具。' },
+        coach: closed(coach)
+      });
+  if (native)
+    schema.description = `原稿引用表（只返回编号）：${JSON.stringify(references)}。rewriteMode=keep时rewrite必须为null；suggest时rewrite必须为非空修改建议。`;
   return {
     ...config,
-    maxOutput: 8192,
+    maxOutput: native ? config.maxOutput : 8192,
     writingOutput: {
       contract: request.contract,
-      inferencePolicy: plain ? 'local-writing-plain-v1' : 'groq-writing-strict-v1',
-      ...(plain ? { format: 'json_object' as const } : {}),
+      inferencePolicy: native ? 'native-coach-tools-v1' : plain ? 'local-writing-plain-v1' : 'groq-writing-strict-v1',
+      ...(plain || native ? { format: 'json_object' as const } : {}),
       ...(request.feedbackVersion === COACH_FEEDBACK_VERSION ? { feedbackVersion: COACH_FEEDBACK_VERSION } : {}),
-      reasoningEffort: 'high',
+      ...(native
+        ? { quoteReferences: references, responseBinding: { kind: request.phase, target: request.target } }
+        : { reasoningEffort: 'high' as const }),
       schemaDigest: crypto.createHash('sha256').update(JSON.stringify(schema)).digest('hex'),
       schema
     }
@@ -419,6 +485,53 @@ export function validateCoachSchema(schema: any, value: any) {
       schemaKeyword: error.keyword || 'schema'
     });
   }
+}
+// The model selects sealed reference IDs; the host never repairs a misquoted string.
+export function decodeCoachResponse(config: ModelConfig, content: string): string {
+  let value: any;
+  try {
+    value = JSON.parse(content);
+  } catch {
+    throw Object.assign(new ProviderError('COACH_INVALID', '批改数据不是完整JSON'), { path: 'raw' });
+  }
+  validateCoachSchema(config.writingOutput!.schema, value);
+  const references = new Map(
+    (config.writingOutput!.quoteReferences || []).map((reference) => [reference.id, reference.quote])
+  );
+  const quote = (id: string, path: string) => {
+    if (!references.has(id))
+      throw Object.assign(new ProviderError('COACH_INVALID', '批改引用没有绑定当前原稿'), { path });
+    return references.get(id)!;
+  };
+  const { quoteVersion: _version, message, ...coach } = value;
+  coach.lines = coach.lines.map((line: any, index: number) => {
+    const { quoteId, rewriteMode, ...rest } = line;
+    const original = quote(quoteId, `lines[${index}].quoteId`);
+    if (
+      (rewriteMode === 'keep' && rest.rewrite !== null) ||
+      (rewriteMode === 'suggest' && (typeof rest.rewrite !== 'string' || !rest.rewrite.trim()))
+    )
+      throw Object.assign(new ProviderError('COACH_INVALID', '改写状态与内容不一致'), {
+        path: `lines[${index}].rewrite`
+      });
+    return { ...rest, original, rewrite: rewriteMode === 'keep' ? original : rest.rewrite };
+  });
+  for (const key of ['strengthEvidence', 'weaknessEvidence'])
+    if (coach[key])
+      coach[key] = coach[key].map((item: any, index: number) => {
+        const { quoteId, ...rest } = item;
+        return { ...rest, quote: quote(quoteId, `${key}[${index}].quoteId`) };
+      });
+  coach.dimensions = coach.dimensions.map((dimension: any, index: number) => {
+    const { evidenceIds, ...rest } = dimension;
+    return { ...rest, evidence: evidenceIds.map((id: string) => quote(id, `dimensions[${index}].evidenceIds`)) };
+  });
+  return JSON.stringify({
+    message,
+    question: null,
+    tools: [],
+    coach: { ...config.writingOutput!.responseBinding, ...coach }
+  });
 }
 export function validateWritingFeedbackOutput(
   raw: string,
@@ -462,14 +575,16 @@ export function validateWritingFeedbackOutput(
   }
 }
 function coachResponseFunction(config: ModelConfig) {
-  return DEV_TEST &&
-    config.plainCoachRequest &&
-    config.writingOutput?.format === 'json_object' &&
-    config.model === 'nvidia/nemotron-3-ultra-550b-a55b:free' &&
-    config.endpoint === 'https://openrouter.ai/api/v1/chat/completions'
+  return config.writingOutput?.inferencePolicy === 'native-coach-tools-v1' ||
+    (DEV_TEST &&
+      config.plainCoachRequest &&
+      config.writingOutput?.format === 'json_object' &&
+      config.model === 'nvidia/nemotron-3-ultra-550b-a55b:free' &&
+      config.endpoint === 'https://openrouter.ai/api/v1/chat/completions')
     ? {
         name: 'yozi_coach_response',
         description: 'Return the complete teaching response as arguments. No action is executed.',
+        ...(config.writingOutput?.inferencePolicy === 'native-coach-tools-v1' ? { strict: true } : {}),
         parameters: config.writingOutput.schema
       }
     : null;
@@ -560,7 +675,7 @@ export function buildLearningRequest(config: ModelConfig, messages: LearningMess
         }
       : config.writingOutput
         ? {
-            ...(config.writingOutput.inferencePolicy === 'local-writing-plain-v1'
+            ...(['local-writing-plain-v1', 'native-coach-tools-v1'].includes(config.writingOutput.inferencePolicy)
               ? {}
               : { reasoning_effort: config.writingOutput.reasoningEffort }),
             response_format:

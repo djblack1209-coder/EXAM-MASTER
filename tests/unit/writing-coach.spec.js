@@ -1,3 +1,4 @@
+import { compactLearningProgress } from '../../laf-backend/functions/_shared/learning-runtime-policy.js';
 import { prepareLearningRestore } from '@/services/learning/learning-backup.js';
 import { describe, it, expect, vi } from 'vitest';
 import {
@@ -640,6 +641,9 @@ it('新量表契约贯穿原稿、按维反馈与次日改写，全文不进入F
   expect(s.coach().days[0].writingSubmissions).toEqual(original);
   expect(s.coach().rewriteTasks[0].feedback.dimensions.every((dimension) => dimension.score === 2)).toBe(true);
   expect(s.coach().days[0].rewritePending).toBe(false);
+  const snapshot = compactLearningProgress(s.get(), 'c');
+  expect(snapshot.draftId).toBe(s.coach().rewriteTasks[0].answer.id);
+  expect(snapshot.dimensionScores.every((dimension) => dimension.score === 2)).toBe(true);
   expect(s.get().reviews).toEqual([]);
   expect(s.coach().learningRecords.at(-1)).toMatchObject({
     source: 'host_validated',

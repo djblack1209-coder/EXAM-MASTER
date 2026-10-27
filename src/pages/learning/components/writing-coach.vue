@@ -701,7 +701,9 @@ const diagnosticCard = computed(() =>
 const skippedCards = ref([]);
 const assessmentCounts = computed(() => coachAssessmentCounts(coach.value, today.value));
 const trainingCard = computed(() =>
-  day.value?.pack.cards.find((c) => !day.value.feedback[`card-${c.id}`] && !skippedCards.value.includes(c.id))
+  day.value?.analysis && !materialTrack.value
+    ? null
+    : day.value?.pack.cards.find((c) => !day.value.feedback[`card-${c.id}`] && !skippedCards.value.includes(c.id))
 );
 function continueTraining() {
   if (trainingCard.value) skippedCards.value.push(trainingCard.value.id);

@@ -65,6 +65,17 @@ export function compactLearningProgress(state, conversationId, at = Date.now()) 
   const coach = conversation?.coach;
   const day = coach?.days?.at(-1);
   const assessments = state.attempts.flatMap((attempt) => attempt.assistance || []);
+  const coachDimensions =
+    coach?.learningRecords?.filter((record) => record.dimensions?.length).at(-1)?.dimensions ||
+    day?.essay?.dimensions ||
+    [];
+  const latestDraftId = state.events
+    .filter(
+      (event) =>
+        ['coach.paragraph', 'coach.essaySubmit', 'coach.rewriteAnswer'].includes(event.type) &&
+        event.data.conversationId === conversationId
+    )
+    .at(-1)?.id;
   return {
     contract: 'learning-snapshot-v1',
     revision: state.revision,
@@ -73,13 +84,13 @@ export function compactLearningProgress(state, conversationId, at = Date.now()) 
       ? { exam: coach.profile.exam, minutes: coach.profile.minutes, deadline: coach.profile.deadline }
       : null,
     dimensionScores: [
-      ...(day?.essay?.dimensions || []).map((dimension) => ({ id: dimension.name, score: dimension.score ?? null })),
       ...assessments.slice(-4).flatMap((entry) =>
         (entry.dimensions || entry.rubric?.dimensions || []).map((dimension) => ({
           id: dimension.criterionId || dimension.name,
           score: dimension.score ?? null
         }))
-      )
+      ),
+      ...coachDimensions.map((dimension) => ({ id: dimension.name, score: dimension.score ?? null }))
     ].slice(-12),
     dueCards: [
       ...(coach?.library || []).filter((item) => item.due <= at).map((item) => ({ id: item.id, due: item.due })),
@@ -87,7 +98,7 @@ export function compactLearningProgress(state, conversationId, at = Date.now()) 
         .filter((item) => !item.cancelled && item.due <= at)
         .map((item) => ({ id: item.id, due: item.due }))
     ].slice(0, 12),
-    draftId: day?.writingSubmissions?.at(-1)?.submissionId || day?.drafts?.at(-1)?.id || null,
+    draftId: latestDraftId || day?.writingSubmissions?.at(-1)?.submissionId || day?.drafts?.at(-1)?.id || null,
     rewritePending: day?.rewritePending === true,
     teaching: {
       stopped: conversation?.stopped === true,

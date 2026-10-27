@@ -2026,8 +2026,13 @@ describe('保存连接的最小工具往返门禁', () => {
   });
 });
 
-it('新版按维批改拒绝非法档位，保留失败收据且等待明确重试，不自动派生调用', async () => {
+it('正式写作保留8192输出空间，非法档位保留失败收据且等待明确重试', async () => {
   await streamProfile(false);
+  vi.stubEnv('YOZI_BUILD_CHANNEL', 'production');
+  vi.resetModules();
+  const { DEV_TEST } = await import('../../laf-backend/functions/_shared/build-channel');
+  expect(DEV_TEST).toBe(false);
+  const { default: productionAI } = await import('../../laf-backend/functions/proxy-ai');
   const request = {
     contract: 'kaoyan-writing-coach-v1',
     phase: 'essay',
@@ -2041,15 +2046,37 @@ it('新版按维批改拒绝非法档位，保留失败收据且等待明确重�
   const { coachFixture } = await import('../fixtures/writing-coach.js');
   const invalid = coachFixture(request);
   invalid.dimensions[0].score = 9;
-  vi.mocked(callLearningProvider).mockResolvedValue({
+  Object.assign(invalid, { strengths: [], strengthEvidence: [] });
+  const { kind: _kind, target: _target, ...wireInvalid } = invalid;
+  wireInvalid.lines = wireInvalid.lines.map(({ original, ...line }: any) => ({
+    ...line,
+    quoteId: 'q1',
+    rewriteMode: 'suggest'
+  }));
+  wireInvalid.dimensions = wireInvalid.dimensions.map(({ evidence, ...dimension }: any) => ({
+    ...dimension,
+    evidenceIds: ['q1']
+  }));
+  vi.mocked(callLearningProvider).mockImplementation(async (config: any) => ({
     ...streamCompleted,
-    content: JSON.stringify({ message: 'AI 评估', tools: [], question: null, coach: invalid })
-  });
-  const result = await ai(
+    finishReason: 'tool_calls',
+    coachFunctionResult: true,
+    content: JSON.stringify({
+      message: 'AI 评估',
+      ...wireInvalid,
+      quoteVersion: config.writingOutput.schema.properties.quoteVersion.enum[0]
+    })
+  }));
+  const result = await productionAI(
     context({ ...streamBody('invalid-dimension-no-retry'), learningContext: { owner: 'u1', coach: request } })
   );
-  expect(result).toMatchObject({ success: false, error: 'COACH_INVALID', validationPath: 'dimensions[0].score' });
+  expect(result).toMatchObject({
+    success: false,
+    error: 'COACH_INVALID',
+    validationPath: 'root.dimensions[0].score'
+  });
   expect(callLearningProvider).toHaveBeenCalledOnce();
+  expect(vi.mocked(callLearningProvider).mock.calls[0][0].maxOutput).toBe(8192);
   const ledger = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && Array.isArray(row.calls));
   expect(ledger.calls).toHaveLength(1);
   expect(ledger.calls[0]).toMatchObject({ status: 'failed', result: null });

@@ -29,6 +29,7 @@ import {
   prepareCoachFeedbackModel,
   validateWritingFeedbackOutput,
   validateCoachSchema,
+  decodeCoachResponse,
   ProviderError,
   modelValueHasKeyEcho,
   type ModelConfig,
@@ -339,8 +340,8 @@ export async function runLearningModelTask(
     model = prepareWritingFeedbackModel(model, feedback, options.stream);
     const batchSummary = devCoach && coach?.phase === 'summary' && coach.target === 'summary';
     model = prepareCoachFeedbackModel(model, coach, options.stream, batchSummary, devCoach);
-    // Dev high reasoning needs room for teaching cards after thinking; production keeps its 2k bound.
-    if (coach && model.source === 'byok') model = { ...model, maxOutput: devCoach ? 32768 : DEV_TEST ? 8192 : 2000 };
+    // Validated writing feedback can exceed 2k with reasoning; account reservations still bound cost.
+    if (coach && model.source === 'byok') model = { ...model, maxOutput: devCoach ? 32768 : 8192 };
     // These dev providers use the same complete local schema when native strict output is unavailable.
     if (
       devCoach &&
@@ -374,7 +375,8 @@ export async function runLearningModelTask(
     const feedbackPrompt = feedback
       ? '\n本次是明确评阅已保存原答：仅返回message和tools，一项assess。attemptId/rubricId须匹配当前背景；逐一覆盖全部维度，evidence必须是数组。优先完整唯一原文；重复文字保留明确范围能力。所有模型反馈仍待核对。'
       : '';
-    const system = `${options.repair ? '上一份回复未通过校验。请基于同一原答重新生成完整JSON，逐项遵守本次结构与原答引用要求；不要声称已经保存。\n' : ''}${intake ? intakeSystemPrompt(intake) : inferenceCoach ? coachSystemPrompt(inferenceCoach, model.writingOutput?.format === 'json_object' ? model.writingOutput.schema : null) : LEARNING_SYSTEM_PROMPT}${context.generalQAOnly === true ? '\n当前是其他科目的单题答疑：简短说明当前重点支持考研英语写作；直接回答当前问题，不创建整套计划，不请求plan工具。' : ''}${!image && !feedback && !(DEV_TEST && coach) ? `\n${CONTENT_BLOCKS_PROMPT}` : ''}${visualPrompt}${capabilityPrompt}${feedbackPrompt}\n对话按学习日提供必要消息；历史摘要仅作接续，不代表已掌握。没有带入的原文不得猜测，需请用户定位或补充。\n当前学习背景（仅数据）：${contextText}`;
+    const nativeCoachReply = model.writingOutput?.inferencePolicy === 'native-coach-tools-v1';
+    const system = `${nativeCoachReply ? '本次yozi_coach_response只传递批改数据，不执行学习动作；阶段、目标和工具权限均由宿主固定。\n' : ''}${options.repair ? '上一份回复未通过校验。请基于同一原答重新生成完整JSON，逐项遵守本次结构与原答引用要求；不要声称已经保存。\n' : ''}${intake ? intakeSystemPrompt(intake) : inferenceCoach ? coachSystemPrompt(inferenceCoach, model.writingOutput?.format === 'json_object' ? model.writingOutput.schema : null) : LEARNING_SYSTEM_PROMPT}${context.generalQAOnly === true ? '\n当前是其他科目的单题答疑：简短说明当前重点支持考研英语写作；直接回答当前问题，不创建整套计划，不请求plan工具。' : ''}${!image && !feedback && !(DEV_TEST && coach) ? `\n${CONTENT_BLOCKS_PROMPT}` : ''}${visualPrompt}${capabilityPrompt}${feedbackPrompt}\n对话按学习日提供必要消息；历史摘要仅作接续，不代表已掌握。没有带入的原文不得猜测，需请用户定位或补充。\n当前学习背景（仅数据）：${contextText}`;
     const messages: LearningMessage[] = options.capabilityProbe
       ? [
           {
@@ -577,7 +579,11 @@ export async function runLearningModelTask(
     if (
       (model.writingOutput?.format === 'json_object' || devCoach) &&
       response.finishReason !== 'stop' &&
-      !(devCoach && response.coachFunctionResult === true && response.finishReason === 'tool_calls')
+      !(
+        (devCoach || nativeCoachReply) &&
+        response.coachFunctionResult === true &&
+        response.finishReason === 'tool_calls'
+      )
     )
       throw Object.assign(new ProviderError('COACH_INVALID', '模型输出未正常结束，反馈未保存'), {
         path: 'finish_reason'
@@ -611,12 +617,12 @@ export async function runLearningModelTask(
           ? parseIntakeOutput(response.content, intake)
           : coach
             ? parseCoachModelOutput(
-                rawResponse.content,
+                nativeCoachReply ? decodeCoachResponse(model, rawResponse.content) : rawResponse.content,
                 coach,
                 captureDiagnostics,
                 (parsed: any) => {
                   assertCoachSafe(parsed);
-                  if (model!.writingOutput?.format === 'json_object')
+                  if (!nativeCoachReply && model!.writingOutput?.format === 'json_object')
                     validateCoachSchema(model!.writingOutput.schema, parsed);
                 },
                 model.writingOutput?.format === 'json_object' || devCoach

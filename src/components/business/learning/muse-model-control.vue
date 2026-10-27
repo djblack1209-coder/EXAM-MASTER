@@ -49,9 +49,14 @@ const choices = computed(() =>
         model.source === 'byok' &&
         model.configured &&
         !model.requiresModelSelection &&
-        (model.connectionStatus !== 'failed' || model.id === learning.modelId)
+        model.capabilityCheck?.version === 1 &&
+        model.capabilityCheck.tools === true &&
+        model.capabilityCheck.structured === true
     )
-    .map((model) => ({ value: model.id, label: `${model.provider} · ${model.model}` }))
+    .map((model) => ({
+      value: model.id,
+      label: `${model.provider} · ${model.model}${model.connectionStatus === 'failed' ? '（上次请求失败）' : ''}`
+    }))
 );
 async function change(action) {
   if (locked.value) return;
