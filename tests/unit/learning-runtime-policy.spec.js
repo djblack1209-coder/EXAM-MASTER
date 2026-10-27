@@ -20,6 +20,7 @@ import {
   validateCoachSchema,
   decodeCoachResponse
 } from '../../laf-backend/functions/_shared/ai-providers/learning-provider.ts';
+import { coachInferenceContext } from '../../laf-backend/functions/_shared/learning-writing-coach.js';
 
 function repository() {
   let state = emptyLearningState('host-policy');
@@ -282,6 +283,68 @@ it('已实测能力的BYOK通过原生函数返回批改数据，原文枚举与
   expect(() => decodeCoachResponse(prepared, JSON.stringify(missingMode))).toThrow();
   raw.choices[0].message.tool_calls[0].function.name = 'method';
   expect(() => readCoachFunctionResponse(prepared, raw)).toThrow();
+});
+
+it('新批改不能仅因可选润色降档，实际错误必须与本维引用对应，审题不产生维度档位', () => {
+  const config = {
+    source: 'byok',
+    model: 'agnes-2.5-flash',
+    endpoint: 'https://apihub.agnes-ai.com/v1/chat/completions',
+    maxOutput: 8192,
+    capabilities: { tools: true, structured: true },
+    capabilityCheck: { version: 1, tools: true, structured: true, checkedAt: 1 }
+  };
+  const request = {
+    contract: 'kaoyan-writing-coach-v1',
+    phase: 'feedback',
+    target: 'card-c4',
+    exam: 'english2',
+    day: '2026-10-27',
+    task: '将“活动将在周五下午举行”译成英文',
+    input: 'The event will be held on Friday afternoon.\nAnother saved sentence.',
+    foundation: 'WHOLE_EMAIL_REQUIREMENTS',
+    weaknesses: ['STALE_ERROR'],
+    sources: [],
+    feedbackVersion: 2,
+    dimensionContract: 'writing-dimensions-v1'
+  };
+  expect(coachInferenceContext(request)).not.toHaveProperty('foundation');
+  expect(coachInferenceContext(request).weaknesses).toEqual([]);
+  expect(coachInferenceContext(request).task).toBe(request.task);
+  const model = prepareCoachFeedbackModel(config, request);
+  const response = {
+    quoteVersion: model.writingOutput.schema.properties.quoteVersion.enum[0],
+    message: 'AI评估',
+    lines: [{ quoteId: 'q1', advice: '可选润色不影响本题达标', rewriteMode: 'keep', rewrite: null }],
+    weaknesses: [],
+    strengths: [],
+    strengthEvidence: [],
+    phrases: [],
+    weaknessEvidence: [{ label: '可选句式变化', quoteId: 'q1', classification: 'suggestion' }],
+    dimensions: [{ name: '表达', score: 1, comment: '可改换句式', evidenceIds: ['q1'] }]
+  };
+  expect(() => decodeCoachResponse(model, JSON.stringify(response))).toThrowError(
+    expect.objectContaining({ code: 'COACH_INVALID', path: 'dimensions[0].score' })
+  );
+  response.dimensions[0].score = 2;
+  expect(JSON.parse(decodeCoachResponse(model, JSON.stringify(response))).coach.dimensions[0].score).toBe(2);
+  response.dimensions[0].score = 1;
+  response.weaknesses = ['实际语法错误'];
+  response.weaknessEvidence = [{ label: '实际语法错误', quoteId: 'q1', classification: 'error' }];
+  expect(JSON.parse(decodeCoachResponse(model, JSON.stringify(response))).coach.dimensions[0].score).toBe(1);
+  response.weaknessEvidence[0].quoteId = 'q2';
+  expect(() => decodeCoachResponse(model, JSON.stringify(response))).toThrow();
+  const analysis = prepareCoachFeedbackModel(config, { ...request, target: 'analysis', input: 'genre: 邮件' });
+  const analysisReply = {
+    ...response,
+    quoteVersion: analysis.writingOutput.schema.properties.quoteVersion.enum[0],
+    weaknesses: [],
+    weaknessEvidence: [],
+    dimensions: []
+  };
+  expect(() => decodeCoachResponse(analysis, JSON.stringify(analysisReply))).not.toThrow();
+  analysisReply.dimensions = [{ name: '语法', score: 2, comment: '不应根据中文提纲判英文语法', evidenceIds: ['q1'] }];
+  expect(() => decodeCoachResponse(analysis, JSON.stringify(analysisReply))).toThrow();
 });
 
 it('未通过能力往返的连接不会获得教学数据函数', () => {

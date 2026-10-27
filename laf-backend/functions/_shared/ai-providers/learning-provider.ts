@@ -441,7 +441,7 @@ export function prepareCoachFeedbackModel(
     feedbackFields.dimensions = {
       type: 'array',
       minItems: request.phase === 'essay' ? 4 : 0,
-      maxItems: 4,
+      maxItems: request.target === 'analysis' ? 0 : 4,
       items: closed({
         name: { type: 'string', enum: WRITING_METHOD.feedback },
         comment: { ...string, minLength: 1, maxLength: 500 },
@@ -495,6 +495,21 @@ export function decodeCoachResponse(config: ModelConfig, content: string): strin
     throw Object.assign(new ProviderError('COACH_INVALID', '批改数据不是完整JSON'), { path: 'raw' });
   }
   validateCoachSchema(config.writingOutput!.schema, value);
+  if (config.writingOutput!.feedbackVersion === COACH_FEEDBACK_VERSION)
+    value.dimensions.forEach((dimension: any, index: number) => {
+      if (
+        (dimension.score === 0 || dimension.score === 1) &&
+        !value.weaknessEvidence?.some(
+          (item: any) =>
+            item.classification === 'error' &&
+            value.weaknesses.includes(item.label) &&
+            dimension.evidenceIds.includes(item.quoteId)
+        )
+      )
+        throw Object.assign(new ProviderError('COACH_INVALID', '仅有润色建议或无对应错误证据，不能降档'), {
+          path: `dimensions[${index}].score`
+        });
+    });
   const references = new Map(
     (config.writingOutput!.quoteReferences || []).map((reference) => [reference.id, reference.quote])
   );

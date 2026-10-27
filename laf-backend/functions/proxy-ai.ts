@@ -265,23 +265,31 @@ export async function runLearningModelTask(
     const intake = context.intake === undefined ? null : normalizeIntakeContext(context.intake);
     if (intake && coach) return { code: 422, success: false, message: '建档与教学请求不能混用' };
     const inferenceCoach = coach ? coachInferenceContext(coach) : null;
+    const gradingCoach = inferenceCoach && ['feedback', 'essay'].includes(inferenceCoach.phase) ? inferenceCoach : null;
     const image =
       body.images !== undefined ? validateVisualInput(body.images, body.imageShareConsent, context.question) : null;
     visualCall = Boolean(image);
     const hostCapabilities = learningCapabilitiesData(context.capabilities);
-    const contextText = JSON.stringify({
-      ...(context.entrySource ? { entrySource: context.entrySource } : {}),
-      goal: context.goal,
-      ...(context.studyProfile ? { studyProfile: context.studyProfile } : {}),
-      task: normalizeLearningTask(context.task),
-      capabilities: hostCapabilities,
-      snapshot: normalizeLearningSnapshot(context.snapshot),
-      strategy: context.strategy,
-      question: context.question,
-      attempt: context.attempt,
-      summary: undefined,
-      ...(inferenceCoach ? { coach: inferenceCoach } : {})
-    });
+    const contextText = JSON.stringify(
+      gradingCoach
+        ? {
+            // 批改不混入整篇目标、其他题目、历史档位或建档自述，避免局部任务被按全文判。
+            coach: inferenceCoach
+          }
+        : {
+            ...(context.entrySource ? { entrySource: context.entrySource } : {}),
+            goal: context.goal,
+            ...(context.studyProfile ? { studyProfile: context.studyProfile } : {}),
+            task: normalizeLearningTask(context.task),
+            capabilities: hostCapabilities,
+            snapshot: normalizeLearningSnapshot(context.snapshot),
+            strategy: context.strategy,
+            question: context.question,
+            attempt: context.attempt,
+            summary: undefined,
+            ...(inferenceCoach ? { coach: inferenceCoach } : {})
+          }
+    );
     if (contextText.length > 12000)
       return {
         code: 413,
@@ -399,7 +407,10 @@ export async function runLearningModelTask(
               ]
             : [])
         ]
-      : [{ role: 'system', content: system }, ...body.messages];
+      : [
+          { role: 'system', content: system },
+          ...(gradingCoach ? [{ role: 'user', content: gradingCoach.input }] : body.messages)
+        ];
     if (image) {
       const last = messages.at(-1)!;
       if (last.role !== 'user') throw new ProviderError('IMAGE_INVALID', '图片只绑定本次明确用户请求');

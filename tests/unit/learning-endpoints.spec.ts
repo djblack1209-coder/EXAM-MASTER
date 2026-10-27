@@ -1802,7 +1802,7 @@ it('failed coach query preserves the validation path and pending cost after one 
     error: 'COACH_INVALID',
     validationPath: 'cards[2].prompt'
   });
-  expect(vi.mocked(callLearningProvider).mock.calls[0][0].maxOutput).toBe(2000);
+  expect(vi.mocked(callLearningProvider).mock.calls[0][0].maxOutput).toBe(8192);
   const read = await models(context({ action: 'result', requestId: body.requestId }));
   expect(read).toMatchObject({
     success: false,
@@ -2024,6 +2024,70 @@ describe('保存连接的最小工具往返门禁', () => {
     expect(inference).toMatchObject({ success: false, error: 'TEACHING_CAPABILITY_REQUIRED' });
     expect(callLearningProvider).not.toHaveBeenCalled();
   });
+});
+
+it('局部批改只发送当前题干原答，不把整篇目标、建档与旧对话变成验答要求', async () => {
+  await streamProfile(false);
+  const request = {
+    contract: 'kaoyan-writing-coach-v1',
+    phase: 'feedback',
+    target: 'card-c4',
+    exam: 'english2',
+    day: '2026-10-27',
+    input: 'The event will be held on Friday afternoon.',
+    task: '将活动将在周五下午举行译成英文',
+    sources: [],
+    foundation: 'PROFILE_WHOLE_EMAIL',
+    dimensionContract: 'writing-dimensions-v1',
+    feedbackVersion: 2
+  };
+  vi.mocked(callLearningProvider).mockImplementation(async (config: any) => ({
+    ...streamCompleted,
+    finishReason: 'tool_calls',
+    coachFunctionResult: true,
+    content: JSON.stringify({
+      quoteVersion: config.writingOutput.schema.properties.quoteVersion.enum[0],
+      message: '本题翻译准确',
+      lines: [{ quoteId: 'q1', advice: '准确翻译本题时间', rewriteMode: 'keep', rewrite: null }],
+      weaknesses: [],
+      strengths: [],
+      strengthEvidence: [],
+      weaknessEvidence: [],
+      phrases: [],
+      dimensions: [{ name: '任务完成', score: 2, comment: '本题翻译已完成，不要求邮件', evidenceIds: ['q1'] }]
+    })
+  }));
+  const body = {
+    ...streamBody('scoped-card-feedback'),
+    messages: [
+      { role: 'assistant', content: 'OLD_CONVERSATION_EMAIL' },
+      { role: 'user', content: request.input }
+    ],
+    learningContext: {
+      owner: 'u1',
+      goal: 'GLOBAL_WHOLE_EMAIL',
+      question: { prompt: 'OTHER_QUESTION' },
+      attempt: { answer: 'OLD_ANSWER' },
+      studyProfile: { goal: 'OLD_PROFILE' },
+      coach: request
+    }
+  };
+  const result = await ai(context(body));
+  expect(result.success).toBe(true);
+  const messages = vi.mocked(callLearningProvider).mock.calls[0][1];
+  expect(messages).toHaveLength(2);
+  expect(messages[1]).toEqual({ role: 'user', content: request.input });
+  const serialized = JSON.stringify(messages);
+  expect(serialized).toContain(request.task);
+  for (const marker of [
+    'GLOBAL_WHOLE_EMAIL',
+    'PROFILE_WHOLE_EMAIL',
+    'OLD_CONVERSATION_EMAIL',
+    'OTHER_QUESTION',
+    'OLD_ANSWER',
+    'OLD_PROFILE'
+  ])
+    expect(serialized).not.toContain(marker);
 });
 
 it('正式写作保留8192输出空间，非法档位保留失败收据且等待明确重试', async () => {
