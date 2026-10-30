@@ -515,3 +515,22 @@ it('普通文本连接不能冒充图片成功；图片状态按同配置/实际
     modelConnectionState({ ...model, visionAdapter: undefined }, [{ ...call, inputMode: 'image' }], at).visionStatus
   ).toBe('undeclared');
 });
+
+it('Dots 免费路由只在核价期限和精确端点生效，不强制采用失败试验的推理参数', () => {
+  const model = {
+    model: 'dots-studio/dots-3-note-preview:free',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+    maxOutput: 8192,
+    timeoutMs: 60000,
+    source: 'byok',
+    capabilities: { tools: true, structured: true },
+    capabilityCheck: { version: 1, tools: true, structured: true, checkedAt: 1 }
+  } as any;
+  expect(freeModelPricing(model, Date.parse('2026-10-30'))).toMatchObject({ inputPerMillion: 0, outputPerMillion: 0 });
+  expect(freeModelPricing(model, Date.parse('2026-11-02'))).toBeNull();
+  expect(freeModelPricing({ ...model, model: 'dots-studio/dots-3-note-preview' }, Date.parse('2026-10-30'))).toBeNull();
+  expect(freeModelPricing({ ...model, endpoint: 'https://other.example/chat' }, Date.parse('2026-10-30'))).toBeNull();
+  expect(buildLearningRequest(model, [])).toMatchObject({ max_tokens: 8192 });
+  expect(buildLearningRequest(model, [])).not.toHaveProperty('reasoning');
+  expect(model.timeoutMs).toBe(60000);
+});

@@ -8,6 +8,7 @@ import crypto from 'node:crypto';
 import {
   normalizeCoachRequest,
   coachInferenceContext,
+  coachAssessmentTask,
   coachSystemPrompt,
   parseCoachModelOutput
 } from './_shared/learning-writing-coach.js';
@@ -30,6 +31,8 @@ import {
   validateWritingFeedbackOutput,
   validateCoachSchema,
   decodeCoachResponse,
+  coachRepairFeedback,
+  coachRepairPrompt,
   ProviderError,
   modelValueHasKeyEcho,
   type ModelConfig,
@@ -210,7 +213,11 @@ export async function runLearningModelTask(
     stream?: boolean;
     capabilityProbe?: { stage: 'tool' | 'json'; nonce: string; toolCall?: any };
     response?: any;
-    repair?: { parentId: string; configurationVersion: string };
+    repair?: {
+      parentId: string;
+      configurationVersion: string;
+      feedback?: ReturnType<typeof coachRepairFeedback>;
+    };
     onStart?: (metadata: any) => void;
     onPreview?: (text: string) => void;
   } = {}
@@ -261,11 +268,17 @@ export async function runLearningModelTask(
     if (!context || typeof context !== 'object' || Array.isArray(context))
       return { code: 400, success: false, message: '学习上下文格式不合法' };
     const coach: Record<string, any> | null = context.coach === undefined ? null : normalizeCoachRequest(context.coach);
-    requireExplicitGradingRetry = Boolean(coach?.dimensionContract);
     captureDiagnostics = Boolean(coach) && canCaptureResponseDiagnostics(auth.userId);
     const intake = context.intake === undefined ? null : normalizeIntakeContext(context.intake);
     if (intake && coach) return { code: 422, success: false, message: '建档与教学请求不能混用' };
     const inferenceCoach = coach ? coachInferenceContext(coach) : null;
+    requireExplicitGradingRetry =
+      Boolean(coach?.dimensionContract) &&
+      !(
+        inferenceCoach?.phase === 'feedback' &&
+        inferenceCoach.target === 'diagnostic' &&
+        coachAssessmentTask(inferenceCoach)?.kind === 'diagnostic_set'
+      );
     const gradingCoach =
       inferenceCoach && ['feedback', 'essay', 'summary'].includes(inferenceCoach.phase) ? inferenceCoach : null;
     const image =
@@ -410,7 +423,7 @@ export async function runLearningModelTask(
             : [])
         ]
       : [
-          { role: 'system', content: system },
+          { role: 'system', content: system + coachRepairPrompt(options.repair?.feedback || null) },
           ...(gradingCoach ? [{ role: 'user', content: gradingCoach.input }] : body.messages)
         ];
     if (image) {
@@ -807,7 +820,11 @@ export async function runLearningModelTask(
           stream: false,
           onStart: undefined,
           onPreview: undefined,
-          repair: { parentId: reservation.call.id, configurationVersion: modelConfigurationVersion(usedModel) }
+          repair: {
+            parentId: reservation.call.id,
+            configurationVersion: modelConfigurationVersion(usedModel),
+            feedback: coachRepairFeedback(usedModel, error, observedResponse.content)
+          }
         }
       );
       if (repaired.success)

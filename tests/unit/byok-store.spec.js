@@ -176,3 +176,48 @@ it('literal goal facts produce a draft and do not guess ambiguous choices or dat
   });
   expect(explicitIntakeFacts('英语一还是英语二，每天20分钟或者30分钟，明年考试')).toEqual({});
 });
+
+it('混合摸底拒收后保留五项原答、关闭失败意图并允许下一步重试，不展示半截反馈', async () => {
+  await prepareCoach();
+  vi.mocked(generateLearningTurn).mockImplementationOnce(async (body) => ({
+    success: true,
+    data: {
+      requestId: body.requestId,
+      requestBinding: body.requestBinding,
+      modelId: body.modelId,
+      coach: coachFixture(body.learningContext.coach)
+    }
+  }));
+  await store.requestCoach('diagnostic');
+  for (const [index, card] of store.active.coach.diagnostic.cards.entries())
+    store.coachSave('answer', { target: 'diagnostic', cardId: card.id, answer: `Synthetic answer ${index}` });
+  const answers = structuredClone(
+    store.active.coach.diagnostic.answers.map(({ cardId, answer }) => ({ cardId, answer }))
+  );
+  vi.mocked(generateLearningTurn).mockResolvedValueOnce({
+    success: false,
+    status: 'failed',
+    error: 'COACH_INVALID',
+    repairExhausted: true,
+    message: '模型回复未通过教学校验，未计入学习成果；原答已保留，请手动重试。'
+  });
+  await store.requestCoach('feedback', 'diagnostic');
+  expect(store.active.coach.diagnostic.feedback).toBeFalsy();
+  expect(store.active.coach.diagnostic.answers.map(({ cardId, answer }) => ({ cardId, answer }))).toEqual(answers);
+  expect(store.active.coach.requests.at(-1).status).toBe('closed');
+  expect(store.retryState).toMatchObject({ phase: 'failed', errorCode: 'COACH_INVALID' });
+  expect(store.coachError).toContain('原答已保留');
+  vi.mocked(generateLearningTurn).mockImplementationOnce(async (body) => ({
+    success: true,
+    data: {
+      requestId: body.requestId,
+      requestBinding: body.requestBinding,
+      modelId: body.modelId,
+      coach: coachFixture(body.learningContext.coach)
+    }
+  }));
+  await store.requestCoach('feedback', 'diagnostic');
+  expect(store.retryState.phase).toBe('succeeded');
+  expect(store.active.coach.diagnostic.feedback).toBeTruthy();
+  expect(store.active.coach.diagnostic.answers.map(({ cardId, answer }) => ({ cardId, answer }))).toEqual(answers);
+});

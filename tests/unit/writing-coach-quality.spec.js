@@ -8,9 +8,12 @@ import {
   COACH_EXERCISE_CONTRACT,
   COACH_SUMMARY_CONTRACT
 } from '../../laf-backend/functions/_shared/learning-writing-coach.js';
+import { mixedDiagnosticRequest, mixedDiagnosticReply } from '../fixtures/writing-mixed.js';
 import {
   prepareCoachFeedbackModel,
-  decodeCoachResponse
+  decodeCoachResponse,
+  coachRepairFeedback,
+  coachRepairPrompt
 } from '../../laf-backend/functions/_shared/ai-providers/learning-provider.ts';
 const base = {
   contract: 'kaoyan-writing-coach-v1',
@@ -291,6 +294,93 @@ describe('片段修正不能扩写成新的作文或事实', () => {
   });
 });
 describe('按任务的真实答题形式送评', () => {
+  it('返修保留字段合同的原规则、维度和引用；缺失回复也有有界返修指令', () => {
+    const prepared = prepareCoachFeedbackModel(
+      config,
+      coachInferenceContext(mixedDiagnosticRequest()),
+      false,
+      false,
+      false,
+      true
+    );
+    const wire = mixedDiagnosticReply(prepared);
+    wire.dimensionReviews.grammar.evidenceIds = ['q1'];
+    const error = {
+      code: 'COACH_INVALID',
+      path: 'root.dimensionReviews.grammar.evidenceIds[0]',
+      message: '模型响应未通过完整字段合同'
+    };
+    const feedback = coachRepairFeedback(prepared, error, JSON.stringify(wire));
+    expect(feedback).toMatchObject({ path: error.path, rule: error.message, dimension: '语法', quoteIds: ['q1'] });
+    expect(coachRepairPrompt(feedback)).toContain(error.message);
+    expect(coachRepairFeedback(prepared, { code: 'COACH_INVALID', path: 'tools', message: '格式错误' })).toMatchObject({
+      rule: '格式错误',
+      previousResponse: null
+    });
+    expect(coachRepairFeedback(prepared, { ...error, repairForbidden: true }, JSON.stringify(wire))).toBeNull();
+    expect(coachRepairFeedback(prepared, { ...error, code: 'TIMEOUT' }, JSON.stringify(wire))).toBeNull();
+  });
+
+  it('同一处搭配错误换维度登记仍被拒收，两个独立错误可分别登记', () => {
+    const input = mixedDiagnosticRequest();
+    input.input = input.input.replace('Welcome to the science fair.', 'She welcome visitors.');
+    const request = coachInferenceContext(input);
+    const prepared = prepareCoachFeedbackModel(config, request, false, false, false, true);
+    const wire = mixedDiagnosticReply(prepared);
+    wire.errors.push({ ...wire.errors[0], dimension: '语法', label: '介词语法错误' });
+    wire.dimensionReviews.grammar = { score: 1, comment: '重复归因', evidenceIds: ['q2'] };
+    expect(() => decodeCoachResponse(prepared, JSON.stringify(wire))).toThrowError(
+      expect.objectContaining({
+        code: 'COACH_INVALID',
+        path: 'errors[1]',
+        validationDimension: '语法',
+        validationQuoteIds: ['q2']
+      })
+    );
+    wire.errors[1] = { label: '主谓一致', quoteId: 'q3', dimension: '语法', errorText: 'welcome', replacement: null };
+    wire.dimensionReviews.grammar.evidenceIds = ['q3'];
+    expect(() => decodeCoachResponse(prepared, JSON.stringify(wire))).not.toThrow();
+  });
+  it.each(['grammar', 'collocation', 'expression', 'task'])('无登记错误的%s降档必须拒收', (key) => {
+    const prepared = prepareCoachFeedbackModel(
+      config,
+      coachInferenceContext(mixedDiagnosticRequest()),
+      false,
+      false,
+      false,
+      true
+    );
+    const wire = mixedDiagnosticReply(prepared);
+    wire.errors = [];
+    Object.values(wire.dimensionReviews).forEach((review) => {
+      review.score = 2;
+    });
+    wire.dimensionReviews[key].score = 1;
+    expect(() => decodeCoachResponse(prepared, JSON.stringify(wire))).toThrowError(
+      expect.objectContaining({ code: 'COACH_INVALID', path: `dimensionReviews.${key}.score` })
+    );
+  });
+  it('同类换题仍使用通用作答形式，不引入旧题词汇与理由要求', () => {
+    const first = coachAssessmentTask(mixedDiagnosticRequest());
+    const second = coachAssessmentTask({
+      ...mixedDiagnosticRequest(),
+      task: mixedDiagnosticRequest().task.replace('science', 'art').replace('at', 'in')
+    });
+    expect(first.items.map((item) => item.answerFormat)).toEqual(second.items.map((item) => item.answerFormat));
+    expect(first.items[1].answerFormat).toContain('仅在题干明确要求时');
+    expect(JSON.stringify(first.items.map((item) => item.answerFormat))).not.toMatch(/provide|give|自拟实际时间/u);
+    const prepared = prepareCoachFeedbackModel(
+      config,
+      coachInferenceContext(mixedDiagnosticRequest()),
+      false,
+      false,
+      false,
+      true
+    );
+    expect(coachSystemPrompt(coachInferenceContext(mixedDiagnosticRequest()), prepared.writingOutput.schema)).toContain(
+      '固定搭配中的介词选择、动词搭配归搭配'
+    );
+  });
   it('填空比较完整候选句，隔离带有错误预设的讲解，保留标签原答', () => {
     const input = structuredClone(cloze),
       projected = coachInferenceContext(input),

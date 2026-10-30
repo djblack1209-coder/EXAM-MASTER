@@ -36,6 +36,12 @@ const REVIEWED_FREE_ROUTES = ['google/gemma-4-26b-a4b-it:free', 'nvidia/nemotron
 export function freeModelPricing(model: { model: string; endpoint: string }, now = Date.now()) {
   if (
     model.endpoint === 'https://openrouter.ai/api/v1/chat/completions' &&
+    model.model === 'dots-studio/dots-3-note-preview:free' &&
+    now < Date.parse('2026-11-02')
+  )
+    return { inputPerMillion: 0, outputPerMillion: 0, priceVersion: 'openrouter-dots-3-note-free-2026-10-30' };
+  if (
+    model.endpoint === 'https://openrouter.ai/api/v1/chat/completions' &&
     model.model === 'nvidia/nemotron-3-ultra-550b-a55b:free' &&
     now < Date.parse('2026-11-02')
   )

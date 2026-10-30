@@ -352,6 +352,34 @@ it('received nonstream failures keep shape, usage and duration without reply or 
       }
       expect(JSON.stringify(error.observed)).not.toMatch(/private_fixture|fixture-private-key/);
     }
+    // A received native-coach reply without the required tool must retain its
+    // usage even when optional diagnostics are off; raw content stays absent.
+    responseText = JSON.stringify({
+      model: config.model,
+      usage: { prompt_tokens: 7, completion_tokens: 5 },
+      choices: [{ finish_reason: 'stop', message: { content: 'private_fixture_wrong_shape' } }]
+    });
+    const nativeConfig = {
+      ...config,
+      writingOutput: {
+        contract: 'kaoyan-writing-coach-v1',
+        inferencePolicy: 'native-coach-tools-v1',
+        schema: { type: 'object' },
+        schemaDigest: 'fixture'
+      }
+    };
+    const toolFailure = await callLearningProvider(nativeConfig, [], ['https://model.example']).catch((e) => e);
+    expect(toolFailure).toMatchObject({
+      code: 'COACH_INVALID',
+      path: 'tools',
+      observed: {
+        actualModel: config.model,
+        usage: { prompt_tokens: 7, completion_tokens: 5 }
+      }
+    });
+    expect(toolFailure.observed).not.toHaveProperty('content');
+    expect(JSON.stringify(toolFailure.observed)).not.toMatch(/private_fixture|fixture-private-key/);
+    responseText = invalidContent;
     const unchanged = await callLearningProvider(config, [], ['https://model.example']).catch((e) => e);
     expect(unchanged.code).toBe('INVALID_RESPONSE');
     expect(unchanged.observed).toBeUndefined();
