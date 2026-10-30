@@ -105,3 +105,35 @@ rtk bypass node scripts/eval/writing-mixed-replay.mjs --runtime tmp/round2-n1.no
 ```
 
 离线命令不读凭据、不联网，只重验保留输出的门禁；不能替代语义正确性或有效连续复跑。真实模型脚本不启动服务器／数据库，不写学习事实；返修最多一次，预算包括能力检查和返修，密钥只通过 `readFreeApiCredential` 在内存读取。
+
+## 呈现第 1 批（模块 P，Codex）执行侧交付（2026-10-30）
+
+- **模块／归属**：P／Codex；指定工作树与 `codex/yozi-progress-1-20261031`，基于 `d2ef4cf8`。已读主工作树第0／0.1／N3／#7及末两轮验收；未改G收据、后端批改链、S壳层或令牌。
+- **读模型**：`learning-progress-read-model.js` 纯投影返回 `subjects[{accuracy,dimensions,questionTypes}]`、`nodes`、`weaknesses`、`evidence`、按来源／连接ID分开的 `sources`、`mindMap` 和 `platformReference`。分子／分母各有事件ID列表，节点另有样本、等级依据与错误事件ID；来源条目含时间、题目、结论、原记录ID，不返回学生原答或错误引文。
+- **口径**：`MIN_PROGRESS_EVENTS = 5`；不足5个有效独立事件时 `status: insufficient`，百分比／等级为null。仅可靠、无提示、每题不重复的客观作答计正确率；写作显示既有「AI评估／达成本次要求」的量规达标占比，不把0／1档称为答错，不输出「已掌握」。混合摸底一张收据只算一个样本；失败、拒收、缺绑定、空证据、null档和已替换反馈不计。节点等级是最近支撑收据相关维度的最低档，不是预测性掌握；阈值与结论仍待N3校准。
+- **映射表**：同文件 `PROGRESS_NODE_RULES` 按维度、精确能力标签和单任务题型映射到现有种子；语法→sentence、主谓一致→agreement、搭配→collocation、任务完成→task、中译英→translation。表达没有对应通用节点，只按明确标签／任务定位；不扫描原答关键词，不把混合摸底档位散发给每道题；未知标签留在四维汇总。BYOK沿已保存的 `byok_` 连接ID标源，未知历史ID保持待核对；收据没有型号版本，个人观察均不进入平台参考结论，`platformReference` 保持数据不足。
+- **展示／范围外**：框架叠加等级与薄弱点、详情列支撑事件，点「查看原答」只读打开准确的原记录；思维导图同源，只选节点看详情，不提供拖拽、作答或写事实入口。复用现有按钮、弹窗、SVG布局和令牌，无新依赖。范围外仅 `src/services/learning/website-progress.js` 加投影字段、`src/components/business/website/website-workspace.vue` 导入并挂载组件，**各2行**；官网关闭原答入口，不显示误解原话；未改官网布局或路由，供总监与S线集成时核对。
+- **全量事实**：隔离全量 **6366项：6151通过、178失败、37跳过**；使用主树原版比较脚本和第1轮清单的本地副本按精确测试ID／重复次数比对，**新增失败0**，178项既有失败全复现（[比对](../tmp/progress-1.noindex/comparison-final.json)、[JSON](../tmp/progress-1.noindex/full-tests-final.json)、[日志](../tmp/progress-1.noindex/full-tests-final.log)）。15项未处理错误按文件＋最近测试提示＋消息的多重集合与清单一致，无新增；提示不是因果归因。首轮4项新增经旧格式缺字段修复、补全后端依赖链接及串行复验消除；首轮证据保留，未放宽断言或超时。
+- **局部验证**：读模型23项、展示／框架9项均通过；最后边线样式修正后展示／框架9项再验通过（[JSON](../tmp/progress-1.noindex/final-ui-tests.json)）。ESLint、Prettier、`git diff --check`通过；桌面467模块、官网261模块构建通过，桌面公开产物检查和原生候选严格签名通过。原生QA仅主crate为opt-level=0，不作发布性能结论。
+- **桌面实操**：独立bundle ID `cn.wangshiliang.wenli.qa.progress1`、WebKit UUID、合成账户与离线传输；空数据四维／26节点均为数据不足，无百分比（[空态](../tmp/progress-1.noindex/app-empty.png)）；6条收据／6次客观作答出现67%／83%且可展开（[统计](../tmp/progress-1.noindex/app-metrics.png)、[来源](../tmp/progress-1.noindex/app-evidence.png)）；receipt-5打开准确的 `coach:writing-answer-5` 原答（[原记录](../tmp/progress-1.noindex/app-original.png)）；薄弱点在框架可见（[框架](../tmp/progress-1.noindex/app-framework.png)）；导图同等级、无作答编辑入口（[导图](../tmp/progress-1.noindex/app-mind-map.png)）。
+- **官网实操**：390px独立浏览器上下文，模拟现有只读云端返回；空态无百分比，足量指标可展开6条写作／6条客观来源，不出现原答或「查看原答」，宽度始终390、无横向溢出（[空态](../tmp/progress-1.noindex/h5-390-empty.png)、[统计](../tmp/progress-1.noindex/h5-390-metrics.png)、[来源](../tmp/progress-1.noindex/h5-390-evidence.png)、[读回](../tmp/progress-1.noindex/h5-observed.json)）。未声称真实同步或N3预测性准确率通过。
+- **未验／文案**：手机App未验，未找到本批可用的uni-app原生运行基座（未安装HBuilderX；已有ADB／Xcode组件不构成完整运行链）；未启动iPhone工具，小程序未构建未验。待批文案候选：**无**，复用既有文案及简报明确的「数据不足／正确率／思维导图」。
+- **资源／边界**：复用主树前后端依赖链接，不重装；独立Cargo临时副本已回收 **2,558,490,097字节逻辑大小**，不等同于实时可用空间。旧候选正常移入废纸篓 `~/.Trash/before-node-style.noindex/`，未清空；当前候选、隔离原生源码、重跑脚本、截图和报告保留。App正常Cmd+Q退出并按完整路径注销，系统搜索仅保留日常入口；只停本批预览PID，测试页回空白、隔离上下文关闭、UI锁释放（[资源](../tmp/progress-1.noindex/resources.json)）。无下载、付费、真实模型调用、短信、推送、部署、合并或日常App替换，主树／S线进程及历史恢复材料未动。
+
+复跑（本分支工作树；输出文件须未存在，避免覆盖交付证据）：
+
+```sh
+cd '/Users/blackdj/Desktop/.worktrees.noindex/yozi-progress-1'
+YOZI_ISOLATED_BUILD=1 rtk bypass npm test -- --reporter=default --reporter=json --outputFile=tmp/progress-1.noindex/retest.json
+rtk bypass node '/Users/blackdj/Desktop/Yozi AI/scripts/eval/compare-test-failures.mjs' --baseline tmp/progress-1.noindex/round1-test-triage.json --report tmp/progress-1.noindex/retest.json --output tmp/progress-1.noindex/retest-comparison.json
+YOZI_ISOLATED_BUILD=1 rtk bypass npm run build:desktop:web
+YOZI_ISOLATED_BUILD=1 VITE_API_BASE_URL=https://progress-qa.invalid rtk bypass npm run build:h5
+rtk bypass node tmp/progress-1.noindex/prepare-native.mjs
+test -d tmp/progress-1.noindex/cargo-target || /bin/cp -cR '/Users/blackdj/Desktop/Yozi AI/src-tauri/target' tmp/progress-1.noindex/cargo-target
+(cd tmp/progress-1.noindex/native && CARGO_TARGET_DIR="$PWD/../cargo-target" CARGO_NET_OFFLINE=true YOZI_ISOLATED_BUILD=1 rtk bypass node ../../../node_modules/@tauri-apps/cli/tauri.js build --ci --no-sign --bundles app)
+/usr/bin/codesign --force --sign - --timestamp=none 'tmp/progress-1.noindex/cargo-target/release/bundle/macos/Yozi AI.app'
+/usr/bin/codesign --verify --deep --strict 'tmp/progress-1.noindex/cargo-target/release/bundle/macos/Yozi AI.app'
+open -n 'tmp/progress-1.noindex/cargo-target/release/bundle/macos/Yozi AI.app'
+```
+
+候选内Ctrl+Alt+E／F切换空态／足量样本；验完正常退出，对实际启动的完整`.app`路径执行`lsregister -u`。官网用 `python3 -m http.server 39137 --bind 127.0.0.1 --directory dist/build/h5` 本地静态预览；`tmp/progress-1.noindex/h5-acceptance.js`交给现有Playwright的`browser_run_code_unsafe(filename)`，脚本会建隔离上下文、模拟只读返回并自行关闭。候选与临时输出始终放在本工作树`.noindex`目录。

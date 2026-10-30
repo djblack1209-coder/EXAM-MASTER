@@ -8,14 +8,20 @@
       <text role="heading" aria-level="1">知识框架</text>
       <text class="knowledge-subtitle">考研英语写作 · 验证版，内容待教师审核</text>
     </view>
+    <ProgressOverview class="knowledge-progress" :model="progress" @open="openEvidence" />
+    <view class="knowledge-views" role="group" aria-label="知识框架">
+      <BaseButton variant="quiet" :selected="mapView === 'framework'" @tap="mapView = 'framework'">知识框架</BaseButton>
+      <BaseButton variant="quiet" :selected="mapView === 'mind'" @tap="mapView = 'mind'">思维导图</BaseButton>
+    </view>
     <view class="knowledge-legend">
       <text>{{ graph.nodes.length }} 节点 · {{ graph.edges.length }} 关系</text>
       <text><text class="edge-key" />hard 必需先修</text>
       <text><text class="edge-key soft" />soft 辅助提示</text>
-      <text>未测 · 暂无记录</text>
+      <text>AI 评估</text>
     </view>
     <view v-if="graph.nodes.length" class="knowledge-layout">
       <view
+        v-if="mapView === 'framework'"
         class="knowledge-map"
         :style="{ width: `${graph.width}px`, height: `${graph.height}px` }"
         role="group"
@@ -36,6 +42,7 @@
           v-for="node in graph.nodes"
           :key="node.id"
           class="knowledge-node"
+          :class="{ 'is-weakness': node.isWeakness }"
           variant="quiet"
           :data-node-id="node.id"
           :selected="selectedId === node.id"
@@ -45,9 +52,10 @@
           @tap="selectNode(node.id)"
         >
           <text class="node-name">{{ node.name }}</text
-          ><text class="node-status">{{ node.statusLabel }}</text>
+          ><text class="node-status">{{ node.statusLabel }}<template v-if="node.isWeakness"> · 薄弱点</template></text>
         </BaseButton>
       </view>
+      <ProgressMindMap v-else class="knowledge-mind" :model="progress" :selected-id="selectedId" @select="selectNode" />
       <view
         id="knowledge-detail"
         class="knowledge-detail"
@@ -62,7 +70,11 @@
             ><text class="review-badge">待审核</text></view
           >
           <text class="detail-title" role="heading" aria-level="2">{{ detail.name }}</text>
-          <text class="record-status">{{ detail.statusLabel }} · {{ detail.recordLabel }}</text>
+          <text class="record-status"
+            >{{ detail.statusLabel }} · {{ detail.evidenceIds.length ? 'AI 评估' : detail.recordLabel
+            }}<template v-if="detail.isWeakness"> · 薄弱点</template></text
+          >
+          <ProgressEvidence :events="nodeEvents" @open="openEvidence" />
           <BaseButton v-if="windowWidth < 960" variant="quiet" @tap="returnToMap">返回图谱</BaseButton>
           <text class="detail-label">掌握标准</text>
           <text v-for="criterion in detail.masteryCriteria" :key="criterion" class="detail-copy">{{ criterion }}</text>
@@ -86,13 +98,35 @@
     </view>
     <view v-else class="knowledge-empty" role="status">暂无知识框架</view>
     <text class="knowledge-footer">验证版 · 图谱自建，未复制外部数据；诊断接入待审核</text>
+    <CustomModal
+      :visible="Boolean(record)"
+      title="学习记录"
+      :is-dark="theme.isDark"
+      :show-actions="false"
+      close-button
+      mask-closable
+      @cancel="recordId = ''"
+    >
+      <view v-if="record" class="progress-original" :data-record-id="record.id">
+        <text>{{ record.day }}</text
+        ><text>{{ record.prompt || record.goal }}</text>
+        <text selectable>{{ record.answer }}</text>
+      </view>
+    </CustomModal>
   </view>
 </template>
 <script setup>
-import { computed, ref, nextTick } from 'vue';
-import { onLoad, onResize } from '@dcloudio/uni-app';
+import { computed, ref, nextTick, watch } from 'vue';
+import { onLoad, onResize, onShow } from '@dcloudio/uni-app';
 import BaseButton from '@/components/base/base-button/base-button.vue';
+import CustomModal from '@/components/common/CustomModal.vue';
+import ProgressOverview from '@/components/business/learning/progress/progress-overview.vue';
+import ProgressEvidence from '@/components/business/learning/progress/progress-evidence.vue';
+import ProgressMindMap from '@/components/business/learning/progress/progress-mind-map.vue';
 import { useThemeStore } from '@/stores/modules/theme.js';
+import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
+import { learningProgressReadModel } from '@/services/learning/learning-progress-read-model.js';
+import { learningRecordTarget } from '../../../laf-backend/functions/_shared/learning-record-search.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import { knowledgeGraphSeed } from '@/services/learning/knowledge-graph-seed.js';
 import {
@@ -101,15 +135,46 @@ import {
   knowledgeGraphSvg
 } from '@/services/learning/knowledge-graph-view.js';
 const theme = useThemeStore();
+const learning = useConversationLearningStore();
 const windowWidth = ref(390),
-  selectedId = ref('');
+  selectedId = ref(''),
+  mapView = ref('framework'),
+  recordId = ref('');
+const progress = computed(() =>
+  learningProgressReadModel(learning.recordReadState === 'ready' ? learning.state : { owner: learning.state.owner })
+);
 const graph = computed(() =>
   knowledgeGraphView(
     knowledgeGraphSeed,
-    windowWidth.value >= 960 ? Math.min(720, windowWidth.value - 388) : windowWidth.value - 32
+    windowWidth.value >= 960 ? Math.min(680, windowWidth.value - 420) : windowWidth.value - 32,
+    progress.value
   )
 );
 const detail = computed(() => knowledgeNodeDetail(graph.value, selectedId.value));
+const nodeEvents = computed(() =>
+  progress.value.evidence.filter((event) => detail.value?.evidenceIds.includes(event.id))
+);
+const record = computed(() => {
+  if (!recordId.value || !progress.value.evidence.some((event) => event.recordId === recordId.value)) return null;
+  try {
+    return learningRecordTarget(learning.state, recordId.value);
+  } catch {
+    return null;
+  }
+});
+function openEvidence(event) {
+  recordId.value = event.recordId || '';
+}
+watch(
+  () => learning.recordContext(),
+  () => {
+    selectedId.value = '';
+    recordId.value = '';
+  }
+);
+onShow(() => {
+  learning.refresh();
+});
 const source = computed(
   () => 'data:image/svg+xml,' + encodeURIComponent(knowledgeGraphSvg(graph.value, theme.isDark, selectedId.value))
 );
@@ -157,6 +222,35 @@ function goBack() {
 .knowledge-footer {
   max-width: 1060px;
   margin: 0 auto;
+}
+.knowledge-progress,
+.knowledge-views {
+  max-width: 1060px;
+  margin: 0 auto 24px;
+}
+.knowledge-views {
+  display: flex;
+  gap: 8px;
+}
+.knowledge-node.base-button.is-weakness {
+  border-left: 3px solid var(--muse-rich-warning);
+}
+.knowledge-mind {
+  flex: 1;
+  min-width: 0;
+}
+.knowledge-detail :deep(.progress-evidence) {
+  margin-top: 16px;
+  max-height: 360px;
+  overflow: auto;
+}
+.progress-original {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
 }
 .knowledge-head {
   display: flex;

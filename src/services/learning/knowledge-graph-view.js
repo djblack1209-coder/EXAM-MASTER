@@ -31,7 +31,7 @@ const displayStandards = {
   collocation: '辨认语境中自然、准确的动词搭配'
 };
 
-export function knowledgeGraphView(seed, width = 680) {
+export function knowledgeGraphView(seed, width = 680, progress = null) {
   const canvasWidth = Math.max(280, Math.min(720, Number(width) || 680));
   const columns = canvasWidth < 500 ? 2 : 3;
   const gap = 18,
@@ -52,10 +52,11 @@ export function knowledgeGraphView(seed, width = 680) {
         id: topic.id,
         name: topic.name,
         chapter,
-        // The batch 15 seed has no reviewed, node-addressed evidence source.
-        status: 'untested',
-        statusLabel: '未测',
+        status: 'insufficient',
+        statusLabel: '数据不足',
         recordLabel: '暂无记录 · 待审核',
+        evidenceIds: [],
+        ...(progress?.nodes.find((item) => item.id === topic.id) || {}),
         masteryCriteria: [displayStandards[topic.id] || '掌握标准待审核'],
         diagnosticPrompt: topic.diagnostic?.prompt || '',
         x: inset + (i % columns) * (nodeWidth + gap),

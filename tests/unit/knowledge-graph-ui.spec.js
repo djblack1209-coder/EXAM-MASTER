@@ -12,7 +12,7 @@ import Knowledge from '@/pages/learning/knowledge.vue';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 vi.mock('@/utils/safe-navigate.js', () => ({ safeNavigateTo: vi.fn() }));
 afterEach(() => vi.unstubAllGlobals());
-vi.mock('@dcloudio/uni-app', () => ({ onLoad: vi.fn(), onResize: vi.fn() }));
+vi.mock('@dcloudio/uni-app', () => ({ onLoad: vi.fn(), onResize: vi.fn(), onShow: vi.fn() }));
 const button = {
   props: ['label', 'disabled', 'selected'],
   emits: ['tap'],
@@ -41,7 +41,8 @@ describe('只读知识框架验证版', () => {
         expect(node.x).toBeGreaterThanOrEqual(0);
         expect(node.x + node.width).toBeLessThanOrEqual(width);
         expect(node.y + node.height).toBeLessThanOrEqual(graph.height);
-        expect(node.status).toBe('untested');
+        expect(node.status).toBe('insufficient');
+        expect(node.statusLabel).toBe('数据不足');
       }
     }
   });
@@ -75,7 +76,7 @@ describe('只读知识框架验证版', () => {
   it('节点点击与先修跳转更新详情，空详情及禁用诊断可见，不写学习事实', async () => {
     const source = readFileSync('src/pages/learning/knowledge.vue', 'utf8');
     const service = readFileSync('src/services/learning/knowledge-graph-view.js', 'utf8');
-    expect(source + service).not.toMatch(/\bdiagnose\(|setStorage|useConversationLearningStore|\.api|fsrs/i);
+    expect(source + service).not.toMatch(/\bdiagnose\(|setStorage|\.commit\(|\.api|fsrs/i);
     const wrapper = mount(Knowledge, { global: { stubs: { BaseButton: button } } });
     expect(wrapper.findAll('[data-node-id]')).toHaveLength(26);
     expect(wrapper.text()).toContain('选择一个能力节点');

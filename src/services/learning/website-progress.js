@@ -1,5 +1,6 @@
 import { dayKey } from './learning-domain.js';
 import { writingCoachDashboard } from '../../../laf-backend/functions/_shared/learning-writing-coach.js';
+import { learningProgressReadModel } from './learning-progress-read-model.js';
 
 // A read-only projection of the same saved facts used by the app; no demo values or inferred scores.
 export function websiteProgress(state, now = Date.now()) {
@@ -33,6 +34,7 @@ export function websiteProgress(state, now = Date.now()) {
     return { day, count: counts.get(day) || 0 };
   });
   return {
+    learningProgress: learningProgressReadModel(state),
     owner: state.owner,
     timezone,
     today,
