@@ -13,7 +13,8 @@ import {
   prepareCoachFeedbackModel,
   decodeCoachResponse,
   coachRepairFeedback,
-  coachRepairPrompt
+  coachRepairPrompt,
+  verifyCoachErrors
 } from '../../laf-backend/functions/_shared/ai-providers/learning-provider.ts';
 const base = {
   contract: 'kaoyan-writing-coach-v1',
@@ -328,7 +329,6 @@ describe('按任务的真实答题形式送评', () => {
     const prepared = prepareCoachFeedbackModel(config, request, false, false, false, true);
     const wire = mixedDiagnosticReply(prepared);
     wire.errors.push({ ...wire.errors[0], dimension: '语法', label: '介词语法错误' });
-    wire.dimensionReviews.grammar = { score: 1, comment: '重复归因', evidenceIds: ['q2'] };
     expect(() => decodeCoachResponse(prepared, JSON.stringify(wire))).toThrowError(
       expect.objectContaining({
         code: 'COACH_INVALID',
@@ -337,11 +337,23 @@ describe('按任务的真实答题形式送评', () => {
         validationQuoteIds: ['q2']
       })
     );
-    wire.errors[1] = { label: '主谓一致', quoteId: 'q3', dimension: '语法', errorText: 'welcome', replacement: null };
-    wire.dimensionReviews.grammar.evidenceIds = ['q3'];
-    expect(() => decodeCoachResponse(prepared, JSON.stringify(wire))).not.toThrow();
+    wire.errors[1] = {
+      label: '主谓一致',
+      quoteId: 'q3',
+      dimension: '语法',
+      errorText: 'welcome',
+      replacement: null,
+      rule: '第三人称单数主语后动词加s'
+    };
+    const out = JSON.parse(decodeCoachResponse(prepared, JSON.stringify(wire))).coach;
+    expect(out.dimensions.map((d) => [d.name, d.score])).toEqual([
+      ['语法', 1],
+      ['搭配', 1],
+      ['表达', 2],
+      ['任务完成', 2]
+    ]);
   });
-  it.each(['grammar', 'collocation', 'expression', 'task'])('无登记错误的%s降档必须拒收', (key) => {
+  it.each(['grammar', 'collocation', 'expression', 'task'])('模型自报的%s档位不被接受，档位只由宿主推出', (key) => {
     const prepared = prepareCoachFeedbackModel(
       config,
       coachInferenceContext(mixedDiagnosticRequest()),
@@ -352,13 +364,79 @@ describe('按任务的真实答题形式送评', () => {
     );
     const wire = mixedDiagnosticReply(prepared);
     wire.errors = [];
-    Object.values(wire.dimensionReviews).forEach((review) => {
-      review.score = 2;
-    });
     wire.dimensionReviews[key].score = 1;
     expect(() => decodeCoachResponse(prepared, JSON.stringify(wire))).toThrowError(
-      expect.objectContaining({ code: 'COACH_INVALID', path: `dimensionReviews.${key}.score` })
+      expect.objectContaining({ code: 'COACH_INVALID', path: `root.dimensionReviews.${key}` })
     );
+  });
+  it('宿主按核对后的错误推档：无错2、一处1、两处0、无可评证据null', () => {
+    const prepared = prepareCoachFeedbackModel(
+      config,
+      coachInferenceContext(mixedDiagnosticRequest()),
+      false,
+      false,
+      false,
+      true
+    );
+    const scores = (wire) =>
+      Object.fromEntries(
+        JSON.parse(decodeCoachResponse(prepared, JSON.stringify(wire))).coach.dimensions.map((d) => [
+          d.name,
+          [d.score, d.evidence]
+        ])
+      );
+    const wire = mixedDiagnosticReply(prepared);
+    expect(scores({ ...wire, errors: [] })).toEqual({
+      语法: [2, ['at', 'Welcome to the science fair.']],
+      搭配: [2, ['at', 'Welcome to the science fair.']],
+      表达: [2, ['Welcome to the science fair.']],
+      任务完成: [2, expect.arrayContaining([expect.stringContaining('主干The tool works well')])]
+    });
+    expect(scores(wire).搭配).toEqual([1, ['at']]);
+    const twoGrammar = ['Welcome', 'fair'].map((errorText) => ({
+      label: '语法错误' + errorText,
+      quoteId: 'q3',
+      dimension: '语法',
+      errorText,
+      replacement: null,
+      rule: '示例规则'
+    }));
+    expect(scores({ ...wire, errors: twoGrammar }).语法).toEqual([0, ['Welcome to the science fair.']]);
+    const unsure = scores({ ...wire, errors: [], uncertainties: [{ label: '译意待核对', quoteId: 'q3' }] });
+    expect(unsure.表达).toEqual([null, []]);
+    expect(unsure.语法).toEqual([2, ['at']]);
+  });
+  it('每条已登记错误都有讲解行，模型没选到的由宿主用规则补齐并按题序排列', () => {
+    const prepared = prepareCoachFeedbackModel(
+      config,
+      coachInferenceContext(mixedDiagnosticRequest()),
+      false,
+      false,
+      false,
+      true
+    );
+    const wire = mixedDiagnosticReply(prepared);
+    wire.errors.push({
+      label: '修饰对象判断错误',
+      quoteId: 'q4',
+      dimension: '任务完成',
+      errorText: null,
+      replacement: null,
+      rule: '题目要求指出从句修饰对象'
+    });
+    const coach = parseCoachModelOutput(
+      decodeCoachResponse(prepared, JSON.stringify(wire)),
+      coachInferenceContext(mixedDiagnosticRequest()),
+      false,
+      undefined,
+      true
+    ).coach;
+    expect(coach.lines.map((line) => line.advice)).toEqual([
+      '核对固定搭配所需的介词，再填回原句。',
+      '题目要求指出从句修饰对象'
+    ]);
+    expect(coach.weaknesses).toEqual(['固定搭配介词选择错误', '修饰对象判断错误']);
+    expect(coach.dimensions.find((d) => d.name === '任务完成').score).toBe(1);
   });
   it('同类换题仍使用通用作答形式，不引入旧题词汇与理由要求', () => {
     const first = coachAssessmentTask(mixedDiagnosticRequest());
@@ -455,41 +533,63 @@ describe('按任务的真实答题形式送评', () => {
       task = JSON.parse(projected.task);
     expect(task.kind).toBe('diagnostic_set');
     expect(task.items[0]).toMatchObject({ quoteId: 'q1', allowedDimensions: ['任务完成'], allowReplacement: false });
+    expect(task.items.map((item) => item.allowedDimensions)).toEqual([
+      ['任务完成'],
+      ['语法', '搭配'],
+      ['语法', '搭配', '表达'],
+      ['任务完成'],
+      ['任务完成']
+    ]);
     expect(task.items[1].answerFormat).toContain('允许有据质疑');
     expect(task.items[4].answerFormat).toContain('内容要点提纲，不是成文');
     expect(projected.input).toBe(r.input);
     const prepared = prepareCoachFeedbackModel(config, projected, false, false, false, true);
-    expect(
-      prepared.writingOutput.schema.properties.dimensionReviews.properties.grammar.properties.evidenceIds.items.enum
-    ).toEqual(['q2', 'q3']);
+    expect(prepared.writingOutput.scorePolicy).toBe('host-derived-v1');
+    expect(Object.keys(prepared.writingOutput.schema.properties.dimensionReviews.properties.grammar.properties)).toEqual([
+      'comment'
+    ]);
+    expect(prepared.writingOutput.schema.properties.errors.items.required).toContain('rule');
     const wire = {
       quoteVersion: prepared.writingOutput.schema.properties.quoteVersion.enum[0],
       message: '摸底反馈',
       lines: [{ quoteId: 'q1', advice: '核对分析内容' }],
-      errors: [{ quoteId: 'q1', label: '关系词误作宾语', dimension: '语法', errorText: '宾语', replacement: null }],
+      errors: [
+        {
+          quoteId: 'q1',
+          label: '关系词误作宾语',
+          dimension: '语法',
+          errorText: '宾语',
+          replacement: null,
+          rule: '关系词在从句中作主语'
+        }
+      ],
       strengths: [],
       uncertainties: [],
       phrases: [],
       dimensionReviews: Object.fromEntries(
-        ['grammar', 'collocation', 'expression', 'task'].map((key) => [
-          key,
-          { score: 2, comment: '本题维度', evidenceIds: [key === 'task' ? 'q1' : 'q3'] }
-        ])
+        ['grammar', 'collocation', 'expression', 'task'].map((key) => [key, { comment: '本题维度' }])
       )
     };
-    expect(() => decodeCoachResponse(prepared, JSON.stringify(wire))).toThrowError(
-      expect.objectContaining({ code: 'COACH_INVALID', path: 'errors[0].dimension' })
-    );
-    wire.errors = [];
-    wire.dimensionReviews.grammar.score = 1;
-    expect(() => decodeCoachResponse(prepared, JSON.stringify(wire))).toThrowError(
-      expect.objectContaining({
-        code: 'COACH_INVALID',
-        path: 'dimensionReviews.grammar.score',
-        validationDimension: '语法',
-        validationQuoteIds: ['q3']
-      })
-    );
+    let rejected;
+    try {
+      decodeCoachResponse(prepared, JSON.stringify(wire));
+    } catch (error) {
+      rejected = error;
+    }
+    expect(rejected).toMatchObject({
+      code: 'COACH_INVALID',
+      path: 'errors[0].dimension',
+      validationAllowedDimensions: ['任务完成']
+    });
+    const feedback = coachRepairFeedback(prepared, rejected, JSON.stringify(wire));
+    expect(feedback.allowedDimensions).toEqual(['任务完成']);
+    expect(coachRepairPrompt(feedback)).toContain('"allowedDimensions":["任务完成"]');
+    wire.errors[0].dimension = '任务完成';
+    wire.errors[0].errorText = null;
+    expect(JSON.parse(decodeCoachResponse(prepared, JSON.stringify(wire))).coach.dimensions[3]).toMatchObject({
+      name: '任务完成',
+      score: 1
+    });
     expect(coachAssessmentTask({ ...r, input: r.input + '\n额外一行' })).toBeNull();
   });
   it('短填空只引用学生标签，中文分析的错答不由模型代写', () => {
@@ -505,5 +605,107 @@ describe('按任务的真实答题形式送评', () => {
     const analyzed = prepareCoachFeedbackModel(config, coachInferenceContext(syntax), false, false, false, true);
     expect(analyzed.writingOutput.schema.properties.errors.items.properties.errorText).toEqual({ type: 'null' });
     expect(analyzed.writingOutput.schema.properties.errors.items.properties.replacement).toEqual({ type: 'null' });
+  });
+});
+describe('摸底错误合并复核一次，只删不加', () => {
+  const prepared = () =>
+    prepareCoachFeedbackModel(config, coachInferenceContext(mixedDiagnosticRequest()), false, false, false, true);
+  const overflagged = (p) => {
+    const wire = mixedDiagnosticReply(p);
+    wire.lines.push({ quoteId: 'q1', advice: '没写出关系代词的句法功能' });
+    wire.errors.push({
+      label: '未写关系代词功能',
+      quoteId: 'q1',
+      dimension: '任务完成',
+      errorText: null,
+      replacement: null,
+      rule: '须写出关系代词在从句中的功能'
+    });
+    wire.dimensionReviews.task.comment = '缺少关系代词功能说明';
+    return wire;
+  };
+  const verdict = (reviews) => async () => JSON.stringify({ reviews });
+  it('题干未要求的挑错被删除，讲解与点评改用复核理由，档位回到2', async () => {
+    const p = prepared();
+    const calls = [];
+    const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(overflagged(p)), async (verifier, messages) => {
+      calls.push({ verifier, messages });
+      return verdict([
+        { index: 0, required: true, wrong: true, reason: 'interested 后固定用 in' },
+        { index: 1, required: false, wrong: true, reason: '题目只要求主干和修饰对象，原答已答出' }
+      ])();
+    });
+    expect(calls).toHaveLength(1);
+    expect(calls[0].verifier.writingOutput.contract).toBe('writing-error-verification-v1');
+    expect(JSON.parse(calls[0].messages[1].content).map((item) => item.label)).toEqual([
+      '固定搭配介词选择错误',
+      '未写关系代词功能'
+    ]);
+    expect(receipt).toMatchObject({ status: 'completed', checked: 2, removed: 1 });
+    expect(receipt.reviews[1]).toMatchObject({ quoteId: 'q1', kept: false, required: false });
+    const coach = JSON.parse(decodeCoachResponse(p, content)).coach;
+    expect(coach.dimensions.map((d) => [d.name, d.score])).toEqual([
+      ['语法', 2],
+      ['搭配', 1],
+      ['表达', 2],
+      ['任务完成', 2]
+    ]);
+    expect(coach.dimensions[3].comment).toBe('题目只要求主干和修饰对象，原答已答出');
+    expect(coach.lines.find((line) => line.original.startsWith('主干')).advice).toBe(
+      '题目只要求主干和修饰对象，原答已答出'
+    );
+    expect(coach.weaknesses).toEqual(['固定搭配介词选择错误']);
+  });
+  it.each([
+    ['限流', async () => Promise.reject(Object.assign(new Error('limit'), { code: 'RATE_LIMITED' }))],
+    ['漏答一条', verdict([{ index: 0, required: true, wrong: false, reason: '略' }])],
+    ['重复回答', verdict([{ index: 0, required: true, wrong: false, reason: '略' }, { index: 0, required: true, wrong: false, reason: '略' }])],
+    ['不是JSON', async () => 'not json']
+  ])('复核失败（%s）时原错误照常进门禁，不当成无错', async (_name, call) => {
+    const p = prepared(),
+      wire = overflagged(p);
+    const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(wire), call);
+    expect(receipt).toMatchObject({ status: 'failed', checked: 2, reviews: [] });
+    expect(JSON.parse(content).errors).toHaveLength(2);
+    expect(JSON.parse(decodeCoachResponse(p, content)).coach.dimensions[3].score).toBe(1);
+  });
+  it('无错误、未过字段合同或非摸底时不发复核；取消照常抛出', async () => {
+    const p = prepared(),
+      never = async () => {
+        throw new Error('should not call');
+      };
+    const clean = { ...mixedDiagnosticReply(p), errors: [] };
+    expect(await verifyCoachErrors(p, JSON.stringify(clean), never)).toEqual({
+      content: JSON.stringify(clean),
+      receipt: null
+    });
+    const broken = mixedDiagnosticReply(p);
+    broken.errors[0].dimension = '表达';
+    expect((await verifyCoachErrors(p, JSON.stringify(broken), never)).receipt).toBeNull();
+    const card = prepareCoachFeedbackModel(config, coachInferenceContext(cloze), false, false, false, true);
+    expect(card.writingOutput.scorePolicy).toBeUndefined();
+    expect((await verifyCoachErrors(card, '{}', never)).receipt).toBeNull();
+    await expect(
+      verifyCoachErrors(p, JSON.stringify(mixedDiagnosticReply(p)), async () => {
+        throw Object.assign(new Error('cancelled'), { code: 'CANCELLED' });
+      })
+    ).rejects.toMatchObject({ code: 'CANCELLED' });
+  });
+  it('返修只修结构：回执写明被拒字段的期望类型与允许键', () => {
+    const p = prepared(),
+      wire = mixedDiagnosticReply(p);
+    wire.dimensionReviews = JSON.stringify(wire.dimensionReviews);
+    let rejected;
+    try {
+      decodeCoachResponse(p, JSON.stringify(wire));
+    } catch (error) {
+      rejected = error;
+    }
+    expect(rejected).toMatchObject({ code: 'COACH_INVALID', path: 'root.dimensionReviews', schemaKeyword: 'type' });
+    const feedback = coachRepairFeedback(p, rejected, JSON.stringify(wire));
+    expect(feedback.expected).toEqual({ type: 'object', keys: ['grammar', 'collocation', 'expression', 'task'] });
+    const prompt = coachRepairPrompt(feedback);
+    expect(prompt).toContain('"expected":{"type":"object"');
+    expect(prompt).toContain('只按回执修正被拒字段的结构');
   });
 });
