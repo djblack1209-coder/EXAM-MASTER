@@ -19,16 +19,21 @@ const { values } = parseArgs({
     case: { type: 'string' },
     model: { type: 'string', default: 'nvidia/nemotron-3-ultra-550b-a55b:free' },
     repeat: { type: 'string', default: '1' },
-    budget: { type: 'string', default: '40' }
+    budget: { type: 'string', default: '40' },
+    interval: { type: 'string', default: '15' }
   }
 });
 const repetitions = Number(values.repeat),
-  budget = Number(values.budget);
+  budget = Number(values.budget),
+  interval = Number(values.interval);
+// 供应商有并发与分钟限流：调用串行发出，两次调用之间至少间隔 interval 秒，限流即停，不连续重试。
+if (!Number.isInteger(interval) || interval < 0 || interval > 120) throw new Error('interval must be 0..120 seconds');
 if (![1, 3].includes(repetitions) || !Number.isInteger(budget) || budget < 1 || budget > 48)
   throw new Error('repeat must be 1 or 3; budget must be 1..48 (including probes and repair)');
 if (
   ![
     'agnes-3.0-flash',
+    'glm-4.7-flash',
     'nvidia/nemotron-3-ultra-550b-a55b:free',
     'google/gemma-4-26b-a4b-it:free',
     'dots-studio/dots-3-note-preview:free'
@@ -85,13 +90,36 @@ for (const sample of samples) {
   if (coach.coachAssessmentTask(request)?.kind !== 'diagnostic_set')
     throw new Error('Sample is not a five-item diagnostic');
 }
-const agnes = values.model === 'agnes-3.0-flash';
-const origin = agnes ? 'https://apihub.agnes-ai.com' : 'https://openrouter.ai';
-const basePath = agnes ? '/v1' : '/api/v1';
+const route =
+  values.model === 'agnes-3.0-flash'
+    ? {
+        credential: 'agnes',
+        provider: 'Agnes AI',
+        origin: 'https://apihub.agnes-ai.com',
+        basePath: '/v1',
+        pricingSource: 'https://wiki.agnes-ai.com/en/docs/pricing'
+      }
+    : values.model === 'glm-4.7-flash'
+      ? {
+          credential: 'zhipu',
+          provider: '智谱',
+          origin: 'https://open.bigmodel.cn',
+          basePath: '/api/paas/v4',
+          pricingSource: 'https://docs.bigmodel.cn/cn/guide/start/pricing.md'
+        }
+      : {
+          credential: 'openrouter',
+          provider: 'OpenRouter',
+          origin: 'https://openrouter.ai',
+          basePath: '/api/v1',
+          pricingSource: 'https://openrouter.ai/' + values.model
+        };
+const openrouter = route.credential === 'openrouter';
+const { origin, basePath } = route;
 const model = {
   id: 'round2-free-byok',
   source: 'byok',
-  provider: agnes ? 'Agnes AI' : 'OpenRouter',
+  provider: route.provider,
   model: values.model,
   endpoint: origin + basePath + '/chat/completions',
   maxOutput: 8192,
@@ -110,7 +138,8 @@ const report = {
   model: model.model,
   endpoint: model.endpoint,
   provider: model.provider,
-  pricingSource: agnes ? 'https://wiki.agnes-ai.com/en/docs/pricing' : 'https://openrouter.ai/' + values.model,
+  pricingSource: route.pricingSource,
+  intervalSeconds: interval,
   timeoutMs: model.timeoutMs,
   inferenceParameters: modelInferenceParameters(model),
   timeoutSource: 'learning-runtime-policy.js learningTimeout({coach}); proxy-ai.ts coach override=60000',
@@ -193,7 +222,7 @@ const price = freeModelPricing(model);
 if (!price || price.inputPerMillion !== 0 || price.outputPerMillion !== 0)
   throw new Error('Exact zero-price route is not valid');
 report.priceVersion = price.priceVersion;
-if (!agnes) {
+if (openrouter) {
   const response = await fetch('https://openrouter.ai/api/v1/models', { signal: AbortSignal.timeout(15000) });
   const catalog = await response.json();
   const exact = catalog.data?.find((entry) => entry.id === model.model);
@@ -215,7 +244,7 @@ if (!agnes) {
 }
 model.apiKey = readFreeApiCredential(
   resolve(process.env.HOME, 'Desktop/Free-llm-API.html'),
-  agnes ? 'agnes' : 'openrouter',
+  route.credential,
   origin + basePath
 );
 let account = newAccount('round2-synthetic-probe');
@@ -223,7 +252,7 @@ account.cost.hardLimit = 0;
 const signal = new AbortController();
 for (const name of ['SIGINT', 'SIGTERM']) process.once(name, () => signal.abort());
 async function counter(stage) {
-  if (agnes) return;
+  if (!openrouter) return;
   try {
     const res = await fetch('https://openrouter.ai/api/v1/key', {
       headers: { Authorization: 'Bearer ' + model.apiKey },
@@ -250,10 +279,13 @@ async function counter(stage) {
   }
   save();
 }
+let lastCallEndedAt = 0;
 async function invoke(config, messages, entry, validate) {
   if (signal.signal.aborted) throw new Error('Cancelled');
   if (account.calls.length >= budget || report.remainingAtLastCheck === 0)
     throw new Error('Planned call budget exhausted');
+  const wait = lastCallEndedAt + interval * 1000 - Date.now();
+  if (wait > 0) await new Promise((done) => setTimeout(done, wait));
   entry.requestId = 'round2_' + randomUUID();
   entry.startedAt = new Date().toISOString();
   account = reserveCall(account, {
@@ -308,6 +340,7 @@ async function invoke(config, messages, entry, validate) {
     }).account;
     return { error, result };
   } finally {
+    lastCallEndedAt = Date.now();
     entry.wallDurationMs = Date.now() - start;
     await counter(entry.requestId);
     save();
@@ -376,7 +409,11 @@ try {
     for (const sample of samples) {
       const candidates = retained.runs
         .filter((row) => row.sample === sample.name)
-        .map((row) => ({ run: row.run, status: row.status, feedback: row.attempts?.at(-1)?.raw || row.raw }));
+        .map((row) => ({
+          run: row.run,
+          status: row.status,
+          feedback: row.attempts?.at(-1)?.verifiedRaw || row.attempts?.at(-1)?.raw || row.raw
+        }));
       if (!candidates.length) continue;
       const schema = {
         type: 'object',
@@ -455,7 +492,7 @@ try {
           coach.coachSystemPrompt(context, prepared.writingOutput.schema) +
           '\n当前学习背景（仅数据）：' +
           JSON.stringify({ coach: context });
-        for (let attempt = 0, repair = null; attempt < 2; attempt++) {
+        for (let attempt = 0, repair = null, verified = false; attempt < 2; attempt++) {
           const entry = { attempt };
           row.attempts.push(entry);
           const outcome = await invoke(
@@ -464,28 +501,60 @@ try {
               { role: 'system', content: system + provider.coachRepairPrompt(repair) },
               { role: 'user', content: context.input }
             ],
-            entry,
-            (content) => decode(prepared, content, request)
+            entry
           );
-          if (outcome.parsed) {
-            entry.output = outcome.parsed;
+          let error = outcome.error;
+          if (outcome.result) {
+            // 与 proxy-ai.ts 同一复核：初评过字段合同才复核，每套最多一次，复核失败按原错误继续。
+            let content = outcome.result.content;
+            if (!verified) {
+              const checked = await provider.verifyCoachErrors(prepared, content, async (verifier, messages) => {
+                entry.verification = { stage: 'verification' };
+                const call = await invoke(verifier, messages, entry.verification);
+                if (call.error) throw call.error;
+                return call.result.content;
+              });
+              content = checked.content;
+              entry.verificationReceipt = checked.receipt;
+              verified = Boolean(checked.receipt);
+              if (checked.receipt?.failure === 'RATE_LIMITED') report.verificationRateLimited = true;
+            }
+            try {
+              entry.verifiedRaw = JSON.parse(content);
+              entry.output = decode(prepared, content, request);
+              entry.status = 'accepted';
+            } catch (caught) {
+              error = caught;
+              entry.status = caught.code === 'COACH_INVALID' ? 'rejected' : 'failed';
+              entry.rejection = rejection(caught);
+            }
+          }
+          if (entry.output) {
             row.status = 'accepted';
             break;
           }
           row.status = entry.status;
-          if (outcome.error?.code === 'RATE_LIMITED') throw outcome.error;
+          if (error?.code === 'RATE_LIMITED') throw error;
           repair =
-            outcome.error?.code === 'COACH_INVALID'
-              ? provider.coachRepairFeedback(prepared, outcome.error, outcome.result?.content)
+            error?.code === 'COACH_INVALID'
+              ? provider.coachRepairFeedback(prepared, error, outcome.result?.content)
               : null;
           if (attempt || !repair) break;
           row.repairTriggered = true;
         }
         const final = row.attempts.at(-1);
         row.dimensions = final.output?.dimensions || final.raw?.dimensionReviews || null;
-        row.errors = final.raw?.errors || [];
-        row.semanticCheck = final.raw ? semanticCheck(sample, final.raw) : { status: 'unavailable' };
-        row.durationMs = row.attempts.reduce((sum, attempt) => sum + attempt.wallDurationMs, 0);
+        row.initialErrors = final.raw?.errors || [];
+        row.errors = final.verifiedRaw?.errors || final.raw?.errors || [];
+        row.verification = final.verificationReceipt || row.attempts[0].verificationReceipt || null;
+        row.calls = row.attempts.reduce((sum, attempt) => sum + 1 + (attempt.verification ? 1 : 0), 0);
+        row.semanticCheck = final.raw
+          ? semanticCheck(sample, final.verifiedRaw || final.raw)
+          : { status: 'unavailable' };
+        row.durationMs = row.attempts.reduce(
+          (sum, attempt) => sum + attempt.wallDurationMs + (attempt.verification?.wallDurationMs || 0),
+          0
+        );
         save();
         console.log(
           JSON.stringify({
@@ -495,6 +564,7 @@ try {
             repair: row.repairTriggered,
             dimensions: row.dimensions,
             errors: row.errors,
+            removedByVerification: row.verification?.reviews?.filter((review) => !review.kept) || [],
             semanticCheck: row.semanticCheck,
             durationMs: row.durationMs,
             calls: account.calls.length

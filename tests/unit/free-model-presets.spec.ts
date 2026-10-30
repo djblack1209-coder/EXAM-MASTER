@@ -358,10 +358,13 @@ describe('免费型号是可核验接入事实，不是任意零价格声明', (
   });
   it('只有精确端点/型号且复核未过期时确认零价格，Gemini账户层和FlashX不冒充免费', () => {
     const p = FREE_MODEL_PRESETS.find((preset) => preset.id === 'zhipu-glm-flash')!;
-    expect(freeModelPricing(p, Date.parse('2026-09-30'))).toMatchObject({ inputPerMillion: 0 });
+    expect(freeModelPricing(p, Date.parse('2026-10-30'))).toMatchObject({
+      inputPerMillion: 0,
+      priceVersion: 'zhipu-glm-4.7-flash-free-2026-10-30'
+    });
     expect(freeModelPricing({ ...p, model: 'glm-4.7-flashx' })).toBeNull();
     expect(freeModelPricing({ ...p, endpoint: 'https://another.example/chat' })).toBeNull();
-    expect(freeModelPricing(p, Date.parse('2026-10-30'))).toBeNull();
+    expect(freeModelPricing(p, Date.parse('2026-11-29'))).toBeNull();
     expect(freeModelPricing(FREE_MODEL_PRESETS.find((preset) => preset.id === 'gemini-flash-lite')!)).toBeNull();
     for (const preset of FREE_MODEL_PRESETS.filter((item) => item.id.endsWith('-flagship')))
       expect(freeModelPricing(preset)).toBeNull();

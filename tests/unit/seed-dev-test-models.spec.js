@@ -155,7 +155,7 @@ describe('reviewed free-provider seeding', () => {
         inputPerMillion: 0,
         outputPerMillion: 0
       });
-      expect(freeModelPricing(model, Date.parse('2026-11-20'))).toBeNull();
+      expect(freeModelPricing(model, Date.parse('2026-11-30'))).toBeNull();
       expect(freeModelPricing({ ...model, model: 'unreviewed-paid-alias' }, Date.parse('2026-10-26'))).toBeNull();
     }
   });

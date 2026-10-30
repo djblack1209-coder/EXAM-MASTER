@@ -30,18 +30,23 @@ export function mixedDiagnosticReply(config) {
     quoteVersion: config.writingOutput.schema.properties.quoteVersion.enum[0],
     message: 'AI评估',
     lines: [{ quoteId: 'q2', advice: '核对固定搭配所需的介词，再填回原句。' }],
-    errors: [{ label: '固定搭配介词选择错误', quoteId: 'q2', dimension: '搭配', errorText: 'at', replacement: null }],
+    errors: [
+      {
+        label: '固定搭配介词选择错误',
+        quoteId: 'q2',
+        dimension: '搭配',
+        errorText: 'at',
+        replacement: null,
+        rule: 'be interested in 是固定搭配，介词用 in'
+      }
+    ],
     strengths: [],
     uncertainties: [],
     phrases: [],
     dimensionReviews: Object.fromEntries(
       ['grammar', 'collocation', 'expression', 'task'].map((key) => [
         key,
-        {
-          score: key === 'collocation' ? 1 : 2,
-          comment: key === 'collocation' ? '固定搭配中的介词选择有误' : '已达到本次要求',
-          evidenceIds: [key === 'collocation' ? 'q2' : key === 'task' ? 'q1' : 'q3']
-        }
+        { comment: key === 'collocation' ? '固定搭配中的介词选择有误' : '已达到本次要求' }
       ])
     )
   };

@@ -211,12 +211,12 @@ export const MODEL_CONNECTION_PRESETS = [
     structured: true,
     stream: true,
     pricing: 'official_free_model',
-    priceVersion: 'zhipu-glm-4.7-flash-free-2026-09-30',
-    verifiedAt: '2026-09-30',
-    expiresAt: '2026-10-30',
+    priceVersion: 'zhipu-glm-4.7-flash-free-2026-10-30',
+    verifiedAt: '2026-10-30',
+    expiresAt: '2026-11-29',
     terms: '官方免费型号，仍受账户限流；不调用搜索等收费工具，不切换FlashX。',
     privacy: '当前目标、最近消息与题目经本项目后端发送至智谱；资料不默认整份上传。',
-    docs: 'https://open.bigmodel.cn/pricing'
+    docs: 'https://docs.bigmodel.cn/cn/guide/start/pricing.md'
   },
   {
     id: 'zai-glm-flash',
