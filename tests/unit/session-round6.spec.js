@@ -295,7 +295,9 @@ it('pending cache merge retains other categories and does not duplicate after un
 it('mistake preflight retains frozen new data until history can be read', async () => {
   storageService._clearRevokedCredentials();
   storageService.save('mistake_book', [{ id: 'old', question: '旧原题' }], true);
-  blocked = 'mistake_book';
+  const storedKeys = uni.getStorageInfoSync().keys.filter((key) => key.endsWith('_mistake_book'));
+  expect(storedKeys).toHaveLength(1);
+  blocked = storedKeys[0];
   const input = { question: '新原题' };
   const pending = storageService.addMistake(input).catch((e) => e);
   expect(isSessionUnavailable(await pending)).toBe(true);

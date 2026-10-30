@@ -2878,9 +2878,18 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
     error.value = '';
     const id = options.id || learningId('turn');
+    const resumingMessage =
+      options.chatEntry === true &&
+      state.value.events.some(
+        (event) =>
+          event.id === `${id}:message` &&
+          event.type === 'message.add' &&
+          event.data?.conversationId === selectedConversationId.value
+      );
     if (
       options.answering === true &&
       activeQuestion.value &&
+      !resumingMessage &&
       !options.discussionOnly &&
       !options.feedbackAttemptId &&
       !options.visual

@@ -365,6 +365,8 @@ describe('按任务的真实答题形式送评', () => {
       task = JSON.parse(projected.task);
     expect(task.kind).toBe('diagnostic_set');
     expect(task.items[0]).toMatchObject({ quoteId: 'q1', allowedDimensions: ['任务完成'], allowReplacement: false });
+    expect(task.items[1].answerFormat).toContain('允许有据质疑');
+    expect(task.items[4].answerFormat).toContain('内容要点提纲，不是成文');
     expect(projected.input).toBe(r.input);
     const prepared = prepareCoachFeedbackModel(config, projected, false, false, false, true);
     expect(
@@ -387,6 +389,16 @@ describe('按任务的真实答题形式送评', () => {
     };
     expect(() => decodeCoachResponse(prepared, JSON.stringify(wire))).toThrowError(
       expect.objectContaining({ code: 'COACH_INVALID', path: 'errors[0].dimension' })
+    );
+    wire.errors = [];
+    wire.dimensionReviews.grammar.score = 1;
+    expect(() => decodeCoachResponse(prepared, JSON.stringify(wire))).toThrowError(
+      expect.objectContaining({
+        code: 'COACH_INVALID',
+        path: 'dimensionReviews.grammar.score',
+        validationDimension: '语法',
+        validationQuoteIds: ['q3']
+      })
     );
     expect(coachAssessmentTask({ ...r, input: r.input + '\n额外一行' })).toBeNull();
   });

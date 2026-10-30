@@ -81,6 +81,7 @@
     </view>
     <view v-else-if="['pending', 'failed'].includes(intake?.status)" class="intake-agent">
       <text role="status">{{
+        learning.intakeError ||
         modelErrorPresentation({
           error: learning.retryState?.errorCode || 'INTAKE_INVALID',
           status: intake?.finalFailure ? 'failed' : 'pending'

@@ -37,7 +37,7 @@
       >
       <text class="practice-question-title">{{ selected.title }}</text
       ><MuseRichText :content="selected.prompt" /><MuseRichText
-        v-if="selected.example"
+        v-if="selected.example && (selectedAnswer || !['trace', 'apply'].includes(selected.kind))"
         :content="selected.example"
         class="practice-example"
       />

@@ -589,7 +589,7 @@ export default {
             this.themeStore.resetDevicePreferences?.();
             this.draftLanguage = this.draftAppearance = null;
             initI18n();
-            uni.reLaunch({ url: '/pages/index/index' });
+            safeNavigateTo('/pages/index/index');
           })
           .catch(() => {
             this.resetError = '清除未完成，请重试';

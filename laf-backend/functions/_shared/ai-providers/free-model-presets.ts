@@ -37,15 +37,15 @@ export function freeModelPricing(model: { model: string; endpoint: string }, now
   if (
     model.endpoint === 'https://openrouter.ai/api/v1/chat/completions' &&
     model.model === 'nvidia/nemotron-3-ultra-550b-a55b:free' &&
-    now < Date.parse('2026-10-30')
+    now < Date.parse('2026-11-02')
   )
-    return { inputPerMillion: 0, outputPerMillion: 0, priceVersion: 'openrouter-nemotron-3-ultra-free-2026-10-24' };
+    return { inputPerMillion: 0, outputPerMillion: 0, priceVersion: 'openrouter-nemotron-3-ultra-free-2026-10-30' };
   if (
     model.endpoint === 'https://api.z.ai/api/paas/v4/chat/completions' &&
     model.model === 'glm-4.7-flash' &&
-    now < Date.parse('2026-10-30')
+    now < Date.parse('2026-11-29')
   )
-    return { inputPerMillion: 0, outputPerMillion: 0, priceVersion: 'zai-glm-4.7-flash-free-2026-09-30' };
+    return { inputPerMillion: 0, outputPerMillion: 0, priceVersion: 'zai-glm-4.7-flash-free-2026-10-30' };
   if (
     model.endpoint === 'https://openrouter.ai/api/v1/chat/completions' &&
     REVIEWED_FREE_ROUTES.includes(model.model) &&

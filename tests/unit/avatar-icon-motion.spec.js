@@ -92,6 +92,25 @@ describe('kitten blink at native size', () => {
 });
 
 describe('bundled video transport', () => {
+  it('keeps the poster fallback when a canvas context is unavailable, then resumes painting after recovery', () => {
+    const runtime = acquireAvatar('lost-canvas-context');
+    const canvas = createCanvas(96, 96),
+      painted = vi.fn();
+    let context = null;
+    const view = { width: 96, height: 96, getContext: () => context };
+    const releaseView = runtime.addView({ current: () => view, next: () => null, perceptible: () => true, painted });
+    try {
+      expect(() => runtime.paint()).not.toThrow();
+      expect(painted).not.toHaveBeenCalled();
+      context = canvas.getContext('2d');
+      runtime.paint();
+      expect(painted).toHaveBeenCalled();
+      expect(context.getImageData(48, 48, 1, 1).data[3]).toBeGreaterThan(0);
+    } finally {
+      releaseView();
+      runtime.release();
+    }
+  });
   it('loads a native local video URL without fetch/blob and releases its decoder', async () => {
     const create = document.createElement.bind(document);
     const video = create('video');

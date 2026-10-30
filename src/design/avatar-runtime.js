@@ -314,9 +314,12 @@ export function acquireAvatar(identity = 'yozi') {
       ]) {
         const canvas = view[key]();
         if (!canvas || !layer) continue;
+        const context = canvas.getContext('2d');
+        // A lost/unavailable canvas keeps the existing poster fallback visible.
+        if (!context) continue;
         if (view.perceptible?.()) {
           paintKittenRig(
-            canvas.getContext('2d'),
+            context,
             canvas.width,
             canvas.height,
             kittenPoseAt(gestureTime, layer.state, {
@@ -330,7 +333,6 @@ export function acquireAvatar(identity = 'yozi') {
         }
         const image = !state.reduced && layer.video?.readyState >= 2 ? layer.video : layer.poster;
         if (!image || !(image.videoWidth || image.naturalWidth)) continue;
-        const context = canvas.getContext('2d');
         paintAvatarFrame(context, image, canvas.width, canvas.height, image === layer.video && layer.packedAlpha);
         if (view.perceptible?.() && !state.reduced && state.activated && AVATAR_MEDIA[layer.state]?.loop) {
           paintAvatarBlink(context, canvas.width, canvas.height, avatarBlinkAt(gestureTime));

@@ -17,6 +17,7 @@ export const MODEL_BRANDS = Object.freeze({
   'Google Gemini': { logo: '/static/brand/google-g.svg', group: 'other' },
   Groq: { logo: '/static/brand/providers/groq.svg', group: 'other', mono: true },
   OpenRouter: { logo: '/static/brand/providers/openrouter-color.svg', group: 'other', mono: true },
+  'Agnes AI': { logo: '/static/brand/providers/agnesai.svg', group: 'other', mono: true },
   'Aion Labs': { logo: '/static/brand/providers/aionlabs-color.svg', group: 'other', mono: true },
   LLM7: { logo: '/static/brand/providers/llm7.png', group: 'other' },
   'Ollama Cloud': { logo: '/static/brand/providers/ollama.svg', group: 'other', mono: true },

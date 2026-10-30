@@ -863,6 +863,13 @@ export async function runLearningModelTask(
       connectionError: classifyModelFailure(error),
       suggestion: modelErrorPresentation(error).action,
       ...(validationPath ? { validationPath } : {}),
+      ...(validationPath &&
+      ['语法', '搭配', '表达', '任务完成'].includes(error.validationDimension) &&
+      Array.isArray(error.validationQuoteIds) &&
+      error.validationQuoteIds.length <= 3 &&
+      error.validationQuoteIds.every((id: any) => typeof id === 'string' && /^q[1-9]\d{0,2}$/.test(id))
+        ? { validationDimension: error.validationDimension, validationQuoteIds: error.validationQuoteIds }
+        : {}),
       ...(error.upstreamStatus
         ? { upstreamStatus: error.upstreamStatus, upstreamCode: error.upstreamCode || null }
         : {}),

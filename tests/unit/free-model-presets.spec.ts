@@ -28,6 +28,8 @@ describe('免费型号是可核验接入事实，不是任意零价格声明', (
     expect(freeModelPricing({ ...model, endpoint: 'https://other.example/chat' }, Date.parse('2026-10-26'))).toBeNull();
   });
   it('开发点评严格结构复用原协议和绑定，120B/high/8192不变，保留非流式边界', async () => {
+    // The synthetic receipt belongs to this reviewed price window, not today's expired route.
+    const receiptClock = vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-10-25T12:00:00Z'));
     for (const [key, value] of Object.entries({
       YOZI_BUILD_CHANNEL: 'test',
       NODE_ENV: 'test',
@@ -215,6 +217,7 @@ describe('免费型号是可核验接入事实，不是任意零价格声明', (
         })
       ).toThrowError(expect.objectContaining({ path: 'root.coach.learned[1]', schemaKeyword: 'stringLength' }));
     } finally {
+      receiptClock.mockRestore();
       vi.unstubAllEnvs();
       vi.resetModules();
     }
@@ -259,9 +262,13 @@ describe('免费型号是可核验接入事实，不是任意零价格声明', (
     expect(freeModelPricing(model, Date.parse('2026-10-24'))).toEqual({
       inputPerMillion: 0,
       outputPerMillion: 0,
-      priceVersion: 'openrouter-nemotron-3-ultra-free-2026-10-24'
+      priceVersion: 'openrouter-nemotron-3-ultra-free-2026-10-30'
     });
-    expect(freeModelPricing(model, Date.parse('2026-10-30'))).toBeNull();
+    expect(freeModelPricing(model, Date.parse('2026-11-01'))).toMatchObject({
+      inputPerMillion: 0,
+      outputPerMillion: 0
+    });
+    expect(freeModelPricing(model, Date.parse('2026-11-02'))).toBeNull();
     const other = { ...model, endpoint: 'https://other.example/chat' };
     expect(buildLearningRequest(other, [])).not.toHaveProperty('reasoning');
     expect(freeModelPricing(other, Date.parse('2026-10-24'))).toBeNull();

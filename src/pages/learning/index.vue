@@ -966,7 +966,9 @@
           }}</BaseButton>
         </view>
         <view v-if="learning.error" id="learning-request-error" tabindex="-1">
+          <BaseEmpty v-if="publicError(learning.error, null)" state="error" :title="publicError(learning.error)" />
           <MuseModelFeedback
+            v-else
             :failure="modelFailure || { error: learning.retryState?.errorCode || 'MODEL_FAILED' }"
             :busy="learning.busy"
             @action="handleModelAction"
@@ -3066,8 +3068,12 @@ async function run(action) {
     if (result?.success === false) modelFailure.value = result;
     return result;
   } catch (e) {
-    modelFailure.value = { error: e.code || 'MODEL_FAILED' };
-    feedback.value = modelErrorPresentation(modelFailure.value).message;
+    const knownMessage = publicError(e, null);
+    if (knownMessage) feedback.value = knownMessage;
+    else {
+      modelFailure.value = { error: e.code || 'MODEL_FAILED' };
+      feedback.value = modelErrorPresentation(modelFailure.value).message;
+    }
   }
 }
 function handleModelAction(action) {

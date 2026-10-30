@@ -193,6 +193,12 @@ describe('model-authored intake and saved subject library', () => {
       expect(existsSync(`src${brand.logo}`), provider.provider).toBe(true);
       expect(brand.group).toBe(domestic.includes(provider.provider) ? 'general' : 'other');
     }
-    expect(MODEL_CONNECTION_PRESETS.filter((provider) => domestic.includes(provider.provider))).toHaveLength(15);
+    expect(
+      new Set(
+        MODEL_CONNECTION_PRESETS.filter((provider) => domestic.includes(provider.provider)).map(
+          (provider) => provider.provider
+        )
+      ).size
+    ).toBe(15);
   });
 });

@@ -97,7 +97,16 @@ function setup(platform = 'h5') {
   const store = useConversationLearningStore();
   stores.push(store);
   store.start(platform === 'app' ? '雅思写作观点与依据' : '理解函数');
-  store.models = [{ id: 'fixture', model: 'explicit', capabilities: { stream: true } }];
+  store.models = [
+    {
+      id: 'fixture',
+      provider: 'synthetic',
+      model: 'explicit',
+      source: 'byok',
+      configured: true,
+      capabilities: { stream: true }
+    }
+  ];
   store.modelId = 'fixture';
   store.selectedMode = 'cloud';
   store.sharingAllowed = true;

@@ -52,6 +52,7 @@ function setup() {
       provider: 'fixture',
       model: 'explicit',
       source: 'byok',
+      configured: true,
       capabilities: { vision: true },
       visionAdapter: 'openai-image-url-v1'
     }

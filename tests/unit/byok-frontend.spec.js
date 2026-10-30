@@ -30,8 +30,24 @@ beforeEach(() => {
     sharingAllowed: true,
     needsConnection: false,
     models: [
-      { id: 'one', provider: 'A', model: 'model-a', source: 'byok', configured: true, connectionStatus: 'connected' },
-      { id: 'two', provider: 'B', model: 'model-b', source: 'byok', configured: true, connectionStatus: 'connected' },
+      {
+        id: 'one',
+        provider: 'A',
+        model: 'model-a',
+        source: 'byok',
+        configured: true,
+        connectionStatus: 'connected',
+        capabilityCheck: { version: 1, tools: true, structured: true, checkedAt: 1 }
+      },
+      {
+        id: 'two',
+        provider: 'B',
+        model: 'model-b',
+        source: 'byok',
+        configured: true,
+        connectionStatus: 'connected',
+        capabilityCheck: { version: 1, tools: true, structured: true, checkedAt: 1 }
+      },
       { id: 'platform', provider: 'Platform', model: 'platform-model', source: 'platform', configured: true }
     ],
     selectModel: vi.fn().mockResolvedValue({ success: true }),

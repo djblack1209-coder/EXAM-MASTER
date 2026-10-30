@@ -40,8 +40,9 @@ describe('native theme and capsule protection', () => {
       ...pages.pages.map((p) => p.style),
       ...pages.subPackages.flatMap((p) => p.pages.map((p) => p.style))
     ]) {
-      expect(style.navigationBarBackgroundColor).toBe('@navBackground');
-      expect(theme.light[style.navigationBarBackgroundColor.slice(1)]).toBe(tokens.light['--canvas']);
+      const resolved = { ...pages.globalStyle, ...style };
+      expect(resolved.navigationBarBackgroundColor).toBe('@navBackground');
+      expect(theme.light[resolved.navigationBarBackgroundColor.slice(1)]).toBe(tokens.light['--canvas']);
     }
   });
   it('measures status, capsule bottom and right reserve without fixed device assumptions', () => {

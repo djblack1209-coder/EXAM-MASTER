@@ -162,7 +162,19 @@ describe('owner-local learning record search', () => {
 });
 async function storeRecords() {
   const store = useConversationLearningStore();
-  await store.send('题目：阅读这段文字并说明你的理由', { chatEntry: true });
+  const conversation = store.start('题目：阅读这段文字并说明你的理由');
+  const question = store.commit('question.add', {
+    question: {
+      id: 'search-reading',
+      version: 1,
+      scope: 'private',
+      type: 'subjective',
+      prompt: '阅读这段文字并说明你的理由',
+      subject: '语文',
+      source: { kind: 'user_input' }
+    }
+  });
+  store.commit('question.focus', { conversationId: conversation.id, questionKey: question.questionKey });
   const first = store.submit('第一稿\n保留完整理由与末尾空格  ', true, 'search-first');
   store.submit('第二稿\n修订理由', true, 'search-second');
   store.start('12 + 8');
@@ -194,7 +206,16 @@ describe('record location uses canonical facts', () => {
       store.openRecord(result.items[0].id, result.context);
       store.selectedMode = mode;
       store.modelId = 'explicit-model';
-      store.models = [{ id: 'explicit-model', capabilities: { stream: true } }];
+      store.models = [
+        {
+          id: 'explicit-model',
+          provider: 'synthetic',
+          model: 'explicit',
+          source: 'byok',
+          configured: true,
+          capabilities: { stream: true }
+        }
+      ];
       store.modelPresets = [{ id: 'preset' }];
       store.usage = { fixture: 'visible-usage' };
       store.localConnection = { endpoint: 'http://127.0.0.1:8765/chat', consent: true };

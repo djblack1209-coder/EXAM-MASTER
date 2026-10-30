@@ -669,6 +669,7 @@ export function decodeCoachResponse(config: ModelConfig, content: string): strin
     throw Object.assign(new ProviderError('COACH_INVALID', '批改数据不是完整JSON'), { path: 'raw' });
   }
   validateCoachSchema(config.writingOutput!.schema, value);
+  const fixedDimensionReviews = Boolean(value.dimensionReviews);
   if (value.dimensionReviews) {
     value.dimensions = ['grammar', 'collocation', 'expression', 'task'].map((key, index) => ({
       name: WRITING_METHOD.feedback[index],
@@ -748,7 +749,11 @@ export function decodeCoachResponse(config: ModelConfig, content: string): strin
         reject(`observations[${i}].errorText`, '错误片段必须逐字出现在本条原答中');
       const role = config.writingOutput!.quoteRoles?.find((r: any) => r.quoteId === o.quoteId);
       if (o.classification === 'error' && role && !role.allowedDimensions.includes(o.dimension))
-        reject(`errors[${i}].dimension`, '中文分析不能当作英文语法或搭配错误');
+        throw Object.assign(new ProviderError('COACH_INVALID', '中文分析不能当作英文语法或搭配错误'), {
+          path: `errors[${i}].dimension`,
+          validationDimension: o.dimension,
+          validationQuoteIds: [o.quoteId]
+        });
       if (role && !role.allowReplacement && o.replacement !== null)
         reject(`errors[${i}].replacement`, '分析笔记只给提示，不代写或改写原答');
       // Cambridge English Grammar Today: on + weekday + part of day is valid
@@ -773,7 +778,16 @@ export function decodeCoachResponse(config: ModelConfig, content: string): strin
           (o: any) => o.classification === 'error' && o.dimension === d.name && d.evidenceIds.includes(o.quoteId)
         )
       )
-        reject(`dimensions[${i}].score`, '降档须有本维度的同引文错误，不能重复归因或用润色降档');
+        throw Object.assign(
+          new ProviderError('COACH_INVALID', '降档须有本维度的同引文错误，不能重复归因或用润色降档'),
+          {
+            path: fixedDimensionReviews
+              ? `dimensionReviews.${['grammar', 'collocation', 'expression', 'task'][i]}.score`
+              : `dimensions[${i}].score`,
+            validationDimension: d.name,
+            validationQuoteIds: d.evidenceIds
+          }
+        );
     });
     value.lines = value.lines.map((line: any, i: number) => {
       const source = refs.get(line.quoteId)!;

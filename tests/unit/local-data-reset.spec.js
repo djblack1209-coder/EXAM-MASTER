@@ -124,7 +124,17 @@ describe('explicit local reset transaction', () => {
     ProfilePage.methods.handleLocalReset.call(page);
     await ProfilePage.methods.confirmDialog.call(page);
     expect(reset).toHaveBeenCalledOnce();
-    expect(uni.reLaunch).toHaveBeenCalledWith({ url: '/pages/index/index' });
+    // Core shell actions use the committed safe navigation contract, including its fallback callbacks.
+    expect(uni.navigateTo).toHaveBeenCalledOnce();
+    expect(uni.navigateTo).toHaveBeenCalledWith({
+      url: '/pages/index/index',
+      animationType: 'slide-in-right',
+      animationDuration: 300,
+      success: expect.any(Function),
+      fail: expect.any(Function),
+      complete: expect.any(Function)
+    });
+    expect(uni.reLaunch).not.toHaveBeenCalled();
   });
   it('keeps failed resets retryable and preference options draft-only', async () => {
     const page = {
