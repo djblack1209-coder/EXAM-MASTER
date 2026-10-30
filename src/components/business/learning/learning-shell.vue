@@ -36,7 +36,7 @@
           variant="quiet"
           :label="BRAND.name"
           @tap="openView('learning')"
-          ><AnimatedAvatar :size="56" autoplay perceptible :business="avatarBusiness"
+          ><image :src="BRAND.mark" mode="aspectFit" style="width: 56px; height: 56px" aria-hidden="true"
         /></BaseButton>
         <view class="rail-body">
           <view class="rail-group">
@@ -378,26 +378,20 @@
             <text v-if="active !== 'learning'" class="space-title">{{ title }}</text>
           </view>
           <view v-if="active === 'learning'" class="muse-chat-identity"
-            ><AnimatedAvatar class="brand-mark" :size="72" autoplay perceptible :business="avatarBusiness" />
+            ><image
+              class="brand-mark"
+              :src="BRAND.mark"
+              mode="aspectFit"
+              style="width: 72px; height: 72px"
+              aria-hidden="true"
+            />
             <view class="brand-label"
               ><text class="brand-name" :title="BRAND.name">{{ BRAND.name }}</text>
-              <text class="brand-status" role="status">{{ avatarStatus }}</text></view
+              <text class="brand-status" :title="learning.active?.goal || title">{{
+                learning.active?.goal || title
+              }}</text></view
             ></view
           >
-          <view v-if="avatarQA" class="avatar-qa" role="group" aria-label="头像验收，仅切换外观，不改变学习状态">
-            <text>头像验收 · 仅外观</text>
-            <button
-              v-for="item in avatarQAStates"
-              :key="item.state"
-              role="button"
-              :aria-label="item.label"
-              :data-avatar-preview-state="item.state"
-              @tap="previewAvatar(item.state)"
-            >
-              {{ item.label }}
-            </button>
-            <button role="button" aria-label="实际状态" @tap="previewAvatar(null)">实际状态</button>
-          </view>
           <BaseButton
             v-if="compactHeader && learning.recordReadState === 'ready'"
             ref="headerActionsButton"
@@ -446,12 +440,9 @@ import { learningText } from '@/i18n/learning.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
-import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
 import MuseLaunch from './muse-launch.vue';
-import { avatarBusinessForLearning, avatarStateFor } from '@/design/avatar-state.js';
-import { DEV_TEST } from '@/config/build-channel.js';
 
-import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import { computed, ref, onMounted, onUnmounted, onBeforeUpdate, onUpdated, nextTick, useAttrs, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { safeNavigateTo, requestProfilePanel } from '@/utils/safe-navigate';
@@ -479,50 +470,37 @@ const syncLogin = () => {
 };
 syncLogin();
 let releaseIdentity = () => {};
-const avatarEvent = ref(null);
-const avatarQA = DEV_TEST && import.meta.env.VITE_AVATAR_QA === 'true';
-const avatarPreview = ref(null);
-const avatarQAStates = [
-  { state: 'idle', label: '就绪' },
-  { state: 'waiting', label: '等待' },
-  { state: 'working', label: '思考' },
-  { state: 'making', label: '处理' },
-  { state: 'celebrate', label: '完成' },
-  { state: 'error', label: '出错' },
-  { state: 'resume', label: '恢复' }
-];
-function previewAvatar(state) {
-  avatarPreview.value = state
-    ? {
-        busy: ['working', 'making'].includes(state),
-        producing: state === 'making',
-        waiting: state === 'waiting',
-        completed: state === 'celebrate',
-        error: state === 'error',
-        resuming: state === 'resume',
-        completionId: `avatar-qa-${Date.now()}`
-      }
-    : null;
-}
-const avatarBusiness = computed(() => avatarPreview.value || avatarBusinessForLearning(learning, avatarEvent.value));
-const avatarStatus = computed(() => {
-  const value = avatarBusiness.value,
-    state = avatarStateFor(value);
-  const key = value.stopped
-    ? 'stopped'
-    : value.busy && ['feedback', 'essay', 'daily', 'summary'].includes(value.activity)
-      ? value.activity
-      : state;
-  return t(`muse.avatar.${key}`);
-});
-watch(
-  () => learning.state?.events?.at(-1)?.id,
-  (id, previous) => {
-    if (previous && id !== previous) avatarEvent.value = learning.state.events.at(-1);
-  }
-);
 const theme = useThemeStore();
 const root = ref(null);
+// Resize the reserved input space without covering the last message. This only
+// follows composer height changes; message/stream updates keep their own lifecycle.
+// #ifdef H5
+let composerResizeFrame;
+const shellAttrs = useAttrs();
+onBeforeUpdate(() => {
+  composerResizeFrame = null;
+  const element = root.value?.$el || root.value;
+  const height = parseFloat(element?.style?.getPropertyValue('--muse-composer-height'));
+  const nextHeight = parseFloat(shellAttrs.style?.['--muse-composer-height']);
+  // Message-only updates never force a layout read or change the reading position.
+  if (!Number.isFinite(height) || !Number.isFinite(nextHeight) || nextHeight === height) return;
+  const scroller = element?.querySelector?.('.space-content');
+  if (!scroller || !element.querySelector('.muse-composer-dock')) return;
+  composerResizeFrame = {
+    element,
+    scroller,
+    height,
+    atEnd: scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight <= 48
+  };
+});
+onUpdated(() => {
+  const before = composerResizeFrame;
+  composerResizeFrame = null;
+  if (!before?.atEnd || !Number.isFinite(before.height)) return;
+  const height = parseFloat(before.element.style.getPropertyValue('--muse-composer-height'));
+  if (Number.isFinite(height) && height !== before.height) before.scroller.scrollTop = before.scroller.scrollHeight;
+});
+// #endif
 const menuButton = ref(null);
 const closeButton = ref(null);
 const searchInput = ref(null);
@@ -770,8 +748,6 @@ const error = ref('');
 const navigation = computed(() => [
   { id: 'learning', label: t('muse.chat'), icon: 'chat' },
   { id: 'search', label: t('learning.ki6'), shortLabel: t('muse.nav.search'), icon: 'search' },
-  { id: 'archive', label: t('muse.activity'), icon: 'list' },
-  { id: 'phrases', label: t('muse.phrases'), shortLabel: t('muse.nav.phrases'), icon: 'bulb' },
   { id: 'plan', label: t('muse.goals'), shortLabel: t('muse.nav.plan'), icon: 'checkbox-on' },
   { id: 'materials', label: t('muse.library'), shortLabel: t('muse.nav.materials'), icon: 'shapes' }
 ]);

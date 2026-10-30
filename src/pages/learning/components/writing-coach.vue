@@ -132,7 +132,15 @@
       >
 
       <template v-if="!coach">
-        <MuseModelIntake v-if="!DEV_TEST" ref="intakePanel" v-model="goal" shared-input @accepted="acceptedProfile" />
+        <MuseChatEmpty v-if="showChatEmpty" connected @draft="goal = $event" />
+        <MuseModelIntake
+          v-if="!DEV_TEST"
+          ref="intakePanel"
+          v-model="goal"
+          :empty-greeting="showChatEmpty"
+          shared-input
+          @accepted="acceptedProfile"
+        />
       </template>
 
       <BaseCard v-else-if="learning.active.stopped" padding="large"
@@ -537,7 +545,7 @@
   </LearningShell>
 </template>
 <script setup>
-import { computed, ref, reactive, watch, onMounted, onUnmounted, nextTick } from 'vue';
+import { computed, ref, reactive, watch, onMounted, onBeforeUnmount, onUnmounted, nextTick } from 'vue';
 import { coachSavedRecords } from '../../../../laf-backend/functions/_shared/learning-coach-records.js';
 import { coachDueItem } from '../../../../laf-backend/functions/_shared/learning-reminders.js';
 import { workspaceDrafts } from '@/services/learning/workspace-drafts.js';
@@ -546,6 +554,7 @@ import '@/i18n/muse.js';
 import { t } from '@/i18n/index.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import MuseComposer from '@/components/business/learning/muse-composer.vue';
+import MuseChatEmpty from '@/components/business/learning/muse-chat-empty.vue';
 import MuseModelControl from '@/components/business/learning/muse-model-control.vue';
 import MuseModelFeedback from '@/components/business/learning/muse-model-feedback.vue';
 import { modelErrorPresentation } from '../../../../laf-backend/functions/_shared/model-errors.js';
@@ -589,6 +598,7 @@ const theme = useThemeStore(),
 const profileStep = ref(0);
 const composerHeight = ref(60);
 const intakePanel = ref(null);
+const showChatEmpty = computed(() => props.connectionTone === 'mint' && !learning.state.intake && !learning.intakeBusy);
 const goal = ref(''),
   answer = ref(''),
   materialText = ref(''),
@@ -807,7 +817,14 @@ async function submitComposer() {
     const previousConversation = learning.selectedConversationId;
     if (!DEV_TEST && !learning.state.intake?.acceptedConversationId) {
       const result = await intakePanel.value?.submitDraft();
-      if (result?.success) goal.value = '';
+      if (
+        draftAlive &&
+        submittedDraft === draftBinding &&
+        submittedDraft.context === learning.recordContext() &&
+        result?.success &&
+        goal.value.trim() === input
+      )
+        goal.value = '';
       return;
     }
     emit('general', input);
@@ -839,9 +856,10 @@ calendar.show();
 onUnmounted(() => calendar.dispose());
 const drafts = workspaceDrafts(learning);
 let draftBinding;
+let draftAlive = true;
 let restoringDraft = false;
 function saveDraft() {
-  if (!restoringDraft && draftBinding && draftBinding.context === learning.recordContext())
+  if (draftAlive && !restoringDraft && draftBinding && draftBinding.context === learning.recordContext())
     drafts.save(draftBinding.context, draftBinding.key, {
       answer: answer.value,
       goal: goal.value,
@@ -900,6 +918,10 @@ watch(
   { immediate: true, flush: 'sync' }
 );
 watch([answer, goal, profile, profileStep], saveDraft, { deep: true, flush: 'sync' });
+onBeforeUnmount(() => {
+  saveDraft();
+  draftAlive = false;
+});
 async function revealCurrentTurn() {
   await nextTick();
   // #ifdef H5
@@ -927,6 +949,8 @@ async function act(action) {
   }
 }
 function acceptedProfile(conversation) {
+  if (!draftAlive) return;
+  drafts.remove(learning.recordContext(), `coach:new:${today.value}`);
   goal.value = '';
   if (!conversation.coach) emit('general', { conversationId: conversation.id });
 }

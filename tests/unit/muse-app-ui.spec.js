@@ -14,6 +14,10 @@ describe('Muse App input behavior', () => {
     await textarea.trigger('keydown', { key: 'Enter', isComposing: true });
     await textarea.trigger('keydown', { key: 'Enter', keyCode: 229 });
     await textarea.trigger('keydown', { key: 'Enter', shiftKey: true });
+    await textarea.trigger('keydown', { key: 'Enter', repeat: true });
+    await textarea.trigger('compositionstart');
+    await textarea.trigger('keydown', { key: 'Enter' });
+    await textarea.trigger('compositionend');
     expect(wrapper.emitted('submit')).toBeUndefined();
     await textarea.trigger('keydown', { key: 'Enter' });
     expect(wrapper.emitted('submit')).toHaveLength(1);

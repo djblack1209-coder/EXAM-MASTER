@@ -316,7 +316,9 @@ page {
   --press-y: 0px;
   --lift-1: none;
   --lift-2: 0 2px 8px #11111214, 0 2px 16px #1111120a;
-  --ease: cubic-bezier(0.15, 1, 0.4, 1);
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --t-press: 150ms;
+  --t-state: 150ms;
   --tabbar-reserve: 0px;
 }
 .muse-space.space-light,
@@ -373,7 +375,7 @@ page {
   --paper-sunk: #1b1b1c;
   --line: #ffffff12;
   --line-strong: #ffffff1f;
-  --ink: #f2f7ff;
+  --ink: #ededee;
   --ink-2: #d2d4d7;
   --ink-3: #a7aaad;
   --ink-4: #ffffff5c;
@@ -383,8 +385,8 @@ page {
   --violet-soft-2: #29456a;
   --blue: #4b93ff;
   --blue-soft: #20334d;
-  --clay-face: #0074e8;
-  --clay-face-hover: #2f8bff;
+  --clay-face: #3172e0;
+  --clay-face-hover: #4a85e8;
   --on-clay: #fff;
   --focus: #4b93ff;
   --glass: #383838cc;
@@ -401,8 +403,8 @@ page {
   --muse-panel-hover: #28292b;
   --muse-rail-hover: var(--muse-panel-hover);
   --muse-send-idle: #545048;
-  --muse-composer: #383838cc;
-  --muse-user: #0074e8;
+  --muse-composer: #323232;
+  --muse-user: #3273e0;
   --muse-user-ink: #fff;
   --muse-rich-surface: #ffffff0d;
   --muse-rich-success: #7ee2a0;

@@ -2458,7 +2458,7 @@ const navigationDrafts = workspaceDrafts(learning);
 let navigationDraftBinding;
 let activeDraftSends = 0;
 function saveNavigationDraft() {
-  if (navigationDraftBinding?.context === learning.recordContext())
+  if (appPageAlive && navigationDraftBinding?.context === learning.recordContext())
     navigationDrafts.save(navigationDraftBinding.context, navigationDraftBinding.key, { draft: draft.value });
 }
 watch(
@@ -3165,6 +3165,7 @@ function prepareSubmission(kind, input) {
   });
 }
 function finishSubmission(ticket) {
+  if (!appPageAlive) return false;
   const conversationId =
     ticket.kind === 'send'
       ? learning.state.events.find((event) => event.id === `${ticket.id}:message`)?.data?.conversationId ||
@@ -3196,6 +3197,8 @@ async function send() {
     activeDraftSends--;
   }
   if (!finishSubmission(ticket)) return;
+  if (!ticket.conversationId && learning.active && !feedback.value && !learning.error && !result?.clarification)
+    navigationDrafts.remove(ticket.recordContext, 'chat:new');
   if (
     !feedback.value &&
     !learning.error &&
@@ -4414,6 +4417,7 @@ onHide(() => {
   learning.cancelSync({ clearFeedback: true });
 });
 onUnmounted(() => {
+  saveNavigationDraft();
   labVisible.value = false;
   appPageAlive = false;
   cancelRecordFile();

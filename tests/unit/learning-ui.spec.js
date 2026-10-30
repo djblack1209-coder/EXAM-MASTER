@@ -2509,10 +2509,9 @@ describe('学习空间的实际入口与目录', () => {
     wrapper.unmount();
     const shell = mount(LearningShell, { global: { stubs } });
     expect(shell.find('.brand-name').text()).toContain(BRAND.chinese);
-    expect(shell.find('.brand-mark').classes()).toContain('animated-avatar');
-    expect(shell.find('.brand-mark .animated-avatar__fallback').attributes('src')).toBe(
-      '/public/visual/avatar/idle.webp'
-    );
+    expect(shell.find('.brand-mark').attributes('src')).toBe(BRAND.mark);
+    expect(shell.find('.brand-mark').classes()).not.toContain('animated-avatar');
+    expect(shell.find('.brand-mark canvas').exists()).toBe(false);
     shell.unmount();
   });
   it('聊天发送向辅助工具说明禁用状态，填写目标后才创建学习记录', async () => {

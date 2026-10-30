@@ -1,6 +1,6 @@
 <template>
   <view v-if="!intake?.acceptedConversationId" class="model-intake" aria-live="polite">
-    <view v-if="!intake" class="intake-agent">
+    <view v-if="!intake && !emptyGreeting" class="intake-agent">
       <text>连接自己的 API 后，告诉我你想学什么。</text>
       <BaseButton
         v-if="learning.modelId && !learning.needsConnection"
@@ -105,7 +105,7 @@ import BaseOptions from '@/components/base/base-options/base-options.vue';
 import MuseModelFeedback from './muse-model-feedback.vue';
 import { modelErrorPresentation } from '../../../../laf-backend/functions/_shared/model-errors.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
-const props = defineProps({ sharedInput: Boolean, modelValue: { type: String, default: '' } });
+const props = defineProps({ sharedInput: Boolean, emptyGreeting: Boolean, modelValue: { type: String, default: '' } });
 const emit = defineEmits(['accepted', 'update:modelValue']);
 const learning = useConversationLearningStore();
 const editing = ref(false);
@@ -129,7 +129,9 @@ watch(
   () => {
     editing.value = false;
     choice.value = '';
-    input.value = '';
+    // The shared composer owns its draft and clears only a confirmed, unchanged
+    // submission. A new request id must not erase typing during model intake.
+    if (!props.sharedInput) input.value = '';
     failure.value = null;
   }
 );

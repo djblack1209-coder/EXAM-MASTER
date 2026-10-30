@@ -8,7 +8,6 @@ import JourneyReview from '@/pages/learning/components/journey-review.vue';
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
 import LearningJourney from '@/pages/learning/components/learning-journey.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
-import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
 import MuseChatEmpty from '@/components/business/learning/muse-chat-empty.vue';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import MuseComposer from '@/components/business/learning/muse-composer.vue';
@@ -77,14 +76,13 @@ describe('learning interface states preserve learning facts', () => {
     expect(wrapper.findAll('.rail-item-tip').map((item) => item.text())).toEqual([
       '对话',
       '搜索⌘K',
-      '历史',
-      '洞察',
       '计划',
       '资料',
       '用量',
+      '登录',
       '设置⌘,'
     ]);
-    expect(wrapper.findAll('.muse-rail button')).toHaveLength(8);
+    expect(wrapper.findAll('.muse-rail button')).toHaveLength(7);
     await wrapper.get('.directory-pill').trigger('tap');
     await flushPromises();
     expect(wrapper.get('.directory-search input').attributes('placeholder')).toBe('搜索会话');
@@ -388,10 +386,10 @@ describe('learning interface states preserve learning facts', () => {
   it('shows the Muse chat empty state and composer without creating a conversation', async () => {
     const store = useConversationLearningStore(),
       wrapper = render();
-    // Muse's new chat is only the avatar identity and composer; connectors stay in the header.
+    // Disconnected entrance retains intake; the header uses the static brand.
     expect(wrapper.findComponent(MuseChatEmpty).exists()).toBe(false);
     const identity = wrapper.getComponent(LearningShell).get('.muse-chat-identity');
-    expect(identity.getComponent(AnimatedAvatar).props('size')).toBe(56);
+    expect(identity.get('image.brand-mark').attributes('src')).toBe('/static/brand/mascot-256.webp');
     expect(identity.get('.brand-name').text()).toBe('Yozi AI');
     expect(wrapper.get('.space-content').text()).not.toContain('未连接');
     expect(wrapper.get('.space-content').findAllComponents(BaseChip)).toHaveLength(0);
@@ -532,12 +530,11 @@ describe('learning interface states preserve learning facts', () => {
     const play = vi.spyOn(HTMLMediaElement.prototype, 'play');
     const wrapper = render();
     await flushPromises();
-    const avatar = wrapper.getComponent(LearningShell).get('.muse-chat-identity').getComponent(AnimatedAvatar);
-    await avatar.trigger('pointerenter');
+    const identity = wrapper.getComponent(LearningShell).get('.muse-chat-identity');
     await flushPromises();
     expect(matchMedia).toHaveBeenCalledWith('(prefers-reduced-motion: reduce)');
-    expect(avatar.findAll('canvas.is-static')).toHaveLength(avatar.findAll('canvas').length);
-    expect(avatar.findAll('canvas')).toHaveLength(1);
+    expect(identity.findAll('canvas')).toHaveLength(0);
+    expect(identity.get('image.brand-mark').attributes('src')).toBe('/static/brand/mascot-256.webp');
     expect(play).not.toHaveBeenCalled();
     expect(wrapper.getComponent(MuseComposer).find('textarea').exists()).toBe(true);
     expect(useConversationLearningStore().state.conversations).toHaveLength(0);
@@ -709,7 +706,7 @@ describe('learning i18n', () => {
     const wrapper = render();
     const input = wrapper.get('.composer').findComponent(BaseInput);
     expect(input.props('autoGrow')).toBe(true);
-    expect(input.props('maxRows')).toBe(5);
+    expect(input.props('maxRows')).toBe(7);
     expect(input.get('textarea').attributes('rows')).toBe('1');
     const before = store.exportData();
     await input.get('textarea').setValue('第一行\n第二行\n第三行');

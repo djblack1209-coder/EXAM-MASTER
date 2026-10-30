@@ -3,6 +3,8 @@ import { mount } from '@vue/test-utils';
 import { nextTick, reactive } from 'vue';
 import { emptyLearningState } from '@/services/learning/learning-domain.js';
 import MuseLibrary from '@/components/business/learning/muse-library.vue';
+import { safeNavigateTo } from '@/utils/safe-navigate.js';
+vi.mock('@/utils/safe-navigate.js', () => ({ safeNavigateTo: vi.fn() }));
 
 const harness = vi.hoisted(() => ({ store: null }));
 vi.mock('@/stores/modules/conversation-learning.js', () => ({ useConversationLearningStore: () => harness.store }));
@@ -27,6 +29,16 @@ beforeEach(() => {
 });
 afterEach(() => wrapper?.unmount());
 const button = (label) => wrapper.findAll('button').find((node) => node.text() === label);
+
+it('keeps history, insights, practice and saved items reachable from the product library without writing facts', async () => {
+  wrapper = mount(MuseLibrary, { global: { stubs: { BaseIcon: true } } });
+  const before = JSON.stringify(harness.store.state);
+  const links = wrapper.findAll('.library-sidebar .library-saved-view');
+  for (const link of links) await link.trigger('tap');
+  expect(wrapper.emitted('view')).toEqual([['all'], ['phrases'], ['mistake']]);
+  expect(safeNavigateTo).toHaveBeenCalledWith('/pages/favorite/index');
+  expect(JSON.stringify(harness.store.state)).toBe(before);
+});
 describe('Muse library keeps selection and private reading local', () => {
   it('带练成果使用已保存的学习日期，避免 UTC 零点显示成前一天', async () => {
     harness.store.state.conversations.push({

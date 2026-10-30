@@ -58,6 +58,15 @@
       </view>
       <view class="library-sidebar-footer"
         ><BaseButton
+          v-for="item in savedViews"
+          :key="item.id"
+          class="lib-nav library-saved-view"
+          variant="quiet"
+          :icon="item.icon"
+          align="start"
+          @tap="openSavedView(item.id)"
+          >{{ item.label }}</BaseButton
+        ><BaseButton
           class="lib-nav"
           :class="{ 'is-current': section === 'files' }"
           variant="quiet"
@@ -129,6 +138,14 @@
           "
           @tap="chooseSection(item.id)"
           >{{ item.label }}{{ item.count !== undefined ? ` (${item.count})` : '' }}</BaseButton
+        ><BaseButton
+          v-for="item in savedViews"
+          :key="item.id"
+          class="library-saved-view"
+          variant="quiet"
+          :icon="item.icon"
+          @tap="openSavedView(item.id)"
+          >{{ item.label }}</BaseButton
         ><BaseInput v-model="query" label="搜索资料库" placeholder="搜索资料库" hide-label maxlength="120"
       /></view>
       <view class="library-scroll">
@@ -186,7 +203,20 @@ import { museLearningLibrary } from '@/services/learning/muse-workspace-data.js'
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
-defineEmits(['view']);
+import '@/i18n/muse.js';
+import '@/i18n/tutor.js';
+import { t } from '@/i18n/index.js';
+const emit = defineEmits(['view']);
+const savedViews = computed(() => [
+  { id: 'all', label: t('muse.activity'), icon: 'list' },
+  { id: 'phrases', label: t('muse.phrases'), icon: 'bulb' },
+  { id: 'mistake', label: t('tutor.archive.mistakes'), icon: 'pen' },
+  { id: 'favorites', label: t('tutor.archive.favorites'), icon: 'star' }
+]);
+function openSavedView(id) {
+  if (id === 'favorites') return safeNavigateTo('/pages/favorite/index');
+  emit('view', id);
+}
 const learning = useConversationLearningStore();
 const root = ref(null),
   filterButton = ref(null),
