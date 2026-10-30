@@ -8,6 +8,7 @@ import crypto from 'node:crypto';
 import {
   normalizeCoachRequest,
   coachInferenceContext,
+  coachAssessmentTask,
   coachSystemPrompt,
   parseCoachModelOutput
 } from './_shared/learning-writing-coach.js';
@@ -30,6 +31,9 @@ import {
   validateWritingFeedbackOutput,
   validateCoachSchema,
   decodeCoachResponse,
+  coachRepairFeedback,
+  coachRepairPrompt,
+  verifyCoachErrors,
   ProviderError,
   modelValueHasKeyEcho,
   type ModelConfig,
@@ -210,7 +214,12 @@ export async function runLearningModelTask(
     stream?: boolean;
     capabilityProbe?: { stage: 'tool' | 'json'; nonce: string; toolCall?: any };
     response?: any;
-    repair?: { parentId: string; configurationVersion: string };
+    repair?: {
+      parentId: string;
+      configurationVersion: string;
+      feedback?: ReturnType<typeof coachRepairFeedback>;
+      verified?: boolean;
+    };
     onStart?: (metadata: any) => void;
     onPreview?: (text: string) => void;
   } = {}
@@ -223,6 +232,7 @@ export async function runLearningModelTask(
   if (!limited.allowed) return { code: 429, success: false, message: '模型请求过于频繁' };
   let reservation: any = null;
   let observedResponse: any = null;
+  let coachVerification: any = null;
   let captureDiagnostics = false;
   let requireExplicitGradingRetry = false;
   let usedModel: ModelConfig | null = null;
@@ -261,11 +271,17 @@ export async function runLearningModelTask(
     if (!context || typeof context !== 'object' || Array.isArray(context))
       return { code: 400, success: false, message: '学习上下文格式不合法' };
     const coach: Record<string, any> | null = context.coach === undefined ? null : normalizeCoachRequest(context.coach);
-    requireExplicitGradingRetry = Boolean(coach?.dimensionContract);
     captureDiagnostics = Boolean(coach) && canCaptureResponseDiagnostics(auth.userId);
     const intake = context.intake === undefined ? null : normalizeIntakeContext(context.intake);
     if (intake && coach) return { code: 422, success: false, message: '建档与教学请求不能混用' };
     const inferenceCoach = coach ? coachInferenceContext(coach) : null;
+    requireExplicitGradingRetry =
+      Boolean(coach?.dimensionContract) &&
+      !(
+        inferenceCoach?.phase === 'feedback' &&
+        inferenceCoach.target === 'diagnostic' &&
+        coachAssessmentTask(inferenceCoach)?.kind === 'diagnostic_set'
+      );
     const gradingCoach =
       inferenceCoach && ['feedback', 'essay', 'summary'].includes(inferenceCoach.phase) ? inferenceCoach : null;
     const image =
@@ -410,7 +426,7 @@ export async function runLearningModelTask(
             : [])
         ]
       : [
-          { role: 'system', content: system },
+          { role: 'system', content: system + coachRepairPrompt(options.repair?.feedback || null) },
           ...(gradingCoach ? [{ role: 'user', content: gradingCoach.input }] : body.messages)
         ];
     if (image) {
@@ -554,6 +570,7 @@ export async function runLearningModelTask(
       inputMode: image ? 'image' : 'text'
     });
     upstreamStarted = true;
+    const upstreamAt = Date.now();
     const rawResponse = options.stream
       ? await callStreamingLearningProvider(model, messages, origins, {
           signal: execution.signal,
@@ -601,6 +618,31 @@ export async function runLearningModelTask(
       throw Object.assign(new ProviderError('COACH_INVALID', '模型输出未正常结束，反馈未保存'), {
         path: 'finish_reason'
       });
+    // 摸底初评通过字段合同后合并复核一次；返修时若原请求已复核则不再复核。
+    let coachContent = rawResponse.content;
+    if (nativeCoachReply && !options.capabilityProbe && !options.repair?.verified) {
+      let verificationUsage: any = null;
+      ({ content: coachContent, receipt: coachVerification } = await verifyCoachErrors(
+        model,
+        rawResponse.content,
+        async (verifier, verifierMessages) => {
+          // 客户端教学等待70秒：初评与复核合计不超过65秒，剩余不足就按复核失败保留原错误。
+          const remaining = 65000 - (Date.now() - upstreamAt);
+          if (remaining < 8000) throw new ProviderError('TIMEOUT', '复核时间不足，保留初评错误');
+          const checked = await callLearningProvider(
+            { ...verifier, timeoutMs: Math.min(30000, remaining) },
+            verifierMessages,
+            origins,
+            execution!.signal
+          );
+          verificationUsage = checked.usage || null;
+          if (checked.actualModel !== model!.model || modelValueHasKeyEcho(checked.content, model!.apiKey))
+            throw new ProviderError('MODEL_MISMATCH', '复核响应未通过模型与密钥检查');
+          return checked.content;
+        }
+      ));
+      if (coachVerification) coachVerification.usage = verificationUsage;
+    }
     let probeOutput: any = null;
     if (options.capabilityProbe) {
       if (options.capabilityProbe.stage === 'tool') {
@@ -630,7 +672,7 @@ export async function runLearningModelTask(
           ? parseIntakeOutput(response.content, intake)
           : coach
             ? parseCoachModelOutput(
-                nativeCoachReply ? decodeCoachResponse(model, rawResponse.content) : rawResponse.content,
+                nativeCoachReply ? decodeCoachResponse(model, coachContent) : rawResponse.content,
                 inferenceCoach?.exerciseContract || inferenceCoach?.summaryContract ? inferenceCoach : coach,
                 captureDiagnostics,
                 (parsed: any) => {
@@ -662,7 +704,8 @@ export async function runLearningModelTask(
       requestId: body.requestId,
       modelId: model.id,
       requestBinding: body.requestBinding || null,
-      transport: options.stream ? 'sse-v1' : 'json-v1'
+      transport: options.stream ? 'sse-v1' : 'json-v1',
+      ...(coachVerification ? { coachVerification } : {})
     };
     const settled = await mutateAccount(db, auth.userId, (a) =>
       settleCall(
@@ -807,7 +850,12 @@ export async function runLearningModelTask(
           stream: false,
           onStart: undefined,
           onPreview: undefined,
-          repair: { parentId: reservation.call.id, configurationVersion: modelConfigurationVersion(usedModel) }
+          repair: {
+            parentId: reservation.call.id,
+            configurationVersion: modelConfigurationVersion(usedModel),
+            feedback: coachRepairFeedback(usedModel, error, observedResponse.content),
+            verified: Boolean(coachVerification)
+          }
         }
       );
       if (repaired.success)

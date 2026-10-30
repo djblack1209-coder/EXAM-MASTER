@@ -358,10 +358,13 @@ describe('免费型号是可核验接入事实，不是任意零价格声明', (
   });
   it('只有精确端点/型号且复核未过期时确认零价格，Gemini账户层和FlashX不冒充免费', () => {
     const p = FREE_MODEL_PRESETS.find((preset) => preset.id === 'zhipu-glm-flash')!;
-    expect(freeModelPricing(p, Date.parse('2026-09-30'))).toMatchObject({ inputPerMillion: 0 });
+    expect(freeModelPricing(p, Date.parse('2026-10-30'))).toMatchObject({
+      inputPerMillion: 0,
+      priceVersion: 'zhipu-glm-4.7-flash-free-2026-10-30'
+    });
     expect(freeModelPricing({ ...p, model: 'glm-4.7-flashx' })).toBeNull();
     expect(freeModelPricing({ ...p, endpoint: 'https://another.example/chat' })).toBeNull();
-    expect(freeModelPricing(p, Date.parse('2026-10-30'))).toBeNull();
+    expect(freeModelPricing(p, Date.parse('2026-11-29'))).toBeNull();
     expect(freeModelPricing(FREE_MODEL_PRESETS.find((preset) => preset.id === 'gemini-flash-lite')!)).toBeNull();
     for (const preset of FREE_MODEL_PRESETS.filter((item) => item.id.endsWith('-flagship')))
       expect(freeModelPricing(preset)).toBeNull();
@@ -514,4 +517,23 @@ it('普通文本连接不能冒充图片成功；图片状态按同配置/实际
   expect(
     modelConnectionState({ ...model, visionAdapter: undefined }, [{ ...call, inputMode: 'image' }], at).visionStatus
   ).toBe('undeclared');
+});
+
+it('Dots 免费路由只在核价期限和精确端点生效，不强制采用失败试验的推理参数', () => {
+  const model = {
+    model: 'dots-studio/dots-3-note-preview:free',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+    maxOutput: 8192,
+    timeoutMs: 60000,
+    source: 'byok',
+    capabilities: { tools: true, structured: true },
+    capabilityCheck: { version: 1, tools: true, structured: true, checkedAt: 1 }
+  } as any;
+  expect(freeModelPricing(model, Date.parse('2026-10-30'))).toMatchObject({ inputPerMillion: 0, outputPerMillion: 0 });
+  expect(freeModelPricing(model, Date.parse('2026-11-02'))).toBeNull();
+  expect(freeModelPricing({ ...model, model: 'dots-studio/dots-3-note-preview' }, Date.parse('2026-10-30'))).toBeNull();
+  expect(freeModelPricing({ ...model, endpoint: 'https://other.example/chat' }, Date.parse('2026-10-30'))).toBeNull();
+  expect(buildLearningRequest(model, [])).toMatchObject({ max_tokens: 8192 });
+  expect(buildLearningRequest(model, [])).not.toHaveProperty('reasoning');
+  expect(model.timeoutMs).toBe(60000);
 });

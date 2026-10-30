@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { mixedDiagnosticRequest, mixedDiagnosticReply } from '../fixtures/writing-mixed.js';
 import { EventEmitter } from 'node:events';
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 const mock = vi.hoisted(() => ({
@@ -2186,3 +2187,84 @@ it('Agnes 3.0 exact reviewed route costs zero only with supported, consistent us
     clock.mockRestore();
   }
 });
+
+it.each(['success', 'missing-tool', 'invalid-again', 'rate-limited', 'secret-echo'])(
+  'mixed diagnostic bounded repair: %s preserves strict gate, budget and parent binding',
+  async (mode) => {
+    await streamProfile(false);
+    let count = 0,
+      verifications = 0;
+    vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
+      if (config.writingOutput?.contract === 'writing-error-verification-v1') {
+        verifications++;
+        return {
+          ...streamCompleted,
+          finishReason: 'tool_calls',
+          coachFunctionResult: true,
+          content: JSON.stringify({
+            reviews: [{ index: 0, required: true, wrong: true, reason: 'interested 后固定用 in' }]
+          })
+        };
+      }
+      count++;
+      if (count === 1 && mode === 'missing-tool')
+        throw Object.assign(new ProviderError('COACH_INVALID', '模型未按本次教学格式返回，原答已保留'), {
+          path: 'tools',
+          observed: { actualModel: config.model, usage: streamCompleted.usage }
+        });
+      if (count === 2 && mode === 'rate-limited') throw new ProviderError('RATE_LIMITED', 'synthetic limit');
+      const wire = mixedDiagnosticReply(config);
+      if (count === 1 || mode === 'invalid-again') {
+        wire.dimensionReviews.grammar = { score: 1, comment: '重复归因', evidenceIds: ['q2'] } as any;
+      }
+      if (mode === 'secret-echo') wire.message = 'fixture-only-stream-key';
+      return {
+        ...streamCompleted,
+        finishReason: 'tool_calls',
+        coachFunctionResult: true,
+        content: JSON.stringify(wire)
+      };
+    });
+    const body = {
+      ...streamBody('mixed-repair-' + mode),
+      learningContext: { owner: 'u1', coach: mixedDiagnosticRequest() }
+    };
+    const result = await ai(context(body));
+    const ledger = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && row.calls);
+    if (mode === 'secret-echo') {
+      expect(result.success).toBe(false);
+      expect(callLearningProvider).toHaveBeenCalledOnce();
+      expect(JSON.stringify(ledger)).not.toContain('fixture-only-stream-key');
+      return;
+    }
+    expect(count).toBe(2);
+    expect(verifications).toBe(mode === 'success' || mode === 'missing-tool' ? 1 : 0);
+    expect(callLearningProvider).toHaveBeenCalledTimes(2 + verifications);
+    const repairMessages = vi.mocked(callLearningProvider).mock.calls[1][1];
+    expect(repairMessages[0].content).toContain(
+      mode === 'missing-tool' ? '模型未按本次教学格式返回，原答已保留' : '模型响应未通过完整字段合同'
+    );
+    if (mode !== 'missing-tool')
+      expect(repairMessages[0].content).toContain('"expected":{"type":"object","keys":["comment"]}');
+    if (mode !== 'missing-tool') expect(repairMessages[0].content).toContain('"dimension":"语法","quoteIds":["q2"]');
+    expect(ledger.calls).toHaveLength(2);
+    expect(ledger.calls[0]).toMatchObject({ status: 'failed', result: null, usage: expect.any(Object) });
+    expect(ledger.calls[1].repairOf).toBe(body.requestId);
+    expect(ledger.calls[1].id).toBe(body.requestId + ':repair1');
+    if (mode === 'success' || mode === 'missing-tool') {
+      expect(result).toMatchObject({
+        success: true,
+        data: { requestId: body.requestId, repairRequestId: body.requestId + ':repair1' }
+      });
+      expect(ledger.calls[1]).toMatchObject({ status: 'completed', usage: expect.any(Object) });
+      expect(result.data.coachVerification).toMatchObject({ status: 'completed', checked: 1, removed: 0 });
+      expect(result.data.coach.dimensions.find((d: any) => d.name === '搭配').score).toBe(1);
+      expect((await ai(context(body))).success).toBe(true);
+      expect(callLearningProvider).toHaveBeenCalledTimes(3);
+    } else {
+      expect(result).toMatchObject({ success: false, repairExhausted: true, status: 'failed' });
+      expect(result).not.toHaveProperty('data.coach');
+      expect(ledger.calls[1]).toMatchObject({ status: 'failed', result: null });
+    }
+  }
+);
