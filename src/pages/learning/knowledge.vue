@@ -76,7 +76,7 @@
           >
           <ProgressEvidence :events="nodeEvents" @open="openEvidence" />
           <BaseButton v-if="windowWidth < 960" variant="quiet" @tap="returnToMap">返回图谱</BaseButton>
-          <text class="detail-label">掌握标准</text>
+          <text class="detail-label">节点详情</text>
           <text v-for="criterion in detail.masteryCriteria" :key="criterion" class="detail-copy">{{ criterion }}</text>
           <text class="detail-label">诊断题提示 · 待审核</text>
           <text class="detail-copy">{{ detail.diagnosticPrompt || '暂无题目提示' }}</text>
@@ -90,10 +90,7 @@
           <text v-if="!detail.prerequisites.length" class="detail-copy">无先修关系</text>
           <BaseButton class="diagnosis-pending" variant="secondary" disabled>诊断接入待审核</BaseButton>
         </template>
-        <template v-else
-          ><text class="detail-title">选择一个能力节点</text
-          ><text class="detail-copy">查看掌握标准、诊断题提示与先修关系</text></template
-        >
+        <template v-else><text class="detail-title">选择一个能力节点</text></template>
       </view>
     </view>
     <view v-else class="knowledge-empty" role="status">暂无知识框架</view>

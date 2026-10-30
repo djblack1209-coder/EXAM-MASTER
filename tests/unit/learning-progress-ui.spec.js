@@ -6,7 +6,7 @@ import ProgressOverview from '@/components/business/learning/progress/progress-o
 import ProgressMindMap from '@/components/business/learning/progress/progress-mind-map.vue';
 import Knowledge from '@/pages/learning/knowledge.vue';
 import { learningProgressReadModel } from '@/services/learning/learning-progress-read-model.js';
-import { progressFixture } from '../fixtures/learning-progress.js';
+import { progressBoundaryFixture, progressFixture } from '../fixtures/learning-progress.js';
 const harness = vi.hoisted(() => ({ learning: null }));
 vi.mock('@/stores/modules/conversation-learning.js', () => ({ useConversationLearningStore: () => harness.learning }));
 vi.mock('@dcloudio/uni-app', () => ({ onLoad: vi.fn(), onShow: vi.fn(), onResize: vi.fn() }));
@@ -22,6 +22,63 @@ beforeEach(() => {
 });
 
 describe('progress presentation shares one read model without writing learning facts', () => {
+  it.each([4, 5])('renders the same sample gate in subjects, framework and mind map at %i events', async (count) => {
+    harness.learning = reactive({
+      state: progressBoundaryFixture(count),
+      recordReadState: 'ready',
+      recordContext() {
+        return this.state.owner;
+      },
+      refresh: vi.fn()
+    });
+    const model = learningProgressReadModel(harness.learning.state);
+    const wrapper = mount(Knowledge, { global });
+    expect(wrapper.get('[data-metric="语法"]').text()).toContain(count === 5 ? '0%' : '数据不足');
+    expect(wrapper.get('[data-metric="数学"]').text()).toContain(count === 5 ? '100%' : '数据不足');
+    for (const selector of ['data-node-id', 'data-mind-node']) {
+      if (selector === 'data-mind-node')
+        await wrapper
+          .findAll('button')
+          .find((item) => item.text() === '思维导图')
+          .trigger('click');
+      const node = wrapper.get(`[${selector}="agreement"]`);
+      expect(node.text()).toContain(count === 5 ? '可改进' : '数据不足');
+      expect(node.text().includes('薄弱点')).toBe(count === 5);
+      expect(node.classes().includes('is-weakness')).toBe(count === 5);
+      expect(
+        wrapper
+          .findAll(`[${selector}].is-weakness`)
+          .map((item) => item.attributes(selector))
+          .sort()
+      ).toEqual(model.weaknesses.map((item) => item.id).sort());
+    }
+    wrapper.unmount();
+  });
+  it.each([0, 4, 5, 6])(
+    'never renders mastery claims in any node, detail, evidence or mind map (%i receipts)',
+    async (count) => {
+      harness.learning = reactive({
+        state: progressFixture(count, count),
+        recordReadState: 'ready',
+        recordContext() {
+          return this.state.owner;
+        },
+        refresh: vi.fn()
+      });
+      const wrapper = mount(Knowledge, { global });
+      expect(wrapper.html()).not.toMatch(/掌握|mastered/i);
+      for (const node of wrapper.findAll('[data-node-id]')) {
+        await node.trigger('click');
+        expect(wrapper.html()).not.toMatch(/掌握|mastered/i);
+      }
+      await wrapper
+        .findAll('button')
+        .find((item) => item.text() === '思维导图')
+        .trigger('click');
+      expect(wrapper.html()).not.toMatch(/掌握|mastered/i);
+      wrapper.unmount();
+    }
+  );
   it('empty and four-event panels display 数据不足 without percentages; sufficient metrics expand exact sources', async () => {
     const wrapper = mount(ProgressOverview, {
       props: { model: learningProgressReadModel(progressFixture(4, 4)) },

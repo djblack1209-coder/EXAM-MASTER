@@ -139,21 +139,22 @@ function nodeProjection(evidence) {
     const observed = rows.filter((event) =>
       event.nodeObservations.some((item) => item.nodeId === node.id && item.score !== null)
     );
-    const latest = observed.at(-1);
-    const level = latest
-      ? Math.min(
-          ...latest.nodeObservations
-            .filter((item) => item.nodeId === node.id && item.score !== null)
-            .map((item) => item.score)
-        )
-      : null;
     const status = observed.length < MIN_PROGRESS_EVENTS ? 'insufficient' : 'observed';
+    const latest = observed.at(-1);
+    const level =
+      status === 'observed'
+        ? Math.min(
+            ...latest.nodeObservations
+              .filter((item) => item.nodeId === node.id && item.score !== null)
+              .map((item) => item.score)
+          )
+        : null;
     return {
       id: node.id,
       name: node.name,
       chapter: node.chapter,
       status,
-      level: status === 'insufficient' ? null : level,
+      level,
       statusLabel: status === 'insufficient' ? '数据不足' : PROGRESS_RUBRIC_LABELS[level],
       // Even five correct objective answers are not a validated writing rubric level.
       sampleCount: observed.length,
@@ -161,7 +162,7 @@ function nodeProjection(evidence) {
       evidenceIds: rows.map((event) => event.id),
       levelEventIds: status === 'observed' ? [latest.id] : [],
       isWeakness: level !== null && level < 2,
-      weaknessEventIds: rows
+      weaknessEventIds: (status === 'observed' ? rows : [])
         .filter((event) => event.nodeObservations.some((item) => item.nodeId === node.id && item.weakness))
         .map((event) => event.id),
       accuracy: metric(rows, (event) => (event.outcome === null ? null : event.outcome === 'correct'))
@@ -257,8 +258,10 @@ export function learningProgressReadModel(state = {}) {
         const errors = list(feedback.errors).filter((error) => error.dimension === dimension.name);
         const labels = [
           ...errors.map((error) => error.label),
+          // Canonical, post-verification evidence only. Summary labels, prior
+          // feedback and verification internals cannot restore deleted errors.
           ...list(feedback.weaknessEvidence)
-            .filter((item) => item.classification === 'error' && list(feedback.weaknesses).includes(item.label))
+            .filter((item) => item.classification === 'error')
             .map((item) => item.label)
         ];
         const ids = progressNodeIds({ dimension: dimension.name, labels: [dimension.name, ...labels] });

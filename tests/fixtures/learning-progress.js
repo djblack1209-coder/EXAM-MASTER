@@ -114,3 +114,41 @@ export function progressFixture(writingCount = 6, answerCount = 6) {
   state.revision = state.events.length;
   return state;
 }
+
+// Each receipt observes the same weak node, so 4/5 tests exercise its floor.
+export function progressBoundaryFixture(count, answerCount = count) {
+  const state = progressFixture(count, answerCount);
+  for (const feedback of Object.values(state.conversations[0].coach.days[0].feedback)) {
+    const answer = feedback.dimensions[0].evidence[0];
+    feedback.dimensions[0].score = 1;
+    feedback.errors = [
+      { quoteId: 'q1', dimension: '语法', label: '主谓一致', errorText: answer, replacement: 'Synthetic correction' }
+    ];
+    feedback.weaknesses = ['主谓一致'];
+    feedback.weaknessEvidence = [{ label: '主谓一致', quote: answer, classification: 'error' }];
+  }
+  return state;
+}
+
+// G round 3: errors/weaknessEvidence are final; removed errors exist only in
+// opaque verification metadata. Never use this fixture as public learning data.
+export function progressRound3Fixture(count = 5) {
+  const state = progressBoundaryFixture(count, 0);
+  Object.values(state.conversations[0].coach.days[0].feedback).forEach((feedback, index) => {
+    feedback.errors[0].rule = '中心主语与谓语单复数一致';
+    feedback.weaknesses = ['主谓一致', '冠词'];
+    feedback.weaknessEvidence = [{ label: '冠词', quote: feedback.dimensions[0].evidence[0], classification: 'error' }];
+    if (index < 2) feedback.dimensions.find((dimension) => dimension.name === '表达').score = null;
+    feedback.scorePolicy = 'host-derived-v1';
+    feedback.coachVerification = {
+      status: 'completed',
+      checked: 3,
+      removed: 2,
+      reviews: [
+        { label: '时态', dimension: '语法', kept: false },
+        { label: '搭配', dimension: '搭配', kept: false }
+      ]
+    };
+  });
+  return state;
+}

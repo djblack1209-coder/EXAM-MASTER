@@ -6,7 +6,7 @@ import {
   progressNodeIds
 } from '@/services/learning/learning-progress-read-model.js';
 import { knowledgeGraphSeed } from '@/services/learning/knowledge-graph-seed.js';
-import { progressFixture } from '../fixtures/learning-progress.js';
+import { progressBoundaryFixture, progressFixture, progressRound3Fixture } from '../fixtures/learning-progress.js';
 const writing = (model) => model.subjects.find((subject) => subject.id === 'kaoyan-english-writing');
 const grammar = (model) => writing(model).dimensions.find((dimension) => dimension.id === '语法');
 
@@ -35,6 +35,139 @@ describe('learning progress: canonical, traceable, read-only observations', () =
       denominator: 5,
       percentage: 80
     });
+  });
+  it.each([4, 5])('gates subject, node, weakness list and mind map consistently at %i events', (count) => {
+    const model = learningProgressReadModel(progressBoundaryFixture(count));
+    const sufficient = count === 5;
+    expect(grammar(model)).toMatchObject({
+      status: sufficient ? 'available' : 'insufficient',
+      numerator: 0,
+      denominator: count,
+      percentage: sufficient ? 0 : null
+    });
+    expect(model.subjects.find((subject) => subject.id === '数学').accuracy).toMatchObject({
+      denominator: count,
+      percentage: sufficient ? 100 : null
+    });
+    for (const projection of [model, ...model.sources.filter((source) => source.source === 'byok')]) {
+      const node = projection.nodes.find((item) => item.id === 'agreement');
+      expect(node).toMatchObject({
+        status: sufficient ? 'observed' : 'insufficient',
+        level: sufficient ? 1 : null,
+        statusLabel: sufficient ? '可改进' : '数据不足',
+        sampleCount: count,
+        isWeakness: sufficient,
+        levelEventIds: sufficient ? ['receipt-4'] : [],
+        weaknessEventIds: sufficient ? Array.from({ length: count }, (_, i) => `receipt-${i}`) : []
+      });
+    }
+    const mindNodes = model.mindMap.branches.flatMap((branch) =>
+      model.nodes.filter((node) => branch.nodeIds.includes(node.id))
+    );
+    expect(
+      mindNodes
+        .filter((node) => node.isWeakness)
+        .map((node) => node.id)
+        .sort()
+    ).toEqual(model.weaknesses.map((node) => node.id).sort());
+    expect(model.weaknesses.some((node) => node.id === 'agreement')).toBe(sufficient);
+    if (!sufficient) {
+      expect(model.weaknesses).toEqual([]);
+      expect(model.nodes.every((node) => node.level === null && !node.isWeakness)).toBe(true);
+    }
+  });
+  it('round 3 uses final errors/evidence, never removed errors, summary labels or historical feedback', () => {
+    const state = progressRound3Fixture();
+    const day = state.conversations[0].coach.days[0];
+    const before = JSON.stringify(state);
+    const model = learningProgressReadModel(state);
+    expect(grammar(model)).toMatchObject({ numerator: 0, denominator: 5, percentage: 0 });
+    expect(writing(model).dimensions.find((dimension) => dimension.id === '搭配')).toMatchObject({
+      numerator: 5,
+      denominator: 5,
+      percentage: 100
+    });
+    expect(model.weaknesses.map((node) => node.id).sort()).toEqual([
+      'agreement',
+      'articles',
+      'sentence',
+      'translation'
+    ]);
+    expect(model.nodes.find((node) => node.id === 'tense')).toMatchObject({
+      level: null,
+      sampleCount: 0,
+      isWeakness: false,
+      evidenceIds: []
+    });
+    expect(model.nodes.find((node) => node.id === 'collocation')).toMatchObject({ level: 2, isWeakness: false });
+    expect(model.evidence).toHaveLength(5);
+    expect(JSON.stringify(state)).toBe(before);
+    for (const feedback of Object.values(day.feedback)) {
+      feedback.weaknesses = ['时态'];
+      feedback.errors[0].rule = '时态'; // rule text is not a node label.
+    }
+    day.feedbackHistory = {
+      'card-card0': [{ errors: [{ dimension: '语法', label: '时态' }], weaknesses: ['时态'] }]
+    };
+    expect(learningProgressReadModel(state)).toEqual(model);
+  });
+  it('round 3 null dimensions never enter subject, source or question-type attainment denominators', () => {
+    const state = progressRound3Fixture();
+    const model = learningProgressReadModel(state);
+    for (const subjects of [model.subjects, ...model.sources.map((source) => source.subjects)]) {
+      const expression = subjects[0].dimensions.find((dimension) => dimension.id === '表达');
+      expect(expression).toMatchObject({ numerator: 3, denominator: 3, percentage: null });
+      expect(expression.denominatorEventIds).toEqual(['receipt-2', 'receipt-3', 'receipt-4']);
+    }
+    // Only one dimension is scored; the other three nulls must not turn a
+    // successful assessed task into a failure or add an unassessed task.
+    for (const [index, feedback] of Object.values(state.conversations[0].coach.days[0].feedback).entries()) {
+      feedback.errors = [];
+      feedback.weaknessEvidence = [];
+      feedback.dimensions.forEach((dimension) => {
+        dimension.score = index < 4 && dimension.name === '搭配' ? 2 : null;
+      });
+    }
+    const partial = learningProgressReadModel(state);
+    expect(writing(partial).questionTypes[0].attainment).toMatchObject({
+      numerator: 4,
+      denominator: 4,
+      percentage: null,
+      denominatorEventIds: ['receipt-0', 'receipt-1', 'receipt-2', 'receipt-3']
+    });
+  });
+  it('verification metadata is opaque and optional; no internal property is read', () => {
+    const state = progressRound3Fixture();
+    const expected = learningProgressReadModel(state);
+    const opaque = new Proxy(
+      {},
+      {
+        get() {
+          throw new Error('verification internals read');
+        },
+        ownKeys() {
+          throw new Error('verification internals enumerated');
+        }
+      }
+    );
+    for (const feedback of Object.values(state.conversations[0].coach.days[0].feedback))
+      feedback.coachVerification = opaque;
+    expect(learningProgressReadModel(state)).toEqual(expected);
+    for (const feedback of Object.values(state.conversations[0].coach.days[0].feedback))
+      delete feedback.coachVerification;
+    expect(learningProgressReadModel(state)).toEqual(expected);
+  });
+  it.each([1, 2])('round %i receipts remain readable without round 3 fields', (round) => {
+    const state = progressBoundaryFixture(5, 0);
+    if (round === 1)
+      for (const feedback of Object.values(state.conversations[0].coach.days[0].feedback)) {
+        delete feedback.errors;
+        delete feedback.weaknessEvidence;
+      }
+    const model = learningProgressReadModel(state);
+    expect(model.evidence).toHaveLength(5);
+    expect(grammar(model)).toMatchObject({ numerator: 0, denominator: 5, percentage: 0 });
+    expect(model.nodes.find((node) => node.id === 'sentence')).toMatchObject({ level: 1, isWeakness: true });
   });
   it('separates rubric attainment from objective correctness and traces both counts to event IDs', () => {
     const state = progressFixture(),

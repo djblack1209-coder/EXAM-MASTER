@@ -57,7 +57,7 @@ export function knowledgeGraphView(seed, width = 680, progress = null) {
         recordLabel: '暂无记录 · 待审核',
         evidenceIds: [],
         ...(progress?.nodes.find((item) => item.id === topic.id) || {}),
-        masteryCriteria: [displayStandards[topic.id] || '掌握标准待审核'],
+        masteryCriteria: [displayStandards[topic.id] || '待审核'],
         diagnosticPrompt: topic.diagnostic?.prompt || '',
         x: inset + (i % columns) * (nodeWidth + gap),
         y: y + 34 + Math.floor(i / columns) * (nodeHeight + 14),

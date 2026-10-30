@@ -137,3 +137,36 @@ open -n 'tmp/progress-1.noindex/cargo-target/release/bundle/macos/Yozi AI.app'
 ```
 
 候选内Ctrl+Alt+E／F切换空态／足量样本；验完正常退出，对实际启动的完整`.app`路径执行`lsregister -u`。官网用 `python3 -m http.server 39137 --bind 127.0.0.1 --directory dist/build/h5` 本地静态预览；`tmp/progress-1.noindex/h5-acceptance.js`交给现有Playwright的`browser_run_code_unsafe(filename)`，脚本会建隔离上下文、模拟只读返回并自行关闭。候选与临时输出始终放在本工作树`.noindex`目录。
+
+## 呈现线第 2 批 执行侧交付（2026-10-30）
+
+- **模块／归属**：P／Codex；仅本工作树 `codex/yozi-progress-1-20261031`。已先读主工作树计划0.1（含接口登记）及第1批总监验收，无冲突合入 `c61dfd8f`（合并提交 `800dc6f0`）；后续未改G或S文件、其他工作树或日常App。
+- **门槛修复**：节点先检查5个有效收据样本，再计算等级；不足时等级为null、薄弱点为false、薄弱点事件编号为空。科目比例、节点、薄弱点列表、来源分组和导图高亮的4／5边界一致，原始支撑事件仍可只读追溯。
+- **第3轮收据**：只按最终 `errors[].label` 和错误类 `weaknessEvidence` 定位；不从汇总标签、`errors[].rule` 文本、旧反馈或复核内部恢复已删错误。`scorePolicy` 与 `coachVerification` 不参与推断，后者用禁止读取属性的代理验证其不透明性；第1／2轮缺少新增字段仍可读取。既有null过滤保持，测试覆盖科目／来源维度、题型达标率及全null收据不入分母。合成收据每张含核对3／删除2计数，均未变成额外样本或薄弱点。
+- **文案／N4**：未发现既有节点「已掌握」结论，但页面两处含「掌握标准」，已改用现有「节点详情」并删冗余空态说明；视图后备文字改用现有「待审核」。遍历所有26节点、详情、证据、导图及0／4／5／6样本的渲染测试不含「掌握／mastered」。只更正 `17` 第3行的页面／Store只读接入现状，未改其他计划文档。
+- **测试事实**：定向 **39／39通过**；ESLint、Prettier、`git diff --check`通过。隔离全量 **6388项：6173通过、178失败、37跳过**，逐文件＋完整测试名＋重复次数比对 **新增0／既有178／消除0**；15个未处理错误按文件＋最近测试提示＋消息的多重集合也无新增，提示不作因果归因。[全量JSON](../tmp/progress-2.noindex/full-tests.json)、[日志](../tmp/progress-2.noindex/full-tests.log)、[逐ID比对](../tmp/progress-2.noindex/comparison.json)、[错误比对](../tmp/progress-2.noindex/unhandled-comparison.json)、[定向JSON](../tmp/progress-2.noindex/targeted-tests.json)。比较器拒绝跨工作树绝对基线路径（原始失败日志保留）；未改G脚本，改用与指定主树原件经 `cmp` 逐字一致的本树tmp副本。
+- **构建事实**：隔离桌面467模块、官网261模块及离线锁定原生候选构建通过；桌面公开产物检查、候选严格签名通过。候选为 `tmp/progress-2.noindex/Yozi AI.app`，独立bundle ID／WebKit UUID、合成账户与离线传输；临时宿主仅主crate opt-level=0，不作发布性能结论。
+
+| 桌面实际状态 | 观察结果 | 截图（同目录保留AX全文） |
+| --- | --- | --- |
+| 4次 | 比例与节点均数据不足；无薄弱点和导图高亮 | [指标](../tmp/progress-2.noindex/app-four-metrics.png)、[框架](../tmp/progress-2.noindex/app-four-framework.png)、[导图](../tmp/progress-2.noindex/app-four-mind.png) |
+| 5次 | 语法0／5；主谓一致为「可改进 · 薄弱点」，框架与导图一致 | [指标](../tmp/progress-2.noindex/app-five-metrics.png)、[框架](../tmp/progress-2.noindex/app-five-framework.png)、[导图](../tmp/progress-2.noindex/app-five-mind.png) |
+| 第3轮含复核删除 | 保留的主谓一致／冠词有高亮；已删时态节点无记录、无薄弱点；搭配5／5，表达因仅3条非null显示数据不足 | [指标](../tmp/progress-2.noindex/app-round3-metrics.png)、[框架与已删节点](../tmp/progress-2.noindex/app-round3-framework.png) |
+| 旧收据 | 缺rule／scorePolicy／coachVerification仍正常显示5条来源与等级 | [指标](../tmp/progress-2.noindex/app-legacy-metrics.png)、[框架](../tmp/progress-2.noindex/app-legacy-framework.png) |
+
+- **官网390px**：四态均无横溢，来源条数为4／5／5／5，未显示原答／「查看原答」入口或掌握字样；第3轮表达维度显示数据不足。[4次](../tmp/progress-2.noindex/h5-390-four.png)、[5次](../tmp/progress-2.noindex/h5-390-five.png)、[第3轮](../tmp/progress-2.noindex/h5-390-round3.png)、[旧收据](../tmp/progress-2.noindex/h5-390-legacy.png)、[读回](../tmp/progress-2.noindex/h5-observed.json)。Playwright隔离上下文拦截回环URL并直接返回构建文件和合成只读接口，无监听服务器、无真实账户或模型请求；上下文已关闭，原about:blank保留。
+- **资源收尾**：复用已有npm依赖与主树Cargo缓存的APFS克隆；本轮App PID31812已Cmd+Q退出、完整路径注销成功，系统搜索只保留日常入口。界面锁已释放，`cargo clean`回收私有中间产物 **2,553,880,888逻辑字节**，不是实时磁盘释放量；主树缓存、既有依赖链接、第1批回滚候选、本批候选与证据保留。日常App可执行哈希仍为 `2e85d945…`。[归属记录](../tmp/progress-2.noindex/resources.json)。
+- **未验／待批**：手机原生App未验（本机无HBuilderX／可运行的uni-app原生基座）；N3预测性准确率未验。待批文案候选：**无**；无新增依赖及许可证公开范围，无S接口改动申请。未写真实学习事实、读私有模型目录、启付费、开服务器、推送、部署、替换日常App或构建小程序。
+
+复跑（本工作树根目录；沿用现有依赖，每次输出使用新编号，既有178失败导致全量命令退出1）：
+
+```sh
+P2_RUN_ID=$(date +%Y%m%d-%H%M%S)
+YOZI_ISOLATED_BUILD=1 rtk bypass npm test -- --cache=false tests/unit/learning-progress-read-model.spec.js tests/unit/learning-progress-ui.spec.js
+cp '/Users/blackdj/Desktop/Yozi AI/tmp/qa-run/round1-test-triage.json' "tmp/progress-2.noindex/baseline-$P2_RUN_ID.json"
+cmp '/Users/blackdj/Desktop/Yozi AI/tmp/qa-run/round1-test-triage.json' "tmp/progress-2.noindex/baseline-$P2_RUN_ID.json"
+YOZI_ISOLATED_BUILD=1 rtk bypass npm test -- --cache=false --reporter=default --reporter=json --outputFile="tmp/progress-2.noindex/retest-$P2_RUN_ID.json"
+rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-2.noindex/baseline-$P2_RUN_ID.json" --report "tmp/progress-2.noindex/retest-$P2_RUN_ID.json" --output "tmp/progress-2.noindex/recompare-$P2_RUN_ID.json"
+```
+
+界面复验先按计划0.1重新取得并填写UI锁；用本批候选的Ctrl+Alt+1／2／3／4依次切换4次／5次／第3轮／旧收据，完成后Cmd+Q并按实际完整路径 `lsregister -u`。官网重跑将本树 `tmp/progress-2.noindex/h5-acceptance.js` 传给现有Playwright `browser_run_code_unsafe(filename)`；所有网络由隔离上下文拦截，不需要启动服务器。界面验完释放锁，不能与其他线并行操作。
