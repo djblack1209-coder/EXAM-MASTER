@@ -252,7 +252,7 @@ describe('原答、计划、复测与停止', () => {
     const store = setup();
     store.submit(correct(store.activeQuestion), true, 'a');
     const planned = store.scheduleScienceRetest();
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     const w = mount(LearningOverview, {
       props: { view: 'plan', showNavigation: false, initialExpanded: true },
       global: {
@@ -297,7 +297,7 @@ describe('原答、计划、复测与停止', () => {
       context = store.writingContext();
     store.submit(correct(store.activeQuestion), true, 'a');
     const planned = store.scheduleScienceRetest();
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     const before = store.exportData();
     expect(() => store.startScience(context, distance)).toThrow('停止');
     expect(() => store.scheduleScienceRetest()).toThrow('停止');

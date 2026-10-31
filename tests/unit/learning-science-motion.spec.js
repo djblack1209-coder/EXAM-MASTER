@@ -263,7 +263,7 @@ describe('新题版本、原答及日历', () => {
     const switched = store.exportData();
     expect(() => store.recordScienceHelp(context, motion)).toThrow('切换');
     expect(store.exportData()).toBe(switched);
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     const stopped = store.exportData();
     expect(() => store.recordScienceHelp(store.writingContext(), motion)).toThrow('停止');
     expect(store.exportData()).toBe(stopped);
@@ -335,7 +335,7 @@ describe('新题版本、原答及日历', () => {
     store.submit(store.activeQuestion.validation.answer, true, 'retest-a');
     expect(store.state.attempts[0]).toEqual(first);
     expect(requestedTeachingMethod(store.state, store.active.id)).toBe('steps');
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     const exported = store.exportData();
     expect(() => store.startScience(store.writingContext(), motion)).toThrow('停止');
     let replay = emptyLearningState(store.state.owner, store.state.timezone);

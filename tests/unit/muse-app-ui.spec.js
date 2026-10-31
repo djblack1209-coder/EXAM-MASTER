@@ -144,7 +144,7 @@ describe('Muse conversation grouping and one shared input', () => {
   });
 });
 
-it('review uses only the dock input and keeps the answer local until an explicit recall rating', async () => {
+it('review keeps the draft local until explicit submission and lets the host derive its rating', async () => {
   uni.clearStorageSync();
   const store = useConversationLearningStore();
   store.startCoach('考研英语写作');
@@ -158,13 +158,10 @@ it('review uses only the dock input and keeps the answer local until an explicit
     await wrapper.get('.muse-composer textarea').setValue('I am writing to invite you to a study group.');
     expect(store.exportData()).toBe(before);
     await wrapper.get('.muse-composer textarea').trigger('keydown', { key: 'Enter' });
-    expect(review).not.toHaveBeenCalled();
-    await wrapper
-      .findAll('button')
-      .find((b) => b.text() === '记得')
-      .trigger('tap');
     await flushPromises();
-    expect(review).toHaveBeenCalledWith('synthetic-due', 'I am writing to invite you to a study group.', 3);
+    expect(review).toHaveBeenCalledOnce();
+    expect(review).toHaveBeenCalledWith('synthetic-due', 'I am writing to invite you to a study group.');
+    expect(wrapper.findAll('button').map((button) => button.text())).not.toContain('记得');
   } finally {
     wrapper?.unmount();
     wrapper = null;

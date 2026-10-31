@@ -81,9 +81,16 @@ beforeEach(() => {
   runtime.limit.mockClear();
   runtime.account = newAccount(runtime.owner);
   runtime.database.mockImplementation(() => ({
-    collection: () => ({
+    collection: (name: string) => ({
       where: (query: any) => ({
-        get: async () => ({ data: query.user_id === runtime.owner ? [structuredClone(runtime.account)] : [] }),
+        get: async () => ({
+          data:
+            name === 'users' && query._id === runtime.owner
+              ? [{ _id: runtime.owner, status: 'active' }]
+              : query.user_id === runtime.owner
+                ? [structuredClone(runtime.account)]
+                : []
+        }),
         update: async (next: any) => {
           runtime.writes++;
           runtime.account = { ...runtime.account, ...next };
@@ -103,11 +110,11 @@ afterEach(() => {
 });
 
 describe('默认关闭discover与只读owner投影离线接缝', () => {
-  it('真实handler关闭态零数据库／维护／限流调用；usage不再携带诊断', async () => {
+  it('真实handler先核验活动账户，关闭态零维护／限流写入；usage不携带诊断', async () => {
     vi.stubEnv('LEARNING_MODEL_DISCOVERY_ENABLED', 'false');
     const result = await learningModels({ body: body() });
     expect(result).toMatchObject({ success: false, errorCode: 'DISCOVERY_DISABLED' });
-    expect(runtime.database).not.toHaveBeenCalled();
+    expect(runtime.database).toHaveBeenCalledTimes(1);
     expect(runtime.limit).not.toHaveBeenCalled();
     expect(runtime.writes).toBe(0);
     runtime.account.calls = [

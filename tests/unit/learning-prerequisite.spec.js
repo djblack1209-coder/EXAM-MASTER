@@ -87,11 +87,11 @@ describe('有真实错答依据的先修小题与原题独立检验', () => {
   it('指定教法保留；诊断后的原题变式绑定原题，提示不能变成独立成功', async () => {
     const store = begin(),
       root = questionKey(store.activeQuestion);
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     store.submit('19', true, 'wrong');
     await store.send('先修诊断', { id: 'diagnose' });
     expect(requestedTeachingMethod(store.state, store.selectedConversationId)).toBe('explain');
-    await store.send('提示');
+    await store.send('提示', { discussionOnly: true });
     store.submit('5', true, 'helped');
     expect(store.diagnosticProgress.status).toBe('helped_correct');
     expect(store.summary.tasks).toMatchObject({ numerator: 1, denominator: 2 });
@@ -177,7 +177,7 @@ describe('有真实错答依据的先修小题与原题独立检验', () => {
     delete q.validation.tolerance;
     q.prerequisite.evidenceIds = ['missing'];
     expect(() => store.commit('question.add', { question: q })).toThrow('真实错答');
-    await store.send('停止');
+    await store.send('停止', { discussionOnly: true });
     expect(() => store.diagnosePrerequisite()).toThrow('停止');
     expect(() => store.generateVariant()).toThrow('停止');
   });

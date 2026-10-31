@@ -91,7 +91,7 @@ describe('资料字面错答与字段对应基础诊断', () => {
       hints: [],
       grade: { status: 'reliable', outcome: 'correct' }
     });
-    await store.send('停止', { id: 'stop' });
+    await store.send('停止', { discussionOnly: true, id: 'stop' });
     for (const state of [
       replay(store),
       prepareLearningRestore(emptyLearningState(store.state.owner, store.state.timezone), store.exportData()).state
@@ -104,7 +104,7 @@ describe('资料字面错答与字段对应基础诊断', () => {
   });
   it('低级提示不直接给字段答案；帮助后的正确不完成独立任务，指定教法及原错答保留', async () => {
     const store = begin();
-    await store.send('直接讲解', { id: 'locked-method' });
+    await store.send('直接讲解', { discussionOnly: true, id: 'locked-method' });
     const root = questionKey(store.activeQuestion);
     store.submit('London', true, 'wrong');
     await store.send('先修诊断', { id: 'diagnose' });
@@ -116,7 +116,7 @@ describe('资料字面错答与字段对应基础诊断', () => {
       expect(hint.content).not.toContain('Cedar');
     }
     expect(localTeaching(store.activeQuestion, 'hint', 3).content).toContain('Desk');
-    await store.send('提示', { id: 'hint' });
+    await store.send('提示', { discussionOnly: true, id: 'hint' });
     await store.send('Desk', { id: 'helped' });
     expect(store.diagnosticProgress.status).toBe('helped_correct');
     expect(store.summary.tasks.numerator).toBe(0);
@@ -223,7 +223,7 @@ describe('资料字面错答与字段对应基础诊断', () => {
     store.submit('Desk', true, 'small');
     await store.send('独立检验原题', { id: 'check' });
     store.submit('Oxford', true, 'transfer');
-    await store.send('停止', { id: 'stop' });
+    await store.send('停止', { discussionOnly: true, id: 'stop' });
     expect(() => store.diagnosePrerequisite()).toThrow('停止');
     expect(() => store.generateVariant()).toThrow('停止');
     const preview = store.previewMaterialDeletion(original.source.materialId);

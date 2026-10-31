@@ -175,7 +175,7 @@ describe('词义的日历复测与自由原答', () => {
     expect(store.state.plans.filter((p) => p.day === target.day).at(-1).tasks[0].completedBy).toBeNull();
     expect(() => store.submit(review.validation.answer, true)).toThrow('已有');
     expect(vocabularyEvidence(store.state, 'recycle-material').independentCorrect).toBe(1);
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     const stopped = JSON.stringify(store.state);
     expect(() => store.startVocabularyTask(context, key, 'retest', 7)).toThrow();
     expect(() => store.submit('A', true)).toThrow('停止');
@@ -388,7 +388,7 @@ describe('词义的日历复测与自由原答', () => {
     const { store, key, context } = source(),
       target = store.startVocabularyTask(context, key, 'retest'),
       originalId = store.selectedConversationId;
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     store.focus(target.questionKey);
     expect(store.active.stopped).toBe(true);
     expect(() => store.submit('A', true)).toThrow('停止');

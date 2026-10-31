@@ -16,7 +16,7 @@ import {
   COACH_MATERIAL_TRACK,
   WRITING_COACH_CONTRACT
 } from '../../laf-backend/functions/_shared/learning-writing-coach.js';
-import { generateLearningTurn, fetchLearningResult } from '@/services/api/domains/learning.api.js';
+import { generateLearningTurn, fetchLearningResult, fetchLearningModels } from '@/services/api/domains/learning.api.js';
 import { coachFixture } from '../fixtures/writing-coach.js';
 import WritingCoach from '@/pages/learning/components/writing-coach.vue';
 
@@ -28,14 +28,15 @@ vi.mock('@/services/api/domains/learning.api.js', async (original) => ({
   fetchLearningModels: vi.fn(async () => ({
     success: true,
     data: {
-      platformEnabled: true,
+      platformEnabled: false,
+      preferences: { selectedModelId: 'fixture-model', sharingAllowed: true },
       presets: [],
       models: [
         {
           id: 'fixture-model',
           provider: 'synthetic',
           model: 'fixture-model',
-          source: 'platform',
+          source: 'byok',
           configured: true,
           capabilities: { structured: true }
         }
@@ -54,6 +55,7 @@ beforeEach(() => {
   setActivePinia(createPinia());
   store = useConversationLearningStore();
   store.startCoach('资料练习');
+  store.modelId = 'fixture-model';
   store.sharingAllowed = true;
   store.coachSave('profile', { profile: { exam: 'cs408', minutes: 15, track: COACH_MATERIAL_TRACK } });
   const material = {
@@ -136,6 +138,10 @@ describe('batch9 -fixture 状态与计数', () => {
   it('失败先查询原请求，终态关闭后仅明确重新评估才新生成，原答/时间/出处不变', async () => {
     setupDaily();
     store.coachSave('answer', { cardId: 'c1', answer: '我猜是1' });
+    store.modelId = 'missing-saved-selection';
+    await expect(store.requestCoach('feedback', 'card-c1')).rejects.toMatchObject({ code: 'NEEDS_CONNECTION' });
+    expect(generateLearningTurn).not.toHaveBeenCalled();
+    store.modelId = 'fixture-model';
     const saved = JSON.parse(JSON.stringify(store.active.coach.days[0].answers[0]));
     vi.mocked(generateLearningTurn).mockResolvedValueOnce({ success: false, code: 502, message: '评估校验失败' });
     vi.mocked(fetchLearningResult).mockImplementation(async (id) => {
@@ -193,9 +199,29 @@ describe('batch9 -fixture 状态与计数', () => {
   });
   it('未评估仍可提交下一题和保存小结，但不能确认完成；待评估原请求跨日回读', async () => {
     setupDaily();
+    store.coachSave('answer', { cardId: 'c1', answer: '我猜是1' });
+    vi.mocked(fetchLearningModels).mockResolvedValueOnce({
+      success: true,
+      data: {
+        platformEnabled: false,
+        presets: [],
+        models: [
+          {
+            id: 'fixture-model',
+            provider: 'synthetic',
+            model: 'fixture-model',
+            source: 'platform',
+            configured: true,
+            capabilities: { structured: true }
+          }
+        ]
+      }
+    });
+    await expect(store.requestCoach('feedback', 'card-c1')).rejects.toMatchObject({ code: 'NEEDS_CONNECTION' });
+    expect(generateLearningTurn).not.toHaveBeenCalled();
     vi.mocked(generateLearningTurn).mockResolvedValue({ success: false, code: 503, message: '离线' });
     for (const id of ['c1', 'c2', 'c3']) {
-      store.coachSave('answer', { cardId: id, answer: '我猜是1' });
+      if (id !== 'c1') store.coachSave('answer', { cardId: id, answer: '我猜是1' });
       await store.requestCoach('feedback', `card-${id}`);
     }
     generate('summary');

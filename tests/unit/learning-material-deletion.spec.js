@@ -372,7 +372,7 @@ describe('原件删除回执和真实状态', () => {
         stubs: {
           view: { template: '<div><slot /></div>' },
           text: { template: '<span><slot /></span>' },
-          LearningShell: { template: '<div><slot /></div>' },
+          LearningShell: { template: '<div><slot /><slot name="composer" /></div>' },
           LearningOverview: true,
           NumberLine: true
         }

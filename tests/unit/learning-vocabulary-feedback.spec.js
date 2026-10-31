@@ -245,7 +245,7 @@ describe('自由原句的词义绑定与位置反馈', () => {
       pending.catch(() => undefined);
       await Promise.resolve();
       expect(store.busy).toBe(true);
-      if (change === 'stop') await store.send('停止当前任务');
+      if (change === 'stop') await store.send('停止当前任务', { discussionOnly: true });
       if (change === 'answer') store.submit('A different sentence.', true, 'new-answer');
       if (change === 'correct')
         store.commit('assessment.correct', { attemptId: 'use-answer', reason: '校对', outcome: null });

@@ -207,7 +207,7 @@ describe('二次原题与基础小题分别保留学习事实', () => {
     expect(store.diagnosticProgress.status).toBe('waiting');
     await store.send('x>=1', { id: 'small-wrong' });
     expect(store.diagnosticProgress.status).toBe('blocked');
-    await store.send('用图示', { id: 'diagram' });
+    await store.send('用图示', { discussionOnly: true, id: 'diagram' });
     await store.send('(-∞,-1]∪[1,∞)', { id: 'small-helped' });
     expect(store.diagnosticProgress.status).toBe('helped_correct');
     expect(store.state.attempts.at(-1).hints).toHaveLength(1);

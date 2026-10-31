@@ -204,3 +204,13 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 - **未验／待批**：本批指定四张界面已验；手机原生App和N3预测性准确率未验，小程序未构建。待批文案候选：**无**。新增依赖／许可公开范围：**无**；不写真实学习事实、不改G收据、不读私有模型目录、不启付费、不推送、不部署、不替换日常App。
 
 复跑：本工作树执行 `sh tmp/progress-4.noindex/rerun-tests.sh`；定向及全量采用原时限，复制主树基线后 `cmp` 逐字核对，再按测试ID多重集合比较，新增失败会非零退出。界面复验先按计划0.1取得并填写UI锁；桌面打开本批候选检查未选中／选中「明确交际目的」两态，结束后Cmd+Q并按完整路径注销；官网命令为 `PROGRESS_QA_OUTPUT="tmp/progress-4.noindex/h5-retest-$(date +%Y%m%d-%H%M%S)" rtk bypass node tmp/progress-4.noindex/h5-acceptance.mjs`，完成后释放本线UI锁。
+
+## 基线测试债第 1 批 执行侧交付（2026-10-31）
+
+- 范围：`95d4db04` 上仅改分诊清单中的 37 份测试及 1 份测试夹具；冻结清单测试保持原样。未改产品、后端、Tauri 或脚本源码，未新增依赖、开服务器、真实模型调用、合并、推送或部署。
+- 结果：178 项旧失败逐条闭合为 **168 改写通过／1 退役／9 保留失败并升级**；9 项是提示交付、停止入口与焦点、损坏记录恢复状态及冻结版本漂移，仍需总监裁定，不宣称全量通过。[逐条去向](../tmp/test-debt-1.noindex/disposition.json)、[疑似缺陷与待裁定](../tmp/test-debt-1.noindex/suspected-defects.json)。
+- 全量：隔离初跑 6,504 项、178 失败，与基线逐 ID 完全一致；最终 6,503 项、6,457 通过、9 失败、37 既有跳过，**新增失败 ID 0、未处理错误 0**。[初跑](../tmp/test-debt-1.noindex/before.json)、[最终报告](../tmp/test-debt-1.noindex/final.json)、[逐 ID 对照](../tmp/test-debt-1.noindex/final-comparison.json)、[完整输出](../tmp/test-debt-1.noindex/final.log)。
+- 退役仅默认访客离线建档：现行主流程是注册登录后 BYOK，离线扩展退出主流程；对应无模型外发、原事实保留和登录不自动同步的 3 条既有安全用例均在最终全量通过，完整名称列于去向表第 119 行。
+- 15 条错误已逐来源归因：12 条分别隔离复现为未等待的会话变化拒绝；3 条用真实 Promise 调用标签追至续期测试的重试列表读取，固定下标误应答偏好后挂起，销毁才抛取消。改按路径/action 匹配、提前等待拒绝，不改超时、不吞异常。[错误去向与复现证据](../tmp/test-debt-1.noindex/unhandled-disposition.json)。
+- 防误改：text-action／preferences／byok／receipts／model-authority 各 2 条，共 10 条均在临时破坏判断后失败，随后逐字恢复源码。[10 条记录](../tmp/test-debt-1.noindex/mutation-checks.json)、[复跑脚本](../tmp/test-debt-1.noindex/run-mutations.py)、[源码零改动证明](../tmp/test-debt-1.noindex/source-diff-proof.txt)。未新增 skip/todo/only/空断言或超时设置。
+- 静态检查：`git diff --check`、受影响 JS 的 ESLint 通过；现有 ESLint 配置忽略 `model-discovery-contract.spec.ts`，其实际测试全量通过。资源复用依赖链接；测试进程均取终态，2 份隔离归因副本及 10 次临时源码备份已回收，清理 190,844 字节编辑索引；保留全部报告、去向表及历史验收/回滚材料，无 App 或手机实测。[统计与限制](../tmp/test-debt-1.noindex/summary.json)、[资源记录](../tmp/test-debt-1.noindex/initial-state.json)。

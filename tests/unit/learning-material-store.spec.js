@@ -1,3 +1,4 @@
+import { savedByok, acknowledgePreferences } from '../fixtures/learning/saved-byok.js';
 import { observeLearningDialogs } from '../setup.js';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
@@ -197,7 +198,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
       expect(first.grade.outcome).toBe('wrong');
       expect(store.summary.mistakes).toHaveLength(1);
       expect(store.summary.tasks.numerator).toBe(0);
-      await store.send('直接讲解');
+      await store.send('直接讲解', { discussionOnly: true });
       const revision = store.submit('25%', true, 'civil-revision');
       expect(revision.hints.length).toBeGreaterThan(0);
       expect(store.summary.tasks.numerator).toBe(0);
@@ -256,7 +257,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
       await wrapper.get('[data-test="start-objective"]').trigger('tap');
       await flushPromises();
       expect(store.submit('20%', true, 'decimal-share-first').grade.outcome).toBe('wrong');
-      await store.send('直接讲解');
+      await store.send('直接讲解', { discussionOnly: true });
       expect(store.active.messages.at(-1).content).toContain('部分除以整体');
       expect(store.submit('25%', true, 'decimal-share-revision').hints.length).toBeGreaterThan(0);
       store.generateVariant();
@@ -318,9 +319,11 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     });
     store.focus('generated@1');
     store.modelId = 'explicit-model';
+    store.models = [savedByok('explicit-model')];
     store.selectedMode = 'cloud';
     store.sharingAllowed = true;
     const transport = vi.spyOn(uni, 'request').mockImplementation((options) => {
+      if (acknowledgePreferences(options)) return { abort: vi.fn() };
       const attempt = options.data.learningContext.attempt;
       options.success({
         data: {
@@ -345,7 +348,12 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     });
     try {
       await store.send('我的答案是每个输入对应唯一输出');
-      expect(transport).toHaveBeenCalledOnce();
+      expect(transport.mock.calls.filter(([options]) => options.url.endsWith('/proxy-ai'))).toHaveLength(1);
+      expect(
+        transport.mock.calls.every(
+          ([options]) => options.url.endsWith('/proxy-ai') || options.data.action === 'preferences'
+        )
+      ).toBe(true);
       expect(store.state.attempts).toHaveLength(1);
       expect(store.state.attempts[0].assistance[0]).toMatchObject({
         status: 'ai_assisted',
@@ -473,7 +481,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
     store.busy = true;
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     expect(store.active.stopped).toBe(true);
     expect(store.active.messages.at(-1).content).toContain('已停止');
   });
@@ -481,7 +489,7 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
     await store.send('19');
-    await store.send('用图示讲解');
+    await store.send('用图示讲解', { discussionOnly: true });
     await store.send('20');
     expect(store.state.attempts[1].hints).toHaveLength(1);
     expect(store.state.attempts[1].kind).toBe('revision');
@@ -565,9 +573,11 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     const candidate = structureMaterialCandidate(segment);
     store.structureQuestion(material.id, { ...candidate, segmentId: segment.id, type: 'choice' });
     store.modelId = 'explicit-model';
+    store.models = [savedByok('explicit-model')];
     store.selectedMode = 'cloud';
     store.sharingAllowed = true;
     const transport = vi.spyOn(uni, 'request').mockImplementation((options) => {
+      if (acknowledgePreferences(options)) return { abort: vi.fn() };
       const payload = options.data;
       expect(payload.learningContext.question).toMatchObject({
         prompt: candidate.prompt,
@@ -580,7 +590,12 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     });
     try {
       await store.send('讨论题意', { discussionOnly: true });
-      expect(transport).toHaveBeenCalledOnce();
+      expect(transport.mock.calls.filter(([options]) => options.url.endsWith('/proxy-ai'))).toHaveLength(1);
+      expect(
+        transport.mock.calls.every(
+          ([options]) => options.url.endsWith('/proxy-ai') || options.data.action === 'preferences'
+        )
+      ).toBe(true);
       expect(store.error).toBe('');
       expect(store.state.materials.at(-1).segments[0].content).toBe(text);
       expect(store.activeQuestion).toMatchObject({
@@ -600,14 +615,14 @@ describe('私人资料和实际 Store 纵向闭环', () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
     await store.send('19');
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     await store.send('20');
     expect(store.state.attempts[1].kind).toBe('revision');
     expect(store.state.attempts[1].parentAttemptId).toBe(store.state.attempts[0].id);
     expect(store.state.attempts[1].hints).toHaveLength(1);
     expect(store.summary.first.denominator).toBe(1);
     expect(store.summary.knowledge['数学 / 整数运算'].status).toBe('需提示');
-    await store.send('调整目标：理解函数');
+    await store.send('调整目标：理解函数', { discussionOnly: true });
     expect(store.active.goal).toBe('12 + 8');
     const draft = store.active.messages.at(-1);
     expect(draft.proposal.type).toBe('profile.set');

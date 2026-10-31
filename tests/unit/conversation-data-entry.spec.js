@@ -89,6 +89,10 @@ function context() {
 function tool(name, args, id = `tool${++sequence}`) {
   return executeLearningTool(repo, { id, name, arguments: args }, context());
 }
+// Entry writes are explicit host candidates, never model authority.
+function hostTool(name, args, id = `host${++sequence}`) {
+  return executeLearningTool(repo, { id, name, arguments: args }, { ...context(), origin: 'host' });
+}
 function setupGoal() {
   const [p] = extracted('我的目标是准备考研英语一写作，到2026年12月20日，每天20分钟。', 'goal-source');
   expect(p).toBeTruthy();
@@ -247,33 +251,38 @@ describe('阶段 B：隔离对话即入口 8.2', () => {
     expect(() => accept(idea.id)).toThrow();
     expect(repo.read().conversations[0].messages.some((m) => m.id === idea.id)).toBe(true);
   });
-  it('模型四工具共享schema，只有候选可写；查询/聚合不写事实；来源与权限越权拒绝', () => {
+  it('模型仅读取条目，候选由宿主写入；查询无副作用、来源与越权拒绝', () => {
     setupGoal();
     const msg = user('先记一个想法：写作句式卡。');
     const args = { kind: 'Idea', fields: { text: '写作句式卡' }, sourceRefs: refs(msg), confidence: 0.99 };
-    expect(
+    expect(() =>
       parseLearningOutput(JSON.stringify({ message: '请确认', tools: [{ name: 'entry.create', arguments: args }] }))
-        .tools[0].name
-    ).toBe('entry.create');
-    expect(tool('entry.create', args).result.status).toBe('pending');
-    expect(entryObjects(repo.read(), 'Idea')[0].status).toBe('pending');
+    ).toThrow('模型请求了未授权的工具');
+    const before = repo.read();
+    expect(() => tool('entry.create', args)).toThrow('模型不能选择教法或写入学习事实');
+    expect(() => tool('entry.update', { kind: 'Idea', id: 'fake', patch: { action: 'keep' } })).toThrow(
+      '模型不能选择教法或写入学习事实'
+    );
+    for (const field of ['profile', 'plans', 'attempts', 'conversations'])
+      expect(repo.read()[field]).toEqual(before[field]);
+    expect(entryObjects(repo.read(), 'Idea')).toEqual([]);
     const revision = repo.read().revision;
     expect(tool('entry.query', { kind: 'Goal' }).result.items).toHaveLength(1);
     expect(tool('entry.aggregate', { kind: 'Goal', metric: 'completed' }).result.value).toBe(0);
     expect(repo.read().revision).toBe(revision);
-    expect(() => tool('entry.create', { ...args, owner: 'someone' })).toThrow();
-    expect(() => tool('entry.create', { ...args, confidence: 0.5 })).toThrow();
+    expect(() => hostTool('entry.create', { ...args, owner: 'someone' })).toThrow();
+    expect(() => hostTool('entry.create', { ...args, confidence: 0.5 })).toThrow();
     expect(() => tool('entry.query', { kind: 'Goal', conversationId: 'other' })).toThrow();
     expect(() =>
       tool('entry.create', { ...args, sourceRefs: [{ ...refs(msg)[0], conversationId: 'other' }] })
     ).toThrow();
-    expect(() => tool('entry.create', { ...args, sourceRefs: [{ ...refs(msg)[0], end: 10000 }] })).toThrow();
+    expect(() => hostTool('entry.create', { ...args, sourceRefs: [{ ...refs(msg)[0], end: 10000 }] })).toThrow();
     op(
       'message.add',
       { conversationId: 'chat', role: 'assistant', content: '先记一个想法：写作句式卡。' },
       'ai-source'
     );
-    expect(() => tool('entry.create', { ...args, sourceRefs: refs('ai-source') })).toThrow();
+    expect(() => hostTool('entry.create', { ...args, sourceRefs: refs('ai-source') })).toThrow();
     expect(() => tool('entry.aggregate', { kind: 'Idea', metric: 'due' })).toThrow();
     expect(Object.keys(ENTRY_TOOL_SCHEMAS)).toHaveLength(4);
   });
@@ -361,7 +370,7 @@ describe('阶段 B：隔离对话即入口 8.2', () => {
     expect(repo.read().conversations[0].reminders).toHaveLength(2);
     const reminder = repo.read().conversations[0].reminders[1],
       msg = user('取消这个提醒');
-    tool('entry.update', {
+    hostTool('entry.update', {
       kind: 'Reminder',
       id: reminder.id,
       basis: reminder.generation,
@@ -373,7 +382,7 @@ describe('阶段 B：隔离对话即入口 8.2', () => {
     expect(repo.read().conversations[0].reminders[1].status).toBe('cancelled');
     const dst = user('明天20点提醒我学习');
     expect(() =>
-      tool('entry.create', {
+      hostTool('entry.create', {
         kind: 'Reminder',
         fields: {
           kind: 'study',
@@ -611,7 +620,7 @@ it('Idea关联已明确采用的计划才转为promoted，失败仍保留；反�
     patch: { action: 'promote', targetEventId: 'missing' },
     sourceRefs: refs(msg)
   };
-  expect(() => tool('entry.update', args)).toThrow();
+  expect(() => hostTool('entry.update', args)).toThrow();
   expect(entryObjects(repo.read(), 'Idea')[0].status).toBe('kept');
   const plan = tool(
     'plan',
@@ -620,7 +629,7 @@ it('Idea关联已明确采用的计划才转为promoted，失败仍保留；反�
   ).result.messageId;
   accept(plan);
   args.patch.targetEventId = `${plan}:accept`;
-  const candidate = tool('entry.update', args).result.proposalId;
+  const candidate = hostTool('entry.update', args).result.proposalId;
   accept(candidate);
   expect(accept(candidate).reused).toBe(true);
   expect(entryObjects(repo.read(), 'Idea')[0].status).toBe('promoted');

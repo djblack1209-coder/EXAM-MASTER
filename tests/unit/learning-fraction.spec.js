@@ -175,7 +175,7 @@ describe('分数整批、原答、恢复与停止', () => {
     s.openTrainingFeedback(s.journeyContext(), group.id, group.questionKeys[1]);
     const wrong = s.activeQuestion;
     expect(s.active.pendingHints).toHaveLength(1); // 已打开的解释同样算帮助。
-    await s.send('给我提示');
+    await s.send('给我提示', { discussionOnly: true });
     expect(s.active.pendingHints).toHaveLength(2);
     s.generateVariant();
     expect(s.activeQuestion.parentQuestionKey).toBe(`${wrong.id}@1`);

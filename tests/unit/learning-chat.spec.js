@@ -83,7 +83,7 @@ describe('压强聊天接续', () => {
     });
     const previousDifficulty = store.state.strategy.difficulty;
     const previousEvents = store.state.events.length;
-    await send('给我提示', 'pressure-hint');
+    await store.send('给我提示', { chatEntry: true, discussionOnly: true, id: 'pressure-hint' });
     expect(store.active.pendingHints).toHaveLength(1);
     expect(store.active.pendingHints[0].content).toContain('面积从cm²除以10000换成m²');
     expect(store.state.attempts).toEqual([original]);
@@ -101,7 +101,7 @@ describe('压强聊天接续', () => {
         .map((event) => [event.type, event.data.method, event.data.source])
     ).toEqual([['strategy.set', 'hint', 'self_report']]);
     const helped = clone(store.state);
-    await send('给我提示', 'pressure-hint');
+    await store.send('给我提示', { chatEntry: true, discussionOnly: true, id: 'pressure-hint' });
     expect(store.state).toEqual(helped);
     store.submit('A', true, 'pressure-corrected', { chatEntry: true });
     expect(store.state.attempts[1]).toMatchObject({
@@ -138,7 +138,7 @@ describe('压强聊天接续', () => {
         .at(-1)
         .tasks.at(-1).completedBy
     ).toBeNull();
-    await send('停止', 'pressure-stop');
+    await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'pressure-stop' });
     const before = clone(store.state);
     const exported = store.exportData();
     store.$dispose();
@@ -170,11 +170,11 @@ describe('压强聊天接续', () => {
     tampered.scienceExercise.input.uniformContact = false;
     expect(localTeaching(tampered, 'hint')).toBeNull();
     expect(localTeaching(store.activeQuestion, 'review')).toMatchObject({ helped: false });
-    await send('停止', 'pressure-boundary-stop');
+    await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'pressure-boundary-stop' });
     const questions = clone(store.state.questions);
     const hints = clone(store.active.pendingHints);
     await send('练习压强', 'pressure-stopped-topic');
-    await send('给我提示', 'pressure-stopped-hint');
+    await store.send('给我提示', { chatEntry: true, discussionOnly: true, id: 'pressure-stopped-hint' });
     expect(store.state.questions).toEqual(questions);
     expect(store.active.pendingHints).toEqual(hints);
     expect(store.state.attempts).toEqual(original);
@@ -366,8 +366,8 @@ describe.each([
       const original = clone(store.activeQuestion);
       if (used === 'submitted') store.submit('A', true, 'science-used-answer', { chatEntry: true });
       else {
-        await send('给我提示', 'science-used-help');
-        await send('恢复自动教法', 'science-used-auto');
+        await store.send('给我提示', { chatEntry: true, discussionOnly: true, id: 'science-used-help' });
+        await store.send('恢复自动教法', { chatEntry: true, discussionOnly: true, id: 'science-used-auto' });
       }
       const attempts = clone(store.state.attempts);
       const hints = clone(store.active.pendingHints);
@@ -403,7 +403,7 @@ describe.each([
     it('重新选择主题保留显式提示教法，新题获得的帮助继续阻止再次复用', async () => {
       await send(`练习${topic}`, 'science-hint-reselect-open');
       const originalKey = store.active.activeQuestionKey;
-      await send('给我提示', 'science-hint-reselect-help');
+      await store.send('给我提示', { chatEntry: true, discussionOnly: true, id: 'science-hint-reselect-help' });
       await send(`练习${topic}`, 'science-hint-reselect-return');
       const helpedVariant = clone(store.activeQuestion);
       const helpedKey = store.active.activeQuestionKey;
@@ -427,7 +427,7 @@ describe.each([
       const original = clone(store.state.attempts[0]);
       expect(original).toMatchObject({ answer: 'B', hints: [], grade: { status: 'reliable', outcome: 'wrong' } });
       const protectedFacts = clone({ questions: store.state.questions, profile: store.state.profile });
-      await send('给我提示', 'science-hint');
+      await store.send('给我提示', { chatEntry: true, discussionOnly: true, id: 'science-hint' });
       expect(store.active.pendingHints).toHaveLength(1);
       expect(store.active.pendingHints[0].content).toContain(hint);
       setLanguage('en');
@@ -436,7 +436,7 @@ describe.each([
       expect(store.state.attempts).toEqual([original]);
       expect({ questions: store.state.questions, profile: store.state.profile }).toEqual(protectedFacts);
       const helped = clone(store.state);
-      await send('给我提示', 'science-hint');
+      await store.send('给我提示', { chatEntry: true, discussionOnly: true, id: 'science-hint' });
       expect(store.state).toEqual(helped);
       store.submit('A', true, 'science-corrected', { chatEntry: true });
       expect(store.state.attempts[1]).toMatchObject({
@@ -463,7 +463,7 @@ describe.each([
       });
       expect(() => store.submit('A', true, 'science-early')).toThrow();
       expect(store.state.attempts).toHaveLength(3);
-      await send('停止', 'science-stop');
+      await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'science-stop' });
       const stopped = clone(store.state);
       const backup = store.exportData();
       store.$dispose();
@@ -498,11 +498,11 @@ describe.each([
       }
       expect(localTeaching(question, 'review')).toMatchObject({ helped: false });
       expect(localTeaching(question, 'analogy')).toBeNull();
-      await send('停止', 'science-boundary-stop');
+      await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'science-boundary-stop' });
       const questions = clone(store.state.questions);
       const hints = clone(store.active.pendingHints);
       await send(`练习${topic}`, 'science-stopped-topic');
-      await send('给我提示', 'science-stopped-hint');
+      await store.send('给我提示', { chatEntry: true, discussionOnly: true, id: 'science-stopped-hint' });
       expect(store.state.questions).toEqual(questions);
       expect(store.active.pendingHints).toEqual(hints);
       expect(store.state.attempts).toEqual(original);
@@ -566,7 +566,7 @@ it('句子聊天：同会话错答、真实帮助后订正、独立新句和复�
   const profile = clone(store.state.profile);
   const questions = clone(store.state.questions);
   const beforeHelpEvents = store.state.events.length;
-  await send('给我提示', 'sentence-help');
+  await store.send('给我提示', { chatEntry: true, id: 'sentence-help' });
   expect(store.active.pendingHints).toHaveLength(1);
   expect(store.active.pendingHints[0].questionKey).toBe(store.active.activeQuestionKey);
   expect(store.active.messages.at(-1).content).toContain('先找主语后的谓语');
@@ -580,7 +580,7 @@ it('句子聊天：同会话错答、真实帮助后订正、独立新句和复�
       .some((event) => ['strategy.set', 'strategy.auto', 'model.request'].includes(event.type))
   ).toBe(false);
   const helped = clone(store.state.events);
-  await send('给我提示', 'sentence-help');
+  await store.send('给我提示', { chatEntry: true, id: 'sentence-help' });
   expect(store.state.events).toEqual(helped);
   store.submitSentence(store.writingContext(), ['t1', 't2', 't3']);
   expect(store.state.attempts[1]).toMatchObject({ kind: 'revision', grade: { outcome: 'correct' } });
@@ -596,7 +596,7 @@ it('句子聊天：同会话错答、真实帮助后订正、独立新句和复�
   expect(planned.sentenceExercise.phase).toBe('retest');
   expect(store.state.attempts).toHaveLength(3);
   expect(store.state.plans.filter((plan) => plan.day === retest.day).at(-1).tasks[0].completedBy).toBeNull();
-  await send('停止', 'sentence-stop');
+  await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'sentence-stop' });
   const before = clone(store.state);
   const exported = store.exportData();
   setActivePinia(createPinia());
@@ -622,7 +622,7 @@ it('句子聊天：否定引用不换题或记作答，停止后请求不得增�
   expect(store.state.questions).toEqual([originalQuestion]);
   expect(store.state.attempts).toEqual([]);
   expect(store.active.pendingHints).toEqual([]);
-  await store.send('停止', { chatEntry: true });
+  await store.send('停止', { discussionOnly: true, chatEntry: true });
   const strategy = clone(store.state.strategy);
   await store.send('句子提示', { chatEntry: true });
   await store.send('练习英文句子组织', { chatEntry: true });
@@ -673,7 +673,7 @@ it('句子页顶提示：不带聊天标记的页面调用保留首答与本题�
 it('句子页顶提示：切到普通私人题后保留旧停止句子，本题仍走原教法分支', async () => {
   const store = useConversationLearningStore();
   store.start('英文句子组织');
-  await store.send('停止');
+  await store.send('停止', { discussionOnly: true });
   const previous = clone(store.active);
   store.start('普通私人题');
   const result = store.commit('question.add', {
@@ -689,7 +689,7 @@ it('句子页顶提示：切到普通私人题后保留旧停止句子，本题�
   });
   store.focus(result.questionKey);
   const current = clone(store.activeQuestion);
-  await store.send('提示');
+  await store.send('提示', { discussionOnly: true });
   expect(store.state.conversations.find((conversation) => conversation.id === previous.id)).toEqual(previous);
   expect(store.activeQuestion).toEqual(current);
   expect(store.active.pendingHints).toEqual([]);
@@ -704,7 +704,7 @@ it('句子页顶提示：非离线模式保留原授权拒绝，不读取本地�
   const original = clone(store.activeQuestion);
   store.selectedMode = 'cloud';
   store.sharingAllowed = false;
-  await expect(store.send('提示')).rejects.toMatchObject({ code: 'CONSENT_REQUIRED' });
+  await expect(store.send('提示', { discussionOnly: true })).rejects.toMatchObject({ code: 'CONSENT_REQUIRED' });
   expect(store.activeQuestion).toEqual(original);
   expect(store.active.pendingHints).toEqual([]);
   expect(store.state.attempts).toEqual([]);
@@ -715,7 +715,7 @@ it('句子页顶提示：非离线模式保留原授权拒绝，不读取本地�
 it('句子页顶提示：当前任务停止后默认页面调用不改变帮助、画像或教法', async () => {
   const store = useConversationLearningStore();
   store.start('英文句子组织');
-  await store.send('停止');
+  await store.send('停止', { discussionOnly: true });
   const before = clone(store.state);
   await store.send('提示');
   expect(store.active.stopped).toBe(true);
@@ -759,7 +759,7 @@ it('目标后在同一聊天选分数、错答订正和独立复测，停止重�
   expect(store.state.events).toEqual(opened);
   await send('2/5', 'fraction-wrong');
   expect(store.state.attempts.at(-1).grade.outcome).toBe('wrong');
-  await send('给我提示', 'fraction-help');
+  await store.send('给我提示', { chatEntry: true, discussionOnly: true, id: 'fraction-help' });
   await send('5/6', 'fraction-correction');
   expect(store.state.attempts.at(-1)).toMatchObject({ kind: 'revision', grade: { outcome: 'correct' } });
   expect(store.state.attempts.at(-1).hints.length).toBeGreaterThan(0);
@@ -775,7 +775,7 @@ it('目标后在同一聊天选分数、错答订正和独立复测，停止重�
   await send('独立检验原题', 'fraction-equation-variant');
   await send('t=2', 'fraction-equation-independent');
   expect(poems()).toHaveLength(0);
-  await send('停止', 'fraction-stop');
+  await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'fraction-stop' });
   const before = clone(store.state);
   setActivePinia(createPinia());
   const reopened = useConversationLearningStore();
@@ -826,7 +826,7 @@ it('分数答案不切题，否定和引用不选题；不支持的完整题保�
     publishable: false
   });
   expect(store.state.attempts).toHaveLength(1);
-  await send('停止', 'fraction-unsupported-stop');
+  await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'fraction-unsupported-stop' });
   await send('练习分数乘除', 'fraction-stopped-choice');
   expect(store.state.questions).toHaveLength(2);
   expect(store.active.stopped).toBe(true);
@@ -852,7 +852,7 @@ it('明确物理目标后只澄清密度，沿同一聊天错答/提示订正/�
   expect(store.state.events).toEqual(opened);
   store.submit('A', true, 'density-wrong', { chatEntry: true });
   expect(store.state.attempts.at(-1).grade.outcome).toBe('wrong');
-  await send('给我提示', 'density-hint');
+  await store.send('给我提示', { chatEntry: true, discussionOnly: true, id: 'density-hint' });
   expect(store.active.pendingHints.at(-1).content).toContain('密度＝质量÷体积');
   store.submit('C', true, 'density-correction', { chatEntry: true });
   expect(store.state.attempts.at(-1)).toMatchObject({ kind: 'revision', grade: { outcome: 'correct' } });
@@ -867,7 +867,7 @@ it('明确物理目标后只澄清密度，沿同一聊天错答/提示订正/�
   store.submit('C', true, 'density-independent-answer', { chatEntry: true });
   expect(store.state.attempts.at(-1)).toMatchObject({ kind: 'variant', hints: [], grade: { outcome: 'correct' } });
   expect(store.active.messages.some((message) => message.content.startsWith('妙哉妙哉'))).toBe(false);
-  await send('停止', 'density-stop');
+  await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'density-stop' });
   const before = clone(store.state);
   setActivePinia(createPinia());
   const reopened = useConversationLearningStore();
@@ -970,7 +970,7 @@ it('英语写作目标后在同一聊天选择邮件，保留原稿/帮助/独�
   expect(store.state.attempts.at(-1)).toMatchObject({ answer: independent, hints: [], grade: { status: 'pending' } });
   expect(store.state.reviews).toEqual([]);
   expect(store.active.messages.some((message) => message.content.startsWith('妙哉妙哉'))).toBe(false);
-  await send('停止', 'email-stop');
+  await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'email-stop' });
   const before = clone(store.state);
   setActivePinia(createPinia());
   const reopened = useConversationLearningStore();
@@ -1016,7 +1016,7 @@ it('明确换到邮件保留数学原答，否定/引用不换题，贴来的具
     validation: null
   });
   expect(store.activeQuestion.writingExercise).toBeUndefined();
-  await send('停止', 'email-provided-stop');
+  await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'email-provided-stop' });
   const questions = store.state.questions.length;
   await send('练习英文邮件写作', 'email-stopped');
   expect(store.state.questions).toHaveLength(questions);
@@ -1074,7 +1074,7 @@ it('离线邮件聊天参考：否定、引用和停止不读参考，也不改�
   for (const text of ['不要提示', '材料里写“读参考信件”']) await store.send(text, { chatEntry: true });
   expect(store.active.pendingHints).toEqual([]);
   expect(store.state.strategy).toEqual(strategy);
-  await store.send('停止');
+  await store.send('停止', { discussionOnly: true });
   const stoppedStrategy = clone(store.state.strategy);
   await store.send('读参考信件', { chatEntry: true });
   expect(store.active.stopped).toBe(true);
@@ -1098,7 +1098,7 @@ it('离线邮件聊天参考：数学和非离线分支不使用邮件参考', a
   const store = useConversationLearningStore();
   await store.send('方程', { chatEntry: true });
   expect(store.canReadChatWritingReference).toBe(false);
-  await store.send('提示', { chatEntry: true });
+  await store.send('提示', { discussionOnly: true, chatEntry: true });
   expect(store.active.pendingHints.some((hint) => hint.reference)).toBe(false);
   expect(store.state.events.some((event) => event.type === 'strategy.set')).toBe(true);
   await store.send('练习英文邮件', { chatEntry: true });
@@ -1136,7 +1136,7 @@ it('同一聊天保存目标、最少澄清、原答、订正、独立变式、�
   expect(store.state.attempts[0].grade.outcome).toBe('wrong');
   const poems = () => store.active.messages.filter((message) => message.content.startsWith('妙哉妙哉'));
   expect(poems()).toHaveLength(0);
-  await send('直接讲解', 'chat-help');
+  await store.send('直接讲解', { chatEntry: true, discussionOnly: true, id: 'chat-help' });
   await send('t<3', 'chat-correction');
   expect(store.state.attempts[1]).toMatchObject({ kind: 'revision', grade: { outcome: 'correct' } });
   expect(store.state.attempts[1].hints).toHaveLength(1);
@@ -1154,7 +1154,7 @@ it('同一聊天保存目标、最少澄清、原答、订正、独立变式、�
   await send('t<1', 'chat-independent-again');
   expect(poems()).toHaveLength(0);
   expect(store.state.attempts).toHaveLength(4);
-  await send('停止', 'chat-stop');
+  await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'chat-stop' });
   const before = clone(store.state);
   setActivePinia(createPinia());
   const reopened = useConversationLearningStore();
@@ -1203,7 +1203,7 @@ it('页面明确提交保持原答，展示选项不进入作答事实，英文�
   await store.send('I want to review middle-school math and find what needs practice', { chatEntry: true });
   expect(store.active.messages.at(-1).content).toContain('想先练哪个知识点');
   await store.send('Linear inequalities', { chatEntry: true });
-  await store.send('Give me a hint', { chatEntry: true });
+  await store.send('Give me a hint', { chatEntry: true, discussionOnly: true });
   expect(store.active.pendingHints).toHaveLength(1);
   store.submit('t<3', true, 'explicit-chat-original', { chatEntry: true });
   expect(store.active.messages.some((message) => message.content.startsWith('妙哉妙哉'))).toBe(false);
@@ -1263,7 +1263,7 @@ it('按推荐用语请求小步引导后贴题，实际提示、原答、独立�
   expect(store.active.messages.at(-1)).toMatchObject({ role: 'tool', method: 'hint' });
   expect(store.active.pendingHints[0].content).not.toContain('x=3');
   expect(store.state.attempts).toHaveLength(0);
-  await send('继续提示', 'paste-hint');
+  await store.send('继续提示', { chatEntry: true, discussionOnly: true, id: 'paste-hint' });
   expect(store.active.pendingHints.map((hint) => hint.level)).toEqual([1, 2]);
   expect(store.active.pendingHints[1].content).not.toContain('第二个根');
   expect(store.state.attempts).toHaveLength(0);
@@ -1275,7 +1275,7 @@ it('按推荐用语请求小步引导后贴题，实际提示、原答、独立�
   await send('x=2', 'paste-independent');
   expect(store.state.attempts[1]).toMatchObject({ kind: 'variant', hints: [], grade: { outcome: 'correct' } });
   expect(store.active.messages.filter((message) => message.content.startsWith('妙哉妙哉'))).toHaveLength(0);
-  await send('停止', 'paste-stop');
+  await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'paste-stop' });
   const before = clone(store.state);
   setActivePinia(createPinia());
   const reopened = useConversationLearningStore();
@@ -1374,7 +1374,7 @@ it('同一聊天明确换题再返回前题，原答和未用提示分题保留�
   const firstKey = store.active.activeQuestionKey;
   await send('t=4', 'switch-wrong');
   const originalAnswer = clone(store.state.attempts[0]);
-  await send('带我一步步理解', 'switch-first-help');
+  await store.send('带我一步步理解', { chatEntry: true, discussionOnly: true, id: 'switch-first-help' });
   const oldHints = clone(store.active.pendingHints);
   const oldEvents = clone(store.state.events);
   await send('题目：-2x+6>0', 'switch-second');
@@ -1400,7 +1400,7 @@ it('同一聊天明确换题再返回前题，原答和未用提示分题保留�
   });
   expect(store.state.attempts[2].hints).toEqual(oldHints);
   expect(store.currentPlan.tasks.map((task) => task.questionKey)).toEqual([firstKey, secondKey]);
-  await send('停止', 'switch-stop');
+  await store.send('停止', { chatEntry: true, discussionOnly: true, id: 'switch-stop' });
   const before = clone(store.state);
   setActivePinia(createPinia());
   const reopened = useConversationLearningStore();
@@ -1467,7 +1467,7 @@ it('换题焦点写入中断后同编号续接，旧提示不丢、不误记原�
   const store = useConversationLearningStore();
   const send = (text, id) => store.send(text, { chatEntry: true, id });
   await send('方程', 'focus-retry-first');
-  await send('带我一步步理解', 'focus-retry-help');
+  await store.send('带我一步步理解', { chatEntry: true, discussionOnly: true, id: 'focus-retry-help' });
   const oldKey = store.active.activeQuestionKey;
   const oldHints = clone(store.active.pendingHints);
   const commit = learningRepository.commit.bind(learningRepository);

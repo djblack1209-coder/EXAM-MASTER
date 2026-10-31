@@ -103,7 +103,7 @@ describe('条件原答的先修诊断入口', () => {
     const diagnostic = store.activeQuestion;
     await store.send('反例x=4', { id: 'wrong-probe' });
     expect(store.diagnosticProgress.status).toBe('blocked');
-    await store.send('提示', { id: 'hint' });
+    await store.send('提示', { discussionOnly: true, id: 'hint' });
     await store.send('反例x=2', { id: 'helped' });
     expect(store.diagnosticProgress.status).toBe('helped_correct');
     expect(store.summary.tasks).toMatchObject({ numerator: 1, denominator: 2 });

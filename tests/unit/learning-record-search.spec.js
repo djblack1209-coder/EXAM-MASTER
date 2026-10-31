@@ -445,10 +445,13 @@ describe('record location uses canonical facts', () => {
     await flushPromises();
     expect(shell.get('[aria-label="学习记录搜索结果"]').text()).toContain('第一稿');
     expect(wrapper.get('[data-test="located-original-answer"]').text()).toContain('第一稿');
-    uni.setStorageSync('EXAM_USER_ID', 'incompatible-render-owner');
+    storageService.saveLoginSession({
+      userId: 'incompatible-render-owner',
+      token: 'fixture-render-token',
+      userInfo: {}
+    });
     storageService.save(LEARNING_KEY, { ...emptyLearningState('incompatible-render-owner'), version: 2 }, true);
-    const notify = uni.$on.mock.calls.findLast(([name]) => name === 'loginStatusChanged')[1];
-    notify();
+    for (const [name, notify] of uni.$on.mock.calls) if (name === 'loginStatusChanged') notify();
     await flushPromises();
     expect(wrapper.find('[data-test="located-original-answer"]').exists()).toBe(false);
     expect(shell.find('[aria-label="学习记录搜索结果"]').exists()).toBe(false);

@@ -167,7 +167,7 @@ describe('真实Store/备份共享充分必要判定', () => {
     await store.send('必要不充分条件', { id: 'first-condition' });
     expect(store.state.attempts).toHaveLength(1);
     expect(store.summary.first).toMatchObject({ numerator: 1, denominator: 1 });
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     await store.send('充分不必要条件');
     expect(store.state.attempts[1].hints.length).toBeGreaterThan(0);
     store.generateVariant();

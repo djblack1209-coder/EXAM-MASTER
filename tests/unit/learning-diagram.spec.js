@@ -301,7 +301,7 @@ describe('图示帮助与可靠事实分开', () => {
     expect(() => store.recordDiagramHelp(ctx, input)).toThrow('disk failure');
     expect(store.exportData()).toBe(before);
     spy.mockRestore();
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     const stopped = store.exportData();
     expect(() => store.recordDiagramHelp(store.writingContext(), input)).toThrow('停止');
     expect(store.exportData()).toBe(stopped);

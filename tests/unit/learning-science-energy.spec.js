@@ -321,7 +321,7 @@ describe('功与动能事实、独立新题、原时区与停止', () => {
     expect(store.exportData()).toBe(early);
     vi.setSystemTime(new Date('2026-10-08T07:00:00Z'));
     store.submit(future.validation.answer, true, 'due-correct');
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     const stopped = store.exportData();
     expect(() => store.recordScienceHelp(store.writingContext(), base)).toThrow('停止');
     expect(() => store.startScience(store.writingContext(), base)).toThrow('停止');
