@@ -607,9 +607,16 @@ describe('按任务的真实答题形式送评', () => {
     expect(analyzed.writingOutput.schema.properties.errors.items.properties.replacement).toEqual({ type: 'null' });
   });
 });
-describe('摸底错误合并复核一次，只删不加', () => {
-  const prepared = () =>
-    prepareCoachFeedbackModel(config, coachInferenceContext(mixedDiagnosticRequest()), false, false, false, true);
+describe('摸底错误合并复核一次：讲解题只删不加，单词填空盲填比对', () => {
+  const preparedFor = (r) =>
+    prepareCoachFeedbackModel(config, coachInferenceContext(r), false, false, false, true);
+  const prepared = () => preparedFor(mixedDiagnosticRequest());
+  const blankAnswer = (answer) => {
+    const r = mixedDiagnosticRequest(),
+      lines = r.input.split('\n');
+    lines[1] = answer;
+    return { ...r, input: lines.join('\n') };
+  };
   const overflagged = (p) => {
     const wire = mixedDiagnosticReply(p);
     wire.lines.push({ quoteId: 'q1', advice: '没写出关系代词的句法功能' });
@@ -624,25 +631,28 @@ describe('摸底错误合并复核一次，只删不加', () => {
     wire.dimensionReviews.task.comment = '缺少关系代词功能说明';
     return wire;
   };
-  const verdict = (reviews) => async () => JSON.stringify({ reviews });
-  it('题干未要求的挑错被删除，讲解与点评改用复核理由，档位回到2', async () => {
+  const fill = (accepted) => ({ id: 'b1', accepted, label: 'interested in', rule: 'be interested in 是固定搭配，介词用 in' });
+  const verdict = (raw) => async () => JSON.stringify(raw);
+  it('题干未要求的挑错被删除，填空只给题干不给原答，档位按盲填比对', async () => {
     const p = prepared();
     const calls = [];
     const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(overflagged(p)), async (verifier, messages) => {
       calls.push({ verifier, messages });
-      return verdict([
-        { index: 0, required: true, wrong: true, reason: 'interested 后固定用 in' },
-        { index: 1, required: false, wrong: true, reason: '题目只要求主干和修饰对象，原答已答出' }
-      ])();
+      return verdict({
+        reviews: [{ index: 1, required: false, wrong: true, reason: '题目只要求主干和修饰对象，原答已答出' }],
+        blanks: [fill(['in'])]
+      })();
     });
     expect(calls).toHaveLength(1);
     expect(calls[0].verifier.writingOutput.contract).toBe('writing-error-verification-v1');
-    expect(JSON.parse(calls[0].messages[1].content).map((item) => item.label)).toEqual([
-      '固定搭配介词选择错误',
-      '未写关系代词功能'
-    ]);
-    expect(receipt).toMatchObject({ status: 'completed', checked: 2, removed: 1 });
+    const sent = JSON.parse(calls[0].messages[1].content);
+    expect(sent.errors.map((item) => item.label)).toEqual(['未写关系代词功能']);
+    expect(sent.blanks).toEqual([{ id: 'b1', task: '补全固定搭配：We are interested ___ science. 只填介词。' }]);
+    expect(calls[0].messages[1].content).not.toContain('"at"');
+    expect(receipt).toMatchObject({ status: 'completed', checked: 2, removed: 1, added: 0 });
+    expect(receipt.reviews[0]).toMatchObject({ quoteId: 'q2', kept: true, wrong: true });
     expect(receipt.reviews[1]).toMatchObject({ quoteId: 'q1', kept: false, required: false });
+    expect(receipt.blanks).toEqual([{ quoteId: 'q2', accepted: ['in'], correct: false }]);
     const coach = JSON.parse(decodeCoachResponse(p, content)).coach;
     expect(coach.dimensions.map((d) => [d.name, d.score])).toEqual([
       ['语法', 2],
@@ -656,10 +666,82 @@ describe('摸底错误合并复核一次，只删不加', () => {
     );
     expect(coach.weaknesses).toEqual(['固定搭配介词选择错误']);
   });
+  it('初评漏登记的错填由盲填补登一条，不代写答案，矛盾的优点撤下', async () => {
+    const p = prepared(),
+      wire = { ...mixedDiagnosticReply(p), errors: [], strengths: [{ label: '介词正确', quoteId: 'q2' }] };
+    wire.dimensionReviews.collocation.comment = '已达到本次要求';
+    const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(wire), verdict({ blanks: [fill(['in'])] }));
+    expect(receipt).toMatchObject({ status: 'completed', checked: 1, removed: 0, added: 1 });
+    const value = JSON.parse(content);
+    expect(value.errors).toEqual([
+      {
+        label: 'interested in',
+        quoteId: 'q2',
+        dimension: '搭配',
+        errorText: 'at',
+        replacement: null,
+        rule: 'be interested in 是固定搭配，介词用 in'
+      }
+    ]);
+    expect(value.strengths).toEqual([]);
+    const coach = JSON.parse(decodeCoachResponse(p, content)).coach;
+    expect(coach.dimensions.find((d) => d.name === '搭配')).toMatchObject({
+      score: 1,
+      comment: 'be interested in 是固定搭配，介词用 in'
+    });
+    expect(coach.lines.find((line) => line.original === 'at').advice).toBe('be interested in 是固定搭配，介词用 in');
+    expect(coach.weaknesses).toEqual(['interested in']);
+  });
+  it('原答带句末标点（at。）照样盲填比对，补登的错误片段只取单词', async () => {
+    const p = preparedFor(blankAnswer('at。')),
+      wire = { ...mixedDiagnosticReply(p), errors: [] };
+    const calls = [];
+    const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(wire), async (verifier, messages) => {
+      calls.push(messages);
+      return verdict({ blanks: [fill(['in'])] })();
+    });
+    expect(calls).toHaveLength(1);
+    expect(calls[0][1].content).not.toContain('at。');
+    expect(receipt).toMatchObject({ status: 'completed', checked: 1, added: 1 });
+    expect(receipt.blanks).toEqual([{ quoteId: 'q2', accepted: ['in'], correct: false }]);
+    expect(JSON.parse(content).errors[0]).toMatchObject({ quoteId: 'q2', errorText: 'at' });
+    const coach = JSON.parse(decodeCoachResponse(p, content)).coach;
+    expect(coach.dimensions.find((d) => d.name === '搭配')).toMatchObject({ score: 1 });
+  });
+  it.each([
+    ['正确答案', 'in', ['in']],
+    ['大写原答', 'In', ['in']],
+    ['带句号', 'in。', ['in']],
+    ['带英文句点', 'in.', ['in']],
+    ['合法变体', 'upon', ['on', 'upon']]
+  ])('填对的空（%s）上的初评错误被删除，档位回到2', async (_name, answer, accepted) => {
+    const p = preparedFor(blankAnswer(answer)),
+      wire = mixedDiagnosticReply(p);
+    wire.errors[0].errorText = answer;
+    const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(wire), verdict({ blanks: [fill(accepted)] }));
+    expect(receipt).toMatchObject({ status: 'completed', checked: 1, removed: 1, added: 0 });
+    expect(receipt.blanks[0]).toMatchObject({ quoteId: 'q2', correct: true });
+    const coach = JSON.parse(decodeCoachResponse(p, content)).coach;
+    expect(coach.dimensions.find((d) => d.name === '搭配')).toMatchObject({ score: 2 });
+    expect(coach.weaknesses).toEqual([]);
+  });
   it.each([
     ['限流', async () => Promise.reject(Object.assign(new Error('limit'), { code: 'RATE_LIMITED' }))],
-    ['漏答一条', verdict([{ index: 0, required: true, wrong: false, reason: '略' }])],
-    ['重复回答', verdict([{ index: 0, required: true, wrong: false, reason: '略' }, { index: 0, required: true, wrong: false, reason: '略' }])],
+    ['漏答填空', verdict({ reviews: [{ index: 1, required: true, wrong: false, reason: '略' }] })],
+    [
+      '重复回答',
+      verdict({
+        reviews: [
+          { index: 1, required: true, wrong: false, reason: '略' },
+          { index: 1, required: true, wrong: false, reason: '略' }
+        ],
+        blanks: [fill(['in'])]
+      })
+    ],
+    [
+      '填空列出短语',
+      verdict({ reviews: [{ index: 1, required: true, wrong: false, reason: '略' }], blanks: [fill(['interested in'])] })
+    ],
     ['不是JSON', async () => 'not json']
   ])('复核失败（%s）时原错误照常进门禁，不当成无错', async (_name, call) => {
     const p = prepared(),
@@ -669,8 +751,8 @@ describe('摸底错误合并复核一次，只删不加', () => {
     expect(JSON.parse(content).errors).toHaveLength(2);
     expect(JSON.parse(decodeCoachResponse(p, content)).coach.dimensions[3].score).toBe(1);
   });
-  it('无错误、未过字段合同或非摸底时不发复核；取消照常抛出', async () => {
-    const p = prepared(),
+  it('无错误且没有单词填空、未过字段合同或非摸底时不发复核；取消照常抛出', async () => {
+    const p = preparedFor(blankAnswer('in，因为interested后接in')),
       never = async () => {
         throw new Error('should not call');
       };
@@ -679,14 +761,14 @@ describe('摸底错误合并复核一次，只删不加', () => {
       content: JSON.stringify(clean),
       receipt: null
     });
-    const broken = mixedDiagnosticReply(p);
+    const broken = mixedDiagnosticReply(prepared());
     broken.errors[0].dimension = '表达';
-    expect((await verifyCoachErrors(p, JSON.stringify(broken), never)).receipt).toBeNull();
+    expect((await verifyCoachErrors(prepared(), JSON.stringify(broken), never)).receipt).toBeNull();
     const card = prepareCoachFeedbackModel(config, coachInferenceContext(cloze), false, false, false, true);
     expect(card.writingOutput.scorePolicy).toBeUndefined();
     expect((await verifyCoachErrors(card, '{}', never)).receipt).toBeNull();
     await expect(
-      verifyCoachErrors(p, JSON.stringify(mixedDiagnosticReply(p)), async () => {
+      verifyCoachErrors(prepared(), JSON.stringify(mixedDiagnosticReply(prepared())), async () => {
         throw Object.assign(new Error('cancelled'), { code: 'CANCELLED' });
       })
     ).rejects.toMatchObject({ code: 'CANCELLED' });
@@ -707,5 +789,20 @@ describe('摸底错误合并复核一次，只删不加', () => {
     const prompt = coachRepairPrompt(feedback);
     expect(prompt).toContain('"expected":{"type":"object"');
     expect(prompt).toContain('只按回执修正被拒字段的结构');
+  });
+  it('长度越界时回执写明上下限与原值长度', () => {
+    const p = prepared(),
+      wire = mixedDiagnosticReply(p);
+    wire.errors[0].rule = '固'.repeat(200);
+    let rejected;
+    try {
+      decodeCoachResponse(p, JSON.stringify(wire));
+    } catch (error) {
+      rejected = error;
+    }
+    expect(rejected).toMatchObject({ code: 'COACH_INVALID', path: 'root.errors[0].rule', schemaKeyword: 'stringLength' });
+    const feedback = coachRepairFeedback(p, rejected, JSON.stringify(wire));
+    expect(feedback.expected).toMatchObject({ type: 'string', minLength: 1, maxLength: 180, actualLength: 200 });
+    expect(coachRepairPrompt(feedback)).toContain('"maxLength":180,"actualLength":200');
   });
 });
