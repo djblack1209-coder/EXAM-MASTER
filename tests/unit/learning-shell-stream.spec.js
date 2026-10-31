@@ -20,6 +20,8 @@ import { bindMessageFollow } from '@/components/business/learning/message-follow
 import { storageService } from '@/services/storageService.js';
 import { learningWriteLease } from '@/services/learning/learning-write-lease.js';
 import { coachFixture } from '../fixtures/writing-coach.js';
+import { artifactWorkspace, openStudentArtifact, studentEssaySources } from '@/services/learning/learning-artifacts.js';
+import { artifactFixtureState } from '../fixtures/learning-artifacts.js';
 import { INTAKE_CHOICES } from '../../laf-backend/functions/_shared/learning-intake.js';
 
 vi.mock('@dcloudio/uni-app', () => ({ onShow: vi.fn(), onHide: vi.fn(), onLoad: vi.fn(), onBackPress: vi.fn() }));
@@ -99,6 +101,35 @@ function receipt(body, patch = {}) {
   };
 }
 describe('S2 continuous reply', () => {
+  it('S4 A1 covers the composer and reserved bottom space with an opaque dock', () => {
+    const wrapper = render(LearningPage, { LearningShell: false });
+    expect(wrapper.get('.muse-composer-dock').find('.muse-composer').exists()).toBe(true);
+    const css = readFileSync('src/components/business/learning/learning-space.css', 'utf8');
+    expect(css).toMatch(
+      /\.muse-composer-dock \{[^}]*bottom: 0;[^}]*padding: 0 12px max\(18px, env\(safe-area-inset-bottom\)\);[^}]*background: var\(--paper\)/s
+    );
+    expect(css).toContain('padding-bottom: max(12px, env(safe-area-inset-bottom))');
+  });
+  it('S4 A2 removes the numeric chapter date without removing record navigation or earlier-day paging', async () => {
+    const fixtureState = artifactFixtureState('shell-stream-owner');
+    fixtureState.conversations[0].trainingGroups = [
+      { id: 'saved-group', day: '2026-10-30', moduleId: 'writing', questionKeys: [] }
+    ];
+    expect(storageService.save('conversation_learning_v1', fixtureState, true)).toBe(true);
+    store.refresh();
+    store.selectedConversationId = 'essay-chat';
+    const wrapper = render(LearningShell, { LearningShell: false });
+    await nextTick();
+    expect(wrapper.find('.directory-date').exists()).toBe(false);
+    expect(wrapper.text()).not.toContain('10 / 30');
+    const modules = wrapper.findAll('.directory-module');
+    expect(modules.length).toBeGreaterThan(0);
+    const locate = vi.spyOn(store, 'locateConversation').mockImplementation(() => {});
+    await modules[0].trigger('tap');
+    expect(locate).toHaveBeenCalledWith('essay-chat', '2026-10-30', expect.any(String));
+    const source = readFileSync('src/components/business/learning/learning-shell.vue', 'utf8');
+    expect(source).toContain('directoryDayLimit += 7');
+  });
   it.each(['chat', 'coach'])('S3 hides an empty stopped %s reply and retains partial text', async (kind) => {
     if (kind === 'coach') {
       store.startCoach('考研英语二写作');
@@ -379,6 +410,40 @@ describe('S2 continuous reply', () => {
   });
 });
 describe('S2 reading and Escape ownership', () => {
+  it('S4 B1 Escape first dismisses overlays, then the artifact panel, then generation', async () => {
+    const item = studentEssaySources(artifactFixtureState(store.state.owner))[0];
+    const close = vi.fn(() => {
+      artifactWorkspace(store).target = null;
+    });
+    const wrapper = render(LearningShell, {
+      LearningShell: false,
+      MuseArtifactPanel: { template: '<div />', methods: { close } }
+    });
+    vi.spyOn(wrapper.element, 'getClientRects').mockReturnValue([{}]);
+    openStudentArtifact(store, item);
+    await nextTick();
+    const cancel = vi.spyOn(store, 'cancel');
+    store.busy = true;
+    let overlay = true;
+    await wrapper.setProps({
+      dismissOverlay: () => {
+        const was = overlay;
+        overlay = false;
+        return was;
+      }
+    });
+    const escape = () =>
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    escape();
+    expect(close).not.toHaveBeenCalled();
+    expect(cancel).not.toHaveBeenCalled();
+    escape();
+    expect(close).toHaveBeenCalledOnce();
+    expect(cancel).not.toHaveBeenCalled();
+    await nextTick();
+    escape();
+    expect(cancel).toHaveBeenCalledOnce();
+  });
   it('anchors the visible reply when a complete card and inline profile arrive in separate updates', async () => {
     const scroller = document.createElement('div'),
       reply = document.createElement('div');

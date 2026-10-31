@@ -242,6 +242,14 @@
             <text v-if="record.source" class="coach-muted">{{ sourceLabel(record.source) }}</text>
             <text v-if="record.source?.quote" class="coach-muted" selectable>{{ record.source.quote }}</text>
             <text class="coach-user-message" selectable>{{ record.answer }}</text>
+            <BaseButton
+              v-if="record.phase === 'essay' && artifactForDay(record.day)"
+              variant="quiet"
+              icon="file-text"
+              :data-essay-artifact="artifactForDay(record.day).id"
+              @tap="openStudentArtifact(learning, artifactForDay(record.day))"
+              >打开文档</BaseButton
+            >
             <text
               v-if="
                 record.phase === 'essay' &&
@@ -484,6 +492,13 @@
               </BaseCard>
               <BaseCard v-else-if="!materialTrack && !day.essay"
                 ><text class="coach-title">你的全文</text
+                ><BaseButton
+                  v-if="artifactForDay(day.day)"
+                  variant="quiet"
+                  icon="file-text"
+                  :data-essay-artifact="artifactForDay(day.day).id"
+                  @tap="openStudentArtifact(learning, artifactForDay(day.day))"
+                  >打开文档</BaseButton
                 ><text v-for="paragraph in day.rewrites" :key="paragraph.id" class="coach-saved">{{
                   paragraph.text
                 }}</text
@@ -553,6 +568,7 @@
 </template>
 <script setup>
 import { visibleReply, cancelledNotice } from '@/services/learning/shell-navigation.js';
+import { studentEssaySources, openStudentArtifact } from '@/services/learning/learning-artifacts.js';
 import { computed, ref, reactive, watch, onMounted, onBeforeUnmount, onUnmounted, nextTick } from 'vue';
 import { coachSavedRecords } from '../../../../laf-backend/functions/_shared/learning-coach-records.js';
 import { coachDueItem } from '../../../../laf-backend/functions/_shared/learning-reminders.js';
@@ -739,6 +755,10 @@ const cardAnswer = computed(() => day.value?.answers.find((a) => a.cardId === tr
 const paragraphIndex = computed(() => day.value?.rewrites.length || 0);
 const historyLimit = ref(1);
 const savedPractice = computed(() => coachSavedRecords(learning.active));
+const essayArtifacts = computed(() =>
+  studentEssaySources(learning.state).filter((item) => item.conversationId === learning.active?.id)
+);
+const artifactForDay = (day) => essayArtifacts.value.filter((item) => item.day === day).at(-1);
 const visiblePractice = computed(() => savedPractice.value.slice(-historyLimit.value));
 watch(
   () => learning.selectedConversationId,

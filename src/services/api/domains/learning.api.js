@@ -138,3 +138,8 @@ export const deleteLearningModel = (profileId, options) =>
   learningRequest('/learning-models', { action: 'delete', profileId }, options);
 export const generateLearningTurn = (body, options) =>
   options?.stream ? generateLearningTurnStream(body, options) : learningRequest('/proxy-ai', body, options);
+
+// Independent essay copies use the same captured account as learning-sync.
+// Existing learning APIs and their write contracts remain unchanged.
+export const requestLearningArtifact = (body, options = {}) =>
+  learningRequest('/learning-artifacts', body, { ...options, session: options.session || captureSession() });

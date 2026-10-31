@@ -18,7 +18,8 @@
       'is-settings': active === 'settings' || active === 'profile',
       'is-desktop-settings': nativeSettings,
       'has-notice': !!notice,
-      'has-composer': !!$slots.composer
+      'has-composer': !!$slots.composer,
+      'has-artifact': !!artifactTarget
     }"
     :style="[platformInsets, dockStyle, { '--muse-panel-width': `${panelWidth}px` }]"
   >
@@ -281,15 +282,15 @@
                   >
                     <view v-for="chapter in directoryDays" :key="chapter.day" class="directory-day">
                       <BaseButton
-                        class="directory-date"
-                        align="start"
-                        :disabled="learning.busy"
-                        :aria-disabled="learning.busy"
+                        v-if="learning.timeline.length > 1"
+                        class="directory-day-link"
                         variant="quiet"
+                        icon="calendar"
+                        icon-only
+                        :label="`查看原对话 · ${chapter.day}`"
+                        :disabled="learning.busy"
                         @tap="locate(conversation.id, chapter.day)"
-                      >
-                        {{ chapter.day.slice(5).replace('-', ' / ') }}
-                      </BaseButton>
+                      />
                       <BaseButton
                         v-for="group in chapter.groups"
                         :key="group.id"
@@ -435,6 +436,13 @@
           <slot name="composer"></slot>
         </view>
       </view>
+      <MuseArtifactPanel
+        v-if="artifactTarget"
+        :key="artifactTarget.id"
+        ref="artifactPanel"
+        :target="artifactTarget"
+        @close="artifacts.target = null"
+      />
     </view>
     <BaseEmpty v-if="error" class="shell-error" state="error" :title="learningText(error)" />
   </view>
@@ -454,6 +462,8 @@ import { useConversationLearningStore } from '@/stores/modules/conversation-lear
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { safeNavigateTo, requestProfilePanel } from '@/utils/safe-navigate';
 import { getToken } from '@/services/auth-storage.js';
+import MuseArtifactPanel from './muse-artifact-panel.vue';
+import { artifactWorkspace } from '@/services/learning/learning-artifacts.js';
 import { storageService } from '@/services/storageService.js';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
@@ -479,6 +489,20 @@ const props = defineProps({
 });
 const emit = defineEmits(['materials', 'new', 'connections']);
 const learning = useConversationLearningStore();
+const artifacts = artifactWorkspace(learning);
+const artifactPanel = ref(null);
+const shellRoute = typeof getCurrentPages === 'function' ? getCurrentPages().at(-1)?.route || '' : '';
+const artifactTarget = computed(() =>
+  artifacts.target?.route === shellRoute && artifacts.target?.context === learning.recordContext()
+    ? artifacts.target
+    : null
+);
+watch(
+  () => learning.recordContext(),
+  () => {
+    artifacts.target = null;
+  }
+);
 const loggedIn = ref(false);
 const syncLogin = () => {
   try {
@@ -972,6 +996,11 @@ function escapeGeneration(event) {
   )
     return;
   if (event.target?.closest?.('select')) return;
+  if (artifactTarget.value) {
+    event.preventDefault();
+    artifactPanel.value?.close();
+    return;
+  }
   if (learning.intakeBusy || (learning.reply?.kind === 'intake' && learning.reply.pending)) {
     learning.cancelModelIntake();
     event.preventDefault();

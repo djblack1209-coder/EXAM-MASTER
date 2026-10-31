@@ -22,6 +22,18 @@
   position: relative;
   isolation: isolate;
 }
+/* Muse 2 实现参数： ArtifactPanel.css:23-28. */
+.has-artifact .space-main {
+  margin-right: clamp(340px, 44%, 520px);
+}
+.has-artifact .space-sidebar {
+  display: none;
+}
+@media (max-width: 760px) {
+  .has-artifact .space-main {
+    margin-right: 0;
+  }
+}
 .muse-rail {
   width: var(--muse-rail-width);
   flex: 0 0 var(--muse-rail-width);
@@ -344,14 +356,22 @@
 .muse-composer-dock {
   position: absolute;
   z-index: 11;
-  bottom: max(18px, env(safe-area-inset-bottom));
-  left: 12px;
-  right: 12px;
-  max-width: 768px;
-  margin: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  /* Muse 2 实现参数： tokens.css:42 / app.css:116,
+     18px below the composer, 768px column. The opaque dock also covers
+     that reserved bottom space while history scrolls behind the input. */
+  padding: 0 12px max(18px, env(safe-area-inset-bottom));
+  background: var(--paper);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 8px;
+}
+.muse-composer-dock > * {
+  width: 100%;
+  max-width: 768px;
 }
 .shell-notice {
   flex: none;
@@ -498,7 +518,7 @@
 }
 .muse-space .space-sidebar .recent-item,
 .muse-space .space-sidebar .directory-module,
-.muse-space .space-sidebar .directory-date,
+.muse-space .space-sidebar .directory-day-link,
 .muse-space .space-sidebar .directory-earlier {
   width: 100%;
   justify-content: flex-start;
@@ -760,9 +780,7 @@
     padding: 8px 16px 24px;
   }
   .muse-composer-dock {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
   .space-sidebar {
     --muse-directory-width: min(320px, calc(100vw - 24px));

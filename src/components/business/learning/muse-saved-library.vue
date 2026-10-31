@@ -162,6 +162,12 @@
             icon="arrow-right"
             @tap="open(record.conversationId, record.day)"
             >查看原答</BaseButton
+          ><BaseButton
+            v-if="record.feedback?.kind === 'essay' && essayFor(record)"
+            variant="quiet"
+            icon="file-text"
+            @tap="openStudentArtifact(learning, essayFor(record))"
+            >打开文档</BaseButton
           ></view
         ></view
       ></CustomModal
@@ -178,6 +184,7 @@ import { t, publicError } from '@/i18n/index.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { museLearningInsights, coachFeedbackPreview } from '@/services/learning/muse-learning-insights.js';
+import { studentEssaySources, openStudentArtifact } from '@/services/learning/learning-artifacts.js';
 import { coachUsesMaterials } from '../../../../laf-backend/functions/_shared/learning-writing-coach.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import BaseInput from '@/components/base/base-input/base-input.vue';
@@ -224,6 +231,9 @@ const tabs = computed(() => [
   { id: 'phrases', label: materialOnly.value ? '知识点' : '句式' }
 ]);
 const data = computed(() => museLearningInsights(context.state.value, learning.calendarTime));
+const essays = computed(() => studentEssaySources(context.state.value));
+const essayFor = (record) =>
+  essays.value.filter((item) => item.conversationId === record.conversationId && item.day === record.day).at(-1);
 const maxCount = computed(() => Math.max(1, ...data.value.days.map((day) => day.count)));
 const matches = (text) => text.toLocaleLowerCase().includes(query.value.trim().toLocaleLowerCase());
 function observationAdvice(item) {

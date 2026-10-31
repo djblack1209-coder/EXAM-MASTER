@@ -543,6 +543,13 @@
                 )
               }}</BaseTag>
               <BaseTag v-if="learning.locatedRecord.helped" tone="neutral">{{ t('learning.records.helped') }}</BaseTag>
+              <BaseButton
+                v-if="essayForAttempt(learning.locatedRecord.attemptId)"
+                variant="quiet"
+                icon="file-text"
+                @tap="openStudentArtifact(learning, essayForAttempt(learning.locatedRecord.attemptId))"
+                >打开文档</BaseButton
+              >
               <BaseButton variant="quiet" @tap="learning.dismissLocatedRecord()">{{
                 t('learning.records.close')
               }}</BaseButton>
@@ -708,6 +715,13 @@
               :play="answerMascot.play"
               size="small"
             /><BaseTag :tone="answerMascot.tone">{{ t(answerMascot.label) }}</BaseTag></view
+          ><BaseButton
+            v-if="essayForAttempt(latestAnswer?.id)"
+            variant="quiet"
+            icon="file-text"
+            :data-essay-artifact="essayForAttempt(latestAnswer.id).id"
+            @tap="openStudentArtifact(learning, essayForAttempt(latestAnswer.id))"
+            >打开文档</BaseButton
           ><view class="question-actions"
             ><view class="question-secondary" role="group" :aria-label="t('learning.questionActions')"
               ><BaseChip
@@ -2018,6 +2032,11 @@ import { DEV_TEST } from '@/config/build-channel.js';
 import { onShow, onHide, onLoad, onBackPress } from '@dcloudio/uni-app';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import WritingCoach from '@/pages/learning/components/writing-coach.vue';
+import {
+  studentEssaySources,
+  openStudentArtifact,
+  createLearningArtifacts
+} from '@/services/learning/learning-artifacts.js';
 import MuseComposer from '@/components/business/learning/muse-composer.vue';
 import { groupLearningMessages } from '@/services/learning/message-groups.js';
 import CustomModal from '@/components/common/CustomModal.vue';
@@ -2075,6 +2094,9 @@ import { getUserId, getToken } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 const learning = useConversationLearningStore();
+const essayArtifacts = computed(() => studentEssaySources(learning.state));
+const essayForAttempt = (id) =>
+  essayArtifacts.value.find((item) => item.source.kind === 'writing-attempt' && item.source.sourceId === id);
 const modelFailure = ref(null);
 
 const latestAnswer = computed(
@@ -4311,7 +4333,12 @@ function deleteRecords() {
     content:
       '删除当前用户的新学习记录、材料与恢复副本。旧题库和旧版学习数据保留；未确认原件的无正文定位待办保留，以便核对/取消，识别服务中的原件与云端密钥需另行确认删除。',
     success: (res) => {
-      if (res.confirm) run(() => learning.deleteData());
+      if (res.confirm)
+        run(() => {
+          const copies = createLearningArtifacts();
+          learning.deleteData();
+          copies.clearDeviceState();
+        });
     }
   });
 }

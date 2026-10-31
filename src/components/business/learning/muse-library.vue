@@ -151,37 +151,47 @@
       <view class="library-scroll">
         <text v-if="selecting" class="selection-count" role="status">已选择 {{ selected.length }} 项</text>
         <view v-if="items.length" class="library-grid"
-          ><BaseButton
-            v-for="item in items"
-            :key="item.id"
-            class="artifact"
-            :class="{ 'is-selected': selected.includes(item.id) }"
-            variant="quiet"
-            align="start"
-            :aria-pressed="selecting ? selected.includes(item.id) : undefined"
-            :label="`${selecting ? '选择 ' : '打开 '}${item.title}`"
-            @tap="openArtifact(item)"
-            ><view class="artifact-cover" :class="`artifact-cover-${item.kind}`"
-              ><BaseIcon :name="item.icon" size="30px" /><BaseIcon
-                v-if="selecting"
-                class="artifact-selection"
-                :name="selected.includes(item.id) ? 'checkbox-on' : 'checkbox-off'"
-                size="20px" /></view
-            ><view class="artifact-meta"
-              ><text class="artifact-title">{{ item.title }}</text
-              ><text class="artifact-subject">{{
-                item.sources.length
-                  ? '来源对话：' + item.sources.map((source) => source.label).join('、')
-                  : '未归类 · 暂无来源对话'
-              }}</text
-              ><text>{{ kindLabel(item.kind) }} · {{ dateLabel(item.at, item.day) }} · {{ item.detail }}</text></view
-            ></BaseButton
-          ></view
-        >
+          ><view v-for="item in items" :key="item.id" class="artifact-entry"
+            ><BaseButton
+              class="artifact"
+              :class="{ 'is-selected': selected.includes(item.id) }"
+              variant="quiet"
+              align="start"
+              :aria-pressed="selecting ? selected.includes(item.id) : undefined"
+              :label="`${selecting ? '选择 ' : '打开 '}${item.title}`"
+              @tap="openArtifact(item)"
+              ><view class="artifact-cover" :class="`artifact-cover-${item.kind}`"
+                ><BaseIcon :name="item.icon" size="30px" /><BaseIcon
+                  v-if="selecting"
+                  class="artifact-selection"
+                  :name="selected.includes(item.id) ? 'checkbox-on' : 'checkbox-off'"
+                  size="20px" /></view
+              ><view class="artifact-meta"
+                ><text class="artifact-title">{{ item.title }}</text
+                ><text class="artifact-subject">{{
+                  item.sources.length
+                    ? '来源对话：' + item.sources.map((source) => source.label).join('、')
+                    : '未归类 · 暂无来源对话'
+                }}</text
+                ><text>{{ kindLabel(item.kind) }} · {{ dateLabel(item.at, item.day) }} · {{ item.detail }}</text></view
+              ></BaseButton
+            ><BaseButton
+              v-if="item.source && !selecting"
+              class="artifact-pin"
+              variant="quiet"
+              icon="star"
+              icon-only
+              :label="pins[item.id] ? '取消置顶' : '置顶'"
+              :selected="!!pins[item.id]"
+              :aria-pressed="!!pins[item.id]"
+              @tap="togglePin(item)"
+            /> </view
+        ></view>
         <view v-else class="library-empty" role="status"
           ><view class="library-empty-mark"><BaseIcon :name="sectionIcon" size="26px" /></view
           ><text>{{ emptyLabel }}</text></view
         >
+        <text v-if="pinError" role="alert">{{ pinError }}</text>
         <view v-if="selectedMaterial" class="material-reader"
           ><view class="reader-head"
             ><text class="artifact-title">{{ selectedMaterial.name }}</text
@@ -200,6 +210,7 @@ import { useConversationLearningStore } from '@/stores/modules/conversation-lear
 import { workspaceConversationContext } from '@/services/learning/workspace-context.js';
 import MuseConversationFilter from './muse-conversation-filter.vue';
 import { museLearningLibrary } from '@/services/learning/muse-workspace-data.js';
+import { createLearningArtifacts, openStudentArtifact } from '@/services/learning/learning-artifacts.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
@@ -230,6 +241,31 @@ const root = ref(null),
   filterOpen = ref(false),
   selectedMaterialId = ref('');
 const context = workspaceConversationContext(learning);
+const pins = ref({}),
+  pinError = ref('');
+function readPins() {
+  pins.value = {};
+  try {
+    const client = createLearningArtifacts();
+    if (client.owner !== learning.state.owner) return;
+    pins.value = Object.fromEntries(
+      library.value.items.filter((i) => i.source).map((i) => [i.id, client.readPin(i.id)])
+    );
+    pinError.value = '';
+  } catch (e) {
+    pinError.value = e.message;
+  }
+}
+function togglePin(item) {
+  try {
+    const client = createLearningArtifacts();
+    if (client.owner !== learning.state.owner) return;
+    pins.value = { ...pins.value, [item.id]: client.setPin(item.id, !pins.value[item.id]) };
+    pinError.value = '';
+  } catch (e) {
+    pinError.value = e.message;
+  }
+}
 const library = computed(() => museLearningLibrary(learning.state, learning.calendarTime));
 const groups = computed(() => library.value.groups);
 const mobileSections = computed(() => library.value.sections);
@@ -270,8 +306,13 @@ const items = computed(() =>
         `${item.title} ${item.goal || ''}`.toLocaleLowerCase().includes(query.value.trim().toLocaleLowerCase())
       );
     })
-    .sort((a, b) => (oldest.value ? a.at - b.at : b.at - a.at))
+    .sort(
+      (a, b) => Number(!!pins.value[b.id]) - Number(!!pins.value[a.id]) || (oldest.value ? a.at - b.at : b.at - a.at)
+    )
 );
+watch(() => [learning.recordContext(), ...library.value.items.filter((i) => i.source).map((i) => i.id)], readPins, {
+  immediate: true
+});
 const sectionIcon = computed(() => mobileSections.value.find((s) => s.id === section.value)?.icon || 'folder');
 const emptyLabel = computed(() =>
   query.value || kind.value !== 'all'
@@ -342,6 +383,10 @@ function openArtifact(item) {
       : [...selected.value, item.id];
     return;
   }
+  if (item.source) {
+    openStudentArtifact(learning, item);
+    return;
+  }
   const source =
     item.sources.find((source) => `conversation:${source.conversationId}` === context.id.value) || item.sources[0];
   if (source) {
@@ -385,7 +430,8 @@ onUnmounted(() => (root.value?.$el || root.value)?.removeEventListener?.('keydow
 }
 .library-sidebar {
   background: var(--muse-panel);
-  width: 240px;
+  /* Muse 2 实现参数：styles/app.css:498-517，分类栏 217px。 */
+  width: 217px;
   flex: none;
   display: flex;
   flex-direction: column;
@@ -541,8 +587,8 @@ onUnmounted(() => (root.value?.$el || root.value)?.removeEventListener?.('keydow
   min-width: 0;
   overflow-wrap: anywhere;
   margin: 0;
-  font-size: 24px;
-  line-height: 32px;
+  font-size: 34px;
+  line-height: 40px;
   font-weight: 680;
   letter-spacing: -0.03em;
 }
@@ -751,12 +797,22 @@ onUnmounted(() => (root.value?.$el || root.value)?.removeEventListener?.('keydow
 }
 .library-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 290px));
+  /* Muse 2 实现参数：styles/app.css:517，3 列、19px 间距。 */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   justify-content: start;
-  gap: 20px;
+  gap: 19px;
   margin-top: 4px;
 }
+:global(.has-artifact) .library-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (max-width: 1050px) {
+  .library-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 .artifact {
+  position: relative;
   display: block;
   padding: 0;
   min-width: 0;
@@ -765,6 +821,15 @@ onUnmounted(() => (root.value?.$el || root.value)?.removeEventListener?.('keydow
   border-radius: 16px;
   background: var(--muse-rich-surface);
   text-align: left;
+}
+.artifact-entry {
+  position: relative;
+  min-width: 0;
+}
+.artifact-pin {
+  position: absolute;
+  top: 8px;
+  right: 8px;
 }
 .artifact :deep(.base-button__content) {
   display: flex;
@@ -914,6 +979,9 @@ onUnmounted(() => (root.value?.$el || root.value)?.removeEventListener?.('keydow
   }
 }
 @media (max-width: 760px) {
+  .library-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .library-head {
     padding: 24px 16px 14px;
   }
