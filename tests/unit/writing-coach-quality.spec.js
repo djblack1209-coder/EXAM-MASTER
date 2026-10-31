@@ -15,6 +15,7 @@ import {
   coachRepairFeedback,
   coachRepairPrompt,
   syntaxAgreement,
+  outlineAgreement,
   verifyCoachErrors
 } from '../../laf-backend/functions/_shared/ai-providers/learning-provider.ts';
 const base = {
@@ -646,27 +647,45 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     note: `主干是${mainSubject} ${mainVerb}，${clause}修饰${antecedent}`
   });
   const verdict = (raw) => async () => JSON.stringify(raw);
-  it('题干未要求的挑错被删除，填空只给题干不给原答，档位按盲填比对', async () => {
+  const fairPoints = [
+    { span: 'Write an email to classmates', keywords: ['邮件', '同学'] },
+    { span: 'introduce a science fair', keywords: ['介绍', '科学展'] },
+    { span: 'invite them', keywords: ['邀请'] },
+    { span: 'About 100 words', keywords: ['100', '一百'] }
+  ];
+  const outline = (points = fairPoints) => ({ id: 'p1', points, note: '给同学写邮件，介绍科学展并邀请参加，约100词' });
+  const outlineAnswer = (answer) => {
+    const r = mixedDiagnosticRequest(),
+      lines = r.input.split('\n');
+    lines[4] = answer;
+    return { ...r, input: lines.join('\n') };
+  };
+  it('审题题只给复核员英文题干盲列要点，提纲逐点写到就删掉挑错；填空只给题干不给原答', async () => {
     const p = prepared();
     const calls = [];
     const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(overflagged(p)), async (verifier, messages) => {
       calls.push({ verifier, messages });
-      return verdict({
-        reviews: [{ index: 1, required: false, wrong: true, reason: '题目只要求提取要点，原答已答出' }],
-        blanks: [fill(['in'])]
-      })();
+      return verdict({ blanks: [fill(['in'])], outlines: [outline()] })();
     });
     expect(calls).toHaveLength(1);
     expect(calls[0].verifier.writingOutput.contract).toBe('writing-error-verification-v1');
     const sent = JSON.parse(calls[0].messages[1].content);
-    expect(sent.errors.map((item) => item.label)).toEqual(['未列邮件格式要素']);
+    expect(sent.errors).toEqual([]);
     expect(sent.blanks).toEqual([{ id: 'b1', task: '补全固定搭配：We are interested ___ science. 只填介词。' }]);
+    expect(sent.outlines).toEqual([
+      { id: 'p1', prompt: 'Write an email to classmates to introduce a science fair and invite them. About 100 words.' }
+    ]);
     expect(sent).not.toHaveProperty('syntax');
     expect(calls[0].messages[1].content).not.toContain('"at"');
+    expect(calls[0].messages[1].content).not.toContain('邀请邮件');
+    expect(calls[0].messages[1].content).not.toContain('未列邮件格式要素');
     expect(receipt).toMatchObject({ status: 'completed', checked: 2, removed: 1, added: 0 });
     expect(receipt.reviews[0]).toMatchObject({ quoteId: 'q2', kept: true, wrong: true });
-    expect(receipt.reviews[1]).toMatchObject({ quoteId: 'q5', kept: false, required: false });
+    expect(receipt.reviews[1]).toMatchObject({ quoteId: 'q5', kept: false, wrong: false });
     expect(receipt.blanks).toEqual([{ quoteId: 'q2', accepted: ['in'], correct: false }]);
+    expect(receipt.outlines).toEqual([
+      { quoteId: 'q5', valid: true, agreed: true, points: fairPoints.map(({ span }) => ({ span, covered: true })) }
+    ]);
     const coach = JSON.parse(decodeCoachResponse(p, content)).coach;
     expect(coach.dimensions.map((d) => [d.name, d.score])).toEqual([
       ['语法', 2],
@@ -674,9 +693,91 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
       ['表达', 2],
       ['任务完成', 2]
     ]);
-    expect(coach.dimensions[3].comment).toBe('题目只要求提取要点，原答已答出');
-    expect(coach.lines.find((line) => line.original.startsWith('写给同学')).advice).toBe('题目只要求提取要点，原答已答出');
+    expect(coach.dimensions[3].comment).toBe('给同学写邮件，介绍科学展并邀请参加，约100词');
+    expect(coach.lines.find((line) => line.original.startsWith('写给同学')).advice).toBe(
+      '给同学写邮件，介绍科学展并邀请参加，约100词'
+    );
     expect(coach.weaknesses).toEqual(['固定搭配介词选择错误']);
+  });
+  it.each([
+    ['提纲漏写一个要点', '写给同学的邮件，介绍科学展，约100词。', fairPoints, true],
+    ['要点所在分句带否定', '写给同学的邮件，介绍科学展，不用邀请，约100词。', fairPoints, true],
+    ['要点片段不是题干原文', null, [{ span: 'Write a letter to classmates', keywords: ['邮件', '同学'] }, ...fairPoints.slice(1)], false],
+    ['题干有一句没列要点', null, fairPoints.slice(0, 3), false],
+    ['同一关键词出现在两个要点下', null, [...fairPoints.slice(0, 2), { span: 'invite them', keywords: ['邀请', '邮件'] }, fairPoints[3]], false]
+  ])('审题错误保留：%s', async (_name, answer, points, valid) => {
+    const p = answer ? preparedFor(outlineAnswer(answer)) : prepared();
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(overflagged(p)),
+      verdict({ blanks: [fill(['in'])], outlines: [outline(points)] })
+    );
+    expect(receipt).toMatchObject({ status: 'completed', checked: 2, removed: 0 });
+    expect(receipt.reviews[1]).toMatchObject({ quoteId: 'q5', kept: true });
+    expect(receipt.outlines[0]).toMatchObject({ quoteId: 'q5', valid, agreed: false });
+    expect(JSON.parse(decodeCoachResponse(p, content)).coach.dimensions[3].score).toBe(1);
+  });
+  it('开发集园艺感谢信：提纲逐条写到题干要点，盲列要点判为一致', () => {
+    const prompt =
+      'Write a letter to volunteers thanking them for their work in the school garden. Mention their contribution and express your appreciation. About 100 words.';
+    const points = [
+      { span: 'Write a letter', keywords: ['感谢信', '书信', '写信'] },
+      { span: 'to volunteers', keywords: ['志愿者', '义工'] },
+      { span: 'thanking them for their work in the school garden', keywords: ['感谢', '园艺', '花园'] },
+      { span: 'Mention their contribution', keywords: ['贡献', '付出'] },
+      { span: 'express your appreciation', keywords: ['谢意', '感激', '致谢'] },
+      { span: 'About 100 words.', keywords: ['100', '一百'] }
+    ];
+    const answer = '感谢信，写给志愿者，感谢校园园艺工作；提到志愿者的贡献并表达谢意，约100词。';
+    expect(outlineAgreement(prompt, points, answer)).toMatchObject({ valid: true, agreed: true });
+    expect(outlineAgreement(prompt, points, '感谢信，写给志愿者，感谢校园园艺工作，约100词。')).toMatchObject({
+      valid: true,
+      agreed: false,
+      points: expect.arrayContaining([{ span: 'Mention their contribution', covered: false }])
+    });
+  });
+  it('中译英的语法错误只看是否写错，复核说题干没要求也保留；表达类仍按两问删除（封存题 H3 时态）', async () => {
+    const r = mixedDiagnosticRequest(),
+      tasks = r.task.split('\n'),
+      answers = r.input.split('\n');
+    tasks[2] = '译成英文：我们昨天参观了科学展。';
+    answers[2] = 'We visit the science fair yesterday.';
+    const p = preparedFor({ ...r, task: tasks.join('\n'), input: answers.join('\n') }),
+      wire = mixedDiagnosticReply(p);
+    wire.errors.push(
+      {
+        label: '时态错误',
+        quoteId: 'q3',
+        dimension: '语法',
+        errorText: 'visit',
+        replacement: null,
+        rule: '有yesterday，谓语用一般过去时'
+      },
+      {
+        label: '用词可更地道',
+        quoteId: 'q3',
+        dimension: '表达',
+        errorText: 'science fair',
+        replacement: null,
+        rule: '可换用更正式的说法'
+      }
+    );
+    const sent = [];
+    const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(wire), async (_verifier, messages) => {
+      sent.push(JSON.parse(messages[1].content));
+      return verdict({
+        reviews: [
+          { index: 1, required: false, wrong: true, reason: '题干未要求时态' },
+          { index: 2, required: false, wrong: true, reason: '题干未要求用词' }
+        ],
+        blanks: [fill(['in'])]
+      })();
+    });
+    expect(sent[0].errors.map((item) => item.index)).toEqual([1, 2]);
+    expect(receipt).toMatchObject({ status: 'completed', checked: 3, removed: 1 });
+    expect(receipt.reviews[1]).toMatchObject({ quoteId: 'q3', dimension: '语法', required: false, wrong: true, kept: true });
+    expect(receipt.reviews[2]).toMatchObject({ quoteId: 'q3', dimension: '表达', kept: false });
+    expect(JSON.parse(content).errors.map((e) => e.label)).toEqual(['固定搭配介词选择错误', '时态错误']);
   });
   it('初评漏登记的错填由盲填补登一条，不代写答案，矛盾的优点撤下', async () => {
     const p = prepared(),
@@ -739,20 +840,13 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
   });
   it.each([
     ['限流', async () => Promise.reject(Object.assign(new Error('limit'), { code: 'RATE_LIMITED' }))],
-    ['漏答填空', verdict({ reviews: [{ index: 1, required: true, wrong: false, reason: '略' }] })],
+    ['漏答填空', verdict({ outlines: [outline()] })],
+    ['漏答审题', verdict({ blanks: [fill(['in'])] })],
+    ['重复回答', verdict({ outlines: [outline(), outline()], blanks: [fill(['in'])] })],
+    ['填空列出短语', verdict({ outlines: [outline()], blanks: [fill(['interested in'])] })],
     [
-      '重复回答',
-      verdict({
-        reviews: [
-          { index: 1, required: true, wrong: false, reason: '略' },
-          { index: 1, required: true, wrong: false, reason: '略' }
-        ],
-        blanks: [fill(['in'])]
-      })
-    ],
-    [
-      '填空列出短语',
-      verdict({ reviews: [{ index: 1, required: true, wrong: false, reason: '略' }], blanks: [fill(['interested in'])] })
+      '关键词只有一个字',
+      verdict({ outlines: [outline([{ span: 'Write an email', keywords: ['信'] }, ...fairPoints.slice(1)])], blanks: [fill(['in'])] })
     ],
     ['不是JSON', async () => 'not json']
   ])('复核失败（%s）时原错误照常进门禁，不当成无错', async (_name, call) => {
