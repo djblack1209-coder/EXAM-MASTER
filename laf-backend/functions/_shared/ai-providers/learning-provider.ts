@@ -1592,7 +1592,7 @@ export async function calibrateCoachExercises(
       new ProviderError(
         'COACH_INVALID',
         bad.accepted.length
-          ? '搭配填空能填对的词超过两个，考不出固定搭配；换一个只有一到两个单词能填对的句子'
+          ? `搭配填空能填对的词超过两个（盲填找到${bad.accepted.join('、')}），考不出固定搭配；换一个只有一到两个单词能填对的句子，空出被前后词锁定的介词、小品词或固定短语里不可替换的词`
           : '搭配填空没有单个英文单词能填对；空格只留一个单词'
       ),
       { path: `cards[${bad.index}].exercise.source` }

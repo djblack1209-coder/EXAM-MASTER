@@ -1412,4 +1412,16 @@ describe('新出搭配填空经盲填校准才下发', () => {
     expect(coachSystemPrompt(request, prepared.writingOutput.schema)).toContain('恰好一个___且只能填一个英文单词');
     expect(coachSystemPrompt(request)).toContain('空格只能填一个英文单词');
   });
+  it('出题提示讲清搭配空格要被前后词锁定，拒收时写出盲填找到的词', async () => {
+    const prepared = prepareCoachFeedbackModel(config, request);
+    for (const prompt of [coachSystemPrompt(request, prepared.writingOutput.schema), coachSystemPrompt(request)]) {
+      expect(prompt).toContain('换近义词就不成立');
+      expect(prompt).toContain('能填对的单词超过两个即退回重出');
+    }
+    const { call } = verifier(fills(['for'], ['sustain', 'maintain', 'promote'], ['on']));
+    await expect(calibrateCoachExercises(config, generated(), call)).rejects.toMatchObject({
+      path: 'cards[1].exercise.source',
+      message: expect.stringContaining('盲填找到sustain、maintain、promote')
+    });
+  });
 });
