@@ -1483,6 +1483,14 @@ describe('新出搭配填空经盲填校准才下发', () => {
       expect(prompt).toContain('换近义词就不成立');
       expect(prompt).toContain('能填对的单词超过两个即退回重出');
     }
+    // 模型照题位逐条出题，锁定要求要写进搭配题位本身。
+    const diagnostic = { ...request, phase: 'diagnostic', target: 'diagnostic', input: '开始十分钟摸底' };
+    expect(coachSystemPrompt(request, prepared.writingOutput.schema)).toMatch(
+      /c1-c3：三个不同搭配的英文填空，空格放在固定搭配里被前后词锁定的词上/u
+    );
+    expect(coachSystemPrompt(diagnostic, prepareCoachFeedbackModel(config, diagnostic).writingOutput.schema)).toMatch(
+      /d2：英文搭配填空，空格放在固定搭配里被前后词锁定的词上/u
+    );
     const { call } = verifier(fills(['for'], ['sustain', 'maintain', 'promote'], ['on']));
     await expect(calibrateCoachExercises(config, generated(), call)).rejects.toMatchObject({
       path: 'cards[1].exercise.source',
