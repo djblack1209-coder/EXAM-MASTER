@@ -77,10 +77,13 @@ describe('只读知识框架验证版', () => {
       expect(knowledgeGraphTitle(seed)).toBe('知识框架');
     expect(knowledgeGraphTitle({ subject: '数学', subjectLabel: '数学' })).toBe('数学 · 知识框架');
   });
-  it.each([358, 680])('framework arrows never pass through unrelated cards at width %i', (width) => {
+  it.each(
+    [358, 680].flatMap((width) => ['', ...knowledgeGraphSeed.topics.map((node) => node.id)].map((id) => [width, id]))
+  )('framework arrows never pass through unrelated cards at width %i, selected node "%s"', (width, selectedId) => {
     const graph = knowledgeGraphView(knowledgeGraphSeed, width);
-    const svg = new DOMParser().parseFromString(knowledgeGraphSvg(graph), 'image/svg+xml');
+    const svg = new DOMParser().parseFromString(knowledgeGraphSvg(graph, false, selectedId), 'image/svg+xml');
     for (const path of svg.querySelectorAll('path[data-from]')) {
+      expect(path.getAttribute('d')).not.toMatch(/[CQ]/);
       const tokens = path.getAttribute('d').match(/[MHV]|-?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi);
       let x = 0,
         y = 0;

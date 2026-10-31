@@ -1,25 +1,29 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { mount, flushPromises } from '@vue/test-utils';
 import { reactive, nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import ProgressOverview from '@/components/business/learning/progress/progress-overview.vue';
 import ProgressMindMap from '@/components/business/learning/progress/progress-mind-map.vue';
 import ProgressEvidence from '@/components/business/learning/progress/progress-evidence.vue';
 import Knowledge from '@/pages/learning/knowledge.vue';
+import WebsiteWorkspace from '@/components/business/website/website-workspace.vue';
+import { knowledgeGraphSeed } from '@/services/learning/knowledge-graph-seed.js';
 import { learningProgressReadModel } from '@/services/learning/learning-progress-read-model.js';
 import { progressBoundaryFixture, progressFixture } from '../fixtures/learning-progress.js';
-const harness = vi.hoisted(() => ({ learning: null }));
+const harness = vi.hoisted(() => ({ learning: null, read: vi.fn() }));
 vi.mock('@/stores/modules/conversation-learning.js', () => ({ useConversationLearningStore: () => harness.learning }));
-vi.mock('@dcloudio/uni-app', () => ({ onLoad: vi.fn(), onShow: vi.fn(), onResize: vi.fn() }));
+vi.mock('@/services/learning/learning-sync.js', () => ({ readLearningSnapshot: harness.read }));
+vi.mock('@dcloudio/uni-app', () => ({ onLoad: vi.fn(), onShow: vi.fn(), onHide: vi.fn(), onResize: vi.fn() }));
 const button = {
   props: ['label', 'selected', 'disabled'],
   emits: ['tap'],
   template: '<button :aria-label="label" :disabled="disabled" @click="$emit(\'tap\')"><slot /></button>'
 };
 const modal = { props: ['visible'], template: '<section v-if="visible" role="dialog"><slot /></section>' };
-const global = { stubs: { BaseButton: button, BaseIcon: true, CustomModal: modal } };
+const global = { stubs: { BaseButton: button, BaseIcon: true, CustomModal: modal, AnimatedAvatar: true } };
 beforeEach(() => {
   setActivePinia(createPinia());
+  harness.read.mockReset();
 });
 
 describe('progress presentation shares one read model without writing learning facts', () => {
@@ -35,7 +39,7 @@ describe('progress presentation shares one read model without writing learning f
     const model = learningProgressReadModel(harness.learning.state);
     const wrapper = mount(Knowledge, { global });
     expect(wrapper.get('[data-metric="语法"]').text()).toContain(count === 5 ? '0%' : '数据不足');
-    expect(wrapper.get('[data-metric="数学"]').text()).toContain(count === 5 ? '100%' : '数据不足');
+    expect(wrapper.find('[data-metric="数学"]').exists()).toBe(false);
     for (const selector of ['data-node-id', 'data-mind-node']) {
       if (selector === 'data-mind-node')
         await wrapper
@@ -140,7 +144,7 @@ describe('progress presentation shares one read model without writing learning f
     expect(JSON.stringify(model)).toBe(before);
     wrapper.unmount();
   });
-  it('separates the framework title from the last subject summary even when the active goal is mathematics', () => {
+  it('renders the explicit framework title exactly once as a level-one heading, even when the active goal is mathematics', () => {
     harness.learning = reactive({
       state: progressFixture(),
       active: { studyProfile: { subject: '数学' } },
@@ -152,9 +156,74 @@ describe('progress presentation shares one read model without writing learning f
     });
     const wrapper = mount(Knowledge, { global });
     expect(wrapper.get('[aria-level="1"]').text()).toBe('考研英语写作 · 知识框架');
-    expect(wrapper.get('.framework-title').text()).toBe('考研英语写作 · 知识框架');
-    expect(wrapper.findAll('.progress-heading').map((heading) => heading.text())).toContain('数学');
+    expect(
+      wrapper.findAll('[role="heading"],h1,h2,h3').filter((heading) => heading.text() === '考研英语写作 · 知识框架')
+    ).toHaveLength(1);
+    expect(wrapper.find('.framework-title').exists()).toBe(false);
+    expect(wrapper.findAll('.progress-heading').map((heading) => heading.text())).toEqual(['考研英语写作']);
     wrapper.unmount();
+  });
+  it('renders only the framework subject and its sources while the website renders both subjects from the same events', async () => {
+    const state = progressBoundaryFixture(5),
+      before = JSON.stringify(state),
+      model = learningProgressReadModel(state);
+    harness.learning = reactive({
+      state,
+      recordReadState: 'ready',
+      recordContext() {
+        return this.state.owner;
+      },
+      refresh: vi.fn()
+    });
+    const wrapper = mount(Knowledge, { global });
+    expect(wrapper.findAll('.progress-heading').map((heading) => heading.text())).toEqual(['考研英语写作']);
+    const sourceButtons = wrapper.findAll('.progress-sources button');
+    expect(sourceButtons.map((button) => button.text())).toEqual(['全部', 'BYOK · byok_progress_qa']);
+    await sourceButtons[1].trigger('click');
+    expect(wrapper.findAll('.progress-heading').map((heading) => heading.text())).toEqual(['考研英语写作']);
+    await wrapper.get('[data-metric="语法"]').trigger('click');
+    expect(wrapper.findAll('.progress-trace .progress-event')).toHaveLength(5);
+    expect(wrapper.get('.progress-trace').text()).not.toContain('合成算术题');
+    wrapper.unmount();
+
+    uni.setStorageSync('EXAM_USER_ID', state.owner);
+    uni.setStorageSync('EXAM_TOKEN', 'progress-qa-local-token');
+    harness.read.mockResolvedValue(state);
+    const website = mount(WebsiteWorkspace, { props: { signedIn: true }, global });
+    await flushPromises();
+    expect(harness.read).toHaveBeenCalledOnce();
+    expect(website.findAll('.progress-heading').map((heading) => heading.text())).toEqual(['考研英语写作', '数学']);
+    expect(website.get('[data-metric="数学"]').text()).toContain('100%');
+    expect(website.getComponent(ProgressOverview).props('model')).toEqual(model);
+    expect(JSON.stringify(state)).toBe(before);
+    website.unmount();
+  });
+  it.each([
+    { subject: undefined, subjectLabel: '考研英语写作' },
+    { subject: '  ', subjectLabel: '考研英语写作' },
+    { subject: 'kaoyan-english-writing', subjectLabel: undefined },
+    { subject: 'kaoyan-english-writing', subjectLabel: '  ' }
+  ])('hides the overview without explicit framework subject metadata: %j', (metadata) => {
+    const original = { subject: knowledgeGraphSeed.subject, subjectLabel: knowledgeGraphSeed.subjectLabel };
+    let wrapper;
+    try {
+      Object.assign(knowledgeGraphSeed, metadata);
+      harness.learning = reactive({
+        state: progressBoundaryFixture(5),
+        active: { studyProfile: { subject: '数学' } },
+        recordReadState: 'ready',
+        recordContext() {
+          return this.state.owner;
+        },
+        refresh: vi.fn()
+      });
+      wrapper = mount(Knowledge, { global });
+      expect(wrapper.findComponent(ProgressOverview).exists()).toBe(false);
+      expect(wrapper.findAll('[data-node-id]')).toHaveLength(26);
+    } finally {
+      wrapper?.unmount();
+      Object.assign(knowledgeGraphSeed, original);
+    }
   });
   it('keeps receipt, event and learning IDs out of rendered text, attributes and originals while preserving exact opens', async () => {
     const model = learningProgressReadModel(progressFixture());

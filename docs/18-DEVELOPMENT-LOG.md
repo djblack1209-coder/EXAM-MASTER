@@ -183,3 +183,24 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 - **资源／边界**：复用现有依赖，私有Cargo APFS克隆已按无消费者及候选独立签名核对后用cargo clean清理2,554,613,323逻辑字节，不是实时磁盘释放量；自建构建／测试／浏览器均已取得终态，第一候选已正常退出并按完整路径注销。最终候选保留在 `tmp/progress-3.noindex/Yozi AI.app`，尚未启动终验，`first.noindex/`暂留作回退；S3锁不改。系统应用搜索仅返回日常入口，主程序可执行哈希保持；[归属与收尾记录](../tmp/progress-3.noindex/resources.json)。手机原生App未验（无HBuilderX／可运行的uni-app原生基座），小程序未构建，N3预测性准确率未验；真实模型调用0。待批文案候选：**无**；新增依赖／许可公开范围：**无**；不推送、不部署、不启付费、不替换日常App。
 
 复跑：在本工作树执行 `sh tmp/progress-3.noindex/rerun-tests.sh`，使用新时间编号保存定向／全量结果，逐字核对复制的基线后按测试ID比较，新增失败会非零退出。界面复验仍须先取得并填写UI锁；桌面候选用Ctrl+Alt+1／2／3／4切换四态，完成后Cmd+Q并按完整路径注销；官网命令为 `PROGRESS_QA_OUTPUT="tmp/progress-3.noindex/h5-retest-$(date +%Y%m%d-%H%M%S)" rtk bypass node tmp/progress-3.noindex/h5-acceptance.mjs`，只读复用本批官网产物，不启动服务器。
+
+## 呈现线第 4 批 执行侧交付（2026-10-30）
+
+- **模块／归属**：P，Codex；本树 `codex/yozi-progress-1-20261031`，起点 `cdf64fef`。先以绝对路径读取主树计划0.1（含接口登记）和第3批总监验收；只改约定页面、框架视图及其测试，另追加本日志和变更记录。G／S、汇总读取模型及官网壳层未改，无接口变化。
+- **跨科根因／落地**：`knowledge.vue:11,143` 原来直接把全科读模型传给总览；现只在页面投影中按框架显式 `subject` 精确筛选科目、证据、来源及其科目汇总，缺少科目编号或标题标签就隐藏总览，不从当前对话推测。原读模型、指标分子分母及官网全科展示保持；同一份写作＋数学事件分别挂载真实框架页和官网工作区，断言本科目／两科以及输入事实不变，并检查来源切换和缺科目四种边界。
+- **标题根因／落地**：原h1与h2均输出 `graph.title`；`knowledge.vue:8` 保留唯一一级标题，删重复h2及其专属样式，不留空占位。`learning-progress-ui.spec.js:147` 断言完整框架名仅作为标题出现一次。
+- **绕线根因／落地**：第3批组内绕线保留；选中态的跨组曲线仍从卡片侧边引出，会扫过同排无关卡片，旧版采样复现保存在 [诊断JSON](../tmp/progress-4.noindex/previous-cross-group-collisions.json)。`knowledge-graph-view.js:118,131` 统一先经过行间空隙再走外侧通道；完整36条关系及详情不减。`knowledge-graph-ui.spec.js:80` 覆盖358／680px、未选中及全部26个节点选中态，逐段检查无关卡片内部无相交。
+- **定向／全量**：定向 **194／194通过**，ESLint、Prettier、链接及diff检查通过。首次全量6458项：6241通过、180失败、37跳过，逐ID为178既有＋2条历史容量超时；原代码／原10秒与20秒时限单独复跑历史23项全部通过。构建结束后全量复跑 **6458项：6243通过、178失败、37跳过**，逐文件＋完整测试名＋重复次数比对 **新增0／既有178／消除0**；Vitest退出1；日志15个未处理错误按文件＋最近测试提示＋首条消息与上批作多重集合比较，新增0，不据提示作因果归因；原始报告均保留。[定向](../tmp/progress-4.noindex/targeted-tests.json)、[首次全量](../tmp/progress-4.noindex/full-tests.json)、[首次比对](../tmp/progress-4.noindex/comparison.json)、[历史复跑](../tmp/progress-4.noindex/history-retest.json)、[最终全量JSON](../tmp/progress-4.noindex/full-tests-retry.json)、[最终日志](../tmp/progress-4.noindex/full-tests-retry.log)、[最终逐ID比对](../tmp/progress-4.noindex/comparison-retry.json)。比较器使用与指定主树原件经 `cmp` 逐字一致的本树tmp基线副本。
+- **构建／实际界面**：隔离桌面与官网构建、桌面公开产物检查、离线锁定原生编译及候选严格签名均通过。候选 `tmp/progress-4.noindex/Yozi AI.app`，复用第3批宿主但使用独立bundle ID／WebKit UUID、合成账户及离线传输；宿主主crate沿用上批 `opt-level=0`，只用于界面验收。官网通过Playwright路由直接提供静态文件和同份合成事件，无监听服务器、真实账户或模型调用。共享浏览器配置占用时使用已安装Chrome的独立上下文，结束后已关闭。
+
+| 本批实际界面 | 事实／证据 |
+| --- | --- |
+| 知识框架页总览 | 只有考研英语写作区块，AX中完整框架名只作一级标题一次：[截图](../tmp/progress-4.noindex/app-writing-overview.png)、[AX](../tmp/progress-4.noindex/app-writing-overview.ax.txt) |
+| 官网工作区390px | 保留写作、数学两科，页面宽度及滚动宽度均390，无原答或内部ID泄露：[截图](../tmp/progress-4.noindex/h5-390-five.png)、[读回](../tmp/progress-4.noindex/h5-observed.json) |
+| 框架未选节点 | 可见组内关系绕开无关卡片：[截图](../tmp/progress-4.noindex/app-framework-unselected.png)、[AX](../tmp/progress-4.noindex/app-framework-unselected.ax.txt) |
+| 选中跨组节点 | 选择「明确交际目的」，指向结构组「组织写作提纲」的关系经外侧通道，可见连线不穿过无关卡片：[截图](../tmp/progress-4.noindex/app-framework-purpose.png)、[AX](../tmp/progress-4.noindex/app-framework-purpose.ax.txt) |
+
+- **资源／边界**：先取得共享UI锁并写owner，验完核对本线owner后释放。App PID20442已Cmd+Q退出并按完整路径注销，系统应用搜索只保留日常入口，其可执行文件哈希保持；自有构建、浏览器和测试进程均已取终态。私有Cargo APFS克隆无消费者后用cargo clean清理 **2,553,884,593逻辑字节**，不等于实际磁盘释放量；第3批首个候选（原仅等待最终绕线实屏）经无消费者、无注册及本批候选核验后，以正常废纸篓方式回收 **27,886,435字节**，仍位于 `.noindex` 目录内，可恢复；第3批最终候选、第2批回滚基线、本批候选、截图、原始测试报告及既有依赖保留。[归属记录](../tmp/progress-4.noindex/resources.json)。
+- **未验／待批**：本批指定四张界面已验；手机原生App和N3预测性准确率未验，小程序未构建。待批文案候选：**无**。新增依赖／许可公开范围：**无**；不写真实学习事实、不改G收据、不读私有模型目录、不启付费、不推送、不部署、不替换日常App。
+
+复跑：本工作树执行 `sh tmp/progress-4.noindex/rerun-tests.sh`；定向及全量采用原时限，复制主树基线后 `cmp` 逐字核对，再按测试ID多重集合比较，新增失败会非零退出。界面复验先按计划0.1取得并填写UI锁；桌面打开本批候选检查未选中／选中「明确交际目的」两态，结束后Cmd+Q并按完整路径注销；官网命令为 `PROGRESS_QA_OUTPUT="tmp/progress-4.noindex/h5-retest-$(date +%Y%m%d-%H%M%S)" rtk bypass node tmp/progress-4.noindex/h5-acceptance.mjs`，完成后释放本线UI锁。

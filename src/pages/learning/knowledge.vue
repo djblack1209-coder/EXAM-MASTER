@@ -8,8 +8,7 @@
       <text role="heading" aria-level="1">{{ graph.title }}</text>
       <text class="knowledge-subtitle">考研英语写作 · 验证版，内容待教师审核</text>
     </view>
-    <ProgressOverview class="knowledge-progress" :model="progress" @open="openEvidence" />
-    <text class="framework-title" role="heading" aria-level="2">{{ graph.title }}</text>
+    <ProgressOverview v-if="overview" class="knowledge-progress" :model="overview" @open="openEvidence" />
     <view class="knowledge-views" role="group" aria-label="知识框架">
       <BaseButton variant="quiet" :selected="mapView === 'framework'" @tap="mapView = 'framework'">知识框架</BaseButton>
       <BaseButton variant="quiet" :selected="mapView === 'mind'" @tap="mapView = 'mind'">思维导图</BaseButton>
@@ -141,6 +140,25 @@ const windowWidth = ref(390),
 const progress = computed(() =>
   learningProgressReadModel(learning.recordReadState === 'ready' ? learning.state : { owner: learning.state.owner })
 );
+const overview = computed(() => {
+  const subject = typeof knowledgeGraphSeed.subject === 'string' ? knowledgeGraphSeed.subject.trim() : '';
+  if (!subject || !knowledgeGraphSeed.subjectLabel?.trim()) return null;
+  const model = progress.value;
+  const evidence = model.evidence.filter((event) => event.subject === subject);
+  const ids = new Set(evidence.map((event) => event.id));
+  return {
+    ...model,
+    evidence,
+    subjects: model.subjects.filter((item) => item.id === subject),
+    sources: model.sources
+      .filter((source) => source.evidenceIds.some((id) => ids.has(id)))
+      .map((source) => ({
+        ...source,
+        evidenceIds: source.evidenceIds.filter((id) => ids.has(id)),
+        subjects: source.subjects.filter((item) => item.id === subject)
+      }))
+  };
+});
 const graph = computed(() =>
   knowledgeGraphView(
     knowledgeGraphSeed,
@@ -222,15 +240,9 @@ function goBack() {
   margin: 0 auto;
 }
 .knowledge-progress,
-.framework-title,
 .knowledge-views {
   max-width: 1060px;
   margin: 0 auto 24px;
-}
-.framework-title {
-  display: block;
-  font-size: 18px;
-  font-weight: 650;
 }
 .knowledge-views {
   display: flex;

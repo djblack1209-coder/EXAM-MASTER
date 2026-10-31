@@ -110,17 +110,12 @@ export function knowledgeGraphSvg(graph, dark = false, selectedId = '') {
       const a = byId.get(edge.from),
         b = byId.get(edge.to);
       const left = i % 2 === 0;
-      const ax = left ? a.x : a.x + a.width,
-        bx = left ? b.x : b.x + b.width;
-      const ay = a.y + a.height / 2,
-        by = b.y + b.height / 2;
+      const ay = a.y + a.height / 2;
       const lane = left ? 4 + (i % 5) * 3 : graph.width - 4 - (i % 5) * 3;
       const active = selectedId === edge.from || selectedId === edge.to;
       const opacity = selectedId ? (active ? 0.95 : 0.12) : 0.42;
       let path;
-      if (a.chapter !== b.chapter) {
-        path = `M${ax} ${ay} C${lane} ${ay} ${lane} ${by} ${bx} ${by}`;
-      } else if (a.y === b.y) {
+      if (a.chapter === b.chapter && a.y === b.y) {
         const forward = a.x < b.x;
         const blocked = graph.nodes.some(
           (node) => node.y === a.y && node.x > Math.min(a.x, b.x) && node.x < Math.max(a.x, b.x)
@@ -128,7 +123,7 @@ export function knowledgeGraphSvg(graph, dark = false, selectedId = '') {
         path = blocked
           ? `M${a.x + a.width / 2} ${a.y} V${a.y - 7} H${b.x + b.width / 2} V${b.y}`
           : `M${forward ? a.x + a.width : a.x} ${ay} H${forward ? b.x : b.x + b.width}`;
-      } else if (Math.abs(a.y - b.y) <= a.height + 14) {
+      } else if (a.chapter === b.chapter && Math.abs(a.y - b.y) <= a.height + 14) {
         const down = a.y < b.y;
         const start = down ? a.y + a.height : a.y;
         const end = down ? b.y : b.y + b.height;
@@ -137,7 +132,9 @@ export function knowledgeGraphSvg(graph, dark = false, selectedId = '') {
         const down = a.y < b.y;
         const start = down ? a.y + a.height : a.y;
         const end = down ? b.y : b.y + b.height;
-        path = `M${a.x + a.width / 2} ${start} V${start + (down ? 7 : -7)} H8 V${end + (down ? -7 : 7)} H${b.x + b.width / 2} V${end}`;
+        // Leave through the row gap before entering an outer lane, including
+        // selected cross-group relations whose endpoints may be in middle columns.
+        path = `M${a.x + a.width / 2} ${start} V${start + (down ? 7 : -7)} H${lane} V${end + (down ? -7 : 7)} H${b.x + b.width / 2} V${end}`;
       }
       return `<path data-from="${xml(edge.from)}" data-to="${xml(edge.to)}" data-strength="${xml(edge.strength)}" d="${path}" fill="none" stroke="${line}" stroke-width="${active ? 2 : 1.3}" opacity="${opacity}"${edge.strength === 'soft' ? ' stroke-dasharray="5 4"' : ''} marker-end="url(#arrow)"/>`;
     })
