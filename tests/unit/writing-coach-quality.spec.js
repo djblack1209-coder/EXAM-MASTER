@@ -168,6 +168,65 @@ describe('练习和小结按事实组装', () => {
     expect(() => parseCoachModelOutput(JSON.stringify(envelope), request)).toThrow();
     expect(() => normalizeCoachOutput(result, { ...request, exerciseContract: undefined })).not.toThrow();
   });
+  it.each([
+    ['english2', 'small', 'Write your classmates an email about a charity sale. About 100 words.', true],
+    ['english1', 'small', '给同学写一封邀请信，约100词。', true],
+    ['english2', 'small', 'Write a 100-word email to your classmates about a charity sale.', true],
+    ['english2', 'small', 'Write your classmates an email about a charity sale in 120–150 words.', false],
+    ['english2', 'small', 'Write your classmates an email about a charity sale.', false],
+    ['english1', 'large', 'Describe the picture of a boy reading, then comment on it. Write 160–200 words.', true],
+    ['english1', 'large', 'Describe the picture of a boy reading, then comment on it. Write about 150 words.', false],
+    ['english2', 'large', 'The chart shows reading time rose from 20 to 35 minutes. Write about 150 words.', true]
+  ])('新出写作任务的字数须与考试一致：%s %s「%s」', (exam, essayType, prompt, ok) => {
+    const asked = { ...request, exam, essayType },
+      pack = exercisePack();
+    pack.writing.prompt = prompt;
+    if (essayType === 'large') pack.writing.patterns.push(['In my view, {reason}.']);
+    const parse = () =>
+      parseCoachModelOutput(JSON.stringify({ message: '开始', tools: [], question: null, coach: pack }), asked);
+    if (ok) expect(parse().coach.writing.prompt).toBe(prompt);
+    else expect(parse).toThrowError(expect.objectContaining({ code: 'COACH_INVALID', path: 'writing.prompt' }));
+    // A task saved before this check stays readable as written.
+    expect(normalizeCoachOutput(pack, asked).writing.prompt).toBe(prompt);
+    const words = {
+      english1: { small: '约100词', large: '160–200词' },
+      english2: { small: '约100词', large: '约150词' }
+    };
+    expect(coachSystemPrompt(asked)).toContain(`字数写明${words[exam][essayType]}`);
+  });
+  it.each([
+    ['Write an email to invite your classmates to a science fair. About 100 words.', true],
+    ['Write an email to invite your classmates to a science fair in 120 to 150 words.', false]
+  ])('新摸底审题任务的字数须与小作文一致：%s', (task, ok) => {
+    const asked = { ...request, phase: 'diagnostic', target: 'diagnostic' },
+      sources = [
+        'The book which I bought was useful.',
+        'We provide books ___ children.',
+        '我们欢迎你参加读书会。',
+        'The sale, which is open to everyone, starts soon.',
+        task
+      ],
+      coach = {
+        kind: 'diagnostic',
+        cards: sources.map((source, i) => ({
+          id: `d${i + 1}`,
+          kind: 'diagnostic',
+          exercise: { source, options: [] },
+          sourceId: null
+        }))
+      };
+    const parse = () =>
+      parseCoachModelOutput(JSON.stringify({ message: '开始', tools: [], question: null, coach }), asked);
+    if (ok) expect(parse().coach.cards[4].prompt).toContain(task);
+    else
+      expect(parse).toThrowError(expect.objectContaining({ code: 'COACH_INVALID', path: 'cards[4].exercise.source' }));
+    expect(normalizeCoachOutput(coach, asked).cards).toHaveLength(5);
+    const prepared = prepareCoachFeedbackModel(config, asked);
+    expect(coachSystemPrompt(asked, prepared.writingOutput.schema)).toContain(
+      'd5：完整英文应用文任务，须有对象、目的、内容，字数写明约100词'
+    );
+    expect(coachSystemPrompt(asked)).toContain('d5给完整英文应用文任务，字数写明约100词');
+  });
   it('小结只选择已保存的行为和允许动作，不继承历史误判或宣称掌握', () => {
     const r = {
       ...base,
