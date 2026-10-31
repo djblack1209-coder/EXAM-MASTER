@@ -1317,7 +1317,6 @@ describe('新出搭配填空经盲填校准才下发', () => {
   it.each([
     ['broken-json', '{"blanks":'],
     ['repeated-id', { blanks: ['b1', 'b1', 'b3'].map((id) => ({ id, accepted: ['for'], rule: '固定搭配' })) }],
-    ['phrase', fills(['for'], ['take part'], ['on'])],
     ['timeout', Object.assign(new Error('复核时间不足'), { code: 'TIMEOUT' })]
   ])('复核失败时题目保持待核对、不当成已校准：%s', async (mode, reply) => {
     const { call } = verifier(reply);
@@ -1328,6 +1327,32 @@ describe('新出搭配填空经盲填校准才下发', () => {
       mode === 'broken-json' ? 'CALIBRATION_INVALID' : mode === 'timeout' ? 'TIMEOUT' : 'COACH_INVALID'
     );
     expect(coach.cards.slice(0, 3).every((card) => card.source.verified === false)).toBe(true);
+  });
+  it('单词空里列出的短语不算能填对，其余单词照常计数', async () => {
+    const { call } = verifier(fills(['for'], ['wear', 'put on'], ['on']));
+    expect(await calibrateCoachExercises(config, generated(), call)).toMatchObject({
+      status: 'completed',
+      blanks: [
+        { cardId: 'c1', acceptedCount: 1 },
+        { cardId: 'c2', acceptedCount: 1 },
+        { cardId: 'c3', acceptedCount: 1 }
+      ]
+    });
+  });
+  it.each([
+    ['only-phrase', fills(['for'], ['take part'], ['on']), '没有单个英文单词能填对'],
+    [
+      'open-with-phrase',
+      fills(['for'], ['integrate', 'synthesize', 'put together', 'incorporate'], ['on']),
+      '能填对的词超过两个'
+    ]
+  ])('短语不再让整次校准作废，单词数照常把关：%s', async (_, reply, rule) => {
+    const { call } = verifier(reply);
+    await expect(calibrateCoachExercises(config, generated(), call)).rejects.toMatchObject({
+      code: 'COACH_INVALID',
+      path: 'cards[1].exercise.source',
+      message: expect.stringContaining(rule)
+    });
   });
   it('校准时依据否定的词不计入能填对的词数', async () => {
     const { call } = verifier({

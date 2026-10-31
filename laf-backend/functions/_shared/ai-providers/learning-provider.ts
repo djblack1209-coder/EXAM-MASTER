@@ -1569,8 +1569,6 @@ export async function calibrateCoachExercises(
     validateCoachSchema(schema, raw);
     if (new Set(raw.blanks.map((fill: any) => fill.id)).size !== blanks.length)
       throw new ProviderError('COACH_INVALID', '填空校准须逐题回答一次');
-    if (raw.blanks.some((fill: any) => fill.accepted.some((word: string) => !/^[A-Za-z]+$/.test(word.trim()))))
-      throw new ProviderError('COACH_INVALID', '填空校准只能列出单词');
     return raw.blanks;
   }, 'CALIBRATION_INVALID');
   const fills: any[] | null = asked.value;
@@ -1582,10 +1580,17 @@ export async function calibrateCoachExercises(
       ...(asked.failurePath ? { failurePath: asked.failurePath } : {}),
       attempts: asked.attempts
     };
-  const results = blanks.map((blank: any) => ({
-    ...blank,
-    accepted: blankAccepted(fills.find((fill: any) => fill.id === blank.id)).accepted
-  }));
+  // 空格只容一个单词，复核员列出的短语（如 put on）填不进去，不算能填对；其余单词照常计数，不因此作废整次校准。
+  const results = blanks.map((blank: any) => {
+    const fill = fills.find((item: any) => item.id === blank.id);
+    return {
+      ...blank,
+      accepted: blankAccepted({
+        ...fill,
+        accepted: fill.accepted.filter((word: string) => /^[A-Za-z]+$/.test(word.trim()))
+      }).accepted
+    };
+  });
   const bad = results.find((result: any) => result.accepted.length < 1 || result.accepted.length > 2);
   if (bad)
     throw Object.assign(
