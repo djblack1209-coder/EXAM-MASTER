@@ -2239,7 +2239,7 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
       calibrations = 0;
     vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
       const done = { ...streamCompleted, finishReason: 'tool_calls', coachFunctionResult: true };
-      if (config.writingOutput?.contract === 'writing-exercise-calibration-v1') {
+      if (config.writingOutput?.contract === 'writing-exercise-calibration-v2') {
         calibrations++;
         if (mode === 'verifier-fails') return { ...done, content: '{"blanks":' };
         const bad = mode === 'bad-twice' || (mode === 'bad-then-good' && calibrations === 1);
@@ -2249,7 +2249,7 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
           content: JSON.stringify({
             blanks: [['for'], bad ? [] : ['for', 'to'], ['on']].map((accepted, i) => ({
               id: `b${i + 1}`,
-              accepted,
+              candidates: ['for', 'to', 'on', 'at'].map((word) => ({ word, fits: accepted.includes(word) })),
               rule: '固定搭配'
             }))
           })
@@ -2262,7 +2262,7 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
     const result = await ai(context(body));
     const calls = vi.mocked(callLearningProvider).mock.calls;
     const blanks = JSON.parse(
-      calls.find(([config]: any) => config.writingOutput?.contract === 'writing-exercise-calibration-v1')![1][1].content
+      calls.find(([config]: any) => config.writingOutput?.contract === 'writing-exercise-calibration-v2')![1][1].content
     ).blanks;
     expect(blanks.map((blank: any) => blank.task)).toEqual(english.slice(0, 3));
     if (mode === 'calibrated' || mode === 'verifier-fails') {
@@ -2294,7 +2294,7 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
     }
     expect([generations, calibrations]).toEqual([2, 2]);
     const repairMessages = calls.filter(
-      ([config]: any) => config.writingOutput?.contract !== 'writing-exercise-calibration-v1'
+      ([config]: any) => config.writingOutput?.contract !== 'writing-exercise-calibration-v2'
     )[1][1];
     expect(repairMessages[0].content).toContain('"path":"exercises.c2"');
     expect(repairMessages[0].content).toContain('搭配填空没有单个英文单词能填对');

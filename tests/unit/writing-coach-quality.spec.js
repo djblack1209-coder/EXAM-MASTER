@@ -1277,8 +1277,16 @@ describe('新出搭配填空经盲填校准才下发', () => {
     };
     return { calls, call };
   };
+  // 复核员逐个判候选词：列出的词判为能填，其余凑足四个的易混词判为不能填。
+  const candidates = (words) => [
+    ...words.map((word) => ({ word, fits: true })),
+    ...['about', 'with', 'from', 'over']
+      .filter((word) => !words.includes(word))
+      .slice(0, Math.max(0, 4 - words.length))
+      .map((word) => ({ word, fits: false }))
+  ];
   const fills = (...accepted) => ({
-    blanks: accepted.map((words, i) => ({ id: `b${i + 1}`, accepted: words, rule: '固定搭配' }))
+    blanks: accepted.map((words, i) => ({ id: `b${i + 1}`, candidates: candidates(words), rule: '固定搭配' }))
   });
   it('只把三道搭配题的题干交给复核员盲填，一到两个词能填对就通过，收据不带答案', async () => {
     const { calls, call } = verifier(fills(['for'], ['for', 'to'], ['on']));
@@ -1293,7 +1301,7 @@ describe('新出搭配填空经盲填校准才下发', () => {
       ]
     });
     expect(calls).toHaveLength(1);
-    expect(calls[0].verifierConfig.writingOutput.contract).toBe('writing-exercise-calibration-v1');
+    expect(calls[0].verifierConfig.writingOutput.contract).toBe('writing-exercise-calibration-v2');
     expect(JSON.parse(calls[0].messages[1].content)).toEqual({
       blanks: [
         { id: 'b1', task: 'We raise money ___ children.' },
@@ -1316,7 +1324,11 @@ describe('新出搭配填空经盲填校准才下发', () => {
   });
   it.each([
     ['broken-json', '{"blanks":'],
-    ['repeated-id', { blanks: ['b1', 'b1', 'b3'].map((id) => ({ id, accepted: ['for'], rule: '固定搭配' })) }],
+    [
+      'repeated-id',
+      { blanks: ['b1', 'b1', 'b3'].map((id) => ({ id, candidates: candidates(['for']), rule: '固定搭配' })) }
+    ],
+    ['free-list', { blanks: ['b1', 'b2', 'b3'].map((id) => ({ id, accepted: ['for'], rule: '固定搭配' })) }],
     ['timeout', Object.assign(new Error('复核时间不足'), { code: 'TIMEOUT' })]
   ])('复核失败时题目保持待核对、不当成已校准：%s', async (mode, reply) => {
     const { call } = verifier(reply);
@@ -1327,6 +1339,34 @@ describe('新出搭配填空经盲填校准才下发', () => {
       mode === 'broken-json' ? 'CALIBRATION_INVALID' : mode === 'timeout' ? 'TIMEOUT' : 'COACH_INVALID'
     );
     expect(coach.cards.slice(0, 3).every((card) => card.source.verified === false)).toBe(true);
+  });
+  it('复核员逐个判候选词，判为能填的近义词都计数，开放空照样退回', async () => {
+    const { calls, call } = verifier({
+      blanks: [
+        { id: 'b1', candidates: candidates(['for']), rule: '固定搭配' },
+        {
+          id: 'b2',
+          candidates: [
+            { word: 'reduce', fits: true },
+            { word: 'lower', fits: true },
+            { word: 'decrease', fits: true },
+            { word: 'increase', fits: false }
+          ],
+          rule: '降低风险，几个近义动词都可'
+        },
+        { id: 'b3', candidates: candidates(['on']), rule: '固定搭配' }
+      ]
+    });
+    await expect(calibrateCoachExercises(config, generated(), call)).rejects.toMatchObject({
+      code: 'COACH_INVALID',
+      path: 'cards[1].exercise.source',
+      message: expect.stringContaining('盲填找到reduce、lower、decrease')
+    });
+    expect(calls[0].messages[0].content).toContain('逐个代回原句判断fits');
+    expect(calls[0].verifierConfig.writingOutput.schema.properties.blanks.items.properties.candidates).toMatchObject({
+      minItems: 4,
+      maxItems: 6
+    });
   });
   it('单词空里列出的短语不算能填对，其余单词照常计数', async () => {
     const { call } = verifier(fills(['for'], ['wear', 'put on'], ['on']));
@@ -1357,9 +1397,9 @@ describe('新出搭配填空经盲填校准才下发', () => {
   it('校准时依据否定的词不计入能填对的词数', async () => {
     const { call } = verifier({
       blanks: [
-        { id: 'b1', accepted: ['for'], rule: '固定搭配' },
-        { id: 'b2', accepted: ['for', 'to', 'into'], rule: 'into不规范' },
-        { id: 'b3', accepted: ['on'], rule: '固定搭配' }
+        { id: 'b1', candidates: candidates(['for']), rule: '固定搭配' },
+        { id: 'b2', candidates: candidates(['for', 'to', 'into']), rule: 'into不规范' },
+        { id: 'b3', candidates: candidates(['on']), rule: '固定搭配' }
       ]
     });
     expect(await calibrateCoachExercises(config, generated(), call)).toMatchObject({
