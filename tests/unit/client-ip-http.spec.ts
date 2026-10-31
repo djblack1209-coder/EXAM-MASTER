@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync, readdirSync, unlinkSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readdirSync, unlinkSync } from 'node:fs';
 import { resolve, relative } from 'node:path';
 import { once } from 'node:events';
 import http from 'node:http';
@@ -35,7 +35,7 @@ beforeAll(() => {
     ['laf-backend/standalone/package-runtime.mjs', '--output', relative(process.cwd(), directory)],
     { timeout: 10000, stdio: 'pipe' }
   );
-  symlinkSync(resolve('laf-backend/standalone/node_modules'), `${directory}/node_modules`, 'dir');
+  // package-runtime.mjs links the backend dependencies into an isolated --output itself.
   // Expose only the synthetic probe in this disposable runtime.
   for (const name of readdirSync(`${directory}/functions`)) {
     if (name.endsWith('.js')) unlinkSync(`${directory}/functions/${name}`);
