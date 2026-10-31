@@ -1151,6 +1151,25 @@ export function outlineAgreement(prompt: string, points: any[], answer: string) 
   };
 }
 
+// 盲填依据里自己判为不正确的词（如「on非标准」）不算能填对：词表与依据矛盾时以依据为准。
+// 否定说法只管紧挨着的词：「不能用into」管后面那个词，其余管同一分句里前面最近的英文词；「不是错误」之类不算。
+const BLANK_REJECTS =
+  /非标准|不标准|不规范|不算(?:正确|对)|不正确|错误|不合(?:语法|规范|搭配)|不地道|不[能可宜]([用填])|不宜/gu;
+export function blankAccepted(fill: { accepted: string[]; rule?: string }) {
+  const words = [...new Set<string>(fill.accepted.map((word) => word.trim().toLowerCase()))],
+    excluded = new Set<string>();
+  for (const clause of String(fill.rule || '').split(/[，,；;。：:]/u)) {
+    if (/(?:不是|不算|并非|没有|并不)错/u.test(clause)) continue;
+    for (const m of clause.matchAll(BLANK_REJECTS)) {
+      const lead = clause.slice(0, m.index).match(/[A-Za-z]+/gu) || [],
+        after = m[1] ? /^\s*([A-Za-z]+)/u.exec(clause.slice(m.index! + m[0].length))?.[1] : undefined,
+        word = (after ?? lead.at(-1))?.toLowerCase();
+      if (word && words.includes(word)) excluded.add(word);
+    }
+  }
+  return { accepted: words.filter((word) => !excluded.has(word)), excluded: [...excluded] };
+}
+
 // 复核员回了坏格式（不是完整JSON或不合字段合同）就再问一次，仍受同一时间预算；超时、限流、模型不符不重试。
 // 收据记下最后一次失败的代码和字段位置，复跑时能看出坏在哪里。
 async function askVerifierTwice<T>(ask: () => Promise<T>, malformed: string) {
@@ -1395,9 +1414,11 @@ export async function verifyCoachErrors(
     };
   });
   const results = blanks.map((blank: any) => {
-    const fill = fills.find((f: any) => f.id === blank.id);
-    const accepted = [...new Set<string>(fill.accepted.map((word: string) => word.trim().toLowerCase()))];
-    return { ...blank, accepted, correct: accepted.includes(blank.answer.toLowerCase()), label: fill.label, rule: fill.rule };
+    const fill = fills.find((f: any) => f.id === blank.id),
+      { accepted, excluded } = blankAccepted(fill);
+    // 列出的词全被依据否定时该空不下结论：不删初评错误，也不补登。
+    const correct = accepted.length || !excluded.length ? accepted.includes(blank.answer.toLowerCase()) : null;
+    return { ...blank, accepted, excluded, correct, label: fill.label, rule: fill.rule };
   });
   const verdicts = value.errors.map((e: any, index: number) => {
     const blank = results.find((result: any) => result.role.quoteId === e.quoteId);
@@ -1431,7 +1452,11 @@ export async function verifyCoachErrors(
   // 盲填判错而初评漏登记的空，按复核员的标签与规则补登一条；不代写答案，维度按题干考查点。
   const added = [];
   for (const result of results) {
-    if (result.correct || value.errors.some((e: any) => e.quoteId === result.role.quoteId) || value.errors.length >= 6)
+    if (
+      result.correct !== false ||
+      value.errors.some((e: any) => e.quoteId === result.role.quoteId) ||
+      value.errors.length >= 6
+    )
       continue;
     const dimension =
       /搭配|介词/u.test(result.role.task) && result.role.allowedDimensions.includes('搭配')
@@ -1484,6 +1509,7 @@ export async function verifyCoachErrors(
       blanks: results.map((result: any) => ({
         quoteId: result.role.quoteId,
         accepted: result.accepted,
+        ...(result.excluded.length ? { excluded: result.excluded } : {}),
         correct: result.correct
       })),
       syntax: analyses.map(({ quoteId, valid, agreed, claims }: any) => ({ quoteId, valid, agreed, claims })),
@@ -1558,11 +1584,7 @@ export async function calibrateCoachExercises(
     };
   const results = blanks.map((blank: any) => ({
     ...blank,
-    accepted: [
-      ...new Set<string>(
-        fills.find((fill: any) => fill.id === blank.id).accepted.map((word: string) => word.trim().toLowerCase())
-      )
-    ]
+    accepted: blankAccepted(fills.find((fill: any) => fill.id === blank.id)).accepted
   }));
   const bad = results.find((result: any) => result.accepted.length < 1 || result.accepted.length > 2);
   if (bad)

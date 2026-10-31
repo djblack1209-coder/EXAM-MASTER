@@ -17,7 +17,8 @@ import {
   syntaxAgreement,
   outlineAgreement,
   verifyCoachErrors,
-  calibrateCoachExercises
+  calibrateCoachExercises,
+  blankAccepted
 } from '../../laf-backend/functions/_shared/ai-providers/learning-provider.ts';
 const base = {
   contract: 'kaoyan-writing-coach-v1',
@@ -865,6 +866,57 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     expect(coach.lines.find((line) => line.original === 'at').advice).toBe('be interested in 是固定搭配，介词用 in');
     expect(coach.weaknesses).toEqual(['interested in']);
   });
+  it.each([
+    [
+      '依据否定了列出的词',
+      ['at', 'in'],
+      'be interested in 是固定搭配；at虽口语偶见但非标准书面英语，不算正确。',
+      1,
+      ['in'],
+      false
+    ],
+    ['列出的词全被依据否定', ['at'], 'at在这里不规范', 0, [], null],
+    ['依据说不是错误', ['at', 'in'], 'at与in都可，at不是错误用法', 0, ['at', 'in'], true]
+  ])('盲填词表与依据矛盾时以依据为准：%s', async (_name, accepted, rule, added, kept, correct) => {
+    const p = prepared(),
+      wire = { ...mixedDiagnosticReply(p), errors: [] };
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(wire),
+      verdict({ blanks: [{ ...fill(accepted), rule }] })
+    );
+    expect(receipt).toMatchObject({ status: 'completed', checked: 1, removed: 0, added });
+    expect(receipt.blanks[0]).toEqual({
+      quoteId: 'q2',
+      accepted: kept,
+      ...(kept.length < accepted.length ? { excluded: accepted.filter((word) => !kept.includes(word)) } : {}),
+      correct
+    });
+    expect(JSON.parse(content).errors).toHaveLength(added);
+    if (added) expect(JSON.parse(content).errors[0]).toMatchObject({ quoteId: 'q2', errorText: 'at', rule });
+  });
+  it('列出的词全被依据否定时不删初评在该空上的错误', async () => {
+    const p = prepared();
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(mixedDiagnosticReply(p)),
+      verdict({ blanks: [{ ...fill(['at']), rule: 'at不合搭配' }] })
+    );
+    expect(receipt).toMatchObject({ status: 'completed', removed: 0, added: 0 });
+    expect(receipt.reviews[0]).toMatchObject({ quoteId: 'q2', kept: true });
+    expect(JSON.parse(content).errors).toHaveLength(1);
+  });
+  it.each([
+    [{ accepted: ['On', 'to'], rule: 'pay attention to；on非标准' }, ['to'], ['on']],
+    [{ accepted: ['to', 'into'], rule: 'into不能用：方向用to' }, ['to'], ['into']],
+    [{ accepted: ['to', 'into'], rule: '方向用to而不能用into' }, ['to'], ['into']],
+    [{ accepted: ['in', 'at'], rule: 'in对at错误' }, ['in'], ['at']],
+    [{ accepted: ['on', 'upon'], rule: 'depend on与depend upon都对，不能省略介词' }, ['on', 'upon'], []],
+    [{ accepted: ['in'], rule: '常见错误是填at' }, ['in'], []],
+    [{ accepted: ['in'] }, ['in'], []]
+  ])('盲填依据只排除被明确否定的词 %#', (fill, accepted, excluded) => {
+    expect(blankAccepted(fill)).toEqual({ accepted, excluded });
+  });
   it('原答带句末标点（at。）照样盲填比对，补登的错误片段只取单词', async () => {
     const p = preparedFor(blankAnswer('at。')),
       wire = { ...mixedDiagnosticReply(p), errors: [] };
@@ -1276,6 +1328,23 @@ describe('新出搭配填空经盲填校准才下发', () => {
       mode === 'broken-json' ? 'CALIBRATION_INVALID' : mode === 'timeout' ? 'TIMEOUT' : 'COACH_INVALID'
     );
     expect(coach.cards.slice(0, 3).every((card) => card.source.verified === false)).toBe(true);
+  });
+  it('校准时依据否定的词不计入能填对的词数', async () => {
+    const { call } = verifier({
+      blanks: [
+        { id: 'b1', accepted: ['for'], rule: '固定搭配' },
+        { id: 'b2', accepted: ['for', 'to', 'into'], rule: 'into不规范' },
+        { id: 'b3', accepted: ['on'], rule: '固定搭配' }
+      ]
+    });
+    expect(await calibrateCoachExercises(config, generated(), call)).toMatchObject({
+      status: 'completed',
+      blanks: [
+        { cardId: 'c1', acceptedCount: 1 },
+        { cardId: 'c2', acceptedCount: 2 },
+        { cardId: 'c3', acceptedCount: 1 }
+      ]
+    });
   });
   it('校准回了坏格式再问一次，答对就照常校准', async () => {
     let count = 0;
