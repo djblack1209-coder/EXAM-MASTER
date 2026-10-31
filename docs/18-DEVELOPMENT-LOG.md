@@ -214,3 +214,10 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 - 15 条错误已逐来源归因：12 条分别隔离复现为未等待的会话变化拒绝；3 条用真实 Promise 调用标签追至续期测试的重试列表读取，固定下标误应答偏好后挂起，销毁才抛取消。改按路径/action 匹配、提前等待拒绝，不改超时、不吞异常。[错误去向与复现证据](../tmp/test-debt-1.noindex/unhandled-disposition.json)。
 - 防误改：text-action／preferences／byok／receipts／model-authority 各 2 条，共 10 条均在临时破坏判断后失败，随后逐字恢复源码。[10 条记录](../tmp/test-debt-1.noindex/mutation-checks.json)、[复跑脚本](../tmp/test-debt-1.noindex/run-mutations.py)、[源码零改动证明](../tmp/test-debt-1.noindex/source-diff-proof.txt)。未新增 skip/todo/only/空断言或超时设置。
 - 静态检查：`git diff --check`、受影响 JS 的 ESLint 通过；现有 ESLint 配置忽略 `model-discovery-contract.spec.ts`，其实际测试全量通过。资源复用依赖链接；测试进程均取终态，2 份隔离归因副本及 10 次临时源码备份已回收，清理 190,844 字节编辑索引；保留全部报告、去向表及历史验收/回滚材料，无 App 或手机实测。[统计与限制](../tmp/test-debt-1.noindex/summary.json)、[资源记录](../tmp/test-debt-1.noindex/initial-state.json)。
+
+## 提示按钮真正交付 执行侧交付（2026-10-31，页面边界交回）
+
+- 未完成修复：已在 `22b5d9b7` 复现 D102、D103、D149、D150、D152，5 项原断言全部失败；未改产品源码、测试或断言。[原始报告](../tmp/yozi-hint-1.noindex/before.json)、[输出](../tmp/yozi-hint-1.noindex/before.log)。
+- 按简报“如果确实非改页面不可，停下来”停止实现：`index.vue:3232` 的提示焦点逻辑只允许离线句子题，`:475` 的气泡 `tabindex` 只给该目标，`:35` 的另一个提示入口只调用 `run`；Store 单独交付无法满足在线与一般题型的实际气泡焦点。
+- 交外壳线：统一提示入口；成功交付后按真实消息 ID 展开所在分页、赋予气泡 `tabindex=-1` 并定位，保留会话／题目切换检查；失败不定位通知或空锚点。无需新增用户文案。Store 后续复用既有本地／模型教学链路，不经输入框触发。
+- 在线新增用例、三文件整测、全量逐 ID 对照及三项防误改未执行，不宣称验收通过；仅本地记录阻塞。资源复用依赖链接，定向测试已退出，无服务器／App／浏览器／手机启动，保留失败证据与既有回滚材料。
