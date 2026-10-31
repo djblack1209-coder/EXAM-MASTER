@@ -2188,6 +2188,130 @@ it('Agnes 3.0 exact reviewed route costs zero only with supported, consistent us
   }
 });
 
+it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
+  'new cloze items pass a blind fill before they ship: %s',
+  async (mode) => {
+    await streamProfile(false);
+    const request = {
+      contract: 'kaoyan-writing-coach-v1',
+      phase: 'daily',
+      target: 'daily',
+      exam: 'english2',
+      day: '2026-10-31',
+      essayType: 'small',
+      minutes: 25,
+      sources: [],
+      input: '安排今天的训练',
+      exerciseContract: 'writing-exercises-v1'
+    };
+    const english = [
+      'We raise money ___ children.',
+      'Please donate books ___ the sale.',
+      'The sale will be held ___ Monday.',
+      'We hope you can join us.',
+      'All the money will help the children.',
+      null,
+      null,
+      'The charity sale, which is organized by our class, will be held in the school hall.'
+    ];
+    const chinese = { c6: '请带一些旧书来义卖。', c7: '活动将在周五下午举行。' } as any;
+    const wire = {
+      message: '开始练习',
+      exercises: Object.fromEntries(
+        english.map((text, i) => [
+          `c${i + 1}`,
+          {
+            ...(text ? { english: text } : { chinese: chinese[`c${i + 1}`] }),
+            sourceId: null,
+            sourceQuote: null,
+            sourcePage: null
+          }
+        ])
+      ),
+      writing: {
+        prompt: 'Write your classmates an email about a charity sale. About 100 words.',
+        sourceId: null,
+        sourceQuote: null,
+        sourcePage: null
+      }
+    };
+    let generations = 0,
+      calibrations = 0;
+    vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
+      const done = { ...streamCompleted, finishReason: 'tool_calls', coachFunctionResult: true };
+      if (config.writingOutput?.contract === 'writing-exercise-calibration-v1') {
+        calibrations++;
+        if (mode === 'verifier-fails') return { ...done, content: '{"blanks":' };
+        const bad = mode === 'bad-twice' || (mode === 'bad-then-good' && calibrations === 1);
+        // 只看题干盲填：第二题没有单个单词能填对时整套拒收。
+        return {
+          ...done,
+          content: JSON.stringify({
+            blanks: [['for'], bad ? [] : ['for', 'to'], ['on']].map((accepted, i) => ({
+              id: `b${i + 1}`,
+              accepted,
+              rule: '固定搭配'
+            }))
+          })
+        };
+      }
+      generations++;
+      return { ...done, content: JSON.stringify(wire) };
+    });
+    const body = { ...streamBody('cloze-calibration-' + mode), learningContext: { owner: 'u1', coach: request } };
+    const result = await ai(context(body));
+    const calls = vi.mocked(callLearningProvider).mock.calls;
+    const blanks = JSON.parse(
+      calls.find(([config]: any) => config.writingOutput?.contract === 'writing-exercise-calibration-v1')![1][1].content
+    ).blanks;
+    expect(blanks.map((blank: any) => blank.task)).toEqual(english.slice(0, 3));
+    if (mode === 'calibrated' || mode === 'verifier-fails') {
+      // 校准员回坏格式会再问一次，两次都坏才按失败收据放行。
+      expect([generations, calibrations]).toEqual(mode === 'calibrated' ? [1, 1] : [1, 2]);
+      expect(result.success).toBe(true);
+      expect(result.data.coach.cards).toHaveLength(8);
+      expect(result.data.exerciseCalibration).toMatchObject(
+        mode === 'calibrated'
+          ? {
+              status: 'completed',
+              checked: 3,
+              blanks: [
+                { cardId: 'c1', acceptedCount: 1 },
+                { cardId: 'c2', acceptedCount: 2 },
+                { cardId: 'c3', acceptedCount: 1 }
+              ]
+            }
+          : {
+              status: 'failed',
+              checked: 3,
+              failure: 'CALIBRATION_INVALID',
+              attempts: 2,
+              usage: { prompt_tokens: 8, completion_tokens: 16 }
+            }
+      );
+      expect(JSON.stringify(result.data.exerciseCalibration)).not.toMatch(/"for"|"on"/);
+      return;
+    }
+    expect([generations, calibrations]).toEqual([2, 2]);
+    const repairMessages = calls.filter(
+      ([config]: any) => config.writingOutput?.contract !== 'writing-exercise-calibration-v1'
+    )[1][1];
+    expect(repairMessages[0].content).toContain('"path":"exercises.c2"');
+    expect(repairMessages[0].content).toContain('搭配填空没有单个英文单词能填对');
+    const ledger = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && row.calls);
+    expect(ledger.calls[1].id).toBe(body.requestId + ':repair1');
+    if (mode === 'bad-then-good')
+      expect(result).toMatchObject({
+        success: true,
+        data: { repairRequestId: body.requestId + ':repair1', exerciseCalibration: { status: 'completed' } }
+      });
+    else {
+      expect(result).toMatchObject({ success: false, repairExhausted: true, status: 'failed' });
+      expect(result).not.toHaveProperty('data.coach');
+    }
+  }
+);
+
 it.each(['success', 'missing-tool', 'invalid-again', 'rate-limited', 'secret-echo'])(
   'mixed diagnostic bounded repair: %s preserves strict gate, budget and parent binding',
   async (mode) => {

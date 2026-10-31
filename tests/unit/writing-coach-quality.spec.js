@@ -16,7 +16,9 @@ import {
   coachRepairPrompt,
   syntaxAgreement,
   outlineAgreement,
-  verifyCoachErrors
+  verifyCoachErrors,
+  calibrateCoachExercises,
+  blankAccepted
 } from '../../laf-backend/functions/_shared/ai-providers/learning-provider.ts';
 const base = {
   contract: 'kaoyan-writing-coach-v1',
@@ -167,6 +169,65 @@ describe('练习和小结按事实组装', () => {
       envelope = { message: '合成练习', tools: [], question: null, coach: result };
     expect(() => parseCoachModelOutput(JSON.stringify(envelope), request)).toThrow();
     expect(() => normalizeCoachOutput(result, { ...request, exerciseContract: undefined })).not.toThrow();
+  });
+  it.each([
+    ['english2', 'small', 'Write your classmates an email about a charity sale. About 100 words.', true],
+    ['english1', 'small', '给同学写一封邀请信，约100词。', true],
+    ['english2', 'small', 'Write a 100-word email to your classmates about a charity sale.', true],
+    ['english2', 'small', 'Write your classmates an email about a charity sale in 120–150 words.', false],
+    ['english2', 'small', 'Write your classmates an email about a charity sale.', false],
+    ['english1', 'large', 'Describe the picture of a boy reading, then comment on it. Write 160–200 words.', true],
+    ['english1', 'large', 'Describe the picture of a boy reading, then comment on it. Write about 150 words.', false],
+    ['english2', 'large', 'The chart shows reading time rose from 20 to 35 minutes. Write about 150 words.', true]
+  ])('新出写作任务的字数须与考试一致：%s %s「%s」', (exam, essayType, prompt, ok) => {
+    const asked = { ...request, exam, essayType },
+      pack = exercisePack();
+    pack.writing.prompt = prompt;
+    if (essayType === 'large') pack.writing.patterns.push(['In my view, {reason}.']);
+    const parse = () =>
+      parseCoachModelOutput(JSON.stringify({ message: '开始', tools: [], question: null, coach: pack }), asked);
+    if (ok) expect(parse().coach.writing.prompt).toBe(prompt);
+    else expect(parse).toThrowError(expect.objectContaining({ code: 'COACH_INVALID', path: 'writing.prompt' }));
+    // A task saved before this check stays readable as written.
+    expect(normalizeCoachOutput(pack, asked).writing.prompt).toBe(prompt);
+    const words = {
+      english1: { small: '约100词', large: '160–200词' },
+      english2: { small: '约100词', large: '约150词' }
+    };
+    expect(coachSystemPrompt(asked)).toContain(`字数写明${words[exam][essayType]}`);
+  });
+  it.each([
+    ['Write an email to invite your classmates to a science fair. About 100 words.', true],
+    ['Write an email to invite your classmates to a science fair in 120 to 150 words.', false]
+  ])('新摸底审题任务的字数须与小作文一致：%s', (task, ok) => {
+    const asked = { ...request, phase: 'diagnostic', target: 'diagnostic' },
+      sources = [
+        'The book which I bought was useful.',
+        'We provide books ___ children.',
+        '我们欢迎你参加读书会。',
+        'The sale, which is open to everyone, starts soon.',
+        task
+      ],
+      coach = {
+        kind: 'diagnostic',
+        cards: sources.map((source, i) => ({
+          id: `d${i + 1}`,
+          kind: 'diagnostic',
+          exercise: { source, options: [] },
+          sourceId: null
+        }))
+      };
+    const parse = () =>
+      parseCoachModelOutput(JSON.stringify({ message: '开始', tools: [], question: null, coach }), asked);
+    if (ok) expect(parse().coach.cards[4].prompt).toContain(task);
+    else
+      expect(parse).toThrowError(expect.objectContaining({ code: 'COACH_INVALID', path: 'cards[4].exercise.source' }));
+    expect(normalizeCoachOutput(coach, asked).cards).toHaveLength(5);
+    const prepared = prepareCoachFeedbackModel(config, asked);
+    expect(coachSystemPrompt(asked, prepared.writingOutput.schema)).toContain(
+      'd5：完整英文应用文任务，须有对象、目的、内容，字数写明约100词'
+    );
+    expect(coachSystemPrompt(asked)).toContain('d5给完整英文应用文任务，字数写明约100词');
   });
   it('小结只选择已保存的行为和允许动作，不继承历史误判或宣称掌握', () => {
     const r = {
@@ -805,6 +866,57 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     expect(coach.lines.find((line) => line.original === 'at').advice).toBe('be interested in 是固定搭配，介词用 in');
     expect(coach.weaknesses).toEqual(['interested in']);
   });
+  it.each([
+    [
+      '依据否定了列出的词',
+      ['at', 'in'],
+      'be interested in 是固定搭配；at虽口语偶见但非标准书面英语，不算正确。',
+      1,
+      ['in'],
+      false
+    ],
+    ['列出的词全被依据否定', ['at'], 'at在这里不规范', 0, [], null],
+    ['依据说不是错误', ['at', 'in'], 'at与in都可，at不是错误用法', 0, ['at', 'in'], true]
+  ])('盲填词表与依据矛盾时以依据为准：%s', async (_name, accepted, rule, added, kept, correct) => {
+    const p = prepared(),
+      wire = { ...mixedDiagnosticReply(p), errors: [] };
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(wire),
+      verdict({ blanks: [{ ...fill(accepted), rule }] })
+    );
+    expect(receipt).toMatchObject({ status: 'completed', checked: 1, removed: 0, added });
+    expect(receipt.blanks[0]).toEqual({
+      quoteId: 'q2',
+      accepted: kept,
+      ...(kept.length < accepted.length ? { excluded: accepted.filter((word) => !kept.includes(word)) } : {}),
+      correct
+    });
+    expect(JSON.parse(content).errors).toHaveLength(added);
+    if (added) expect(JSON.parse(content).errors[0]).toMatchObject({ quoteId: 'q2', errorText: 'at', rule });
+  });
+  it('列出的词全被依据否定时不删初评在该空上的错误', async () => {
+    const p = prepared();
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(mixedDiagnosticReply(p)),
+      verdict({ blanks: [{ ...fill(['at']), rule: 'at不合搭配' }] })
+    );
+    expect(receipt).toMatchObject({ status: 'completed', removed: 0, added: 0 });
+    expect(receipt.reviews[0]).toMatchObject({ quoteId: 'q2', kept: true });
+    expect(JSON.parse(content).errors).toHaveLength(1);
+  });
+  it.each([
+    [{ accepted: ['On', 'to'], rule: 'pay attention to；on非标准' }, ['to'], ['on']],
+    [{ accepted: ['to', 'into'], rule: 'into不能用：方向用to' }, ['to'], ['into']],
+    [{ accepted: ['to', 'into'], rule: '方向用to而不能用into' }, ['to'], ['into']],
+    [{ accepted: ['in', 'at'], rule: 'in对at错误' }, ['in'], ['at']],
+    [{ accepted: ['on', 'upon'], rule: 'depend on与depend upon都对，不能省略介词' }, ['on', 'upon'], []],
+    [{ accepted: ['in'], rule: '常见错误是填at' }, ['in'], []],
+    [{ accepted: ['in'] }, ['in'], []]
+  ])('盲填依据只排除被明确否定的词 %#', (fill, accepted, excluded) => {
+    expect(blankAccepted(fill)).toEqual({ accepted, excluded });
+  });
   it('原答带句末标点（at。）照样盲填比对，补登的错误片段只取单词', async () => {
     const p = preparedFor(blankAnswer('at。')),
       wire = { ...mixedDiagnosticReply(p), errors: [] };
@@ -856,6 +968,34 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     expect(receipt).toMatchObject({ status: 'failed', checked: 2, reviews: [] });
     expect(JSON.parse(content).errors).toHaveLength(2);
     expect(JSON.parse(decodeCoachResponse(p, content)).coach.dimensions[3].score).toBe(1);
+  });
+  it.each([
+    ['坏JSON后答对', ['not json', { blanks: [fill(['in'])], outlines: [outline()] }], 2, 'completed'],
+    ['字段不合后答对', [{ blanks: [fill(['in'])] }, { blanks: [fill(['in'])], outlines: [outline()] }], 2, 'completed'],
+    ['两次都坏', [{ blanks: [fill(['in'])] }, { blanks: [fill(['in'])] }], 2, 'failed'],
+    ['限流不重问', [Object.assign(new Error('limit'), { code: 'RATE_LIMITED' })], 1, 'failed'],
+    ['超时不重问', [Object.assign(new Error('late'), { code: 'TIMEOUT' })], 1, 'failed']
+  ])('复核员回了坏格式就再问一次，其他失败不重问：%s', async (name, replies, asks, status) => {
+    const p = prepared();
+    let count = 0;
+    const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(overflagged(p)), async () => {
+      const reply = replies[count++];
+      if (reply instanceof Error) throw reply;
+      return typeof reply === 'string' ? reply : JSON.stringify(reply);
+    });
+    expect(count).toBe(asks);
+    expect(receipt.status).toBe(status);
+    if (status === 'completed') {
+      expect(receipt).toMatchObject({ attempts: 2, removed: 1 });
+      expect(JSON.parse(content).errors).toHaveLength(1);
+    } else {
+      expect(receipt).toMatchObject({ attempts: asks, reviews: [] });
+      expect(JSON.parse(content).errors).toHaveLength(2);
+      expect(receipt.failure).toBe(
+        name === '限流不重问' ? 'RATE_LIMITED' : name === '超时不重问' ? 'TIMEOUT' : 'COACH_INVALID'
+      );
+      if (name === '两次都坏') expect(receipt.failurePath).toMatch(/^root/);
+    }
   });
   it('无错误且没有单词填空、未过字段合同或非摸底时不发复核；取消照常抛出', async () => {
     const p = preparedFor(blankAnswer('in，因为interested后接in')),
@@ -1113,5 +1253,175 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     const feedback = coachRepairFeedback(p, rejected, JSON.stringify(wire));
     expect(feedback.expected).toMatchObject({ type: 'string', minLength: 1, maxLength: 180, actualLength: 200 });
     expect(coachRepairPrompt(feedback)).toContain('"maxLength":180,"actualLength":200');
+  });
+});
+describe('新出搭配填空经盲填校准才下发', () => {
+  const request = {
+    ...base,
+    phase: 'daily',
+    feedbackVersion: undefined,
+    dimensionContract: undefined,
+    target: 'daily',
+    input: '安排今天的训练',
+    essayType: 'small',
+    exerciseContract: COACH_EXERCISE_CONTRACT
+  };
+  const generated = (asked = request, pack = exercisePack()) =>
+    parseCoachModelOutput(JSON.stringify({ message: '开始', tools: [], question: null, coach: pack }), asked).coach;
+  const verifier = (reply) => {
+    const calls = [];
+    const call = async (verifierConfig, messages) => {
+      calls.push({ verifierConfig, messages });
+      if (reply instanceof Error) throw reply;
+      return typeof reply === 'string' ? reply : JSON.stringify(reply);
+    };
+    return { calls, call };
+  };
+  const fills = (...accepted) => ({
+    blanks: accepted.map((words, i) => ({ id: `b${i + 1}`, accepted: words, rule: '固定搭配' }))
+  });
+  it('只把三道搭配题的题干交给复核员盲填，一到两个词能填对就通过，收据不带答案', async () => {
+    const { calls, call } = verifier(fills(['for'], ['for', 'to'], ['on']));
+    const receipt = await calibrateCoachExercises(config, generated(), call);
+    expect(receipt).toEqual({
+      status: 'completed',
+      checked: 3,
+      blanks: [
+        { cardId: 'c1', acceptedCount: 1 },
+        { cardId: 'c2', acceptedCount: 2 },
+        { cardId: 'c3', acceptedCount: 1 }
+      ]
+    });
+    expect(calls).toHaveLength(1);
+    expect(calls[0].verifierConfig.writingOutput.contract).toBe('writing-exercise-calibration-v1');
+    expect(JSON.parse(calls[0].messages[1].content)).toEqual({
+      blanks: [
+        { id: 'b1', task: 'We raise money ___ children.' },
+        { id: 'b2', task: 'Please donate books ___ the sale.' },
+        { id: 'b3', task: 'The sale will be held ___ Monday.' }
+      ]
+    });
+    expect(JSON.stringify(receipt)).not.toMatch(/"for"|"on"/);
+  });
+  it.each([
+    ['none', fills(['for'], [], ['on']), '没有单个英文单词能填对'],
+    ['too-many', fills(['for'], ['for', 'to', 'at'], ['on']), '能填对的词超过两个']
+  ])('能填对的词为零或超过两个时整套拒收，指明是哪一题：%s', async (_, reply, rule) => {
+    const { call } = verifier(reply);
+    await expect(calibrateCoachExercises(config, generated(), call)).rejects.toMatchObject({
+      code: 'COACH_INVALID',
+      path: 'cards[1].exercise.source',
+      message: expect.stringContaining(rule)
+    });
+  });
+  it.each([
+    ['broken-json', '{"blanks":'],
+    ['repeated-id', { blanks: ['b1', 'b1', 'b3'].map((id) => ({ id, accepted: ['for'], rule: '固定搭配' })) }],
+    ['phrase', fills(['for'], ['take part'], ['on'])],
+    ['timeout', Object.assign(new Error('复核时间不足'), { code: 'TIMEOUT' })]
+  ])('复核失败时题目保持待核对、不当成已校准：%s', async (mode, reply) => {
+    const { call } = verifier(reply);
+    const coach = generated();
+    const receipt = await calibrateCoachExercises(config, coach, call);
+    expect(receipt).toMatchObject({ status: 'failed', checked: 3 });
+    expect(receipt.failure).toBe(
+      mode === 'broken-json' ? 'CALIBRATION_INVALID' : mode === 'timeout' ? 'TIMEOUT' : 'COACH_INVALID'
+    );
+    expect(coach.cards.slice(0, 3).every((card) => card.source.verified === false)).toBe(true);
+  });
+  it('校准时依据否定的词不计入能填对的词数', async () => {
+    const { call } = verifier({
+      blanks: [
+        { id: 'b1', accepted: ['for'], rule: '固定搭配' },
+        { id: 'b2', accepted: ['for', 'to', 'into'], rule: 'into不规范' },
+        { id: 'b3', accepted: ['on'], rule: '固定搭配' }
+      ]
+    });
+    expect(await calibrateCoachExercises(config, generated(), call)).toMatchObject({
+      status: 'completed',
+      blanks: [
+        { cardId: 'c1', acceptedCount: 1 },
+        { cardId: 'c2', acceptedCount: 2 },
+        { cardId: 'c3', acceptedCount: 1 }
+      ]
+    });
+  });
+  it('校准回了坏格式再问一次，答对就照常校准', async () => {
+    let count = 0;
+    const receipt = await calibrateCoachExercises(config, generated(), async () =>
+      count++ ? JSON.stringify(fills(['for'], ['for'], ['on'])) : '{"blanks":'
+    );
+    expect(count).toBe(2);
+    expect(receipt).toMatchObject({ status: 'completed', attempts: 2, checked: 3 });
+  });
+  it('停止生成时不吞掉取消', async () => {
+    const { call } = verifier(Object.assign(new Error('stopped'), { code: 'CANCELLED' }));
+    await expect(calibrateCoachExercises(config, generated(), call)).rejects.toMatchObject({ code: 'CANCELLED' });
+  });
+  it('没通过工具与结构化往返检查的连接不发校准请求', async () => {
+    const { calls, call } = verifier(fills(['for'], ['for'], ['on']));
+    for (const unchecked of [
+      { ...config, capabilityCheck: undefined },
+      { ...config, capabilityCheck: { ...config.capabilityCheck, tools: false } },
+      { ...config, source: 'platform' }
+    ])
+      expect(await calibrateCoachExercises(unchecked, generated(), call)).toBeNull();
+    expect(calls).toHaveLength(0);
+  });
+  it('摸底只校准第二题搭配填空', async () => {
+    const asked = { ...request, phase: 'diagnostic', target: 'diagnostic' },
+      sources = [
+        'The book which I bought was useful.',
+        'Many cyclists are interested ___ road safety.',
+        '我们欢迎你参加读书会。',
+        'The sale, which is open to everyone, starts soon.',
+        'Write an email to invite your classmates to a science fair. About 100 words.'
+      ],
+      pack = {
+        kind: 'diagnostic',
+        cards: sources.map((source, i) => ({
+          id: `d${i + 1}`,
+          kind: 'diagnostic',
+          exercise: { source, options: [] },
+          sourceId: null
+        }))
+      };
+    const { calls, call } = verifier(fills(['in']));
+    expect(await calibrateCoachExercises(config, generated(asked, pack), call)).toMatchObject({
+      status: 'completed',
+      blanks: [{ cardId: 'd2', acceptedCount: 1 }]
+    });
+    expect(JSON.parse(calls[0].messages[1].content).blanks).toEqual([
+      { id: 'b1', task: 'Many cyclists are interested ___ road safety.' }
+    ]);
+  });
+  it('出题被拒时返修回执写明题号与规则，并提示空格只填一个单词', () => {
+    const prepared = prepareCoachFeedbackModel(config, request);
+    const error = Object.assign(new Error('搭配填空没有单个英文单词能填对；空格只留一个单词'), {
+      code: 'COACH_INVALID',
+      path: 'cards[1].exercise.source'
+    });
+    const feedback = coachRepairFeedback(prepared, error, JSON.stringify({ exercises: { c2: { english: 'x' } } }));
+    expect(feedback).toMatchObject({ path: 'exercises.c2', rule: error.message });
+    expect(coachRepairPrompt(feedback)).toContain('"path":"exercises.c2"');
+    const words = Object.assign(new Error('写作任务字数须写约100词'), {
+      code: 'COACH_INVALID',
+      path: 'writing.prompt'
+    });
+    expect(coachRepairFeedback(prepared, words, '{}')).toMatchObject({ path: 'writing.prompt' });
+    expect(coachSystemPrompt(request, prepared.writingOutput.schema)).toContain('恰好一个___且只能填一个英文单词');
+    expect(coachSystemPrompt(request)).toContain('空格只能填一个英文单词');
+  });
+  it('出题提示讲清搭配空格要被前后词锁定，拒收时写出盲填找到的词', async () => {
+    const prepared = prepareCoachFeedbackModel(config, request);
+    for (const prompt of [coachSystemPrompt(request, prepared.writingOutput.schema), coachSystemPrompt(request)]) {
+      expect(prompt).toContain('换近义词就不成立');
+      expect(prompt).toContain('能填对的单词超过两个即退回重出');
+    }
+    const { call } = verifier(fills(['for'], ['sustain', 'maintain', 'promote'], ['on']));
+    await expect(calibrateCoachExercises(config, generated(), call)).rejects.toMatchObject({
+      path: 'cards[1].exercise.source',
+      message: expect.stringContaining('盲填找到sustain、maintain、promote')
+    });
   });
 });
