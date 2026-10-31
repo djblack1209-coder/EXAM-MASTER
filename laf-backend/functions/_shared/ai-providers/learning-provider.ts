@@ -656,6 +656,8 @@ export function validateCoachSchema(schema: any, value: any) {
     });
   }
 }
+// 出题时模型标出的搭配原词，按本次请求的模型配置存放，只供随后的盲填校准读取。
+const collocationAnswers = new WeakMap<ModelConfig, Record<string, string>>();
 // The model selects sealed reference IDs; the host never repairs a misquoted string.
 export function decodeCoachResponse(config: ModelConfig, content: string): string {
   let value: any;
@@ -687,16 +689,29 @@ export function decodeCoachResponse(config: ModelConfig, content: string): strin
       'long_sentence'
     ];
     const ids = Array.from({ length: phase === 'daily' ? 8 : 5 }, (_, i) => (phase === 'daily' ? 'c' : 'd') + (i + 1));
+    const answers: Record<string, string> = {};
     const cards = ids.map((id, index) => {
       const raw = exercises[id];
       const { english, chinese, ...source } = raw;
+      let task = english ?? chinese;
+      // 搭配题由模型写完整句、用方括号标出要考的词，宿主换成空格；原词只留给盲填校准，不随题下发。
+      // 标得不对（零处、多处、括号里不是一个单词）就原样交给题目校验退回，不替模型猜。
+      const marked =
+        (phase === 'daily' ? index < 3 : index === 1) && english && !/_{2,}/u.test(english)
+          ? [...english.matchAll(/\[([A-Za-z]+)\]/gu)]
+          : [];
+      if (marked.length === 1 && !/[[\]]/u.test(english.replace(marked[0][0], ''))) {
+        answers[id] = marked[0][1].toLowerCase();
+        task = english.replace(marked[0][0], '___');
+      }
       return {
         id,
         kind: phase === 'daily' ? order[index] : 'diagnostic',
-        exercise: { source: english ?? chinese, options: [] },
+        exercise: { source: task, options: [] },
         ...source
       };
     });
+    collocationAnswers.set(config, answers);
     const patterns =
       config.writingOutput!.generationEssayType === 'large'
         ? [
@@ -1587,17 +1602,19 @@ export async function calibrateCoachExercises(
     };
   // 复核员逐个判过的候选词里，判为能填的才计数。只让它自由列词时常常只列一个，开放空被当成固定搭配放行。
   // 空格只容一个单词，候选里的短语（如 put on）填不进去，不算能填对；其余单词照常计数，不因此作废整次校准。
+  // 出题者在完整句里标出的原词本来就能填；复核员漏判（如 do away with 判 away 不能填）时补上，仍按总数把关。
+  const intended = collocationAnswers.get(config) || {};
   const results = blanks.map((blank: any) => {
     const fill = fills.find((item: any) => item.id === blank.id);
-    return {
-      ...blank,
-      accepted: blankAccepted({
+    const accepted = blankAccepted({
         rule: fill.rule,
         accepted: fill.candidates
           .filter((candidate: any) => candidate.fits && /^[A-Za-z]+$/.test(candidate.word.trim()))
           .map((candidate: any) => candidate.word)
-      }).accepted
-    };
+      }).accepted,
+      word = intended[blank.cardId],
+      missed = Boolean(word && !accepted.includes(word));
+    return { ...blank, accepted: missed ? [...accepted, word] : accepted, missed };
   });
   const bad = results.find((result: any) => result.accepted.length < 1 || result.accepted.length > 2);
   if (bad)
@@ -1615,7 +1632,11 @@ export async function calibrateCoachExercises(
     status: 'completed',
     checked: blanks.length,
     ...(asked.attempts > 1 ? { attempts: asked.attempts } : {}),
-    blanks: results.map((result: any) => ({ cardId: result.cardId, acceptedCount: result.accepted.length }))
+    blanks: results.map((result: any) => ({
+      cardId: result.cardId,
+      acceptedCount: result.accepted.length,
+      ...(result.missed ? { verifierMissed: true } : {})
+    }))
   };
 }
 export function validateWritingFeedbackOutput(

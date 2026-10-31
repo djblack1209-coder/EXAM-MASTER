@@ -1368,6 +1368,89 @@ describe('新出搭配填空经盲填校准才下发', () => {
       maxItems: 6
     });
   });
+  // 出题端点按题位返回；前三题可换成模型用方括号标词的完整句。
+  const slots = (...collocations) => {
+    const pack = exercisePack();
+    return JSON.stringify({
+      message: '开始练习',
+      exercises: Object.fromEntries(
+        pack.cards.map((card, i) => [
+          card.id,
+          {
+            [card.kind === 'translate_en' ? 'chinese' : 'english']: collocations[i] ?? card.exercise.source,
+            sourceId: null,
+            sourceQuote: null,
+            sourcePage: null
+          }
+        ])
+      ),
+      writing: { prompt: pack.writing.prompt, sourceId: null, sourceQuote: null, sourcePage: null }
+    });
+  };
+  it('模型标出的原词由宿主换成空格，只交给校准补上复核员漏判的词，不随题下发', async () => {
+    const prepared = prepareCoachFeedbackModel(config, request);
+    const decoded = decodeCoachResponse(
+      prepared,
+      slots('The company will do [away] with the old rule.', undefined, 'The plan was put [into] effect.')
+    );
+    expect(decoded).not.toMatch(/\baway\b|\binto\b/u);
+    const coach = parseCoachModelOutput(decoded, request).coach;
+    expect(coach.cards[0].prompt).toContain('The company will do ___ with the old rule.');
+    expect(coach.cards[2].prompt).toContain('The plan was put ___ effect.');
+    // 复核员把 away 全判成不能填；第二题没标原词，照常只看复核员。
+    const { calls, call } = verifier({
+      blanks: [
+        { id: 'b1', candidates: candidates([]), rule: '没有单词能填' },
+        { id: 'b2', candidates: candidates(['for']), rule: '固定搭配' },
+        { id: 'b3', candidates: candidates(['into']), rule: '固定搭配' }
+      ]
+    });
+    expect(await calibrateCoachExercises(prepared, coach, call)).toEqual({
+      status: 'completed',
+      checked: 3,
+      blanks: [
+        { cardId: 'c1', acceptedCount: 1, verifierMissed: true },
+        { cardId: 'c2', acceptedCount: 1 },
+        { cardId: 'c3', acceptedCount: 1 }
+      ]
+    });
+    expect(calls[0].messages[1].content).not.toMatch(/\baway\b|\binto\b/u);
+    // 同一配置再出一套没标词的题，上一套的原词不再算数。
+    const plain = parseCoachModelOutput(decodeCoachResponse(prepared, slots()), request).coach;
+    await expect(
+      calibrateCoachExercises(prepared, plain, verifier(fills([], ['for'], ['on'])).call)
+    ).rejects.toMatchObject({
+      path: 'cards[0].exercise.source',
+      message: expect.stringContaining('没有单个英文单词能填对')
+    });
+  });
+  it('出题原词之外复核员又判出两个能填的词，照样按开放空退回', async () => {
+    const prepared = prepareCoachFeedbackModel(config, request);
+    const coach = parseCoachModelOutput(
+      decodeCoachResponse(prepared, slots('Many small firms are under [great] pressure.')),
+      request
+    ).coach;
+    await expect(
+      calibrateCoachExercises(prepared, coach, verifier(fills(['heavy', 'constant'], ['for'], ['on'])).call)
+    ).rejects.toMatchObject({
+      path: 'cards[0].exercise.source',
+      message: expect.stringContaining('盲填找到heavy、constant、great')
+    });
+  });
+  it.each([
+    ['two-marks', 'The firm will [carry] [on] with the plan.'],
+    ['phrase-mark', 'The firm will [carry on] with the plan.'],
+    ['mark-and-blank', 'The firm will carry [on] ___ the plan.']
+  ])('方括号标得不对时原样退回，答案不随题下发：%s', (_, sentence) => {
+    const prepared = prepareCoachFeedbackModel(config, request);
+    expect(() => parseCoachModelOutput(decodeCoachResponse(prepared, slots(sentence)), request)).toThrowError(
+      expect.objectContaining({
+        code: 'COACH_INVALID',
+        path: 'cards[0].exercise.source',
+        message: expect.stringContaining('方括号')
+      })
+    );
+  });
   it('单词空里列出的短语不算能填对，其余单词照常计数', async () => {
     const { call } = verifier(fills(['for'], ['wear', 'put on'], ['on']));
     expect(await calibrateCoachExercises(config, generated(), call)).toMatchObject({
@@ -1474,7 +1557,9 @@ describe('新出搭配填空经盲填校准才下发', () => {
       path: 'writing.prompt'
     });
     expect(coachRepairFeedback(prepared, words, '{}')).toMatchObject({ path: 'writing.prompt' });
-    expect(coachSystemPrompt(request, prepared.writingOutput.schema)).toContain('恰好一个___且只能填一个英文单词');
+    expect(coachSystemPrompt(request, prepared.writingOutput.schema)).toContain(
+      '全句恰好一处方括号、里面只有一个英文单词'
+    );
     expect(coachSystemPrompt(request)).toContain('空格只能填一个英文单词');
   });
   it('出题提示讲清搭配空格要被前后词锁定，拒收时写出盲填找到的词', async () => {
@@ -1483,13 +1568,13 @@ describe('新出搭配填空经盲填校准才下发', () => {
       expect(prompt).toContain('换近义词就不成立');
       expect(prompt).toContain('能填对的单词超过两个即退回重出');
     }
-    // 模型照题位逐条出题，锁定要求要写进搭配题位本身。
+    // 模型照题位逐条出题，锁定要求和方括号标词要写进搭配题位本身。
     const diagnostic = { ...request, phase: 'diagnostic', target: 'diagnostic', input: '开始十分钟摸底' };
     expect(coachSystemPrompt(request, prepared.writingOutput.schema)).toMatch(
-      /c1-c3：三个不同搭配的英文填空，空格放在固定搭配里被前后词锁定的词上/u
+      /c1-c3：三个不同搭配的完整英文句，用方括号标出要考的那一个单词（如 carry \[on\] with），宿主会把它换成空格；标出的词须是固定搭配里被前后词锁定的词/u
     );
     expect(coachSystemPrompt(diagnostic, prepareCoachFeedbackModel(config, diagnostic).writingOutput.schema)).toMatch(
-      /d2：英文搭配填空，空格放在固定搭配里被前后词锁定的词上/u
+      /d2：英文搭配题，给完整英文句并用方括号标出要考的那一个单词（如 carry \[on\] with），宿主会把它换成空格；标出的词须是固定搭配里被前后词锁定的词/u
     );
     const { call } = verifier(fills(['for'], ['sustain', 'maintain', 'promote'], ['on']));
     await expect(calibrateCoachExercises(config, generated(), call)).rejects.toMatchObject({
