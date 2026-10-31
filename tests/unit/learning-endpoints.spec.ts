@@ -2201,8 +2201,9 @@ it.each(['success', 'missing-tool', 'invalid-again', 'rate-limited', 'secret-ech
           ...streamCompleted,
           finishReason: 'tool_calls',
           coachFunctionResult: true,
+          // 唯一错误在单词填空上，复核只做盲填：不收原答，列出可接受的词。
           content: JSON.stringify({
-            reviews: [{ index: 0, required: true, wrong: true, reason: 'interested 后固定用 in' }]
+            blanks: [{ id: 'b1', accepted: ['in'], label: 'interested in', rule: 'interested 后固定用 in' }]
           })
         };
       }
