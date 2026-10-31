@@ -1151,6 +1151,25 @@ export function outlineAgreement(prompt: string, points: any[], answer: string) 
   };
 }
 
+// 复核员回了坏格式（不是完整JSON或不合字段合同）就再问一次，仍受同一时间预算；超时、限流、模型不符不重试。
+// 收据记下最后一次失败的代码和字段位置，复跑时能看出坏在哪里。
+async function askVerifierTwice<T>(ask: () => Promise<T>, malformed: string) {
+  let failure: string | null = null,
+    failurePath: string | null = null;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      return { value: await ask(), attempts: attempt, failure: null, failurePath: null };
+    } catch (error: any) {
+      if (error?.code === 'CANCELLED') throw error;
+      failure = error?.code || malformed;
+      failurePath = typeof error?.path === 'string' ? error.path.slice(0, 160) : null;
+      if (failure !== 'COACH_INVALID' && failure !== malformed)
+        return { value: null, attempts: attempt, failure, failurePath };
+    }
+  }
+  return { value: null, attempts: 2, failure, failurePath };
+}
+
 // 初评通过字段合同后，把全部已登记错误合在一次有界请求里复核。复核只能删除不成立的错误；
 // 单词填空另做盲填：复核员只看题干列出全部可接受的词，宿主拿学生原答逐字比对，
 // 不在其中才登记错误，在其中就删掉该题的错误。复核失败时原错误照常进入门禁，不当成无错。
@@ -1302,12 +1321,7 @@ export async function verifyCoachErrors(
         }
       : {})
   });
-  let reviews: any[] | null = null,
-    fills: any[] | null = null,
-    structures: any[] | null = null,
-    lists: any[] | null = null,
-    failure: string | null = null;
-  try {
+  const asked = await askVerifierTwice(async () => {
     const raw = JSON.parse(
       await call(
         {
@@ -1346,18 +1360,26 @@ export async function verifyCoachErrors(
       throw new ProviderError('COACH_INVALID', '句法复核须逐句回答一次');
     if (new Set((raw.outlines || []).map((outline: any) => outline.id)).size !== outlines.length)
       throw new ProviderError('COACH_INVALID', '审题复核须逐题回答一次');
-    reviews = raw.reviews || [];
-    fills = raw.blanks || [];
-    structures = raw.syntax || [];
-    lists = raw.outlines || [];
-  } catch (error: any) {
-    if (error?.code === 'CANCELLED') throw error;
-    failure = error?.code || 'VERIFICATION_INVALID';
-  }
-  if (!reviews || !fills || !structures || !lists)
-    return { content, receipt: { status: 'failed', checked, failure, reviews: [] } };
+    return raw;
+  }, 'VERIFICATION_INVALID');
+  if (!asked.value)
+    return {
+      content,
+      receipt: {
+        status: 'failed',
+        checked,
+        failure: asked.failure,
+        ...(asked.failurePath ? { failurePath: asked.failurePath } : {}),
+        attempts: asked.attempts,
+        reviews: []
+      }
+    };
+  const reviews: any[] = asked.value.reviews || [],
+    fills: any[] = asked.value.blanks || [],
+    structures: any[] = asked.value.syntax || [],
+    lists: any[] = asked.value.outlines || [];
   const analyses = parses.map((parse: any) => {
-    const structure = structures!.find((s: any) => s.id === parse.id);
+    const structure = structures.find((s: any) => s.id === parse.id);
     return {
       quoteId: parse.role.quoteId,
       note: structure.note,
@@ -1365,7 +1387,7 @@ export async function verifyCoachErrors(
     };
   });
   const coverage = outlines.map((outline: any) => {
-    const list = lists!.find((l: any) => l.id === outline.id);
+    const list = lists.find((l: any) => l.id === outline.id);
     return {
       quoteId: outline.role.quoteId,
       note: list.note,
@@ -1373,7 +1395,7 @@ export async function verifyCoachErrors(
     };
   });
   const results = blanks.map((blank: any) => {
-    const fill = fills!.find((f: any) => f.id === blank.id);
+    const fill = fills.find((f: any) => f.id === blank.id);
     const accepted = [...new Set<string>(fill.accepted.map((word: string) => word.trim().toLowerCase()))];
     return { ...blank, accepted, correct: accepted.includes(blank.answer.toLowerCase()), label: fill.label, rule: fill.rule };
   });
@@ -1392,7 +1414,7 @@ export async function verifyCoachErrors(
         kept: blank ? !blank.correct : !blind.agreed,
         reason: blank ? blank.rule : blind.note
       };
-    const review = reviews!.find((r: any) => r.index === index);
+    const review = reviews.find((r: any) => r.index === index);
     return {
       label: e.label,
       quoteId: e.quoteId,
@@ -1455,6 +1477,7 @@ export async function verifyCoachErrors(
     receipt: {
       status: 'completed',
       checked,
+      ...(asked.attempts > 1 ? { attempts: asked.attempts } : {}),
       removed: removed.length,
       added: added.length,
       reviews: verdicts,
@@ -1499,9 +1522,7 @@ export async function calibrateCoachExercises(
       })
     }
   });
-  let fills: any[] | null = null,
-    failure: string | null = null;
-  try {
+  const asked = await askVerifierTwice(async () => {
     const raw = JSON.parse(
       await call(
         {
@@ -1524,17 +1545,22 @@ export async function calibrateCoachExercises(
       throw new ProviderError('COACH_INVALID', '填空校准须逐题回答一次');
     if (raw.blanks.some((fill: any) => fill.accepted.some((word: string) => !/^[A-Za-z]+$/.test(word.trim()))))
       throw new ProviderError('COACH_INVALID', '填空校准只能列出单词');
-    fills = raw.blanks;
-  } catch (error: any) {
-    if (error?.code === 'CANCELLED') throw error;
-    failure = error?.code || 'CALIBRATION_INVALID';
-  }
-  if (!fills) return { status: 'failed', checked: blanks.length, failure };
+    return raw.blanks;
+  }, 'CALIBRATION_INVALID');
+  const fills: any[] | null = asked.value;
+  if (!fills)
+    return {
+      status: 'failed',
+      checked: blanks.length,
+      failure: asked.failure,
+      ...(asked.failurePath ? { failurePath: asked.failurePath } : {}),
+      attempts: asked.attempts
+    };
   const results = blanks.map((blank: any) => ({
     ...blank,
     accepted: [
       ...new Set<string>(
-        fills!.find((fill: any) => fill.id === blank.id).accepted.map((word: string) => word.trim().toLowerCase())
+        fills.find((fill: any) => fill.id === blank.id).accepted.map((word: string) => word.trim().toLowerCase())
       )
     ]
   }));
@@ -1553,6 +1579,7 @@ export async function calibrateCoachExercises(
   return {
     status: 'completed',
     checked: blanks.length,
+    ...(asked.attempts > 1 ? { attempts: asked.attempts } : {}),
     blanks: results.map((result: any) => ({ cardId: result.cardId, acceptedCount: result.accepted.length }))
   };
 }

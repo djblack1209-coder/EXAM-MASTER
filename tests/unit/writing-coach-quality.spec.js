@@ -917,6 +917,34 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     expect(JSON.parse(content).errors).toHaveLength(2);
     expect(JSON.parse(decodeCoachResponse(p, content)).coach.dimensions[3].score).toBe(1);
   });
+  it.each([
+    ['坏JSON后答对', ['not json', { blanks: [fill(['in'])], outlines: [outline()] }], 2, 'completed'],
+    ['字段不合后答对', [{ blanks: [fill(['in'])] }, { blanks: [fill(['in'])], outlines: [outline()] }], 2, 'completed'],
+    ['两次都坏', [{ blanks: [fill(['in'])] }, { blanks: [fill(['in'])] }], 2, 'failed'],
+    ['限流不重问', [Object.assign(new Error('limit'), { code: 'RATE_LIMITED' })], 1, 'failed'],
+    ['超时不重问', [Object.assign(new Error('late'), { code: 'TIMEOUT' })], 1, 'failed']
+  ])('复核员回了坏格式就再问一次，其他失败不重问：%s', async (name, replies, asks, status) => {
+    const p = prepared();
+    let count = 0;
+    const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(overflagged(p)), async () => {
+      const reply = replies[count++];
+      if (reply instanceof Error) throw reply;
+      return typeof reply === 'string' ? reply : JSON.stringify(reply);
+    });
+    expect(count).toBe(asks);
+    expect(receipt.status).toBe(status);
+    if (status === 'completed') {
+      expect(receipt).toMatchObject({ attempts: 2, removed: 1 });
+      expect(JSON.parse(content).errors).toHaveLength(1);
+    } else {
+      expect(receipt).toMatchObject({ attempts: asks, reviews: [] });
+      expect(JSON.parse(content).errors).toHaveLength(2);
+      expect(receipt.failure).toBe(
+        name === '限流不重问' ? 'RATE_LIMITED' : name === '超时不重问' ? 'TIMEOUT' : 'COACH_INVALID'
+      );
+      if (name === '两次都坏') expect(receipt.failurePath).toMatch(/^root/);
+    }
+  });
   it('无错误且没有单词填空、未过字段合同或非摸底时不发复核；取消照常抛出', async () => {
     const p = preparedFor(blankAnswer('in，因为interested后接in')),
       never = async () => {
@@ -1248,6 +1276,14 @@ describe('新出搭配填空经盲填校准才下发', () => {
       mode === 'broken-json' ? 'CALIBRATION_INVALID' : mode === 'timeout' ? 'TIMEOUT' : 'COACH_INVALID'
     );
     expect(coach.cards.slice(0, 3).every((card) => card.source.verified === false)).toBe(true);
+  });
+  it('校准回了坏格式再问一次，答对就照常校准', async () => {
+    let count = 0;
+    const receipt = await calibrateCoachExercises(config, generated(), async () =>
+      count++ ? JSON.stringify(fills(['for'], ['for'], ['on'])) : '{"blanks":'
+    );
+    expect(count).toBe(2);
+    expect(receipt).toMatchObject({ status: 'completed', attempts: 2, checked: 3 });
   });
   it('停止生成时不吞掉取消', async () => {
     const { call } = verifier(Object.assign(new Error('stopped'), { code: 'CANCELLED' }));

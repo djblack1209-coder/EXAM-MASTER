@@ -630,7 +630,17 @@ export async function runLearningModelTask(
         origins,
         execution!.signal
       );
-      verificationUsage = checked.usage || null;
+      // 复核坏格式会再问一次，用量按次累加。
+      verificationUsage = checked.usage
+        ? Object.fromEntries(
+            Object.entries(checked.usage).map(([key, value]) => [
+              key,
+              typeof value === 'number' && typeof verificationUsage?.[key] === 'number'
+                ? value + verificationUsage[key]
+                : value
+            ])
+          )
+        : verificationUsage;
       if (checked.actualModel !== model!.model || modelValueHasKeyEcho(checked.content, model!.apiKey))
         throw new ProviderError('MODEL_MISMATCH', '复核响应未通过模型与密钥检查');
       return checked.content;

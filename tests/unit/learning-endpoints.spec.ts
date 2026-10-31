@@ -2266,7 +2266,8 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
     ).blanks;
     expect(blanks.map((blank: any) => blank.task)).toEqual(english.slice(0, 3));
     if (mode === 'calibrated' || mode === 'verifier-fails') {
-      expect([generations, calibrations]).toEqual([1, 1]);
+      // 校准员回坏格式会再问一次，两次都坏才按失败收据放行。
+      expect([generations, calibrations]).toEqual(mode === 'calibrated' ? [1, 1] : [1, 2]);
       expect(result.success).toBe(true);
       expect(result.data.coach.cards).toHaveLength(8);
       expect(result.data.exerciseCalibration).toMatchObject(
@@ -2280,7 +2281,13 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
                 { cardId: 'c3', acceptedCount: 1 }
               ]
             }
-          : { status: 'failed', checked: 3, failure: 'CALIBRATION_INVALID' }
+          : {
+              status: 'failed',
+              checked: 3,
+              failure: 'CALIBRATION_INVALID',
+              attempts: 2,
+              usage: { prompt_tokens: 8, completion_tokens: 16 }
+            }
       );
       expect(JSON.stringify(result.data.exerciseCalibration)).not.toMatch(/"for"|"on"/);
       return;
