@@ -31,6 +31,11 @@ const displayStandards = {
   collocation: '辨认语境中自然、准确的动词搭配'
 };
 
+export function knowledgeGraphTitle(seed) {
+  const subject = typeof seed?.subjectLabel === 'string' ? seed.subjectLabel.trim() : '';
+  return subject ? `${subject} · 知识框架` : '知识框架';
+}
+
 export function knowledgeGraphView(seed, width = 680, progress = null) {
   const canvasWidth = Math.max(280, Math.min(720, Number(width) || 680));
   const columns = canvasWidth < 500 ? 2 : 3;
@@ -77,7 +82,7 @@ export function knowledgeGraphView(seed, width = 680, progress = null) {
       fromName: byId.get(edge.from).name,
       toName: byId.get(edge.to).name
     }));
-  return { width: canvasWidth, height: y, nodes, edges, groups };
+  return { title: knowledgeGraphTitle(seed), width: canvasWidth, height: y, nodes, edges, groups };
 }
 
 export function knowledgeNodeDetail(graph, id) {
@@ -95,6 +100,12 @@ export function knowledgeGraphSvg(graph, dark = false, selectedId = '') {
   const byId = new Map(graph.nodes.map((node) => [node.id, node]));
   const line = dark ? '#a7aaad' : '#65686c';
   const paths = graph.edges
+    // Keep the complete graph for details; the framework draws local relations
+    // and only the selected node's cross-group relations.
+    .filter(
+      (edge) =>
+        byId.get(edge.from).chapter === byId.get(edge.to).chapter || selectedId === edge.from || selectedId === edge.to
+    )
     .map((edge, i) => {
       const a = byId.get(edge.from),
         b = byId.get(edge.to);
@@ -106,7 +117,29 @@ export function knowledgeGraphSvg(graph, dark = false, selectedId = '') {
       const lane = left ? 4 + (i % 5) * 3 : graph.width - 4 - (i % 5) * 3;
       const active = selectedId === edge.from || selectedId === edge.to;
       const opacity = selectedId ? (active ? 0.95 : 0.12) : 0.42;
-      return `<path data-strength="${xml(edge.strength)}" d="M${ax} ${ay} C${lane} ${ay} ${lane} ${by} ${bx} ${by}" fill="none" stroke="${line}" stroke-width="${active ? 2 : 1.3}" opacity="${opacity}"${edge.strength === 'soft' ? ' stroke-dasharray="5 4"' : ''} marker-end="url(#arrow)"/>`;
+      let path;
+      if (a.chapter !== b.chapter) {
+        path = `M${ax} ${ay} C${lane} ${ay} ${lane} ${by} ${bx} ${by}`;
+      } else if (a.y === b.y) {
+        const forward = a.x < b.x;
+        const blocked = graph.nodes.some(
+          (node) => node.y === a.y && node.x > Math.min(a.x, b.x) && node.x < Math.max(a.x, b.x)
+        );
+        path = blocked
+          ? `M${a.x + a.width / 2} ${a.y} V${a.y - 7} H${b.x + b.width / 2} V${b.y}`
+          : `M${forward ? a.x + a.width : a.x} ${ay} H${forward ? b.x : b.x + b.width}`;
+      } else if (Math.abs(a.y - b.y) <= a.height + 14) {
+        const down = a.y < b.y;
+        const start = down ? a.y + a.height : a.y;
+        const end = down ? b.y : b.y + b.height;
+        path = `M${a.x + a.width / 2} ${start} V${(start + end) / 2} H${b.x + b.width / 2} V${end}`;
+      } else {
+        const down = a.y < b.y;
+        const start = down ? a.y + a.height : a.y;
+        const end = down ? b.y : b.y + b.height;
+        path = `M${a.x + a.width / 2} ${start} V${start + (down ? 7 : -7)} H8 V${end + (down ? -7 : 7)} H${b.x + b.width / 2} V${end}`;
+      }
+      return `<path data-from="${xml(edge.from)}" data-to="${xml(edge.to)}" data-strength="${xml(edge.strength)}" d="${path}" fill="none" stroke="${line}" stroke-width="${active ? 2 : 1.3}" opacity="${opacity}"${edge.strength === 'soft' ? ' stroke-dasharray="5 4"' : ''} marker-end="url(#arrow)"/>`;
     })
     .join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${graph.width}" height="${graph.height}" viewBox="0 0 ${graph.width} ${graph.height}"><defs><marker id="arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0 0 L5 2.5 L0 5" fill="${line}"/></marker></defs>${paths}</svg>`;

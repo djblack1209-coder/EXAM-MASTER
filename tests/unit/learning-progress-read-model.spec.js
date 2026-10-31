@@ -179,6 +179,15 @@ describe('learning progress: canonical, traceable, read-only observations', () =
     expect(grammar(model)).toMatchObject({ kind: 'rubric-attainment', numerator: 4, denominator: 6, percentage: 67 });
     expect(grammar(model).denominatorEventIds).toEqual(Array.from({ length: 6 }, (_, i) => `receipt-${i}`));
     expect(writing(model).accuracy.denominator).toBe(0);
+    expect(writing(model).attainment).toMatchObject({
+      kind: 'rubric-attainment',
+      numerator: 4,
+      denominator: 6,
+      percentage: 67
+    });
+    expect(writing(model).attainment.numeratorEventIds).toEqual(['receipt-0', 'receipt-1', 'receipt-2', 'receipt-3']);
+    expect(writing(model).attainment.denominatorEventIds).toEqual(grammar(model).denominatorEventIds);
+    expect(model.subjects.find((subject) => subject.id === '数学').attainment.denominator).toBe(0);
     expect(writing(model).questionTypes[0].attainment.denominator).toBe(6);
     const node = model.nodes.find((item) => item.id === 'sentence');
     expect(node).toMatchObject({
@@ -193,6 +202,25 @@ describe('learning progress: canonical, traceable, read-only observations', () =
       expect(state.events.some((event) => event.id === id)).toBe(true);
     expect(JSON.stringify(state)).toBe(before);
   });
+  it.each([4, 5])(
+    'subject attainment floor and exact event IDs stay separate in aggregate and source views (%i)',
+    (count) => {
+      const state = progressFixture(count, count);
+      const model = learningProgressReadModel(state);
+      for (const projection of [model, ...model.sources.filter((source) => source.source === 'byok')]) {
+        const attainment = writing(projection).attainment;
+        expect(attainment).toMatchObject({ denominator: count, numerator: 4, percentage: count === 5 ? 80 : null });
+        expect(attainment.denominatorEventIds).toEqual(Array.from({ length: count }, (_, i) => `receipt-${i}`));
+        for (const id of [...attainment.denominatorEventIds, ...attainment.numeratorEventIds])
+          expect(state.events.some((event) => event.id === id && event.type === 'coach.result')).toBe(true);
+      }
+      const objective = model.subjects.find((subject) => subject.id === '数学').accuracy;
+      expect(objective.denominatorEventIds).toEqual(state.attempts.map((attempt) => attempt.id));
+      expect(
+        objective.denominatorEventIds.some((id) => writing(model).attainment.denominatorEventIds.includes(id))
+      ).toBe(false);
+    }
+  );
   it('duplicate attempts, receipts and reassessment history never increase the denominator', () => {
     const state = progressFixture();
     state.attempts.push(structuredClone(state.attempts[0]), { ...state.attempts[0], id: 'repeated-first' });

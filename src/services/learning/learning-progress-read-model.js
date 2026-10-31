@@ -104,6 +104,11 @@ function aggregates(evidence) {
       id,
       label: id === writingSubject ? '考研英语写作' : id,
       accuracy: metric(rows, (event) => (event.outcome === null ? null : event.outcome === 'correct')),
+      attainment: metric(
+        rows,
+        (event) => (event.dimensions.length ? event.dimensions.every((dimension) => dimension.score === 2) : null),
+        'rubric-attainment'
+      ),
       dimensions: (id === writingSubject ? PROGRESS_DIMENSIONS : []).map((name) => ({
         id: name,
         label: name,

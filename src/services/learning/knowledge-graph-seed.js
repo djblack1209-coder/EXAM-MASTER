@@ -307,6 +307,7 @@ const soft = (from, to) => ({ from, to, strength: 'soft', reason: '可能有助�
 export const knowledgeGraphSeed = {
   version: 'yozi-writing-diagnosis-v0.1',
   subject,
+  subjectLabel: '考研英语写作',
   topics,
   edges: [
     hard('task', 'purpose'),

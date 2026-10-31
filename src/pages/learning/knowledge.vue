@@ -5,10 +5,11 @@
       <BaseButton variant="quiet" @tap="safeNavigateTo('/pages/learning/index')">回到对话</BaseButton>
     </view>
     <view class="knowledge-title">
-      <text role="heading" aria-level="1">知识框架</text>
+      <text role="heading" aria-level="1">{{ graph.title }}</text>
       <text class="knowledge-subtitle">考研英语写作 · 验证版，内容待教师审核</text>
     </view>
     <ProgressOverview class="knowledge-progress" :model="progress" @open="openEvidence" />
+    <text class="framework-title" role="heading" aria-level="2">{{ graph.title }}</text>
     <view class="knowledge-views" role="group" aria-label="知识框架">
       <BaseButton variant="quiet" :selected="mapView === 'framework'" @tap="mapView = 'framework'">知识框架</BaseButton>
       <BaseButton variant="quiet" :selected="mapView === 'mind'" @tap="mapView = 'mind'">思维导图</BaseButton>
@@ -74,7 +75,7 @@
             >{{ detail.statusLabel }} · {{ detail.evidenceIds.length ? 'AI 评估' : detail.recordLabel
             }}<template v-if="detail.isWeakness"> · 薄弱点</template></text
           >
-          <ProgressEvidence :events="nodeEvents" @open="openEvidence" />
+          <ProgressEvidence :events="nodeEvents" :page-size="2" @open="openEvidence" />
           <BaseButton v-if="windowWidth < 960" variant="quiet" @tap="returnToMap">返回图谱</BaseButton>
           <text class="detail-label">节点详情</text>
           <text v-for="criterion in detail.masteryCriteria" :key="criterion" class="detail-copy">{{ criterion }}</text>
@@ -104,7 +105,7 @@
       mask-closable
       @cancel="recordId = ''"
     >
-      <view v-if="record" class="progress-original" :data-record-id="record.id">
+      <view v-if="record" class="progress-original">
         <text>{{ record.day }}</text
         ><text>{{ record.prompt || record.goal }}</text>
         <text selectable>{{ record.answer }}</text>
@@ -221,9 +222,15 @@ function goBack() {
   margin: 0 auto;
 }
 .knowledge-progress,
+.framework-title,
 .knowledge-views {
   max-width: 1060px;
   margin: 0 auto 24px;
+}
+.framework-title {
+  display: block;
+  font-size: 18px;
+  font-weight: 650;
 }
 .knowledge-views {
   display: flex;
@@ -238,8 +245,6 @@ function goBack() {
 }
 .knowledge-detail :deep(.progress-evidence) {
   margin-top: 16px;
-  max-height: 360px;
-  overflow: auto;
 }
 .progress-original {
   display: flex;

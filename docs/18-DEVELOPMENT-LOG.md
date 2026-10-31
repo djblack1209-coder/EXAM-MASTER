@@ -170,3 +170,16 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 ```
 
 界面复验先按计划0.1重新取得并填写UI锁；用本批候选的Ctrl+Alt+1／2／3／4依次切换4次／5次／第3轮／旧收据，完成后Cmd+Q并按实际完整路径 `lsregister -u`。官网重跑将本树 `tmp/progress-2.noindex/h5-acceptance.js` 传给现有Playwright `browser_run_code_unsafe(filename)`；所有网络由隔离上下文拦截，不需要启动服务器。界面验完释放锁，不能与其他线并行操作。
+
+## 呈现线第 3 批 执行侧交付（2026-10-30）
+
+- **模块／归属**：P，Codex；仅修改约定的呈现页面、读模型、框架元数据／视图、progress组件及其测试，另按简报追加本日志与变更记录。G／S、主工作树及日常App不改；无接口改动申请。
+- **根因与落地**：旧截图的「数学」实际是最后一个汇总标题，页主标题仍为通用「知识框架」，汇总与框架缺少科目标识边界；现在页标题及框架标题都取当前框架的显式科目标签，缺失时返回通用标题。证据模板直接输出收据ID且通过DOM属性带出原答ID，现均移除，原始编号仍留读模型供精确追溯。
+- **框架／列表**：此前SVG画全部36条边并绕到整页两侧；现默认只画组内关系，仅补选中节点相关的跨组边，完整36条关系仍用于详情。实屏发现非相邻同排直线穿过中间卡片，已改绕卡片的折线，358／680px几何断言通过。右栏此前以360px高度裁切证据；现先显示2条完整记录，沿用「查看更多」整条展开，不设列表裁切高度。
+- **各科汇总／守门**：原有维度及题型汇总保留，补每科整体量规达成汇总，与客观题正确率分列；分子／分母均保留对应事件ID。4次不显示百分比，5次解锁；四种状态、复核删除、null维度、旧收据及不读取复核内部结构的合同保持。
+- **定向／全量**：定向135项通过，连线增量9项通过（其中新增2个宽度断言）；ESLint、Prettier、diff检查通过。首次全量6401项有178既有失败及3个历史容量超时；原代码／原超时门槛独立复跑历史23项全过，再完整复跑为6186通过／178既有失败／37跳过，15项既有未处理错误未增加。[最终逐ID比较](../tmp/progress-3.noindex/comparison-retry.json)新增失败**0**，完整包含最终连线的两个几何断言；[首轮比较](../tmp/progress-3.noindex/comparison.json)、[历史复跑](../tmp/progress-3.noindex/history-retest.json)、两份全量原报告保留。主树基线复制后及最终比较前均逐字一致，比较器不改。
+- **桌面实际界面**：隔离账户、合成事件、独立bundle ID／WebKit UUID；[4次汇总](../tmp/progress-3.noindex/app-four-overview.png)、[4次完整证据](../tmp/progress-3.noindex/app-four-evidence.png)、[5次汇总](../tmp/progress-3.noindex/app-five-overview.png)、[5次完整证据](../tmp/progress-3.noindex/app-five-evidence.png)、[导图](../tmp/progress-3.noindex/app-five-mind.png)、[原答](../tmp/progress-3.noindex/app-original.png)、[复核删除](../tmp/progress-3.noindex/app-round3-deleted.png)、[旧收据](../tmp/progress-3.noindex/app-legacy-overview.png)，同目录保留AX。写作及数学汇总分别展开5条相应来源；节点先2条、点击更多后4条；查看第5题打开原答 `Synthetic answer 4`。最终连线实屏待UI锁释放。
+- **官网390px**：4次／5次／第3轮／旧收据均通过，无横溢、内部ID、原答／原答入口或掌握文案；[4次](../tmp/progress-3.noindex/h5-390-four.png)、[5次](../tmp/progress-3.noindex/h5-390-five.png)、[读回](../tmp/progress-3.noindex/h5-observed.json)。共享Playwright配置被占用、缓存浏览器缺失，改用已有系统Chrome独立临时上下文；路由直接提供静态产物和合成接口，无监听服务器，上下文及浏览器已关闭。
+- **资源／边界**：复用现有依赖，私有Cargo APFS克隆已按无消费者及候选独立签名核对后用cargo clean清理2,554,613,323逻辑字节，不是实时磁盘释放量；第一候选已正常退出并按完整路径注销，最终候选保留在 `tmp/progress-3.noindex/Yozi AI.app`。全量进程与最终界面收尾待终态后填入。手机原生App未验（无HBuilderX／可运行的uni-app原生基座），小程序未构建，N3预测性准确率未验；真实模型调用0。待批文案候选：**无**；新增依赖／许可公开范围：**无**；不推送、不部署、不启付费、不替换日常App。
+
+复跑：在本工作树执行 `sh tmp/progress-3.noindex/rerun-tests.sh`，使用新时间编号保存定向／全量结果，逐字核对复制的基线后按测试ID比较，新增失败会非零退出。界面复验仍须先取得并填写UI锁；桌面候选用Ctrl+Alt+1／2／3／4切换四态，完成后Cmd+Q并按完整路径注销；官网命令为 `PROGRESS_QA_OUTPUT="tmp/progress-3.noindex/h5-retest-$(date +%Y%m%d-%H%M%S)" rtk bypass node tmp/progress-3.noindex/h5-acceptance.mjs`，只读复用本批官网产物，不启动服务器。

@@ -16,6 +16,20 @@
       <text class="progress-heading" role="heading" aria-level="2">{{ subject.label }}</text>
       <view class="progress-metrics">
         <BaseButton
+          v-if="subject.id === 'kaoyan-english-writing' || subject.attainment.denominator"
+          class="progress-metric"
+          variant="quiet"
+          :data-metric="`${subject.id}:attainment`"
+          @tap="show(subject.label, subject.attainment)"
+        >
+          <text class="metric-name">达成本次要求</text><text class="metric-value">{{ value(subject.attainment) }}</text>
+          <text class="metric-fraction"
+            >AI 评估<template v-if="subject.attainment.status === 'available'">
+              · {{ subject.attainment.numerator }} / {{ subject.attainment.denominator }}</template
+            ></text
+          >
+        </BaseButton>
+        <BaseButton
           v-if="subject.id !== 'kaoyan-english-writing' || subject.accuracy.denominator"
           class="progress-metric"
           variant="quiet"
