@@ -53,13 +53,15 @@
                   ? 3000
                   : 400
         "
-        :busy="learning.busy || learning.intakeBusy"
+        :busy="learning.busy || learning.intakeBusy || learning.reply?.pending"
         :disabled="Boolean(coach && (learning.active.stopped || !answerTarget))"
         :submit-disabled="false"
         :attachment-disabled="fileBusy || learning.busy"
         @submit="submitComposer"
         @attach="showMaterials = !showMaterials"
-        @stop="learning.intakeBusy ? learning.cancelModelIntake() : learning.cancel()"
+        @stop="
+          learning.intakeBusy || learning.reply?.kind === 'intake' ? learning.cancelModelIntake() : learning.cancel()
+        "
         @height="composerHeight = $event"
       />
     </template>
@@ -201,14 +203,18 @@
 
           <BaseButton v-if="!loggedIn" variant="primary" @tap="login">登录后开始带练</BaseButton>
           <text v-if="yesterday" class="coach-muted">{{ reentryText }}</text>
-          <view v-if="learning.busy && !learning.streamPreview" class="reply-state" role="status">
-            <view class="reply-dots" aria-hidden="true"><view /><view /><view /></view>
-            <text class="reply-state__label">{{ t('learning.replying') }}</text>
-          </view>
-          <BaseBubble v-if="learning.streamPreview" class="stream-preview" aria-live="polite">
-            <text>{{ learning.streamPreview }}</text>
+          <BaseBubble
+            v-if="coachReply"
+            :id="coachReply.id"
+            :data-reply-pending="coachReply.pending ? 'true' : undefined"
+            avatar
+            :avatar-identity="coachReply.id"
+            :avatar-business="{ busy: coachReply.pending, producing: coachReply.pending && !!coachReply.content }"
+            class="coach-reply"
+            aria-live="polite"
+          >
+            <LearningMessage :content="coachReply.content" :pending="coachReply.pending" />
           </BaseBubble>
-          <BaseButton v-if="learning.busy" variant="quiet" @tap="learning.cancel()">取消等待</BaseButton>
         </view>
 
         <BaseCard
@@ -550,6 +556,7 @@ import { coachSavedRecords } from '../../../../laf-backend/functions/_shared/lea
 import { coachDueItem } from '../../../../laf-backend/functions/_shared/learning-reminders.js';
 import { workspaceDrafts } from '@/services/learning/workspace-drafts.js';
 import BaseBubble from '@/components/base/base-bubble/base-bubble.vue';
+import LearningMessage from './learning-message.vue';
 import '@/i18n/muse.js';
 import { t } from '@/i18n/index.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
@@ -684,6 +691,9 @@ const analysisFields = [
 ];
 const analysis = reactive(Object.fromEntries(analysisFields.map((f) => [f.key, ''])));
 const coach = computed(() => learning.active?.coach);
+const coachReply = computed(() =>
+  learning.reply?.kind === 'coach' && learning.reply.conversationId === learning.active?.id ? learning.reply : null
+);
 const materialTrack = computed(() => coachUsesMaterials(coach.value) || profile.subject === 'kaoyan_major');
 const today = computed(() => dayKey(learning.calendarTime, learning.state.timezone));
 const day = computed(() => coach.value?.days.find((d) => d.day === today.value));
@@ -926,19 +936,30 @@ async function revealCurrentTurn() {
   await nextTick();
   // #ifdef H5
   if (!learning.locatedRecord && typeof document !== 'undefined')
-    document.getElementById('coach-current-turn')?.scrollIntoView?.({ block: 'end' });
+    if (document.querySelector('.space-content')?.dataset.followLatest !== 'false')
+      document.getElementById('coach-current-turn')?.scrollIntoView?.({ block: 'end' });
   // #endif
 }
 onMounted(revealCurrentTurn);
 watch([() => savedPractice.value.length, () => coach.value?.profile], revealCurrentTurn);
 async function act(action) {
+  const context = learning.recordContext(),
+    previous = learning.reply?.operationId;
+  let operation;
+  const current = () =>
+    context === learning.recordContext() &&
+    (!operation || (learning.reply?.operationId === operation && !learning.reply.cancelled));
   message.value = '';
   try {
     modelFailure.value = null;
-    const result = await action();
+    const pending = action();
+    operation = learning.reply?.operationId !== previous ? learning.reply?.operationId : null;
+    const result = await pending;
+    if (!current()) return result;
     if (result?.success === false) modelFailure.value = result;
     return result;
   } catch (error) {
+    if (!current()) return;
     modelFailure.value = { error: error.code || 'MODEL_FAILED' };
     message.value = modelErrorPresentation(modelFailure.value).message;
     if (DEV_TEST) {
@@ -1249,7 +1270,8 @@ function login() {
   border-radius: 22px;
   color: var(--muse-user-ink);
   background: var(--muse-user);
-  line-height: 22px;
+  font-size: 16px;
+  line-height: 26px;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }

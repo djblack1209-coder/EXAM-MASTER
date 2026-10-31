@@ -143,18 +143,34 @@ export async function generateLearningTurnStream(body, options = {}) {
     reader,
     timer,
     timedOut = false;
+  let cancellingReader;
+  const cancelReader = () => {
+    if (!reader) return Promise.resolve();
+    if (!cancellingReader) {
+      try {
+        cancellingReader = Promise.resolve(reader.cancel());
+      } catch {
+        cancellingReader = Promise.resolve();
+      }
+    }
+    return cancellingReader;
+  };
   const abort = () => {
     controller?.abort();
     task?.abort();
+    // Fetch abort alone is not enough for a reader whose read is already pending.
+    void cancelReader().catch(() => {
+      /* finally releases the reader lock */
+    });
   };
   const releaseReader = async () => {
     const activeReader = reader;
-    reader = null;
     try {
-      await activeReader.cancel();
+      await cancelReader();
     } catch {
       /* 断开的流已释放 */
     } finally {
+      reader = null;
       activeReader.releaseLock();
     }
   };

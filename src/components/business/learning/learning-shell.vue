@@ -452,7 +452,9 @@ import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
 import { BRAND } from '@/config/brand.js';
 import { publicError, t } from '@/i18n/index.js';
+import { bindMessageFollow } from './message-follow.js';
 const props = defineProps({
+  dismissOverlay: { type: Function, default: null },
   sidePanel: { type: Boolean, default: false },
   active: { type: String, default: 'learning' },
   title: { type: String, default: '' },
@@ -476,6 +478,7 @@ const root = ref(null);
 // follows composer height changes; message/stream updates keep their own lifecycle.
 // #ifdef H5
 let composerResizeFrame;
+let releaseMessageFollow = () => {};
 const shellAttrs = useAttrs();
 onBeforeUpdate(() => {
   composerResizeFrame = null;
@@ -496,7 +499,7 @@ onBeforeUpdate(() => {
 onUpdated(() => {
   const before = composerResizeFrame;
   composerResizeFrame = null;
-  if (!before?.atEnd || !Number.isFinite(before.height)) return;
+  if (!before?.atEnd || before.scroller.dataset.followLatest === 'false' || !Number.isFinite(before.height)) return;
   const height = parseFloat(before.element.style.getPropertyValue('--muse-composer-height'));
   if (Number.isFinite(height) && height !== before.height) before.scroller.scrollTop = before.scroller.scrollHeight;
 });
@@ -861,6 +864,57 @@ function escapeMenu(event) {
   }
   // #endif
 }
+// Window runs after the existing document/dialog handlers. One Escape has one owner.
+function escapeGeneration(event) {
+  if (
+    event.key !== 'Escape' ||
+    event.defaultPrevented ||
+    event.isComposing ||
+    event.keyCode === 229 ||
+    event.repeat ||
+    event.shiftKey ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey
+  )
+    return;
+  const element = root.value?.$el || root.value;
+  if (!element?.getClientRects?.().length) return;
+  if (props.dismissOverlay?.()) {
+    event.preventDefault();
+    return;
+  }
+  const layers = document.querySelectorAll(
+    '.custom-modal-container, [role="dialog"], [role="listbox"], uni-picker-view'
+  );
+  if (
+    [...layers].some((layer) => {
+      for (let node = layer; node; node = node.parentElement) {
+        const style = getComputedStyle(node);
+        if (
+          node.hidden ||
+          node.hasAttribute('inert') ||
+          node.getAttribute('aria-hidden') === 'true' ||
+          style.display === 'none' ||
+          style.visibility === 'hidden'
+        )
+          return false;
+      }
+      return true;
+    })
+  )
+    return;
+  if (event.target?.closest?.('select')) return;
+  if (learning.intakeBusy || (learning.reply?.kind === 'intake' && learning.reply.pending)) {
+    learning.cancelModelIntake();
+    event.preventDefault();
+    return;
+  }
+  if (learning.busy || learning.reply?.pending) {
+    learning.cancel();
+    event.preventDefault();
+  }
+}
 function openView(view) {
   directoryOptions.value = false;
   menuOpen.value = false;
@@ -950,6 +1004,8 @@ onMounted(() => {
   const element = root.value?.$el || root.value;
   // #ifdef H5
   document.addEventListener('keydown', escapeMenu);
+  window.addEventListener('keydown', escapeGeneration);
+  if (props.active === 'learning') releaseMessageFollow = bindMessageFollow(element?.querySelector('.space-content'));
   // #endif
   element?.addEventListener?.('focusout', headerActionsFocusOut);
   element?.addEventListener?.('keydown', headerActionKey, true);
@@ -973,6 +1029,8 @@ onUnmounted(() => {
   const element = root.value?.$el || root.value;
   // #ifdef H5
   document.removeEventListener('keydown', escapeMenu);
+  window.removeEventListener('keydown', escapeGeneration);
+  releaseMessageFollow();
   // #endif
   element?.removeEventListener?.('focusout', headerActionsFocusOut);
   element?.removeEventListener?.('keydown', headerActionKey, true);

@@ -485,6 +485,42 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   const selectedMode = ref('offline');
   const streamEnabled = ref(false),
     streamPreview = ref('');
+  // Device-only presentation. Provisional text never enters the event repository.
+  const reply = ref(null);
+  let replyController = null;
+  let retryOperation = 0;
+  const sending = new Map();
+  function beginReply(kind, requestId, conversationId = selectedConversationId.value) {
+    const control = new AbortController();
+    replyController = control;
+    reply.value = {
+      kind,
+      operationId: learningId('presentation'),
+      requestId,
+      id: `${requestId}:reply`,
+      conversationId,
+      content: '',
+      pending: true,
+      at: Date.now()
+    };
+    return control;
+  }
+  function previewReply(control, content) {
+    assert(!control.signal.aborted && replyController === control, 'CANCELLED', '请求已取消，旧模型响应未写入');
+    streamPreview.value = content;
+    reply.value.content = content;
+  }
+  function finishReply(control, content = '') {
+    if (replyController !== control) return;
+    reply.value = {
+      ...reply.value,
+      pending: false,
+      cancelled: control.signal.aborted,
+      content: control.signal.aborted ? '' : content
+    };
+    replyController = null;
+    streamPreview.value = '';
+  }
   const visualRequest = shallowRef(null);
   const streamPlatform = learningStreamPlatform();
   const streamSupported = computed(
@@ -1297,6 +1333,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     localConnectionController?.abort();
     controller?.abort();
     pendingCloudCall = null;
+    replyController?.abort();
+    replyController = null;
+    reply.value = null;
     visualRequest.value = null;
     streamPreview.value = '';
     streamEnabled.value = false;
@@ -1682,6 +1721,17 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     return coachSave('review', { itemId, answer, rating, practice: true, ratingSource: 'host-v1' });
   }
   async function requestCoach(phase, target = phase, requestId = null) {
+    assert(!busy.value && !reply.value?.pending, 'BUSY', '请等待当前请求完成');
+    const control = beginReply('coach', requestId || learningId('coach'));
+    let result;
+    try {
+      result = await requestCoachTurn(phase, target, requestId, control);
+      return result;
+    } finally {
+      finishReply(control, result?.success ? reply.value?.content : '');
+    }
+  }
+  async function requestCoachTurn(phase, target, requestId, requestController) {
     refresh();
     const session = ensureSessionCurrent(),
       owner = state.value.owner;
@@ -1712,6 +1762,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     );
     if (DEV_TEST) {
       await learningWriteLease.waitUntilWritable(owner);
+      assert(!requestController.signal.aborted, 'CANCELLED', '请求已取消');
       ensureSessionCurrent(session);
       assert(
         recordContext() === context &&
@@ -1724,6 +1775,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
     if (!request) {
       const listed = await loadModels();
+      assert(!requestController.signal.aborted, 'CANCELLED', '请求已取消');
       assert(recordContext() === context && active.value?.id === conversationId, 'CONTEXT_CHANGED', '当前学习已变化');
       assert(listed.success, 'MODEL_DISABLED', listed.message || '平台模型暂不可用');
       const model = modelId.value ? models.value.find((m) => m.id === modelId.value) : null;
@@ -1740,7 +1792,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       const weaknesses = coachWeaknesses(coach);
       const sources = coachMaterialContext(state.value, active.value, { phase, ...bound, weaknesses });
       assert(coach.profile.exam !== 'cs408' || sources.length, 'MATERIAL_REQUIRED', '请先添加专业课资料');
-      const id = learningId('coach'),
+      const id = retryOf ? learningId('coach') : reply.value.requestId,
         binding = learningId('binding');
       const data = {
         contract: WRITING_COACH_CONTRACT,
@@ -1780,8 +1832,10 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     } else {
       assert(request.request.input === bound.input, 'CONTEXT_CHANGED', '原答已变化，旧请求只保留供核对');
     }
-    const requestController = new AbortController();
+    reply.value.requestId = request.id;
+    reply.value.id = `${request.id}:reply`;
     controller = requestController;
+    pendingCloudCall = { id: request.id, owner, session };
     const revision = state.value.revision;
     const selectedModel = modelId.value,
       selectedProviderMode = selectedMode.value;
@@ -1820,7 +1874,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         stream: streamEnabled.value,
         onPreview: (text) => {
           assertCurrent();
-          streamPreview.value = text;
+          previewReply(requestController, text);
         }
       };
       const result = recovering
@@ -1883,10 +1937,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         { conversationId, explicit: true, requestId: request.id, output: result.data.coach },
         `${request.id}:result`
       );
+      reply.value.content = safeLearningMessage(result.data.message || '');
       retryState.value = { phase: 'succeeded', requestId: request.id, errorCode: null, message: '已收到结果' };
       return result;
     } catch (failure) {
-      if (recordContext() === context) {
+      if (controller === requestController && recordContext() === context) {
         retryState.value = {
           phase: 'failed',
           requestId: request.id,
@@ -1900,6 +1955,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       if (controller === requestController) {
         controller = null;
         busy.value = false;
+        pendingCloudCall = null;
         streamPreview.value = '';
       }
     }
@@ -2819,7 +2875,39 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     notice(command.type === 'hint_only' ? '已切换为只给提示。' : '已更换讲解方法。');
     return result;
   }
-  async function send(raw, options = {}) {
+  function send(raw, options = {}) {
+    const id = options.id || learningId('turn');
+    if (sending.has(id)) return sending.get(id);
+    // A correction is a new, explicitly sent user message. Keep the original
+    // answer and invalidate its generation before accepting the correction.
+    if (options.correctionOf) {
+      assert(
+        active.value?.messages.filter((m) => m.role === 'user').at(-1)?.id === options.correctionOf,
+        'CONTEXT_CHANGED',
+        '当前学习已变化'
+      );
+      cancel();
+    }
+    if (reply.value?.pending && !busy.value) {
+      if (userDirective(raw, state.value, selectedConversationId.value)?.type === 'task.stop') cancel();
+      else {
+        error.value = '当前模型任务仍在执行，可以先取消请求或停止当前任务';
+        return;
+      }
+    }
+    if (busy.value || selectedMode.value === 'offline') return sendTurn(raw, { ...options, id });
+    const control = beginReply('chat', id);
+    const pending = sendTurn(raw, { ...options, id, presentationController: control }).finally(() => {
+      if (replyController === control) {
+        const saved = active.value?.messages.find((message) => message.id === `${id}:reply`);
+        finishReply(control, saved?.content || '');
+      }
+      sending.delete(id);
+    });
+    sending.set(id, pending);
+    return pending;
+  }
+  async function sendTurn(raw, options = {}) {
     ensureSessionCurrent();
     assert(!intakeBusy.value, 'BUSY', '请等待模型建档回复');
     if (
@@ -2828,6 +2916,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       !models.value.some((model) => model.source === 'byok' && model.configured && !model.requiresModelSelection)
     )
       await loadModels();
+    assert(!options.presentationController?.signal.aborted, 'CANCELLED', '请求已取消');
     assert(
       !getToken() ||
         selectedMode.value === 'local' ||
@@ -2914,6 +3003,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
     const startedFromMessage = !active.value;
     if (startedFromMessage) start(raw);
+    if (options.presentationController && replyController === options.presentationController)
+      reply.value.conversationId = selectedConversationId.value;
     commit(
       'message.add',
       { conversationId: selectedConversationId.value, role: 'user', content: raw },
@@ -3160,7 +3251,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       return;
     }
     assert(sharingAllowed.value, 'CONSENT_REQUIRED', '请先确认当前上下文的数据流向');
-    const requestController = new AbortController();
+    const requestController = options.presentationController || new AbortController();
     const mode = selectedMode.value,
       requestedModelId = modelId.value;
     const lifecycle = learningRepository.lifecycleRevision();
@@ -3360,7 +3451,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
               assertCurrent,
               onPreview: (text) => {
                 assertCurrent();
-                streamPreview.value = text;
+                previewReply(requestController, text);
               }
             });
       assertCurrent();
@@ -3374,6 +3465,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       applyModelResult(result.data, request, requestController.signal);
     } catch (e) {
       if (
+        controller === requestController &&
         loginContext() === request.session &&
         state.value.owner === owner &&
         selectedConversationId.value === conversationId
@@ -3594,15 +3686,17 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const owner = state.value.owner,
       lifecycle = learningRepository.lifecycleRevision();
     const session = loginContext();
-    const requestController = new AbortController();
+    const requestController = beginReply('chat', pending.requestId, pending.conversationId);
     controller = requestController;
+    pendingCloudCall = { id: pending.requestId, owner, session };
     busy.value = true;
     streamPreview.value = '';
     const assertRecovery = () => {
       refresh();
       const eventIndex = state.value.events.findIndex((e) => e.id === `${pending.requestId}:request`);
       assert(
-        loginContext() === session &&
+        controller === requestController &&
+          loginContext() === session &&
           !requestController.signal.aborted &&
           state.value.owner === owner &&
           lifecycle === learningRepository.lifecycleRevision() &&
@@ -3650,6 +3744,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       return result;
     } catch (e) {
       if (
+        controller === requestController &&
         loginContext() === session &&
         state.value.owner === owner &&
         selectedConversationId.value === pending.conversationId
@@ -3660,15 +3755,28 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       if (controller === requestController) {
         busy.value = false;
         controller = null;
+        pendingCloudCall = null;
         streamPreview.value = '';
+        finishReply(
+          requestController,
+          active.value?.messages.find((message) => message.id === `${pending.requestId}:reply`)?.content || ''
+        );
       }
     }
   }
   function cancel() {
+    const wasPending = Boolean(controller || replyController);
+    retryOperation++;
     visualRequest.value = null;
     const pending = pendingCloudCall;
     pendingCloudCall = null;
     controller?.abort();
+    const presentation = replyController;
+    presentation?.abort();
+    if (presentation) finishReply(presentation);
+    controller = null;
+    busy.value = false;
+    if (wasPending) error.value = '请求已取消，费用状态请查看模型用量';
     streamPreview.value = '';
     if (checkSession(boundSession) !== 'current') return;
     if (pending && pending.owner === state.value.owner && pending.session === loginContext()) {
@@ -3683,11 +3791,22 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         assertCurrent: () => ensureSessionCurrent(pending.session)
       })
         .then((result) => {
-          if (!result.success && state.value.owner === pending.owner && pending.session === loginContext())
+          if (
+            !result.success &&
+            reply.value?.requestId === pending.id &&
+            !reply.value.pending &&
+            state.value.owner === pending.owner &&
+            pending.session === loginContext()
+          )
             error.value = '客户端已取消，服务端取消未确认；实际用量需查看模型用量状态';
         })
         .catch(() => {
-          if (state.value.owner === pending.owner && pending.session === loginContext())
+          if (
+            reply.value?.requestId === pending.id &&
+            !reply.value.pending &&
+            state.value.owner === pending.owner &&
+            pending.session === loginContext()
+          )
             error.value = '服务端取消未确认，实际用量需查看模型用量状态';
         });
     }
@@ -3956,7 +4075,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const origin = ensureSessionCurrent(),
       expected = recordContext();
     intakeBusy.value = true;
-    intakeController = new AbortController();
+    const control =
+      reply.value?.kind === 'intake' && reply.value.pending
+        ? replyController
+        : beginReply('intake', learningId('intake'));
+    intakeController = control;
     let requestId;
     try {
       refresh();
@@ -3976,21 +4099,24 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           ...(answer !== undefined ? { answer } : {})
         });
       }
+      reply.value.requestId = requestId;
+      reply.value.id = `${requestId}:reply`;
       intakeError.value = '';
       const turns = state.value.intake.turns;
       const result = await modelAction((options) =>
         recover
           ? fetchLearningResult(requestId, {
               ...options,
-              signal: globalThis.AbortSignal.any([options.signal, intakeController.signal])
+              signal: globalThis.AbortSignal.any([options.signal, control.signal])
             })
           : testLearningModel(id, requestId, {
               ...options,
-              signal: globalThis.AbortSignal.any([options.signal, intakeController.signal]),
+              signal: globalThis.AbortSignal.any([options.signal, control.signal]),
               intake: { turns }
             })
       );
       ensureSessionCurrent(origin);
+      assert(!control.signal.aborted && intakeController === control, 'CANCELLED', '请求已取消');
       assert(recordContext() === expected, 'CONTEXT_CHANGED', '学习记录已变化');
       if (result.success) {
         if (!result.data || typeof result.data !== 'object')
@@ -4012,6 +4138,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           { turns }
         );
         commit('intake.result', { requestId, modelId: id, reply });
+        finishReply(control, reply.message);
         modelId.value = id;
         selectedMode.value = 'cloud';
       } else {
@@ -4026,7 +4153,13 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       }
       return result;
     } catch (failure) {
-      if (recordContext() === expected && requestId && state.value.intake?.requestId === requestId) {
+      if (
+        !control.signal.aborted &&
+        intakeController === control &&
+        recordContext() === expected &&
+        requestId &&
+        state.value.intake?.requestId === requestId
+      ) {
         const invalid = failure.code === 'INTAKE_INVALID';
         commit('intake.failed', { requestId, final: invalid });
         intakeError.value = intakeFailureMessage(failure, invalid);
@@ -4034,8 +4167,11 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       }
       throw failure;
     } finally {
-      intakeController = null;
-      intakeBusy.value = false;
+      if (intakeController === control) {
+        intakeController = null;
+        intakeBusy.value = false;
+      }
+      finishReply(control);
     }
   }
   function intakeFailureMessage(failure, final) {
@@ -4047,7 +4183,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     return `${publicError(failure)} 可查询原请求，查询不会再次调用模型。`;
   }
   function cancelModelIntake() {
-    intakeController?.abort();
+    retryOperation++;
+    const control = intakeController || (reply.value?.kind === 'intake' ? replyController : null);
+    control?.abort();
+    if (control) finishReply(control);
+    intakeController = null;
+    intakeBusy.value = false;
   }
   function restartModelIntake() {
     const intake = state.value.intake;
@@ -4056,7 +4197,17 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     return runModelIntake(intake.modelId, undefined, false, finished);
   }
   async function beginModelIntake(id) {
+    if (reply.value?.pending) return { success: false, message: '请等待当前请求完成' };
+    const control = beginReply('intake', learningId('intake'));
+    try {
+      return await beginModelIntakeTurn(id, control);
+    } finally {
+      finishReply(control);
+    }
+  }
+  async function beginModelIntakeTurn(id, control) {
     if (!['ready', 'remote'].includes(accountRecordState.value)) await readAccountRecords();
+    assert(!control.signal.aborted, 'CANCELLED', '请求已取消');
     if (accountRecordState.value !== 'ready')
       return { success: false, message: '账号已有学习记录，请先在数据面板确认采用云端记录' };
     if (DEV_TEST) return loadModels();
@@ -4071,6 +4222,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     )
       return testModel(id);
     const catalog = await loadModels();
+    assert(!control.signal.aborted, 'CANCELLED', '请求已取消');
     if (!catalog.success) return catalog;
     if (!modelIntakeAvailable) return { success: false, code: 426, error: 'INTAKE_UNAVAILABLE' };
     if (state.value.intake?.modelId === id && !state.value.intake.acceptedConversationId) {
@@ -5209,6 +5361,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     streamSupported,
     streamPlatform,
     streamPreview,
+    reply,
     recoverableRequest,
     recoverModelResult,
     localConnection,
@@ -5304,8 +5457,9 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         'recoverModelResult',
         'testModel'
       ].includes(name);
+      const retryTicket = tracksRetry ? ++retryOperation : null;
       const trackResult = (value) => {
-        if (tracksRetry) {
+        if (tracksRetry && retryTicket === retryOperation) {
           const failure = value?.success === false;
           const presentation = failure ? modelErrorPresentation(value) : null;
           retryState.value = {
@@ -5341,7 +5495,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
               },
               (failure) => {
                 check(session);
-                if (tracksRetry) {
+                if (tracksRetry && retryTicket === retryOperation) {
                   const presentation = modelErrorPresentation(failure);
                   retryState.value = {
                     phase: 'failed',
