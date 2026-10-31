@@ -306,7 +306,7 @@ describe('有出处的公开说明文阅读帮助', () => {
     store.startWriting(oldContext, 'narrative');
     expect(() => store.readWritingReference(oldContext, source.id, 1)).toThrow('切换');
     store.startWriting(store.writingContext(), 'explanation');
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     const stopped = store.exportData();
     expect(() => read(store)).toThrow('停止');
     expect(() => applyLearningOperation(store.state, referenceOperation(store))).toThrow('进行中的');
@@ -517,7 +517,7 @@ describe('中文叙事的公共原文与学习目标', () => {
       context = store.writingContext();
     expect(() => store.submit('提前原答。', true)).toThrow('复测日期');
     expect(store.exportData()).toBe(future);
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     const stopped = store.exportData();
     expect(() => read(store)).toThrow('停止');
     expect(store.exportData()).toBe(stopped);
@@ -683,7 +683,7 @@ describe('公共完整作品与明确阅读', () => {
       expect(wrong.exportData()).toBe(before);
       const store = setup('narrative'),
         context = store.writingContext();
-      await store.send('停止当前任务');
+      await store.send('停止当前任务', { discussionOnly: true });
       const stopped = store.exportData();
       expect(() => store.readWritingReference(context, id, 1)).toThrow('停止');
       expect(store.exportData()).toBe(stopped);
@@ -937,7 +937,7 @@ describe('原创体裁的规范题目、原答与来源', () => {
       context = store.writingContext();
     store.startWriting(context, 'explanation');
     expect(() => store.recordWritingHelp(context, '旧提示', 'narrative')).toThrow('切换');
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     const stopped = store.exportData();
     expect(() => store.startWriting(store.writingContext(), 'narrative')).toThrow('停止');
     expect(store.exportData()).toBe(stopped);

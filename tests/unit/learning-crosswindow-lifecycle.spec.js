@@ -5,8 +5,17 @@ import { createLearningRepository, learningRepository, LEARNING_KEY } from '@/se
 import { storageService, StorageService } from '@/services/storageService.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { getLoginSessionEpoch, sessionCredentialProof, captureSession } from '@/services/auth-storage.js';
-import { obfuscate } from '@/utils/crypto/cipher.js';
+import { obfuscate, deobfuscate } from '@/utils/crypto/cipher.js';
 import { parsePastedMaterial } from '@/services/learning/material-intake.js';
+function requestFor(pending, action, occurrence = 0) {
+  const matches = pending.filter((request) =>
+    action.startsWith('/')
+      ? request.url.endsWith(action)
+      : request.url.endsWith('/learning-models') && request.data.action === action
+  );
+  if (!matches[occurrence]) throw new Error(`Missing fixture request ${action} #${occurrence}`);
+  return matches[occurrence];
+}
 const epochKey = `${LEARNING_KEY}_lifecycle`;
 function pair() {
   const map = new Map();
@@ -214,7 +223,9 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
     const pending = [];
     vi.spyOn(uni, 'request').mockImplementation((options) => {
       const abort = vi.fn();
-      pending.push({ ...options, abort });
+      if (options.url.endsWith('/learning-models') && options.data.action === 'preferences') {
+        options.success({ data: { success: true, data: { preferences: options.data.preferences } } });
+      } else pending.push({ ...options, abort });
       return { abort };
     });
     return pending;
@@ -237,7 +248,7 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
       cost: { spent: 0, reserved: 0, pending: 0 }
     }
   };
-  it('连续点击只发送一次列表请求；真实等待不改变模型、共享许可或学习事实', async () => {
+  it('连续点击仅一次列表请求；等待不改配置，目录缺项清除失效选择且不改学习事实', async () => {
     const pending = requests(),
       before = store.exportData();
     store.selectedMode = 'local';
@@ -247,13 +258,15 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
       second = store.loadModels();
     expect(store.modelListState).toMatchObject({ phase: 'loading' });
     expect(pending).toHaveLength(1);
-    expect(pending[0].data).toEqual({ action: 'list' });
-    pending[0].success({ data: modelResult() });
+    expect(requestFor(pending, 'list').data).toEqual({ action: 'list' });
+    expect(store.selectedMode).toBe('local');
+    expect(store.modelId).toBe('explicit-choice');
+    requestFor(pending, 'list').success({ data: modelResult() });
     await Promise.all([first, second]);
     expect(store.modelListState).toMatchObject({ phase: 'ready' });
     expect(store.models[0].id).toBe('current-model');
-    expect(store.selectedMode).toBe('local');
-    expect(store.modelId).toBe('explicit-choice');
+    expect(store.selectedMode).toBe('offline');
+    expect(store.modelId).toBe('');
     expect(store.sharingAllowed).toBe(true);
     expect(store.exportData()).toBe(before);
   });
@@ -262,14 +275,15 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
       before = store.exportData();
     const reading = store.loadModels();
     const result = modelResult('saved-model');
-    Object.assign(result.data.models[0], { configured: true, connectionStatus: 'connected' });
-    pending[0].success({ data: result });
+    Object.assign(result.data.models[0], { source: 'byok', configured: true, connectionStatus: 'connected' });
+    result.data.preferences = { selectedModelId: 'saved-model', sharingAllowed: false };
+    requestFor(pending, 'list').success({ data: result });
     await reading;
     expect(store.modelId).toBe('saved-model');
     expect(store.selectedMode).toBe('cloud');
     expect(store.sharingAllowed).toBe(false);
     expect(pending).toHaveLength(1);
-    expect(pending[0].data).toEqual({ action: 'list' });
+    expect(requestFor(pending, 'list').data).toEqual({ action: 'list' });
     expect(store.exportData()).toBe(before);
   });
   it('读取失败与明确重试分别显示状态；成功后清除旧错误，不自动重放', async () => {
@@ -472,7 +486,14 @@ describe('加密同账户会话与凭据请求边界', () => {
     store.openRecord(search.items[0].id, search.context);
     store.modelId = 'explicit-model';
     store.models = [
-      { id: 'explicit-model', provider: '合成', model: 'explicit-model', capabilities: { structured: true } }
+      {
+        id: 'explicit-model',
+        provider: '合成',
+        model: 'explicit-model',
+        source: 'byok',
+        configured: true,
+        capabilities: { structured: true }
+      }
     ];
     store.modelPresets = [{ id: 'explicit-preset' }];
     store.usage = { fixture: 'kept-usage' };
@@ -512,14 +533,29 @@ describe('加密同账户会话与凭据请求边界', () => {
     const pending = [];
     vi.spyOn(uni, 'request').mockImplementation((options) => {
       const abort = vi.fn();
-      pending.push({ ...options, abort });
+      if (options.url.endsWith('/learning-models') && options.data.action === 'preferences') {
+        options.success({ data: { success: true, data: { preferences: options.data.preferences } } });
+      } else pending.push({ ...options, abort });
       return { abort };
     });
     return pending;
   }
   const models = (id) => ({
     success: true,
-    data: { models: [{ id, provider: '合成', model: id, capabilities: {} }], presets: [] }
+    data: {
+      models: [
+        { id, provider: '合成', model: id, source: 'byok', configured: true, capabilities: {} },
+        {
+          id: 'explicit-model',
+          provider: '合成',
+          model: 'explicit-model',
+          source: 'byok',
+          configured: true,
+          capabilities: { structured: true }
+        }
+      ],
+      presets: []
+    }
   });
   const usage = { success: true, data: null };
   function change(kind) {
@@ -558,7 +594,7 @@ describe('加密同账户会话与凭据请求边界', () => {
     expect(store.selectedMode).toBe('offline');
     expect(store.localConnection).toBeNull();
     expect(store.materialConnection).toBeNull();
-    expect(store.sharingAllowed).toBe(false);
+    expect(store.sharingAllowed).toBe(true); // same owner restores the saved account preference
   }
   it.each(['epoch-first', 'removed-first', 'restored-first'])(
     '跨窗口退出再登同账户的积压事件%s完整撤销所有旧读取',
@@ -589,8 +625,8 @@ describe('加密同账户会话与凭据请求边界', () => {
       await Promise.all([rejectedList, rejectedUsage]);
       expect(pending.every((request) => request.abort.mock.calls.length === 1)).toBe(true);
       expectReset();
-      pending[0].success({ data: models('late-revoked-model') });
-      pending[1].success({ data: usage });
+      requestFor(pending, 'list').success({ data: models('late-revoked-model') });
+      requestFor(pending, 'usage').success({ data: usage });
       await Promise.resolve();
       expectReset();
       expect(store.exportData()).toBe(facts);
@@ -611,6 +647,7 @@ describe('加密同账户会话与凭据请求边界', () => {
     const transport = vi.fn(() => new Promise((done) => (resolve = done)));
     vi.stubGlobal('fetch', transport);
     const promise = store.send('请再解释一下');
+    const rejected = expect(promise).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
     const facts = store.exportData();
     // Revocation is observed from persisted state; a delayed event cannot revoke a later binding.
     peerLogin('synthetic-post-revocation-epoch');
@@ -620,7 +657,7 @@ describe('加密同账户会话与凭据请求边界', () => {
     expect(transport.mock.calls[0][1].signal.aborted).toBe(true);
     expectReset();
     resolve({ ok: true, text: async () => JSON.stringify({ success: true, data: { message: '撤销前的迟到正文' } }) });
-    await expect(promise).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+    await rejected;
     expect(store.exportData()).toBe(facts);
     expect(store.active.messages.some((m) => m.content === '撤销前的迟到正文')).toBe(false);
     expect(store.busy).toBe(false);
@@ -709,7 +746,7 @@ describe('加密同账户会话与凭据请求边界', () => {
     expectReset();
     expect(transport).not.toHaveBeenCalled();
     expect(store.exportData()).toBe(facts);
-    await store.send('新操作只做离线学习');
+    store.start('新会话的本机任务');
     expect(transport).not.toHaveBeenCalled();
   });
   it.each(['changed', 'removed', 'cancelled'])(
@@ -831,7 +868,11 @@ describe('加密同账户会话与凭据请求边界', () => {
       'cancelMaterial',
       'cancelSync',
       'cancelHistory',
-      'cancelModelReads'
+      'cancelModelReads',
+      'cancelModelIntake',
+      'openModelConnector',
+      'modelErrorPresentation',
+      'loadModelDiscovery'
     ]);
     const transport = vi.fn();
     vi.stubGlobal('fetch', transport);
@@ -850,7 +891,7 @@ describe('加密同账户会话与凭据请求边界', () => {
         result = Promise.reject(failure);
       }
       if (safeReads.has(name)) await Promise.resolve(result).catch(() => undefined);
-      else await expect(result).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+      else await expect(Promise.resolve(result), name).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
       expectReset();
       expect(JSON.stringify(global.__mockStorage), name).toBe(afterLogin);
       expect(before).not.toBe(afterLogin);
@@ -949,16 +990,15 @@ describe('加密同账户会话与凭据请求边界', () => {
       const before = config(),
         facts = store.exportData(),
         original = store.locatedRecord;
-      expect(pending[0].header.Authorization).toBe(`Bearer ${originalToken}`);
+      expect(requestFor(pending, 'list').header.Authorization).toBe(`Bearer ${originalToken}`);
       if (source === 'same-window') change('refresh');
       else {
         uni.setStorageSync('_enc_EXAM_TOKEN', encrypted);
         uni.setStorageSync(
           '_enc_EXAM_SESSION_EPOCH',
           obfuscate({
-            version: 1,
-            epoch: getLoginSessionEpoch(),
-            owner: 'synthetic-crosswindow-owner',
+            ...deobfuscate(uni.getStorageSync('_enc_EXAM_SESSION_EPOCH')),
+            token: renewedToken,
             proof: sessionCredentialProof('synthetic-crosswindow-owner', renewedToken)
           })
         );
@@ -973,13 +1013,13 @@ describe('加密同账户会话与凭据请求边界', () => {
       expect(config()).toEqual(before);
       expect(store.locatedRecord).toBe(original);
       expect(store.exportData()).toBe(facts);
-      pending[0].success({ data: models('continued-model') });
-      pending[1].success({ data: usage });
+      requestFor(pending, 'list').success({ data: models('continued-model') });
+      requestFor(pending, 'usage').success({ data: usage });
       await Promise.all([list, readUsage]);
       expect(store.models[0].id).toBe('continued-model');
       const retry = store.loadModels();
-      expect(pending[2].header.Authorization).toBe(`Bearer ${renewedToken}`);
-      pending[2].success({ data: models('fresh-token-model') });
+      expect(requestFor(pending, 'list', 1).header.Authorization).toBe(`Bearer ${renewedToken}`);
+      requestFor(pending, 'list', 1).success({ data: models('fresh-token-model') });
       await retry;
       expect(store.models[0].id).toBe('fresh-token-model');
       expect(store.modelId).toBe('explicit-model');
@@ -1045,12 +1085,14 @@ describe('加密同账户会话与凭据请求边界', () => {
     const pending = requests(),
       promise = store.send('请再解释一下'),
       before = config();
-    expect(pending[0].url).toMatch(/\/proxy-ai$/);
+    expect(requestFor(pending, '/proxy-ai').url).toMatch(/\/proxy-ai$/);
     store.streamPreview = '已显示的临时预览';
     change(kind);
     expect(config()).toEqual(before);
-    expect(pending[0].abort).not.toHaveBeenCalled();
-    pending[0].success({ data: { success: true, data: { message: '云端生成已完成', tools: [] } } });
+    expect(requestFor(pending, '/proxy-ai').abort).not.toHaveBeenCalled();
+    requestFor(pending, '/proxy-ai').success({
+      data: { success: true, data: { message: '云端生成已完成', tools: [] } }
+    });
     await promise;
     expect(store.active.messages.some((message) => message.content === '云端生成已完成')).toBe(true);
     expect(store.busy).toBe(false);
@@ -1064,14 +1106,14 @@ describe('加密同账户会话与凭据请求边界', () => {
       promise = store.syncRecords(true);
     const before = config(),
       facts = store.exportData();
-    expect(pending[0].url).toMatch(/\/learning-sync$/);
+    expect(requestFor(pending, '/learning-sync').url).toMatch(/\/learning-sync$/);
     change('refresh');
-    expect(pending[0].abort).not.toHaveBeenCalled();
+    expect(requestFor(pending, '/learning-sync').abort).not.toHaveBeenCalled();
     expect(config()).toEqual(before);
     const { normalizePrivateSyncOperation } = await import('@/services/learning/learning-domain.js');
     const remote = learningRepository.read();
     remote.events = remote.events.map(normalizePrivateSyncOperation);
-    pending[0].success({ data: { success: true, data: { state: remote } } });
+    requestFor(pending, '/learning-sync').success({ data: { success: true, data: { state: remote } } });
     await promise;
     expect(pending).toHaveLength(1);
     const previous = JSON.parse(facts);
@@ -1113,7 +1155,7 @@ describe('加密同账户会话与凭据请求边界', () => {
     });
     expect(store.modelId).toBe('');
     expect(store.selectedMode).toBe('offline');
-    expect(store.sharingAllowed).toBe(false);
+    expect(store.sharingAllowed).toBe(true);
   });
   it('没有可靠账户ID时，重复资料写入也按切换处理，宁可撤销不复用访客授权', () => {
     session();

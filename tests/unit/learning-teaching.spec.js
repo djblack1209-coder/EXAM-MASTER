@@ -1,3 +1,4 @@
+import { savedByok, acknowledgePreferences } from '../fixtures/learning/saved-byok.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
@@ -35,8 +36,8 @@ describe('教学实际交付与帮助记录', () => {
     store.start('12 + 8');
     const original = store.activeQuestion,
       conversation = store.selectedConversationId;
-    await store.send('直接讲解', { id: 'delivered-explanation' });
-    await store.send('直接讲解', { id: 'delivered-explanation' });
+    await store.send('直接讲解', { discussionOnly: true, id: 'delivered-explanation' });
+    await store.send('直接讲解', { discussionOnly: true, id: 'delivered-explanation' });
     expect(store.active.pendingHints).toHaveLength(1);
     expect(store.state.executions.filter((e) => e.tool === 'teaching')).toHaveLength(1);
     store.start('3 + 7');
@@ -64,7 +65,7 @@ describe('教学实际交付与帮助记录', () => {
       tasks: [{ id: 'independent', title: '独立检验', questionKey: key, condition: 'independent_correct' }]
     });
     store.refresh();
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     store.setRhythm('focus');
     store.focus(key, store.selectedConversationId, 'review');
     const answer = store.submit('20', true);
@@ -75,12 +76,12 @@ describe('教学实际交付与帮助记录', () => {
   it('1至3级提示逐步增加，例题、类比、步骤各有实际内容；不靠教法标签冒充执行', async () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
-    for (let i = 1; i <= 3; i++) await store.send('给我提示', { id: `layer-${i}` });
+    for (let i = 1; i <= 3; i++) await store.send('给我提示', { discussionOnly: true, id: `layer-${i}` });
     expect(store.active.pendingHints.map((h) => h.level)).toEqual([1, 2, 3]);
     expect(store.active.pendingHints[0].content).not.toContain('20');
     expect(store.active.pendingHints[1].content).not.toContain('20');
     expect(store.active.pendingHints[2].content).toContain('20');
-    await store.send('给我提示', { id: 'layer-1' });
+    await store.send('给我提示', { discussionOnly: true, id: 'layer-1' });
     expect(store.active.pendingHints).toHaveLength(3);
     const q = store.activeQuestion;
     const contents = ['explain', 'question', 'steps', 'prerequisite', 'example', 'analogy', 'diagram'].map(
@@ -122,7 +123,7 @@ describe('教学实际交付与帮助记录', () => {
   it('教学事件经备份/同步重放保持原题帮助、统计和历史身份，不宣称重新执行', async () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
-    await store.send('用图形讲解', { id: 'graph-delivery' });
+    await store.send('用图形讲解', { discussionOnly: true, id: 'graph-delivery' });
     store.focus(questionKey(store.activeQuestion));
     store.submit('20', true, 'graph-answer');
     const current = emptyLearningState('guest', store.state.timezone);
@@ -199,7 +200,7 @@ describe('动态调整的任务、证据和范围', () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
     const first = store.submit('19', true);
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     const revision = store.submit('20', true);
     store.correctAssessment(first.id, '原始判分有争议');
     const review = store.state.reviews.at(-1);
@@ -249,7 +250,7 @@ describe('动态调整的任务、证据和范围', () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
     const original = store.activeQuestion;
-    await store.send('太简单了', { id: 'challenge-turn' });
+    await store.send('太简单了', { discussionOnly: true, id: 'challenge-turn' });
     const q = store.activeQuestion;
     expect(q.parentQuestionKey).toBe(questionKey(original));
     expect(q.prompt).toBe('计算 (12 + 8) × -2。');
@@ -317,19 +318,26 @@ describe('动态调整的任务、证据和范围', () => {
     store.selectedMode = 'cloud';
     store.sharingAllowed = true;
     store.modelId = 'isolated-model';
+    store.models = [savedByok('isolated-model')];
     const transport = vi.spyOn(uni, 'request').mockImplementation((options) => {
+      if (acknowledgePreferences(options)) return { abort: vi.fn() };
       options.success({ data: { success: true, data: { message: '12加8得到20。', tools: [] } } });
       return { abort: vi.fn() };
     });
     try {
-      await store.send('直接讲解', { id: 'model-explain' });
+      await store.send('直接讲解', { discussionOnly: true, id: 'model-explain' });
       expect(store.active.messages.at(-1)).toMatchObject({ role: 'assistant', method: 'explain' });
       store.focus(questionKey(store.activeQuestion));
       const attempt = await store.send('20');
       expect(attempt.hints).toHaveLength(1);
       expect(store.summary.first.denominator).toBe(1);
       expect(store.summary.knowledge['数学 / 整数运算'].status).toBe('需提示');
-      expect(transport).toHaveBeenCalledOnce();
+      expect(transport.mock.calls.filter(([options]) => options.url.endsWith('/proxy-ai'))).toHaveLength(1);
+      expect(
+        transport.mock.calls.every(
+          ([options]) => options.url.endsWith('/proxy-ai') || options.data.action === 'preferences'
+        )
+      ).toBe(true);
     } finally {
       transport.mockRestore();
     }
@@ -344,13 +352,15 @@ describe('动态调整的任务、证据和范围', () => {
     store.selectedMode = 'cloud';
     store.sharingAllowed = true;
     store.modelId = 'isolated-model';
+    store.models = [savedByok('isolated-model')];
     let respond;
     const transport = vi.spyOn(uni, 'request').mockImplementation((options) => {
+      if (acknowledgePreferences(options)) return { abort: vi.fn() };
       respond = options.success;
       return { abort: vi.fn() };
     });
     try {
-      const request = store.send('直接讲解');
+      const request = store.send('直接讲解', { discussionOnly: true });
       store.focus('second-q@1');
       respond({ data: { success: true, data: { message: '旧题答案20', tools: [] } } });
       await request;

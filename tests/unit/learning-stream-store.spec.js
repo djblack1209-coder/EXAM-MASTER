@@ -1,3 +1,5 @@
+import { acknowledgePreferences } from '../fixtures/learning/saved-byok.js';
+import { toolParameterHash } from '../../laf-backend/functions/_shared/learning-runtime-policy.js';
 import { storageService } from '@/services/storageService.js';
 import { beforeEach, afterEach, it, expect, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
@@ -33,37 +35,6 @@ afterEach(async () => {
   vi.clearAllMocks();
   vi.unstubAllGlobals();
 });
-it('访客明确提交学习目标后进入现有建档，确认后显示待采用计划且不调用模型', async () => {
-  const store = useConversationLearningStore();
-  stores.push(store);
-  const wrapper = mount(LearningPage, { global: { stubs: { BaseIcon: true, PrivacyPopup: true } } });
-  wrappers.push(wrapper);
-  const request = vi.spyOn(uni, 'request');
-  await wrapper.get('textarea[aria-label="发送消息"]').setValue('浮力概念自建练习');
-  await wrapper.get('button[aria-label="发送"]').trigger('tap');
-  await flushPromises();
-  expect(store.active.goal).toBe('浮力概念自建练习');
-  expect(store.active.studyProfile).toBeFalsy();
-  for (let step = 0; step < 5; step++) {
-    await wrapper
-      .get('[data-test="profile-draft"]')
-      .findAll('button')
-      .find((button) => button.text() === (step === 0 ? '下一步' : '跳过'))
-      .trigger('tap');
-    await flushPromises();
-  }
-  await wrapper
-    .get('[data-test="profile-draft"]')
-    .findAll('button')
-    .find((button) => button.text() === '确认保存')
-    .trigger('tap');
-  await flushPromises();
-  expect(wrapper.find('[data-test="profile-draft"]').exists()).toBe(false);
-  expect(wrapper.find('[data-test="learning-proposal"]').exists()).toBe(true);
-  expect(store.state.plans).toHaveLength(0);
-  expect(request).not.toHaveBeenCalled();
-});
-
 function setup(platform = 'h5') {
   let bridge;
   if (platform === 'app') {
@@ -248,6 +219,7 @@ it('带练复用流式片段，预览不写学习事实，最终校验后保存�
   store.startCoach('考研英语二写作');
   store.coachSave('profile', { profile: { exam: 'english2', minutes: 25, deadline: null } });
   vi.spyOn(uni, 'request').mockImplementation((options) => {
+    if (acknowledgePreferences(options)) return { abort: vi.fn() };
     options.success({
       data: {
         success: true,
@@ -296,14 +268,27 @@ it('合法提示后无效计划保留部分成功、失败收据和重开重试�
   expect(JSON.stringify(store.state.plans)).toBe(originalPlans);
   expect(store.state.attempts).toHaveLength(0);
   expect(store.active.messages.some((m) => m.content === '提示与计划都已保存。')).toBe(false);
-  expect(store.state.executions).toEqual([
-    expect.objectContaining({ id: 'partial-tools:tool:0:receipt', tool: 'hint', status: 'success' }),
-    expect.objectContaining({
-      id: 'partial-tools:tool:1:failure',
+  expect(store.state.executions.map(({ at, ...receipt }) => receipt)).toEqual([
+    {
+      id: 'partial-tools:tool:0:receipt',
+      tool: 'hint',
+      status: 'success',
+      version: '1.1',
+      permission: 'learn',
+      decision: 'allowed',
+      parameterHash: toolParameterHash(tools[0].arguments),
+      remainingBudget: 2
+    },
+    {
+      id: `partial-tools:tool:1:denied:${toolParameterHash(tools[1].arguments).split(':')[1]}`,
       tool: 'plan',
       status: 'failed',
-      errorCode: 'INVALID_INPUT'
-    })
+      version: '2.0',
+      permission: 'learn',
+      decision: 'denied',
+      parameterHash: toolParameterHash(tools[1].arguments),
+      remainingBudget: 1
+    }
   ]);
   expect(store.error).toContain('已保存1项操作');
   const snapshot = store.exportData();
@@ -314,6 +299,7 @@ it('合法提示后无效计划保留部分成功、失败收据和重开重试�
   reopened.modelId = 'fixture';
   reopened.sharingAllowed = true;
   vi.spyOn(uni, 'request').mockImplementation((options) => {
+    if (acknowledgePreferences(options)) return { abort: vi.fn() };
     expect(options.data).toEqual({ action: 'result', requestId: 'partial-tools' });
     options.success({
       data: {
@@ -392,6 +378,7 @@ it('断流仅保存请求意图；重开读取绑定的原结果，两个动作�
   reopened.modelId = 'fixture';
   reopened.sharingAllowed = true;
   const transport = vi.spyOn(uni, 'request').mockImplementation((options) => {
+    if (acknowledgePreferences(options)) return { abort: vi.fn() };
     expect(options.data).toEqual({ action: 'result', requestId: 'lost-task' });
     options.success({
       data: {
@@ -413,7 +400,12 @@ it('断流仅保存请求意图；重开读取绑定的原结果，两个动作�
   expect(reopened.active.messages.at(-1).content).toBe('已完成的原教学结果');
   expect(reopened.state.executions).toHaveLength(1);
   expect(harness.fetch).toHaveBeenCalledOnce();
-  expect(transport).toHaveBeenCalledOnce();
+  expect(
+    transport.mock.calls.filter(
+      ([options]) => options.url.endsWith('/learning-models') && options.data.action === 'result'
+    )
+  ).toHaveLength(1);
+  expect(transport.mock.calls.every(([options]) => ['result', 'preferences'].includes(options.data.action))).toBe(true);
   await expect(reopened.recoverModelResult()).rejects.toThrow('没有');
 });
 it('上下文已调整、隐私删除/恢复或取消之后，拒绝迟到片段及旧工具', async () => {
@@ -451,6 +443,7 @@ it('上下文已调整、隐私删除/恢复或取消之后，拒绝迟到片段
 it('取消清除临时预览并发送同账户服务端取消，不把取消当零成本成功', async () => {
   const harness = setup();
   const transport = vi.spyOn(uni, 'request').mockImplementation((options) => {
+    if (acknowledgePreferences(options)) return { abort: vi.fn() };
     options.success({ data: { success: true, data: { cancellationRecorded: true, status: 'reserved' } } });
     return { abort: vi.fn() };
   });
@@ -463,7 +456,11 @@ it('取消清除临时预览并发送同账户服务端取消，不把取消当�
   expect(harness.store.streamPreview).toBe('');
   expect(harness.store.recoverableRequest).toBeNull();
   expect(harness.store.state.plans).toHaveLength(0);
-  expect(transport.mock.calls[0][0].data).toEqual({ action: 'cancel', requestId: 'cancel-task' });
+  const cancellations = transport.mock.calls.filter(
+    ([options]) => options.url.endsWith('/learning-models') && options.data.action === 'cancel'
+  );
+  expect(cancellations).toHaveLength(1);
+  expect(cancellations[0][0].data).toEqual({ action: 'cancel', requestId: 'cancel-task' });
   expect(harness.store.error).toContain('取消');
 });
 
@@ -559,6 +556,7 @@ it.each(['owner', 'epoch', 'model', 'stop', 'withdraw', 'hide'])(
       { store, bridge } = harness;
     let wrapper;
     vi.spyOn(uni, 'request').mockImplementation((options) => {
+      if (acknowledgePreferences(options)) return { abort: vi.fn() };
       options.success({ data: { success: true, data: { cancellationRecorded: true, status: 'reserved' } } });
       return { abort: vi.fn() };
     });
@@ -619,6 +617,7 @@ it.each(['stop', 'hide'])('取消后的迟到错误不抢走%s页面焦点，原
   store.submit('19', true);
   const originals = JSON.stringify(store.state.attempts);
   vi.spyOn(uni, 'request').mockImplementation((options) => {
+    if (acknowledgePreferences(options)) return { abort: vi.fn() };
     options.success({ data: { success: true, data: { cancellationRecorded: true, status: 'reserved' } } });
     return { abort: vi.fn() };
   });
@@ -641,7 +640,7 @@ it.each(['stop', 'hide'])('取消后的迟到错误不抢走%s页面焦点，原
   document.body.append(otherPage);
   let expected, expectedError;
   try {
-    const pending = store.send('直接讲解');
+    const pending = store.send('直接讲解', { discussionOnly: true });
     await flushPromises();
     harness.preview();
     await flushPromises();

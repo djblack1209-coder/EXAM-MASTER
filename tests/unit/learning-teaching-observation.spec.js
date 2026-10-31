@@ -47,7 +47,7 @@ describe('实际教学与后续表现', () => {
     });
     store.refresh();
     expect(observations(store)).toEqual([]);
-    await store.send('换一个例子', { id: 'example' });
+    await store.send('换一个例子', { discussionOnly: true, id: 'example' });
     await store.send('懂了', { id: 'understood' });
     expect(store.state.attempts).toHaveLength(0);
     expect(observations(store)[0]).toMatchObject({ status: 'waiting', followups: { reliable: 0, pending: 0 } });
@@ -57,7 +57,7 @@ describe('实际教学与后续表现', () => {
   });
   it('提示后正确、原题无提示重做、独立变式分别记录；不会推断长期掌握', async () => {
     const store = begin();
-    await store.send('直接讲解', { id: 'explanation' });
+    await store.send('直接讲解', { discussionOnly: true, id: 'explanation' });
     store.submit('20', true, 'helped');
     expect(observations(store)[0]).toMatchObject({
       status: 'helped_correct',
@@ -76,9 +76,9 @@ describe('实际教学与后续表现', () => {
   });
   it('同一作答不会归功于多个教法，后一次交付开始新的观察；相同消息重试不新增行', async () => {
     const store = begin();
-    await store.send('直接讲解', { id: 'first-method' });
-    await store.send('换方法', { id: 'second-method' });
-    await store.send('换方法', { id: 'second-method' });
+    await store.send('直接讲解', { discussionOnly: true, id: 'first-method' });
+    await store.send('换方法', { discussionOnly: true, id: 'second-method' });
+    await store.send('换方法', { discussionOnly: true, id: 'second-method' });
     store.submit('20', true, 'answer');
     const rows = observations(store);
     expect(rows).toHaveLength(2);
@@ -90,7 +90,7 @@ describe('实际教学与后续表现', () => {
     const store = begin();
     const conversationId = store.selectedConversationId;
     const key = questionKey(store.activeQuestion);
-    await store.send('直接讲解', { id: 'teaching' });
+    await store.send('直接讲解', { discussionOnly: true, id: 'teaching' });
     store.start('4 + 6');
     store.submit('10', true, 'other-question');
     store.focus(key);
@@ -104,7 +104,7 @@ describe('实际教学与后续表现', () => {
   });
   it('争议立即撤销可靠效果，计划和首答仍按原事实重算；恢复与同步保留历史身份', async () => {
     const store = begin();
-    await store.send('直接讲解', { id: 'explained' });
+    await store.send('直接讲解', { discussionOnly: true, id: 'explained' });
     store.submit('20', true, 'answer');
     store.correctAssessment('answer', '原始答案有争议');
     expect(observations(store)[0]).toMatchObject({
@@ -128,7 +128,7 @@ describe('实际教学与后续表现', () => {
   });
   it('提前复測不记到期通过，有有效前期调度且无提示的到期作答才单列', async () => {
     const store = begin();
-    await store.send('直接讲解', { id: 'explain' });
+    await store.send('直接讲解', { discussionOnly: true, id: 'explain' });
     store.submit('20', true, 'first');
     store.focus(questionKey(store.activeQuestion), store.selectedConversationId, 'review');
     store.submit('20', true, 'early');
@@ -148,7 +148,7 @@ describe('实际教学与后续表现', () => {
   });
   it('统计页面显示相同观察、可靠/待定与提示分母，并可回原教学', async () => {
     const store = begin();
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     store.submit('20', true);
     const wrapper = mount(LearningOverview, {
       props: { initialExpanded: true, view: 'study-detail' },
@@ -193,7 +193,7 @@ describe('有证据的调整与用户意愿', () => {
   });
   it('直接讲解与慢速步骤是持续的用户选择，错误或提示后正确不能被自动教法覆盖', async () => {
     const store = begin();
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     store.submit('19', true);
     store.submit('18', true);
     store.submit('20', true);
@@ -203,25 +203,25 @@ describe('有证据的调整与用户意愿', () => {
     store.submit('19', true);
     store.submit('18', true);
     expect(store.state.strategy.method).toBe('steps');
-    await store.send('停止');
+    await store.send('停止', { discussionOnly: true });
     expect(requestedTeachingMethod(store.state, store.selectedConversationId)).toBeNull();
     expect(() => store.submit('20', true)).toThrow('已停止');
   });
   it('不同对话不继承强制教法或两次错误判断；实际用户可以换方法解除前一个选择', async () => {
     const store = begin();
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     const earlier = store.selectedConversationId;
     store.start('4 + 6');
     expect(requestedTeachingMethod(store.state, store.selectedConversationId)).toBeNull();
     store.submit('9', true, 'new-first');
     expect(nextStrategy(store.state, store.state.attempts.at(-1))).toBeNull();
     store.focus(questionKey(store.state.questions[0]), earlier);
-    await store.send('换方法');
+    await store.send('换方法', { discussionOnly: true });
     expect(store.state.strategy.method).toBe('analogy');
   });
   it('模型不能改指定教法，也不能借相同教法释放用户选择、降低难度或覆盖理由', async () => {
     const store = begin();
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     const current = JSON.parse(JSON.stringify(store.state.strategy));
     const context = {
       conversationId: store.selectedConversationId,
@@ -238,12 +238,14 @@ describe('有证据的调整与用户意愿', () => {
         { id: 'denied', name: 'method', arguments: { method: 'question', reason: '模型建议' } },
         context
       )
-    ).toThrow('明确指定');
-    executeLearningTool(
-      learningRepository,
-      { id: 'same', name: 'method', arguments: { method: 'explain', difficulty: 'easier', reason: '覆盖用户' } },
-      context
-    );
+    ).toThrow('模型不能选择教法或写入学习事实');
+    expect(() =>
+      executeLearningTool(
+        learningRepository,
+        { id: 'same', name: 'method', arguments: { method: 'explain', difficulty: 'easier', reason: '覆盖用户' } },
+        context
+      )
+    ).toThrow('模型不能选择教法或写入学习事实');
     store.refresh();
     expect(store.state.strategy).toEqual(current);
     expect(() =>
@@ -252,11 +254,11 @@ describe('有证据的调整与用户意愿', () => {
         { id: 'source-forgery', name: 'method', arguments: { method: 'explain', source: 'self_report' } },
         context
       )
-    ).toThrow('超出权限');
+    ).toThrow('模型不能选择教法或写入学习事实');
   });
-  it('下一轮模型请求保留指定教法锁和最多3段事实，拒绝真实返回中的违规换法', async () => {
+  it('下一轮模型请求只发压缩快照与教法锁，拒绝真实返回中的违规换法', async () => {
     const store = begin();
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     store.submit('20', true);
     store.models = [{ id: 'synthetic', model: 'synthetic', capabilities: {} }];
     store.modelId = 'synthetic';
@@ -270,9 +272,13 @@ describe('有证据的调整与用户意愿', () => {
       }
     });
     await store.send('请继续解释', { id: 'model-reply' });
-    expect(api.generate.mock.calls[0][0].learningContext.summary.teaching).toHaveLength(1);
+    expect(api.generate.mock.calls[0][0].learningContext.summary).toMatchObject({
+      contract: 'learning-snapshot-v1',
+      teaching: { stopped: false, method: 'explain' }
+    });
+    expect(api.generate.mock.calls[0][0].learningContext.summary).not.toHaveProperty('continuity');
     expect(store.state.events.find((e) => e.id === 'model-reply:request').data.lockedMethod).toBe('explain');
-    expect(store.error).toContain('明确指定');
+    expect(store.error).toBe('此操作未获授权，未执行。');
     expect(store.state.strategy.method).toBe('explain');
     expect(store.active.messages.some((m) => m.id === 'model-reply:reply')).toBe(false);
   });
@@ -285,7 +291,7 @@ describe('有证据的调整与用户意愿', () => {
     expect(store.state.strategy).toMatchObject({ method: 'check', evidenceIds: [] });
     expect(observations(store)[0].status).toBe('waiting');
     expect(store.state.events.find((e) => e.id === 'second:strategy').result.method).toBe('prerequisite');
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     store.correctAssessment('first', '另一处争议');
     expect(store.state.strategy.method).toBe('explain');
   });

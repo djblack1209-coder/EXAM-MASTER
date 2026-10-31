@@ -128,11 +128,11 @@ describe('原答与明确操作的意愿边界', () => {
     store.start('合成原答与明确动作');
     store.setRhythm('gentle');
     bindSubjectQuestion(store, 'explicit-intent');
-    const result = store.submit('恢复自动教法', true, 'explicit-data');
+    const result = await store.send('恢复自动教法', { answering: true, id: 'explicit-data' });
     expect(result.answer).toBe('恢复自动教法');
     expect(result.grade.status).toBe('pending');
     expect(requestedTeachingMethod(store.state, store.selectedConversationId)).toBe('steps');
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     await store.send('我的答案是：用图示说明', { id: 'stopped-body' });
     expect(store.active.stopped).toBe(true);
     expect(store.state.attempts).toHaveLength(1);
@@ -153,7 +153,7 @@ describe('原答与明确操作的意愿边界', () => {
     expect(store.active.stopped).toBe(false);
     expect(store.busy).toBe(true);
     expect(api.generate).toHaveBeenCalledOnce();
-    await store.send('请停止当前任务', { id: 'explicit-stop' });
+    await store.send('请停止当前任务', { discussionOnly: true, id: 'explicit-stop' });
     expect(store.active.stopped).toBe(true);
     expect(api.generate.mock.calls[0][1].signal.aborted).toBe(true);
     resolve({ success: true, data: { message: '迟到模型文本', tools: [] } });
@@ -182,7 +182,7 @@ describe('对话停止与持久教法边界', () => {
     const store = begin(),
       a = store.selectedConversationId,
       key = questionKey(store.activeQuestion);
-    await store.send('停止');
+    await store.send('停止', { discussionOnly: true });
     store.start('4 + 6');
     store.submit('9', true, 'b-first');
     store.submit('8', true, 'b-second');
@@ -195,7 +195,7 @@ describe('对话停止与持久教法边界', () => {
     const store = begin(),
       a = store.selectedConversationId,
       key = questionKey(store.activeQuestion);
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     store.start('4 + 6');
     const b = store.selectedConversationId,
       bKey = questionKey(store.activeQuestion);
@@ -217,28 +217,28 @@ describe('对话停止与持久教法边界', () => {
   it('明确恢复自动只解除当前教法；不提交答案/交付帮助、不解除停止，可明确继续任务', async () => {
     const store = begin(),
       a = store.selectedConversationId;
-    await store.send('直接讲解');
-    await store.send('停止');
+    await store.send('直接讲解', { discussionOnly: true });
+    await store.send('停止', { discussionOnly: true });
     const answers = store.state.attempts.length,
       teaching = store.state.executions.filter((e) => e.tool === 'teaching').length;
-    await store.send('恢复自动教法', { id: 'auto' });
+    await store.send('恢复自动教法', { discussionOnly: true, id: 'auto' });
     expect(requestedTeachingMethod(store.state, a)).toBeNull();
     expect(store.active.stopped).toBe(true);
     expect(store.state.attempts).toHaveLength(answers);
     expect(store.state.executions.filter((e) => e.tool === 'teaching')).toHaveLength(teaching);
     expect(store.state.events.find((e) => e.id === 'auto:directive')?.type).toBe('strategy.auto');
-    await store.send('继续当前任务');
+    await store.send('继续当前任务', { discussionOnly: true });
     expect(store.active.stopped).toBe(false);
     store.submit('19', true, 'resumed-first');
     store.submit('18', true, 'resumed-second');
     expect(store.active.messages.at(-1)).toMatchObject({ method: 'steps' });
     expect(store.activeStrategy.source).toBe('observed');
   });
-  it('模型未传方法锁也不能覆盖旧对话用户教法；同方法保持来源和理由', async () => {
+  it('模型不能覆盖旧对话用户教法；同方法请求也拒绝，来源与理由保留', async () => {
     const store = begin(),
       a = store.selectedConversationId,
       key = questionKey(store.activeQuestion);
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     store.start('4 + 6');
     store.setRhythm('gentle');
     store.focus(key, a);
@@ -248,12 +248,14 @@ describe('对话停止与持久教法边界', () => {
         { id: 'denied', name: 'method', arguments: { method: 'question', reason: '模型换法' } },
         modelContext(store)
       )
-    ).toThrow('明确指定');
-    executeLearningTool(
-      learningRepository,
-      { id: 'same', name: 'method', arguments: { method: 'explain', reason: '覆盖理由' } },
-      modelContext(store)
-    );
+    ).toThrow('模型不能选择教法或写入学习事实');
+    expect(() =>
+      executeLearningTool(
+        learningRepository,
+        { id: 'same', name: 'method', arguments: { method: 'explain', reason: '覆盖理由' } },
+        modelContext(store)
+      )
+    ).toThrow('模型不能选择教法或写入学习事实');
     store.refresh();
     expect(requestedTeachingMethod(store.state, a)).toBe('explain');
     expect(store.activeStrategy.reason).toContain('用户明确要求');
@@ -261,12 +263,12 @@ describe('对话停止与持久教法边界', () => {
   it('备份与私人同步重放恢复各对话选择及独立自动状态，保留停止和首答事实', async () => {
     const store = begin(),
       a = store.selectedConversationId;
-    await store.send('直接讲解');
-    await store.send('停止');
+    await store.send('直接讲解', { discussionOnly: true });
+    await store.send('停止', { discussionOnly: true });
     store.start('4 + 6');
     const b = store.selectedConversationId;
     store.setRhythm('gentle');
-    await store.send('恢复自动教法');
+    await store.send('恢复自动教法', { discussionOnly: true });
     const restored = prepareLearningRestore(
       emptyLearningState('guest', store.state.timezone),
       store.exportData()
@@ -294,7 +296,7 @@ describe('对话停止与持久教法边界', () => {
     const store = begin(),
       a = store.selectedConversationId,
       key = questionKey(store.activeQuestion);
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     store.start('4 + 6');
     store.setRhythm('gentle');
     store.focus(key, a);
@@ -316,7 +318,7 @@ describe('对话停止与持久教法边界', () => {
     expect(questionKey(store.activeQuestion)).toBe(key);
     expect(store.state.questions.some((question) => question.prompt === '模型擅自的新题')).toBe(false);
     expect(store.active.messages.at(-1).content).toBe('本轮教学夹具');
-    await store.send('停止');
+    await store.send('停止', { discussionOnly: true });
     const count = store.state.attempts.length;
     await store.send('20');
     await store.send('请继续说明');
@@ -327,10 +329,10 @@ describe('对话停止与持久教法边界', () => {
     const store = begin(),
       a = store.selectedConversationId,
       key = questionKey(store.activeQuestion);
-    await store.send('直接讲解');
+    await store.send('直接讲解', { discussionOnly: true });
     store.start('4 + 6');
     store.setRhythm('gentle');
-    await store.send('恢复自动教法');
+    await store.send('恢复自动教法', { discussionOnly: true });
     expect(requestedTeachingMethod(store.state, a)).toBe('explain');
     store.focus(key, a);
     await store.send('不要恢复自动教法');

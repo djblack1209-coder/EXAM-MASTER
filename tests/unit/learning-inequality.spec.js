@@ -147,14 +147,14 @@ describe('显式单未知量一次不等式的独立版本', () => {
       );
       expect(diagnostic.prerequisite.topic).toBe('negative-inequality');
       expect(() => computeScopeFor(store.state, store.active.id)).toThrow('暂不支持参考计算');
-      await store.send('直接讲解');
+      await store.send('直接讲解', { discussionOnly: true });
       await store.send('t<3');
       expect(store.state.attempts[1]).toMatchObject({ answer: 't<3', grade: { outcome: 'correct' } });
       expect(store.state.attempts[1].hints).toHaveLength(1);
       store.generateVariant();
       await store.send('t<2');
       expect(store.state.attempts[2]).toMatchObject({ kind: 'variant', hints: [], grade: { outcome: 'correct' } });
-      await store.send('停止');
+      await store.send('停止', { discussionOnly: true });
       expect(store.active.stopped).toBe(true);
       const before = JSON.parse(JSON.stringify(store.state));
       setActivePinia(createPinia());
@@ -270,7 +270,7 @@ describe('对话、错题、计划、帮助和恢复的一次不等式闭环', (
       expect(store.state.attempts).toHaveLength(1);
       expect(store.summary.first).toMatchObject({ numerator: 1, denominator: 1 });
       expect(store.summary.mistakes).toHaveLength(1);
-      await store.send('直接讲解', { id: 'explain' });
+      await store.send('直接讲解', { discussionOnly: true, id: 'explain' });
       await store.send('(-∞,3)', { id: 'revision' });
       expect(store.state.attempts[1]).toMatchObject({ kind: 'revision', grade: { outcome: 'correct' } });
       expect(store.state.attempts[1].hints).toHaveLength(1);

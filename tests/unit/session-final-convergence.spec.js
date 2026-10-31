@@ -44,7 +44,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.useRealTimers();
 });
-it('B客户端发现默认关闭：guest真实Store入口零请求且不改模型和学习事实', async () => {
+it('B客户端发现先鉴权：guest真实Store入口零请求且不改模型和学习事实', async () => {
   uni.clearStorageSync();
   const request = vi.spyOn(uni, 'request').mockImplementation(() => {
     throw new Error('Default-off discovery must not request');
@@ -57,7 +57,7 @@ it('B客户端发现默认关闭：guest真实Store入口零请求且不改模�
   const facts = JSON.stringify(store.state);
   const models = JSON.stringify(store.models);
   const result = await store.loadModelDiscovery({ profileId: 'fixture-kept', refresh: true });
-  expect(result).toEqual({ success: false, code: 503, errorCode: 'DISCOVERY_DISABLED' });
+  expect(result).toEqual({ success: false, code: 401, errorCode: 'AUTH_REQUIRED', message: '登录已过期，请重新登录' });
   expect(request).not.toHaveBeenCalled();
   expect(store.modelId).toBe('fixture-kept');
   expect(JSON.stringify(store.models)).toBe(models);

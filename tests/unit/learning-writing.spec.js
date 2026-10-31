@@ -511,7 +511,7 @@ describe('通知版本、归属和复测计划', () => {
     const before = store.exportData();
     expect(store.scheduleWritingRetest()).toEqual(result);
     expect(store.exportData()).toBe(before);
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     store.focus(result.questionKey);
     expect(store.active.stopped).toBe(true);
     expect(store.active.nextAttemptKind).toBe('review');
@@ -543,7 +543,7 @@ describe('通知版本、归属和复测计划', () => {
     const store = setup();
     expect(() => store.scheduleWritingRetest()).toThrow('提交');
     store.submit(answer, true);
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     expect(() => store.scheduleWritingRetest()).toThrow('停止');
   });
   it('量表修订保留原版本和帮助；条件更正转普通候选，不沿用通知合同', () => {
@@ -728,7 +728,7 @@ describe('仅评阅原答的辅助模型请求', () => {
       await Promise.resolve();
       expect(store.busy).toBe(true);
       if (change === 'cancel') store.cancel();
-      if (change === 'stop') await store.send('停止当前任务');
+      if (change === 'stop') await store.send('停止当前任务', { discussionOnly: true });
       if (change === 'new-answer') store.submit('Another answer', true, 'b');
       if (change === 'question') store.start('其他学习');
       if (change === 'account') {

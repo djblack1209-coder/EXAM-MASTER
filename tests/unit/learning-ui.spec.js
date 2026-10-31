@@ -256,7 +256,25 @@ it.each(['writing', 'science', 'vocabulary'])(
       for (const callback of loadHooks.showCallbacks) callback();
       await flushPromises();
       expect(submit().attributes('disabled')).toBeDefined();
-      expect(store.exportData()).toBe(saved);
+      const beforeLeave = JSON.parse(saved),
+        afterLeave = JSON.parse(store.exportData());
+      const { events: oldEvents, revision: oldRevision, ...oldFacts } = beforeLeave;
+      const { events: newEvents, revision: newRevision, ...newFacts } = afterLeave;
+      expect(newFacts).toEqual(oldFacts);
+      expect(newRevision).toBe(oldRevision + 1);
+      expect(newEvents.slice(0, oldEvents.length)).toEqual(oldEvents);
+      expect(newEvents.slice(oldEvents.length)).toEqual([
+        expect.objectContaining({
+          type: 'learning.leave',
+          data: {
+            owner: store.state.owner,
+            source: 'conversation',
+            conversationId: store.active.id,
+            questionKey: target.questionKey,
+            reason: null
+          }
+        })
+      ]);
     } finally {
       wrapper.unmount();
       overview.unmount();
@@ -540,7 +558,7 @@ describe('选择项与明确保存', () => {
         hints: [],
         grade: { status: 'reliable', outcome: 'correct' }
       });
-      await p.store.send('停止');
+      await p.store.send('停止', { discussionOnly: true });
       await flushPromises();
       expect(p.button('提交句子').attributes('disabled')).toBeDefined();
       expect(p.button('看句子提示').attributes('disabled')).toBeDefined();
@@ -575,16 +593,16 @@ describe('选择项与明确保存', () => {
       p.store.start('英文句子组织');
       await flushPromises();
       const before = JSON.parse(JSON.stringify(p.store.state));
-      const send = vi.spyOn(p.store, 'send');
+      const action = vi.spyOn(p.store, 'dispatchLearningAction');
       await p.button('要个提示').trigger('tap');
       await flushPromises();
-      expect(send).toHaveBeenCalledWith('提示');
+      expect(action).toHaveBeenCalledWith({ type: 'hint_only' });
       expect(p.store.active.pendingHints).toHaveLength(1);
-      for (const key of ['attempts', 'questions', 'profile', 'strategy'])
-        expect(p.store.state[key]).toEqual(before[key]);
+      for (const key of ['attempts', 'questions', 'profile']) expect(p.store.state[key]).toEqual(before[key]);
+      expect(p.store.state.strategy).toMatchObject({ method: 'hint', source: 'self_report' });
       expect(p.wrapper.text()).toContain('先找主语后的谓语，再安排两个时间短语。');
       expect(p.wrapper.text()).not.toContain('尚未连接模型，请先连接。');
-      await p.store.send('停止');
+      await p.store.send('停止', { discussionOnly: true });
       await flushPromises();
       expect(p.button('要个提示').attributes('disabled')).toBeDefined();
     } finally {
@@ -751,7 +769,7 @@ describe('选择项与明确保存', () => {
       expect(learningText('公开参考内容，不计入学习记录。')).toBe(
         'Public reference material. This is not a learning record.'
       );
-      await p.store.send('停止');
+      await p.store.send('停止', { discussionOnly: true });
       await flushPromises();
       expect(p.button('Read reference email').attributes('disabled')).toBeDefined();
       expect(p.store.active.pendingHints).toEqual([]);
@@ -969,7 +987,7 @@ describe('选择项与明确保存', () => {
       p.store.focus(q.questionKey, first.id);
       await flushPromises();
       await p.button('C. 不变').trigger('tap');
-      await p.store.send('停止');
+      await p.store.send('停止', { discussionOnly: true });
       await flushPromises();
       const before = p.store.exportData();
       expect(p.button('A. 向右').attributes('disabled')).toBeDefined();
@@ -1404,6 +1422,8 @@ describe('网页备份文件与明确恢复', () => {
   );
   it('账户往返及收起恢复面板不接纳旧文件，访客原件保持', async () => {
     const p = page();
+    const guestKey = Object.keys(global.__mockStorage).find((key) => key.endsWith('conversation_learning_v1'));
+    const guestOriginal = structuredClone(uni.getStorageSync(guestKey));
     let reader;
     const read = vi.spyOn(FileReader.prototype, 'readAsArrayBuffer').mockImplementation(function () {
       reader = this;
@@ -1425,7 +1445,8 @@ describe('网页备份文件与明确恢复', () => {
       p.store.refresh();
       old();
       await flushPromises();
-      expect(p.store.exportData()).toBe(p.original);
+      expect(p.store.state.events).toHaveLength(0);
+      expect(uni.getStorageSync(guestKey)).toEqual(guestOriginal);
       expect(p.wrapper.get('textarea[aria-label="学习记录 JSON 备份"]').element.value).toBe('');
       await p.button('选择备份文件').trigger('tap');
       const hiddenPicker = document.querySelector('input[type="file"]');
@@ -1438,7 +1459,8 @@ describe('网页备份文件与明确恢复', () => {
       expect(p.wrapper.get('textarea[aria-label="学习记录 JSON 备份"]').element.value).toBe('');
       expect(picker.isConnected).toBe(false);
       expect(hiddenPicker.isConnected).toBe(false);
-      expect(p.store.exportData()).toBe(p.original);
+      expect(p.store.state.events).toHaveLength(0);
+      expect(uni.getStorageSync(guestKey)).toEqual(guestOriginal);
     } finally {
       read.mockRestore();
       p.close();
@@ -1660,19 +1682,23 @@ describe('模型读取的页内状态与离开保护', () => {
         wrapper
           .findAll('[role="checkbox"]')
           .find((item) => item.text().replace(/\s+/g, ' ').trim() === label.replace(/\s+/g, ' ').trim());
-      for (const label of ['learning.keh', 'learning.kke', 'learning.k32']) {
+      expect(checkbox(t('learning.keh')).attributes('aria-checked')).toBe('true'); // the current Zhipu preset opts into streaming
+      await checkbox(t('learning.keh')).trigger('tap');
+      expect(checkbox(t('learning.keh')).attributes('aria-checked')).toBe('false');
+      for (const label of ['learning.kke', 'learning.k32']) {
         await checkbox(t(label)).trigger('tap');
         expect(checkbox(t(label)).attributes('aria-checked')).toBe('true');
       }
-      await button('Groq · openai/gpt-oss-20b').trigger('tap');
+      expect(button('Groq · openai/gpt-oss-20b')).toBeUndefined(); // unsaved overseas templates are not current choices
+      await button('DeepSeek · deepseek-flash').trigger('tap');
       expect(key.element.value).toBe('');
       for (const label of ['learning.keh', 'learning.kke', 'learning.k32']) {
         expect(checkbox(t(label)).attributes('aria-checked')).toBe('false');
       }
-      expect(endpoint.element.value).toBe('https://api.groq.com/openai/v1/chat/completions');
-      await endpoint.setValue('https://api.groq.com/openai/v1/');
+      expect(endpoint.element.value).toBe('https://api.deepseek.com/chat/completions');
+      await endpoint.setValue('https://api.deepseek.com/');
       await endpoint.trigger('blur');
-      expect(endpoint.element.value).toBe('https://api.groq.com/openai/v1/chat/completions');
+      expect(endpoint.element.value).toBe('https://api.deepseek.com/chat/completions');
       expect(store.exportData()).toBe(before);
       expect(requests).toEqual([]);
     } finally {
@@ -2860,8 +2886,7 @@ describe('学习空间的实际入口与目录', () => {
         await flushPromises();
         expect(store.scienceRetest.day).toBe('2026-10-08');
         expect(control('已安排 10/08').attributes('disabled')).toBeDefined();
-        await wrapper.get('#learning-composer textarea').setValue('停止当前任务');
-        await wrapper.get('#learning-composer .muse-send').trigger('tap');
+        store.commit('task.stop', { conversationId: store.active.id, source: 'self_report' });
         await flushPromises();
         const stopped = store.exportData();
         for (const label of ['看计算方法', '换条件独立作答', '提交作答']) {
@@ -2985,7 +3010,7 @@ it('Muse settings preview appearance in a draft and save only on confirmation', 
   try {
     await wrapper.get('[aria-label="深色"]').trigger('tap');
     expect(theme.isDark).toBe(false);
-    const save = wrapper.findAll('.settings-actions button').find((button) => button.text() === '保存');
+    const save = wrapper.findAll('.settings-actions button').find((button) => button.text() === '保存偏好');
     await save.trigger('tap');
     expect(theme.isDark).toBe(true);
     expect(store.exportData()).toBe(before);

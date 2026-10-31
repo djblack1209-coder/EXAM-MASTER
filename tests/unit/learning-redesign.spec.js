@@ -82,9 +82,10 @@ describe('learning interface states preserve learning facts', () => {
       '计划',
       '资料',
       '用量',
+      '登录',
       '设置⌘,'
     ]);
-    expect(wrapper.findAll('.muse-rail button')).toHaveLength(8);
+    expect(wrapper.findAll('.muse-rail button')).toHaveLength(9);
     await wrapper.get('.directory-pill').trigger('tap');
     await flushPromises();
     expect(wrapper.get('.directory-search input').attributes('placeholder')).toBe('搜索会话');
@@ -333,7 +334,7 @@ describe('learning interface states preserve learning facts', () => {
     });
     const group = store.startTraining(store.journeyContext(), 'fraction-add-subtract', 1);
     store.submitTraining(store.journeyContext(), group.id, ['11/12']);
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     const originals = JSON.stringify(store.state.attempts),
       wrapper = render();
     const resume = wrapper.get('#learning-stop-state').findComponent(BaseButton);
@@ -391,7 +392,7 @@ describe('learning interface states preserve learning facts', () => {
     // Muse's new chat is only the avatar identity and composer; connectors stay in the header.
     expect(wrapper.findComponent(MuseChatEmpty).exists()).toBe(false);
     const identity = wrapper.getComponent(LearningShell).get('.muse-chat-identity');
-    expect(identity.getComponent(AnimatedAvatar).props('size')).toBe(56);
+    expect(identity.getComponent(AnimatedAvatar).props('size')).toBe(72);
     expect(identity.get('.brand-name').text()).toBe('Yozi AI');
     expect(wrapper.get('.space-content').text()).not.toContain('未连接');
     expect(wrapper.get('.space-content').findAllComponents(BaseChip)).toHaveLength(0);
@@ -418,7 +419,7 @@ describe('learning interface states preserve learning facts', () => {
     store.error = '合成连接错误';
     await flushPromises();
     expect(wrapper.find('.reply-state').exists()).toBe(false);
-    expect(wrapper.find('.base-state--error').attributes('role')).toBe('alert');
+    expect(wrapper.get('#learning-request-error [role="alert"]').attributes('role')).toBe('alert');
     expect(store.state.attempts).toHaveLength(0);
   });
   it.each([
@@ -692,7 +693,7 @@ describe('learning i18n', () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
     const wrapper = render();
-    await store.send('停止当前任务');
+    await store.send('停止当前任务', { discussionOnly: true });
     await flushPromises();
     await wrapper.get('.connection-pill').trigger('tap');
     await flushPromises();

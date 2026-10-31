@@ -144,7 +144,7 @@ describe('二次完整解集图形和对话事实', () => {
       expect(store.state.attempts).toHaveLength(1);
       expect(store.summary.first).toMatchObject({ numerator: 1, denominator: 1 });
       expect(store.summary.mistakes).toHaveLength(1);
-      await store.send('用图示', { id: 'diagram-help' });
+      await store.send('用图示', { discussionOnly: true, id: 'diagram-help' });
       await store.send('(-∞,-2]∪[2,∞)', { id: 'revision' });
       expect(store.state.attempts[1]).toMatchObject({ kind: 'revision', grade: { outcome: 'correct' } });
       expect(store.state.attempts[1].hints).toHaveLength(1);

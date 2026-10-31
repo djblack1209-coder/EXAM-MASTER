@@ -98,11 +98,29 @@ describe('整批训练的实际学习记录', () => {
     await s.send('请继续今天的目标', { discussionOnly: true });
     const payload = vi.mocked(generateLearningTurn).mock.calls[0][0];
     expect(payload.messages).toEqual([{ role: 'user', content: '请继续今天的目标' }]);
-    expect(payload.learningContext.summary.continuity).toMatchObject({
-      day: '2026-10-11',
-      goal: '7天模块训练',
-      previous: { answers: 1, wrong: 1, pending: 0, evidenceIds: [oldEvidence] }
+    expect(payload.learningContext.summary).toMatchObject({
+      contract: 'learning-snapshot-v1',
+      counts: { answers: 1, reviews: 1 },
+      teaching: { stopped: false }
     });
+    expect(payload.learningContext.summary).not.toHaveProperty('continuity');
+    expect(Object.keys(payload.learningContext.summary).sort()).toEqual(
+      [
+        'contract',
+        'revision',
+        'timezone',
+        'profile',
+        'dimensionScores',
+        'dueCards',
+        'draftId',
+        'rewritePending',
+        'teaching',
+        'planVersion',
+        'counts'
+      ].sort()
+    );
+    expect(s.state.attempts[0].id).toBe(oldEvidence);
+    expect(JSON.stringify(payload)).not.toContain('旧日正文不可加入新日窗口');
     expect(s.active.id).toBe(id);
     expect(s.active.messages.some((m) => m.content === '旧日正文不可加入新日窗口')).toBe(true);
   });

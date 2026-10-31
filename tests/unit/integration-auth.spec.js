@@ -188,11 +188,17 @@ describe('全链路: 启动 -> 登录 -> 首页', () => {
       const { storageService } = await import('@/services/storageService.js');
       const original = { progress: { completedQuestions: 72 }, history: [{ questionId: 'guest-original' }] };
       storageService.save(key, original, true);
+      expect(storageService.get(key)).toEqual(original);
+      const originals = Object.fromEntries(
+        Object.entries(global.__mockStorage).filter(([storedKey]) => storedKey.endsWith(key))
+      );
+      expect(Object.keys(originals)).toHaveLength(1);
       storageService.save('EXAM_USER_ID', 'synthetic-local-new', true);
       storageService.migrateUserKeys();
       expect(storageService.get(key, null)).toBeNull();
       storageService.remove('EXAM_USER_ID');
-      expect(storageService.get(key)).toEqual(original);
+      expect(storageService.get(key, null)).toBeNull();
+      for (const [storedKey, value] of Object.entries(originals)) expect(uni.getStorageSync(storedKey)).toEqual(value);
     });
 
     it.each([

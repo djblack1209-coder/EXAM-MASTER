@@ -113,7 +113,7 @@ describe('独立原答差异驱动的版本化先修诊断', () => {
       root = questionKey(store.activeQuestion);
     store.submit('2', true, 'partial');
     await store.send('先修诊断', { id: 'diagnose' });
-    await store.send('提示');
+    await store.send('提示', { discussionOnly: true });
     store.submit('{-1,1}', true, 'helped');
     expect(store.diagnosticProgress.status).toBe('helped_correct');
     expect(store.summary.mistakes).toHaveLength(0);

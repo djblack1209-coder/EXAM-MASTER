@@ -11,6 +11,7 @@ import {
   learningEvidenceMap
 } from '../../laf-backend/functions/_shared/learning-visual.js';
 import { parseLearningOutput } from '../../laf-backend/functions/_shared/ai-providers/learning-provider.ts';
+import { toolParameterHash } from '../../laf-backend/functions/_shared/learning-runtime-policy.js';
 import { executeLearningTool } from '@/services/learning/learning-tools.js';
 import LearningLab from '@/pages/learning/components/learning-lab.vue';
 import { createNoticeQuestion } from '../../laf-backend/functions/_shared/learning-writing.js';
@@ -29,6 +30,11 @@ const context = () => ({
   conversationId: 'c1',
   origin: 'model'
 });
+const stateWithStop = (kind) => {
+  const current = state();
+  if (kind === 'stop') current.conversations[0].stopped = true;
+  return current;
+};
 const visualCall = {
   id: 'visual-1',
   name: 'visualize',
@@ -129,9 +135,17 @@ describe('有界演示与渲染合同', () => {
     expect(executeLearningTool({ read: () => current, commit }, visualCall, context()).result).toEqual(recipe());
     expect(JSON.stringify(current)).toBe(before);
     expect(commit).toHaveBeenCalledTimes(1);
-    expect(commit.mock.calls[0][0]).toMatchObject({
+    expect(commit.mock.calls[0][0]).toEqual({
+      id: 'visual-1:receipt',
       type: 'execution.record',
-      data: { tool: 'visualize', status: 'success' }
+      data: {
+        tool: 'visualize',
+        version: '1.1',
+        permission: 'read',
+        decision: 'allowed',
+        parameterHash: toolParameterHash(visualCall.arguments),
+        remainingBudget: 1
+      }
     });
   });
   it.each(['stop', 'expired', 'cancel', 'permission', 'method'])(
@@ -146,7 +160,20 @@ describe('有界演示与渲染合同', () => {
       if (kind === 'permission') ctx.permissions = [];
       if (kind === 'method') ctx.lockedMethod = 'steps';
       expect(() => executeLearningTool({ read: () => current, commit }, visualCall, ctx)).toThrow();
-      expect(commit).not.toHaveBeenCalled();
+      expect(commit).toHaveBeenCalledTimes(1);
+      expect(commit.mock.calls[0][0]).toEqual({
+        id: `visual-1:denied:${toolParameterHash(visualCall.arguments).split(':')[1]}`,
+        type: 'execution.record',
+        data: {
+          tool: 'visualize',
+          version: '1.1',
+          permission: 'read',
+          decision: 'denied',
+          parameterHash: toolParameterHash(visualCall.arguments),
+          remainingBudget: ['expired', 'cancel', 'permission'].includes(kind) ? 2 : 1
+        }
+      });
+      expect(current).toEqual(stateWithStop(kind));
     }
   );
 });
