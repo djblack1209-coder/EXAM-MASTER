@@ -3,6 +3,7 @@
     ref="root"
     side-panel
     class="muse-settings-page"
+    :class="{ 'native-settings-page': nativeSettings }"
     :active="settingsMode ? 'settings' : 'profile'"
     :title="t('nav.settings')"
   >
@@ -380,6 +381,12 @@ export default {
     }
   },
   mounted() {
+    this.releaseSettingsIdentity = storageService.onIdentityChange(() => {
+      this.draftLanguage = this.draftAppearance = null;
+      this.languageOpen = false;
+      this.showDialog = false;
+      this.dialogSequence++;
+    });
     this.releaseKeyboard = bindLearningKeyboard(this.$refs.root);
     const element = this.$refs.root?.$el || this.$refs.root;
     const closeLanguage = (event) => {
@@ -396,6 +403,7 @@ export default {
   },
   beforeUnmount() {
     uni.$off('profilePanel', this.setProfilePanel);
+    this.releaseSettingsIdentity?.();
     this.releaseKeyboard?.();
     this.releaseLanguageMenu?.();
     this.releaseMotion?.();
@@ -959,5 +967,50 @@ export default {
   .settings-group {
     padding: 0 16px;
   }
+}
+</style>
+
+<style scoped>
+/* Muse 2 native/main.swift:1759, 520×680. A native compact window keeps
+   vertical navigation (Settings.css); it is never the phone layout. */
+.native-settings-page .settings-layout {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  height: 100%;
+}
+.native-settings-page .settings-sidebar {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 8px;
+  border-right: 1px solid var(--line);
+  border-bottom: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.native-settings-page .settings-sidebar-title {
+  display: flex;
+  min-height: 44px;
+  padding: 0 8px;
+}
+.native-settings-page .settings-sidebar .settings-nav {
+  white-space: normal;
+  padding: 8px;
+  font-size: 13px;
+}
+.native-settings-page .settings-sidebar .settings-nav :deep(.base-icon) {
+  display: inline-flex;
+}
+.native-settings-page .settings-spacer {
+  display: block;
+}
+.native-settings-page .settings-main {
+  padding: 16px;
+}
+.native-settings-page .appearance-row {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.native-settings-page .user-section {
+  flex-wrap: wrap;
 }
 </style>

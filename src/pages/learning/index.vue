@@ -12,6 +12,7 @@
     v-else
     active="learning"
     :dismiss-overlay="dismissOverlay"
+    :notice="cancellationNotice"
     :style="{ '--muse-composer-height': `${composerHeight || 80}px` }"
     :title="$t('pages.learning')"
     @materials="showMaterial = true"
@@ -970,7 +971,7 @@
             t('learning.khs')
           }}</BaseButton>
         </view>
-        <view v-if="learning.error" id="learning-request-error" tabindex="-1">
+        <view v-if="learning.error && !cancellationNotice" id="learning-request-error" tabindex="-1">
           <BaseEmpty v-if="publicError(learning.error, null)" state="error" :title="publicError(learning.error)" />
           <MuseModelFeedback
             v-else
@@ -1946,7 +1947,7 @@
           </text>
         </BaseCard>
       </view>
-      <view v-if="learning.error && !learning.active" id="learning-request-error" tabindex="-1">
+      <view v-if="learning.error && !cancellationNotice && !learning.active" id="learning-request-error" tabindex="-1">
         <BaseEmpty state="error" :title="publicError(learning.error)" mascot-size="small" />
       </view>
       <text v-if="!learning.error && feedback" class="feedback" role="status">{{ learningText(feedback) }}</text>
@@ -1976,6 +1977,7 @@ import BaseBubble from '@/components/base/base-bubble/base-bubble.vue';
 import BaseOptions from '@/components/base/base-options/base-options.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
+import { visibleReply, cancelledNotice } from '@/services/learning/shell-navigation.js';
 import { answerFeedback, answerOptionState } from '@/components/business/learning/learning-feedback.js';
 import './messages.js';
 import { learningText } from '@/i18n/learning.js';
@@ -2285,6 +2287,7 @@ watch(
   }
 );
 const messageStart = ref(0);
+const cancellationNotice = computed(() => cancelledNotice(learning.error));
 const presentedTimeline = computed(() => {
   const chapters = learning.timeline.map((chapter) => {
     const users = new Set(chapter.messages.filter((message) => message.role === 'user').map((message) => message.id));
@@ -2307,7 +2310,7 @@ const presentedTimeline = computed(() => {
     };
   });
   const reply = learning.reply;
-  if (reply?.kind !== 'chat' || reply.conversationId !== learning.active?.id) return chapters;
+  if (reply?.kind !== 'chat' || reply.conversationId !== learning.active?.id || !visibleReply(reply)) return chapters;
   const savedChapter = chapters.find((chapter) => chapter.messages.some((message) => message.id === reply.id));
   if (savedChapter) {
     const index = savedChapter.messages.findIndex((message) => message.id === reply.id);
@@ -2402,7 +2405,7 @@ function revealLearningTarget(id, isCurrent = () => true) {
 watch(
   () => learning.error,
   async (error) => {
-    if (!error) return;
+    if (!error || cancelledNotice(error)) return;
     const conversationId = learning.active?.id;
     const isCurrent = () =>
       labVisible.value &&
@@ -3085,7 +3088,7 @@ watch(
     showLocator.value = false;
     restorePreview.value = null;
     guestPreview.value = null;
-    draft.value = '';
+    // The synchronous account/conversation binding above restores only this owner's draft.
     feedback.value = '';
     showJourney.value = false;
     profile.value = {

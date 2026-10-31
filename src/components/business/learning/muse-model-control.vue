@@ -19,15 +19,19 @@
       >同意共享本次原答和必要资料片段</BaseCheckbox
     >
     <MuseModelFeedback
-      v-if="failure || (learning.needsConnection && !['loading', 'error'].includes(learning.modelListState?.phase))"
-      :failure="failure || { error: 'NEEDS_CONNECTION' }"
+      v-if="
+        failure ||
+        learning.modelListState?.selectionError ||
+        (learning.needsConnection && !['loading', 'error'].includes(learning.modelListState?.phase))
+      "
+      :failure="failure || { error: learning.modelListState?.selectionError || 'NEEDS_CONNECTION' }"
       :busy="locked"
       @action="$emit('connect')"
     />
   </view>
 </template>
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { modelErrorPresentation } from '../../../../laf-backend/functions/_shared/model-errors.js';
 import BaseInput from '@/components/base/base-input/base-input.vue';
@@ -38,6 +42,16 @@ defineEmits(['connect']);
 const learning = useConversationLearningStore(),
   failure = ref(null),
   saving = ref(false);
+let operation = 0;
+watch(
+  () => learning.recordContext(),
+  () => {
+    operation++;
+    failure.value = null;
+    saving.value = false;
+  },
+  { flush: 'sync' }
+);
 const locked = computed(() => saving.value || learning.busy || learning.intakeBusy);
 const current = computed(() =>
   learning.models.find((model) => model.id === learning.modelId && model.source === 'byok')
@@ -60,7 +74,8 @@ const choices = computed(() =>
 );
 async function change(action) {
   if (locked.value) return;
-  const context = learning.recordContext();
+  const context = learning.recordContext(),
+    currentOperation = ++operation;
   saving.value = true;
   failure.value = null;
   try {
@@ -69,7 +84,7 @@ async function change(action) {
   } catch (error) {
     if (context === learning.recordContext()) failure.value = { error: error.code || 'MODEL_FAILED' };
   } finally {
-    saving.value = false;
+    if (currentOperation === operation) saving.value = false;
   }
 }
 function select(id) {

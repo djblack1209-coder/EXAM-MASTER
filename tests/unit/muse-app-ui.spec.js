@@ -3,6 +3,17 @@ import { createPinia, setActivePinia } from 'pinia';
 beforeEach(() => setActivePinia(createPinia()));
 import { mount } from '@vue/test-utils';
 import MuseComposer from '@/components/business/learning/muse-composer.vue';
+vi.mock('@/composables/useVoiceDictation.js', () => ({
+  useVoiceDictation: () => ({
+    active: false,
+    phase: 'idle',
+    error: '',
+    capability: { platform: 'macos', available: true },
+    start: vi.fn(),
+    stop: vi.fn(),
+    cancel: vi.fn()
+  })
+}));
 import { workspaceDrafts } from '@/services/learning/workspace-drafts.js';
 
 let wrapper;
@@ -176,4 +187,10 @@ it('review uses only the dock input and keeps the answer local until an explicit
     store.$dispose();
     learningWriteLease.release();
   }
+});
+
+it('S3 A5 keeps unverified voice entry hidden while preserving the composer implementation', () => {
+  wrapper = mount(MuseComposer, { props: { modelValue: '原答' } });
+  expect(wrapper.findAll('button')).toHaveLength(2);
+  expect(wrapper.findAll('button').some((button) => button.attributes('icon') === 'microphone')).toBe(false);
 });

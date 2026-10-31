@@ -16,6 +16,8 @@
       'is-chat': active === 'learning',
       'is-library': ['archive', 'plan', 'phrases', 'materials', 'usage'].includes(active),
       'is-settings': active === 'settings' || active === 'profile',
+      'is-desktop-settings': nativeSettings,
+      'has-notice': !!notice,
       'has-composer': !!$slots.composer
     }"
     :style="[platformInsets, dockStyle, { '--muse-panel-width': `${panelWidth}px` }]"
@@ -329,12 +331,12 @@
           tabindex="0"
           aria-orientation="vertical"
           :aria-label="t('muse.resize')"
-          :aria-valuemin="240"
+          :aria-valuemin="180"
           :aria-valuemax="420"
           :aria-valuenow="panelWidth"
           @pointerdown="startPanelResize"
           @keydown="resizePanelKey"
-          @dblclick="panelWidth = 240"
+          @dblclick="resetPanelWidth"
         />
         <!-- #endif -->
       </view>
@@ -382,7 +384,7 @@
               class="brand-mark"
               :src="BRAND.mark"
               mode="aspectFit"
-              style="width: 72px; height: 72px"
+              style="width: 56px; height: 56px"
               aria-hidden="true"
             />
             <view class="brand-label"
@@ -426,7 +428,12 @@
             @action="learning.reloadRecords()"
           />
         </view>
-        <view v-if="$slots.composer" class="muse-composer-dock"><slot name="composer"></slot></view>
+        <view v-if="$slots.composer" class="muse-composer-dock">
+          <text v-if="notice" id="learning-request-error" class="shell-notice" role="status">{{
+            learningText(notice)
+          }}</text>
+          <slot name="composer"></slot>
+        </view>
       </view>
     </view>
     <BaseEmpty v-if="error" class="shell-error" state="error" :title="learningText(error)" />
@@ -453,8 +460,18 @@ import { bindBusinessMotion } from '@/design/business-motion.js';
 import { BRAND } from '@/config/brand.js';
 import { publicError, t } from '@/i18n/index.js';
 import { bindMessageFollow } from './message-follow.js';
+import { isDesktopSettingsWindow } from '@/services/desktop/windows.js';
+import {
+  shellNavigation,
+  SHELL_MODULES,
+  SHELL_ROUTES,
+  readSidebar,
+  saveSidebar,
+  clampSidebarWidth
+} from '@/services/learning/shell-navigation.js';
 const props = defineProps({
   dismissOverlay: { type: Function, default: null },
+  notice: { type: String, default: '' },
   sidePanel: { type: Boolean, default: false },
   active: { type: String, default: 'learning' },
   title: { type: String, default: '' },
@@ -507,10 +524,22 @@ onUpdated(() => {
 const menuButton = ref(null);
 const closeButton = ref(null);
 const searchInput = ref(null);
-const menuOpen = ref(false);
+const nativeSettings = isDesktopSettingsWindow();
+const sidebar = readSidebar();
+const menuOpen = ref(
+  props.active === 'learning' &&
+    !nativeSettings &&
+    !sidebar.collapsed &&
+    (typeof window !== 'undefined' ? window.innerWidth : uni.getWindowInfo?.().windowWidth || 1024) > 760
+);
+const navigationConfig = shellNavigation();
+const navigationSnapshot = ref(navigationConfig.snapshot());
+function applyNavigation(value) {
+  if (navigationConfig.apply(value)) navigationSnapshot.value = navigationConfig.snapshot();
+}
 const searchOnOpen = ref(false);
 const directoryOptions = ref(false);
-const panelPinned = ref(false);
+const panelPinned = ref(true);
 const viewportWidth = ref(1024);
 const compactHeader = computed(() => props.active === 'learning' && viewportWidth.value <= 480);
 const headerActionsOpen = ref(false);
@@ -554,8 +583,17 @@ let previousDirectoryFocus = null;
 function toggleMenu() {
   searchOnOpen.value = false;
   menuOpen.value = !menuOpen.value;
+  persistSidebar();
 }
-const panelWidth = ref(240);
+const panelWidth = ref(sidebar.width);
+function persistSidebar() {
+  if (props.active === 'learning' && viewportWidth.value > 760 && !nativeSettings)
+    saveSidebar({ version: 1, collapsed: !menuOpen.value, width: panelWidth.value });
+}
+function resetPanelWidth() {
+  panelWidth.value = 217;
+  persistSidebar();
+}
 const panelResizing = ref(false);
 const panelOpening = ref(false);
 const panelReveal = ref(0);
@@ -566,6 +604,7 @@ function openPanelKey(event) {
   event.preventDefault();
   searchOnOpen.value = false;
   menuOpen.value = true;
+  persistSidebar();
 }
 function startPanelOpen(event) {
   // #ifdef H5
@@ -595,6 +634,7 @@ function startPanelOpen(event) {
     if (open) {
       searchOnOpen.value = false;
       menuOpen.value = true;
+      persistSidebar();
     }
   };
   const cancel = (next) => {
@@ -621,10 +661,11 @@ function resizePanelKey(event) {
   const step = event.shiftKey ? 64 : 16;
   panelWidth.value =
     event.key === 'Home'
-      ? 240
+      ? 180
       : event.key === 'End'
         ? 420
-        : Math.max(240, Math.min(420, panelWidth.value + (event.key === 'ArrowRight' ? step : -step)));
+        : clampSidebarWidth(panelWidth.value + (event.key === 'ArrowRight' ? step : -step));
+  persistSidebar();
 }
 function startPanelResize(event) {
   // #ifdef H5
@@ -640,12 +681,13 @@ function startPanelResize(event) {
     if (next.pointerId !== event.pointerId) return;
     moved ||= Math.abs(next.clientX - startX) > 4;
     requested = startWidth + next.clientX - startX;
-    panelWidth.value = Math.max(240, Math.min(420, requested));
+    panelWidth.value = clampSidebarWidth(requested);
   };
   const finish = (next) => {
     if (next.pointerId !== event.pointerId) return;
     releasePanelResize();
-    if (!moved || requested < 180) closeMenu();
+    if (!moved) return;
+    persistSidebar();
   };
   const cancel = (next) => {
     if (next.pointerId !== event.pointerId) return;
@@ -730,7 +772,13 @@ function updateDockMetrics(event) {
       ? { windowHeight: window.innerHeight, windowWidth: window.innerWidth }
       : event?.size || uni.getWindowInfo?.();
   if (info?.windowHeight) viewportHeight.value = info.windowHeight;
-  if (info?.windowWidth) viewportWidth.value = info.windowWidth;
+  if (info?.windowWidth) {
+    const wasNarrow = viewportWidth.value <= 760;
+    viewportWidth.value = info.windowWidth;
+    if (wasNarrow !== viewportWidth.value <= 760 && !searchOnOpen.value)
+      menuOpen.value =
+        props.active === 'learning' && viewportWidth.value > 760 && !nativeSettings && !readSidebar().collapsed;
+  }
 }
 let releaseViewport = () => undefined;
 
@@ -748,12 +796,16 @@ try {
 }
 // #endif
 const error = ref('');
-const navigation = computed(() => [
-  { id: 'learning', label: t('muse.chat'), icon: 'chat' },
-  { id: 'search', label: t('learning.ki6'), shortLabel: t('muse.nav.search'), icon: 'search' },
-  { id: 'plan', label: t('muse.goals'), shortLabel: t('muse.nav.plan'), icon: 'checkbox-on' },
-  { id: 'materials', label: t('muse.library'), shortLabel: t('muse.nav.materials'), icon: 'shapes' }
-]);
+const navigation = computed(() =>
+  navigationSnapshot.value.modules
+    .filter((item) => item.visible)
+    .map(({ id }) => ({
+      id,
+      ...SHELL_MODULES[id],
+      label: t(SHELL_MODULES[id].label),
+      shortLabel: SHELL_MODULES[id].shortLabel ? t(SHELL_MODULES[id].shortLabel) : undefined
+    }))
+);
 function railActive(id) {
   return props.active === id;
 }
@@ -786,7 +838,10 @@ watch(menuOpen, async (open) => {
 });
 async function closeMenu() {
   directoryOptions.value = false;
-  menuOpen.value = false;
+  const wasSearch = searchOnOpen.value;
+  menuOpen.value = wasSearch && props.active === 'learning' && viewportWidth.value > 760 && !readSidebar().collapsed;
+  searchOnOpen.value = false;
+  if (!wasSearch) persistSidebar();
   await nextTick();
   // #ifdef H5
   (previousDirectoryFocus?.isConnected ? previousDirectoryFocus : menuButton.value?.$el || menuButton.value)?.focus?.();
@@ -808,6 +863,18 @@ function escapeMenu(event) {
   if (event.key === 'Escape' && panelOpening.value) {
     event.preventDefault();
     releasePanelOpen();
+    return;
+  }
+  if (
+    (event.metaKey || event.ctrlKey) &&
+    event.key.toLowerCase() === 'b' &&
+    !event.shiftKey &&
+    !event.altKey &&
+    props.active === 'learning' &&
+    !nativeSettings
+  ) {
+    event.preventDefault();
+    if (!event.repeat) toggleMenu();
     return;
   }
   if ((event.metaKey || event.ctrlKey) && ['k', 'j', ','].includes(event.key.toLowerCase())) {
@@ -840,7 +907,7 @@ function escapeMenu(event) {
     }
   }
   // #endif
-  if (event.key === 'Escape') {
+  if (event.key === 'Escape' && directoryModal.value) {
     event.preventDefault();
     closeMenu();
   }
@@ -917,7 +984,6 @@ function escapeGeneration(event) {
 }
 function openView(view) {
   directoryOptions.value = false;
-  menuOpen.value = false;
   const route = getCurrentPages().at(-1)?.route;
   if (view === 'search') {
     recordFilter.value = 'all';
@@ -939,32 +1005,35 @@ function openView(view) {
     else safeNavigateTo('/pages/profile/index');
     return;
   }
-  const target = ['archive', 'phrases', 'plan', 'materials', 'usage'].includes(view)
-    ? `/pages/archive/index?view=${view === 'archive' ? 'all' : view}`
-    : view === 'connections'
-      ? '/pages/learning/index?panel=connections'
-      : `/pages/${view}/index`;
+  if (directoryModal.value) menuOpen.value = false;
+  const target =
+    SHELL_ROUTES[view] ||
+    (['archive', 'phrases', 'plan', 'materials', 'usage'].includes(view)
+      ? `/pages/archive/index?view=${view === 'archive' ? 'all' : view}`
+      : view === 'connections'
+        ? '/pages/learning/index?panel=connections'
+        : `/pages/${view}/index`);
   if (route !== target.slice(1).split('?')[0]) safeNavigateTo(target);
   else if (props.active !== view) uni.redirectTo({ url: target });
 }
 function newSession() {
   if (learning.busy) return;
   learning.selectedConversationId = null;
-  menuOpen.value = false;
+  if (directoryModal.value) menuOpen.value = false;
   emit('new');
   if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
 }
 function resume(id) {
   if (learning.busy) return;
   learning.locateConversation(id);
-  menuOpen.value = false;
+  if (directoryModal.value) menuOpen.value = false;
   if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
 }
 function openRecord(id, context) {
   try {
     learning.openRecord(id, context);
     error.value = '';
-    menuOpen.value = false;
+    if (directoryModal.value) menuOpen.value = false;
     if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
   } catch (failure) {
     error.value = publicError(failure);
@@ -972,7 +1041,7 @@ function openRecord(id, context) {
 }
 function locate(id, day, groupId = null) {
   learning.locateConversation(id, day, groupId);
-  menuOpen.value = false;
+  if (directoryModal.value) menuOpen.value = false;
   if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
 }
 function outsideDirectory(event) {
@@ -984,6 +1053,8 @@ function outsideDirectory(event) {
 }
 onMounted(() => {
   updateDockMetrics();
+  if (viewportWidth.value <= 760 || nativeSettings) menuOpen.value = false;
+  uni.$on('shellNavigationChanged', applyNavigation);
   syncLogin();
   releaseIdentity = storageService.onIdentityChange(syncLogin);
   if (typeof uni.onWindowResize === 'function') {
@@ -1018,6 +1089,7 @@ onMounted(() => {
   }
 });
 onUnmounted(() => {
+  uni.$off('shellNavigationChanged', applyNavigation);
   releaseIdentity();
   releaseViewport();
   releasePanelResize();

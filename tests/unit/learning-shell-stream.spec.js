@@ -17,6 +17,7 @@ import BaseBubble from '@/components/base/base-bubble/base-bubble.vue';
 import MuseFeedbackCard from '@/components/business/learning/muse-feedback-card.vue';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import { bindMessageFollow } from '@/components/business/learning/message-follow.js';
+import { storageService } from '@/services/storageService.js';
 import { learningWriteLease } from '@/services/learning/learning-write-lease.js';
 import { coachFixture } from '../fixtures/writing-coach.js';
 import { INTAKE_CHOICES } from '../../laf-backend/functions/_shared/learning-intake.js';
@@ -98,6 +99,46 @@ function receipt(body, patch = {}) {
   };
 }
 describe('S2 continuous reply', () => {
+  it.each(['chat', 'coach'])('S3 hides an empty stopped %s reply and retains partial text', async (kind) => {
+    if (kind === 'coach') {
+      store.startCoach('考研英语二写作');
+      store.coachSave('profile', { profile: { exam: 'english2', minutes: 25, deadline: null } });
+    }
+    const wrapper = render(kind === 'coach' ? WritingCoach : LearningPage);
+    store.reply = {
+      kind,
+      id: 'stopped:reply',
+      requestId: 'stopped',
+      at: Date.now(),
+      conversationId: store.active.id,
+      pending: false,
+      cancelled: true,
+      content: ''
+    };
+    await nextTick();
+    expect(wrapper.find('[id="stopped:reply"]').exists()).toBe(false);
+    store.reply.content = '已收到的部分';
+    await nextTick();
+    expect(wrapper.get('[id="stopped:reply"]').text()).toContain('已收到的部分');
+  });
+  it('S3 places the cancellation notice before the composer without duplicating the error block', async () => {
+    store.error = '请求已取消，费用状态请查看模型用量';
+    const wrapper = render(LearningPage, { LearningShell: false });
+    await nextTick();
+    expect(wrapper.get('.muse-composer-dock [role="status"]').text()).toBe(store.error);
+    expect(wrapper.get('#learning-request-error').classes()).toContain('shell-notice');
+    expect(wrapper.find('.muse-composer-dock').element.firstElementChild.classList.contains('shell-notice')).toBe(true);
+    const css = readFileSync('src/components/business/learning/learning-space.css', 'utf8');
+    expect(css).toContain('.has-composer.has-notice .space-content');
+  });
+  it('S3 reserves the static brand outside the history scroller', () => {
+    const wrapper = render(LearningShell, { LearningShell: false });
+    expect(wrapper.get('.muse-chat-identity .brand-mark').attributes('src')).toBeTruthy();
+    expect(wrapper.find('.muse-chat-identity animated-avatar-stub').exists()).toBe(false);
+    const css = readFileSync('src/components/business/learning/learning-space.css', 'utf8');
+    expect(css).toMatch(/\.is-chat \.space-content \{[^}]*margin-top: calc\(116px[^}]*padding-top: 0/s);
+  });
+
   it('prepares before the first byte, grows one message, completes in the same DOM node, and returns the cat to idle', async () => {
     const wait = deferred();
     generateLearningTurn.mockReturnValue(wait.promise);
@@ -164,7 +205,7 @@ describe('S2 continuous reply', () => {
       );
       await pending;
       expect(store.reply.pending).toBe(false);
-      expect(store.reply.content).toBe('');
+      expect(store.reply.content).toBe(kind === 'stop' ? '临时说明' : '');
       expect(store.state.plans).toHaveLength(0);
       expect(store.state.attempts).toHaveLength(0);
       if (kind === 'stop') expect(store.exportData()).toBe(snapshot);
@@ -462,4 +503,81 @@ describe('S2 reading and Escape ownership', () => {
       expect(store.busy).toBe(false);
     }
   );
+});
+
+it('S3 changing accounts clears the foreign draft and returning restores the original conversation draft', async () => {
+  const wrapper = render();
+  const id = store.selectedConversationId;
+  await wrapper.get('.muse-composer textarea').setValue('账号甲未提交草稿');
+  await storageService.saveLoginSession({ userId: 'shell-owner-b', token: 'synthetic-b' });
+  store.refresh();
+  await flushPromises();
+  expect(wrapper.get('.muse-composer textarea').element.value).toBe('');
+  expect(store.modelId).toBe('');
+  await storageService.saveLoginSession({ userId: 'shell-stream-owner', token: 'synthetic-a-return' });
+  store.refresh();
+  await flushPromises();
+  expect(store.selectedConversationId).toBe(id);
+  expect(wrapper.get('.muse-composer textarea').element.value).toBe('账号甲未提交草稿');
+});
+
+describe('S3 sidebar and navigation', () => {
+  it.each(['plan', 'materials', 'settings'])(
+    'does not put the chat directory behind the %s workspace sidebar',
+    async (active) => {
+      const wrapper = render(LearningShell, { LearningShell: false });
+      wrapper.unmount();
+      const page = mount(LearningShell, { props: { active }, global: { stubs: { BaseIcon: true } } });
+      wrappers.push(page);
+      await nextTick();
+      expect(page.find('.space-sidebar').exists()).toBe(false);
+      expect(page.find('.rail-settings').exists()).toBe(true);
+    }
+  );
+
+  it('defaults to 217/open, toggles with Cmd/Ctrl B once, and restores the device layout', async () => {
+    let wrapper = render(LearningShell, { LearningShell: false });
+    vi.spyOn(wrapper.element, 'getClientRects').mockReturnValue([{}]);
+    expect(wrapper.get('.directory-resize').attributes('aria-valuenow')).toBe('217');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'b', metaKey: true, bubbles: true }));
+    await nextTick();
+    expect(uni.getStorageSync('yozi_shell_sidebar_v1')).toMatchObject({ collapsed: true, width: 217 });
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'b', ctrlKey: true, repeat: true, bubbles: true }));
+    expect(uni.getStorageSync('yozi_shell_sidebar_v1').collapsed).toBe(true);
+    wrapper.unmount();
+    wrapper = render(LearningShell, { LearningShell: false });
+    vi.spyOn(wrapper.element, 'getClientRects').mockReturnValue([{}]);
+    expect(wrapper.find('.space-sidebar').exists()).toBe(false);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'b', ctrlKey: true, bubbles: true }));
+    await nextTick();
+    await wrapper.get('.directory-resize').trigger('keydown', { key: 'Home' });
+    expect(uni.getStorageSync('yozi_shell_sidebar_v1').width).toBe(180);
+    await wrapper.get('.directory-resize').trigger('keydown', { key: 'End' });
+    expect(uni.getStorageSync('yozi_shell_sidebar_v1').width).toBe(420);
+  });
+  it('reorders/hides rail entries and rejects a corrupt config without touching the conversation', async () => {
+    const wrapper = render(LearningShell, { LearningShell: false });
+    const id = store.selectedConversationId,
+      before = store.exportData();
+    const apply = uni.$on.mock.calls.findLast(([name]) => name === 'shellNavigationChanged')[1];
+    apply({
+      schema: 'yozi.shell.navigation.v1',
+      modules: [
+        { id: 'materials', visible: true },
+        { id: 'learning', visible: true },
+        { id: 'plan', visible: false }
+      ]
+    });
+    await nextTick();
+    expect(wrapper.findAll('.rail-group button').map((button) => button.attributes('aria-label'))).toEqual([
+      '资料库',
+      '对话'
+    ]);
+    apply({ modules: [] });
+    await nextTick();
+    expect(wrapper.findAll('.rail-group button')).toHaveLength(2);
+    expect(store.selectedConversationId).toBe(id);
+    expect(store.exportData()).toBe(before);
+    expect(wrapper.get('.rail-settings').exists()).toBe(true);
+  });
 });

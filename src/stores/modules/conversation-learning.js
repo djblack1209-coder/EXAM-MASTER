@@ -1,3 +1,4 @@
+import { LOCATION_KEY, restoredConversation } from '@/services/learning/shell-navigation.js';
 import {
   MODEL_TOOL_NAMES,
   compactLearningProgress,
@@ -381,6 +382,14 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     }
   );
   const selectedConversationId = ref(state.value.conversations.at(-1)?.id || null);
+  watch(
+    selectedConversationId,
+    (conversationId) => {
+      if (resettingSession || !boundSession || checkSession(boundSession) !== 'current') return;
+      storageService.save(LOCATION_KEY, { version: 1, conversationId }, true, boundSession);
+    },
+    { flush: 'sync' }
+  );
   const busy = ref(false);
   const error = ref('');
   const intakeBusy = ref(false),
@@ -471,6 +480,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     );
     const unchanged = modelId.value === id;
     modelId.value = id;
+    modelListState.value = { ...modelListState.value, selectionError: null };
     selectedMode.value = 'cloud';
     if (unchanged) persistModelPreferences();
     return (await preferenceWrite) || { success: true };
@@ -516,7 +526,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       ...reply.value,
       pending: false,
       cancelled: control.signal.aborted,
-      content: control.signal.aborted ? '' : content
+      content: control.signal.aborted ? reply.value.content : content
     };
     replyController = null;
     streamPreview.value = '';
@@ -1408,12 +1418,26 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           import.meta.env.VITE_ENABLE_WRITING_COACH === 'false'
             ? next.conversations
             : next.conversations.filter((conversation) => conversation.coach);
-        selectedConversationId.value = startup.at(-1)?.id || next.conversations.at(-1)?.id || null;
+        const location =
+          boundSession && storageService.get(LOCATION_KEY, null, { session: boundSession, migrateLegacy: false });
+        selectedConversationId.value = restoredConversation(
+          location,
+          next,
+          startup.at(-1)?.id || next.conversations.at(-1)?.id || null
+        );
       }
       state.value = next;
       if (preferencesOwner !== next.owner && boundSession && boundSession.owner === next.owner) {
         hydratingPreferences = true;
         try {
+          const savedModelPreferences = storageService.get(preferenceKey, null, {
+            session: boundSession,
+            migrateLegacy: false
+          });
+          modelId.value =
+            typeof savedModelPreferences?.selectedModelId === 'string' ? savedModelPreferences.selectedModelId : '';
+          // The catalog must confirm this identity before it can be used.
+          selectedMode.value = 'offline';
           sharingAllowed.value =
             storageService.get(preferenceKey, null, { session: boundSession, migrateLegacy: false })?.sharingAllowed ===
             true;
@@ -3896,6 +3920,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         : data.mode === 'detail' && data.modelId === input.modelId && validObject(data.fields));
     const apply = (result) => {
       ensureSessionCurrent(session, operation.controller.signal);
+      let selectionError = null;
       if (kind === 'discover') {
         modelDiscovery.value = result.success
           ? { profileId: input.profileId, modelId: input.modelId || null, data: result.data }
@@ -3923,6 +3948,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
                 !model.requiresModelSelection
             );
             modelId.value = selected?.id || '';
+            if (preferences.selectedModelId && !selected) selectionError = 'MODEL_NOT_FOUND';
             selectedMode.value = selected ? 'cloud' : 'offline';
             sharingAllowed.value = preferences.sharingAllowed === true;
             storageService.save(preferenceKey, preferences, true, boundSession);
@@ -3932,12 +3958,14 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         }
         if (result.success && modelId.value && !models.value.some((model) => model.id === modelId.value)) {
           hydratingPreferences = true;
+          selectionError = 'MODEL_NOT_FOUND';
           modelId.value = '';
           selectedMode.value = 'offline';
           hydratingPreferences = false;
         }
       } else usage.value = result.success ? result.data : null;
       status.value = {
+        selectionError,
         code: result.success ? undefined : result.code,
         phase: !result.success
           ? 'error'

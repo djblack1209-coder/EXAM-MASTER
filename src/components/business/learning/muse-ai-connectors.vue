@@ -207,6 +207,8 @@ function connectionLabel(saved) {
 function close() {
   current.value = null;
   apiKey.value = '';
+  draft.value = {};
+  newConnection.value = false;
   editing.value = false;
   choosing.value = false;
   disconnecting.value = false;
@@ -389,7 +391,9 @@ watch(
     close();
     query.value = '';
     message.value = '';
-  }
+    loginRequired.value = false;
+  },
+  { flush: 'sync' }
 );
 onMounted(() => {
   if (getToken()) void reload();

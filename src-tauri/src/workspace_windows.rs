@@ -68,9 +68,12 @@ fn settings_only(window: &WebviewWindow) -> Result<(), String> {
     if window.label() == "settings" { Ok(()) } else { Err("此操作仅限设置窗口".into()) }
 }
 fn workspace_route(route: &str) -> bool {
-    ["/pages/learning/index", "/pages/archive/index", "/pages/archive/index?view=plan", "/pages/mistake/index", "/pages/favorite/index",
+    ["/pages/learning/index", "/pages/archive/index", "/pages/archive/index?view=plan", "/pages/archive/index?view=materials", "/pages/mistake/index", "/pages/favorite/index",
         "/pages/login/index", "/pages/index/index", "/pages/profile/index?panel=reset", "/pages/settings/privacy", "/pages/settings/terms"].contains(&route)
 }
+
+// Muse 2 实现参数: native/main.swift:1759 (independent settings window).
+const SETTINGS_SIZE: (f64, f64) = (520.0, 680.0);
 
 #[tauri::command]
 pub async fn open_desktop_settings(app: AppHandle, window: WebviewWindow, state: State<'_, SettingsRefresh>, panel: String) -> Result<(), String> {
@@ -86,7 +89,7 @@ pub async fn open_desktop_settings(app: AppHandle, window: WebviewWindow, state:
     }
     let route = format!("/pages/profile/index?panel={panel}");
     let builder = tauri::WebviewWindowBuilder::new(&app, "settings", tauri::WebviewUrl::App(format!("index.html#{route}").into()))
-        .title("Yozi AI 设置").inner_size(800.0, 600.0).min_inner_size(800.0, 600.0).center()
+        .title("Yozi AI 设置").inner_size(SETTINGS_SIZE.0, SETTINGS_SIZE.1).min_inner_size(SETTINGS_SIZE.0, SETTINGS_SIZE.1).center()
         .theme(window.theme().ok());
     #[cfg(target_os = "macos")]
     let builder = {
@@ -97,9 +100,20 @@ pub async fn open_desktop_settings(app: AppHandle, window: WebviewWindow, state:
             builder.data_store_identifier([0x51,0x92,0x20,0x26,0x10,0x10,0x42,0x72,0x91,0x29,0x35,0x73,0x88,0x91,0x13,0x07])
         } else { builder }
     };
-    builder.on_navigation(super::trusted_navigation)
+    let parent = app.clone();
+    let settings = builder.on_navigation(super::trusted_navigation)
         .on_new_window(|_, _| tauri::webview::NewWindowResponse::Deny)
         .build().map_err(|_| "无法创建设置窗口")?;
+    settings.on_window_event(move |event| {
+        if matches!(event, tauri::WindowEvent::Destroyed) {
+            if let Some(main) = parent.get_webview_window("main") {
+                let _ = main.show();
+                let _ = main.unminimize();
+                let _ = main.set_focus();
+                let _ = main.emit("desktop-settings-closed", ());
+            }
+        }
+    });
     Ok(())
 }
 
@@ -215,9 +229,14 @@ mod tests {
     fn settings_routes_are_closed_to_remote_and_arbitrary_paths() {
         assert!(workspace_route("/pages/learning/index"));
         assert!(workspace_route("/pages/archive/index?view=plan"));
+        assert!(workspace_route("/pages/archive/index?view=materials"));
         assert!(!workspace_route("/pages/archive/index?view=other"));
         assert!(!workspace_route("https://example.com"));
         assert!(!workspace_route("/pages/learning/index?redirect=https://example.com"));
         assert!(!workspace_route("../../private"));
+    }
+    #[test]
+    fn settings_keep_the_compact_desktop_size() {
+        assert_eq!(SETTINGS_SIZE, (520.0, 680.0));
     }
 }

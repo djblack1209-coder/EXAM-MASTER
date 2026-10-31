@@ -12,6 +12,8 @@ import { setLanguage } from '@/i18n/index.js';
 let wrapper;
 beforeEach(() => {
   uni.clearStorageSync();
+  // Exercise the explicitly collapsed device layout; S3 tests cover the open default.
+  uni.setStorageSync('yozi_shell_sidebar_v1', { version: 1, collapsed: true, width: 217 });
   setActivePinia(createPinia());
 });
 afterEach(() => {

@@ -11,15 +11,26 @@ export function isDesktopSettingsWindow() {
   }
 }
 let settingsOpening = null;
+let settingsReturnFocus = null;
+export function restoreDesktopSettingsFocus() {
+  const target = settingsReturnFocus;
+  settingsReturnFocus = null;
+  if (target?.isConnected) target.focus?.({ preventScroll: true });
+}
 export function openDesktopSettings(panel) {
   if (!['settings', 'connectors', 'profile'].includes(panel)) return Promise.reject(new Error('设置分组不合法'));
   // Sequence different panels; merge duplicate rapid clicks while native creation is pending.
   if (settingsOpening?.panel === panel) return settingsOpening.promise;
+  if (!settingsReturnFocus && typeof document !== 'undefined') settingsReturnFocus = document.activeElement;
   const previous = settingsOpening?.promise;
   const operation = { panel };
   operation.promise = Promise.resolve(previous)
     .catch(() => undefined)
     .then(() => invoke('open_desktop_settings', { panel }))
+    .catch((error) => {
+      restoreDesktopSettingsFocus();
+      throw error;
+    })
     .finally(() => {
       if (settingsOpening === operation) settingsOpening = null;
     });
@@ -87,6 +98,7 @@ export async function bindDesktopWorkspace({ onRoute, onPreferences, onModelInta
   else {
     releases.push(await listen('desktop-workspace-route', (event) => onRoute(event.payload)));
     releases.push(await listen('desktop-model-intake', (event) => onModelIntake?.(event.payload)));
+    releases.push(await listen('desktop-settings-closed', restoreDesktopSettingsFocus));
   }
   releases.push(await listen('desktop-preferences-changed', onPreferences));
   window.addEventListener('focus', onPreferences);

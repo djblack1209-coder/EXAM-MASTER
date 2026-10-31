@@ -1021,6 +1021,8 @@ beforeEach(() => {
   vi.stubEnv('VITE_ENABLE_WRITING_COACH', 'false');
   vi.stubEnv('VITE_ENABLE_LEGACY_LEARNING', 'true');
   uni.clearStorageSync();
+  // Exercise the explicitly collapsed device layout; S3 tests cover the open default.
+  uni.setStorageSync('yozi_shell_sidebar_v1', { version: 1, collapsed: true, width: 217 });
   setActivePinia(createPinia());
   vi.clearAllMocks();
   loadHooks.callbacks = [];
@@ -2899,14 +2901,14 @@ describe('学习空间的实际入口与目录', () => {
     );
     wrapper.unmount();
   });
-  it('目录打开聚焦搜索，Escape 关闭并恢复原按钮焦点', async () => {
+  it('显式打开目录聚焦搜索，收起恢复原按钮焦点', async () => {
     const wrapper = mount(LearningShell, { attachTo: document.body, global: { stubs } });
     await wrapper.find('.mobile-menu').trigger('tap');
     await flushPromises();
     expect(wrapper.find('.space-sidebar').classes()).toContain('sidebar-open');
     expect(document.activeElement).toBe(wrapper.find('.space-sidebar input').element);
     expect(wrapper.find('.space-main').attributes()).not.toHaveProperty('inert');
-    await wrapper.find('.space-sidebar input').trigger('keydown', { key: 'Escape' });
+    await wrapper.get('.sidebar-close').trigger('tap');
     await flushPromises();
     expect(wrapper.find('.space-sidebar.sidebar-open').exists()).toBe(false);
     expect(document.activeElement).toBe(wrapper.find('.mobile-menu').element);
@@ -2992,7 +2994,7 @@ it('Muse settings preview appearance in a draft and save only on confirmation', 
     wrapper.unmount();
   }
 });
-it('Muse directory width is keyboard bounded and Escape restores focus', async () => {
+it('Muse directory width is keyboard bounded and explicit close restores focus', async () => {
   const wrapper = mount(LearningShell, { global: { stubs }, attachTo: document.body });
   try {
     await wrapper.get('.mobile-menu').trigger('tap');
@@ -3003,11 +3005,11 @@ it('Muse directory width is keyboard bounded and Escape restores focus', async (
     expect(separator.attributes('aria-valuenow')).toBe('420');
     await separator.trigger('keydown', { key: 'Home' });
     await separator.trigger('keydown', { key: 'ArrowRight', shiftKey: true });
-    expect(separator.attributes('aria-valuenow')).toBe('304');
+    expect(separator.attributes('aria-valuenow')).toBe('244');
     await separator.trigger('keydown', { key: 'Home' });
     await separator.trigger('keydown', { key: 'ArrowLeft' });
-    expect(separator.attributes('aria-valuenow')).toBe('240');
-    await separator.trigger('keydown', { key: 'Escape' });
+    expect(separator.attributes('aria-valuenow')).toBe('180');
+    await wrapper.get('.sidebar-close').trigger('tap');
     await flushPromises();
     expect(wrapper.get('.mobile-menu').attributes('aria-expanded')).toBe('false');
     expect(document.activeElement).toBe(wrapper.get('.mobile-menu').element);
@@ -3027,7 +3029,7 @@ it('Muse search focuses the query instead of the close button', async () => {
   }
 });
 
-it('Muse drawer resize cancellation preserves width and facts; a handle click closes it', async () => {
+it('Muse drawer resize cancellation preserves width and facts; a handle click preserves it', async () => {
   const store = useConversationLearningStore();
   const before = store.exportData();
   const wrapper = mount(LearningShell, { global: { stubs }, attachTo: document.body });
@@ -3035,19 +3037,21 @@ it('Muse drawer resize cancellation preserves width and facts; a handle click cl
   try {
     await wrapper.get('.mobile-menu').trigger('tap');
     const separator = wrapper.get('[role="separator"]');
-    await separator.trigger('pointerdown', { pointerId: 7, clientX: 240, button: 0 });
+    await separator.trigger('pointerdown', { pointerId: 7, clientX: 217, button: 0 });
     window.dispatchEvent(pointer('pointermove', 320));
     await flushPromises();
     expect(separator.attributes('aria-valuenow')).toBe('320');
     expect(wrapper.classes()).toContain('is-resizing');
     window.dispatchEvent(pointer('pointercancel', 320));
     await flushPromises();
-    expect(separator.attributes('aria-valuenow')).toBe('240');
+    expect(separator.attributes('aria-valuenow')).toBe('217');
     expect(wrapper.get('.space-sidebar').classes()).toContain('sidebar-open');
     expect(wrapper.classes()).not.toContain('is-resizing');
-    await separator.trigger('pointerdown', { pointerId: 7, clientX: 240, button: 0 });
-    window.dispatchEvent(pointer('pointerup', 240));
+    await separator.trigger('pointerdown', { pointerId: 7, clientX: 217, button: 0 });
+    window.dispatchEvent(pointer('pointerup', 217));
     await flushPromises();
+    expect(wrapper.get('.space-sidebar').classes()).toContain('sidebar-open');
+    await wrapper.get('.sidebar-close').trigger('tap');
     expect(wrapper.get('.mobile-menu').attributes('aria-expanded')).toBe('false');
     expect(document.activeElement).toBe(wrapper.get('.mobile-menu').element);
     expect(store.exportData()).toBe(before);
@@ -3101,8 +3105,6 @@ it('Muse desktop pin preserves chat interaction while the mobile drawer remains 
     await wrapper.get('.mobile-menu').trigger('tap');
     await flushPromises();
     expect(wrapper.get('.space-main').attributes()).not.toHaveProperty('inert');
-    await wrapper.get('.sidebar-options').trigger('tap');
-    await wrapper.get('.directory-options-menu [aria-pressed]').trigger('tap');
     await wrapper.get('.space-content').trigger('pointerdown');
     await flushPromises();
     expect(wrapper.find('.space-sidebar.sidebar-open').exists()).toBe(true);

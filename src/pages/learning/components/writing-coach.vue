@@ -1,6 +1,7 @@
 <template>
   <LearningShell
     active="learning"
+    :notice="cancellationNotice"
     :title="materialTrack ? '计算机专业课' : '考研英语写作'"
     :style="{ '--muse-composer-height': `${composerHeight}px`, '--learning-composer-height': `${composerHeight}px` }"
     @new="newSession"
@@ -540,7 +541,7 @@
         >
       </template>
       <BaseCard
-        v-if="message || learning.coachError || learning.error"
+        v-if="!cancellationNotice && (message || learning.coachError || learning.error)"
         :id="DEV_TEST ? 'coach-action-error' : undefined"
         :role="modelFailure?.error === 'NEEDS_CONNECTION' ? 'status' : 'alert'"
         ><text>{{
@@ -551,6 +552,7 @@
   </LearningShell>
 </template>
 <script setup>
+import { visibleReply, cancelledNotice } from '@/services/learning/shell-navigation.js';
 import { computed, ref, reactive, watch, onMounted, onBeforeUnmount, onUnmounted, nextTick } from 'vue';
 import { coachSavedRecords } from '../../../../laf-backend/functions/_shared/learning-coach-records.js';
 import { coachDueItem } from '../../../../laf-backend/functions/_shared/learning-reminders.js';
@@ -691,8 +693,13 @@ const analysisFields = [
 ];
 const analysis = reactive(Object.fromEntries(analysisFields.map((f) => [f.key, ''])));
 const coach = computed(() => learning.active?.coach);
+const cancellationNotice = computed(() => cancelledNotice(learning.error));
 const coachReply = computed(() =>
-  learning.reply?.kind === 'coach' && learning.reply.conversationId === learning.active?.id ? learning.reply : null
+  learning.reply?.kind === 'coach' &&
+  learning.reply.conversationId === learning.active?.id &&
+  visibleReply(learning.reply)
+    ? learning.reply
+    : null
 );
 const materialTrack = computed(() => coachUsesMaterials(coach.value) || profile.subject === 'kaoyan_major');
 const today = computed(() => dayKey(learning.calendarTime, learning.state.timezone));
