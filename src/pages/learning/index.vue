@@ -30,11 +30,7 @@
         @tap="run(() => learning.dispatchLearningAction({ type: 'change_method' }))"
         >换法</BaseButton
       >
-      <BaseButton
-        v-if="learning.active"
-        variant="quiet"
-        :disabled="learning.busy"
-        @tap="sendDirective('提示')"
+      <BaseButton v-if="learning.active" variant="quiet" :disabled="learning.busy" @tap="sendDirective('提示')"
         >只要提示</BaseButton
       >
       <BaseButton
@@ -488,7 +484,8 @@
             :author="message.role === 'user' ? 'user' : 'assistant'"
             :group="message.groupPosition"
             :rich="message.rich && !message.id.endsWith(':reply')"
-            :avatar="message.role === 'assistant'"
+            avatar
+            :avatar-src="message.role === 'user' ? userAvatar : ''"
             :avatar-identity="message.id"
             :avatar-business="{ busy: !!message.pending, producing: !!message.pending && !!message.content }"
           >
@@ -2475,6 +2472,10 @@ onMounted(() => {
 onUnmounted(() => unbindKeyboard());
 // Slot updates can run while the old conversation is being removed.
 const conversationMessages = computed(() => learning.active?.messages || []);
+// Owner is the reactive key: the saved account photo only belongs to a signed-in learner.
+const userAvatar = computed(() =>
+  learning.state.owner === 'guest' ? '' : storageService.get('userInfo')?.avatarUrl || ''
+);
 const correctionOf = ref(null);
 const lastEditableMessage = computed(() =>
   !learning.activeQuestion && !learning.active?.stopped
@@ -3161,6 +3162,7 @@ onLoad((options) => {
   if (options.panel === 'connections') openAIConnectors();
   if (options.panel === 'legacyConnections') showConnections.value = true;
   if (options.panel === 'profile') showProfile.value = true;
+  if (options.panel === 'data') openAccountData();
 });
 async function run(action) {
   const context = learning.recordContext(),

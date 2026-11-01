@@ -7,7 +7,8 @@
     :aria-label="t(`ui.author.${author}`)"
   >
     <view v-if="$slots.time" class="base-bubble__time"><slot name="time"></slot></view>
-    <view class="base-bubble__body">
+    <!-- WeChat-style rows: the avatar sits outside the bubble, the kitten on the left and the student on the right. -->
+    <view class="base-bubble__row">
       <view
         v-if="avatar && author === 'assistant'"
         class="base-bubble__avatar"
@@ -24,22 +25,42 @@
         />
         <image v-else :src="AVATAR_STATIC" mode="aspectFit" class="base-bubble__still" />
       </view>
-      <view class="base-bubble__content"><slot></slot></view>
+      <view v-else-if="avatar" class="base-bubble__avatar base-bubble__avatar--user" aria-hidden="true">
+        <image
+          v-if="avatarSrc && !avatarFailed"
+          :src="avatarSrc"
+          mode="aspectFill"
+          class="base-bubble__photo"
+          @error="avatarFailed = true"
+        />
+        <BaseIcon v-else name="user" size="24px" tone="ink-2" />
+      </view>
+      <view class="base-bubble__body">
+        <view class="base-bubble__content"><slot></slot></view>
+      </view>
     </view>
   </view>
 </template>
 <script setup>
 import { t } from '@/i18n/index.js';
+import { ref, watch } from 'vue';
 import AnimatedAvatar from '../animated-avatar/animated-avatar.vue';
+import BaseIcon from '../base-icon/base-icon.vue';
 import { AVATAR_STATIC, avatarStateFor } from '@/design/avatar-state.js';
-defineProps({
+const props = defineProps({
   author: { type: String, default: 'assistant', validator: (value) => ['user', 'assistant'].includes(value) },
   avatar: { type: Boolean, default: false },
   avatarBusiness: { type: Object, default: null },
   avatarIdentity: { type: String, default: 'message-reply' },
+  avatarSrc: { type: String, default: '' },
   rich: Boolean,
   group: { type: String, default: '', validator: (value) => ['', 'single', 'first', 'middle', 'last'].includes(value) }
 });
+const avatarFailed = ref(false);
+watch(
+  () => props.avatarSrc,
+  () => (avatarFailed.value = false)
+);
 </script>
 <style scoped>
 .base-bubble {
@@ -50,12 +71,21 @@ defineProps({
   color: var(--ink);
   font: var(--weight-regular) 16px/22px var(--font-ui);
 }
+.base-bubble__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+.base-bubble--user .base-bubble__row {
+  flex-direction: row-reverse;
+}
 .base-bubble__body {
   display: flex;
   align-items: flex-start;
-  align-self: flex-start;
-  gap: var(--s-3);
   max-width: 86%;
+  min-width: 0;
   min-height: 44px;
   padding: 11px 15px;
   border-radius: 22px;
@@ -85,6 +115,18 @@ defineProps({
   width: 48px;
   height: 48px;
 }
+/* The student avatar is the account photo, or a neutral Lucide user mark when there is none. */
+.base-bubble__avatar--user {
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--muse-selected, var(--paper));
+}
+.base-bubble__photo {
+  width: 48px;
+  height: 48px;
+}
 /* The shared player keeps its 1000ms dwell. The existing 2.2s thinking motion
    bridges its first idle frame so request feedback starts in the send tick. */
 .base-bubble__avatar[data-avatar-state='working']
@@ -107,7 +149,6 @@ defineProps({
   }
 }
 .base-bubble--user .base-bubble__body {
-  align-self: flex-end;
   max-width: 78%;
   background: var(--muse-user, var(--violet-soft));
   color: var(--muse-user-ink, var(--ink));
@@ -115,6 +156,7 @@ defineProps({
   line-height: 26px;
 }
 .base-bubble--rich .base-bubble__body {
+  flex: 1;
   padding: 0;
   background: transparent;
   max-width: 100%;

@@ -7,6 +7,13 @@ function matchesLearningControl(button, label) {
   const text = button.find('.base-option__label');
   return key.exists() && text.exists() && `${key.text().trim()}. ${text.text().trim()}` === expected;
 }
+async function openSettingsSection(wrapper, label) {
+  await wrapper
+    .findAll('.settings-nav')
+    .find((button) => button.text().trim() === label)
+    .trigger('tap');
+  await flushPromises();
+}
 async function openLearningSettings(wrapper) {
   const control = wrapper.find('.connection-pill');
   if (control.attributes('aria-expanded') !== 'true') {
@@ -2295,6 +2302,7 @@ describe('学习空间的实际入口与目录', () => {
     const wrapper = mount(ProfilePage, {
       global: { stubs: { ...stubs, LearningOverview: false, CustomTabbar: true, image: true } }
     });
+    await openSettingsSection(wrapper, '数据控制');
     expect(wrapper.find('.learning-overview').exists()).toBe(false);
     expect(wrapper.text()).toContain('历史题库记录');
     expect(wrapper.find('.stats-card').text()).toContain('7');
@@ -2318,13 +2326,14 @@ describe('学习空间的实际入口与目录', () => {
     [Array.from({ length: 4 }, () => ({ isCorrect: false })), '0%'],
     [Array.from({ length: 4 }, () => ({ isCorrect: true })), '100%'],
     [[{ isCorrect: true, grade: { status: 'pending' } }, { isCorrect: NaN }], '—']
-  ])('近期旧判对只使用逐题旧布尔分母：%j', (history, expected) => {
+  ])('近期旧判对只使用逐题旧布尔分母：%j', async (history, expected) => {
     const study = useStudyStore();
     study.studyProgress.completedQuestions = 999;
     study.studyProgress.correctQuestions = 998;
     study.questionHistory = history;
     const wrapper = mount(ProfilePage, { global: { stubs: { ...stubs, CustomTabbar: true } } });
     try {
+      await openSettingsSection(wrapper, '数据控制');
       expect(wrapper.find('.stats-card').text()).toContain('近期旧判对');
       expect(wrapper.find('.stats-card .base-list-row__value').text()).toBe(expected);
     } finally {

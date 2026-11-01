@@ -372,10 +372,16 @@ describe('S2 continuous reply', () => {
     expect(wrapper.text()).toBe(before);
     expect(store.active.coach.diagnostic).toBeNull();
   });
-  it('uses Muse 2 user bubble parameters and keeps student avatars absent', () => {
+  // 11-01 brief: WeChat-style rows put an avatar beside every message, the student's included.
+  it('uses Muse 2 user bubble parameters and shows the student avatar on the right', async () => {
     const wrapper = mount(BaseBubble, { props: { author: 'user', avatar: true } });
     wrappers.push(wrapper);
-    expect(wrapper.find('.base-bubble__avatar').exists()).toBe(false);
+    expect(wrapper.find('.base-bubble__avatar--user').exists()).toBe(true);
+    expect(wrapper.find('.base-bubble__still').exists()).toBe(false);
+    await wrapper.setProps({ avatarSrc: '/fixture-student-photo.png' });
+    expect(wrapper.get('.base-bubble__photo').attributes('src')).toBe('/fixture-student-photo.png');
+    await wrapper.get('.base-bubble__photo').trigger('error');
+    expect(wrapper.find('.base-bubble__photo').exists()).toBe(false);
     const css = readFileSync('src/components/base/base-bubble/base-bubble.vue', 'utf8');
     expect(css).toContain('border-radius: 22px');
     expect(css).toContain('font-size: 16px');

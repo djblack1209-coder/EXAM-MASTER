@@ -122,7 +122,8 @@ describe('profile panel navigation across page registration', () => {
     expect(context.settingsSection).toBe('general');
     context.setProfilePanel('profile');
     expect(context.settingsMode).toBe(false);
-    expect(context.settingsSection).toBe('account');
+    // Muse puts the account at the top of General; there is no separate account section.
+    expect(context.settingsSection).toBe('general');
   });
   it('a reused tab consumes each latest target once in onShow', () => {
     const context = page();

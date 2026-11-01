@@ -47,7 +47,7 @@
             label="返回对话"
             @tap="goTo('/pages/learning/index')"
         /></view>
-        <view v-if="['general', 'account'].includes(settingsSection)" class="settings-group user-section">
+        <view v-if="settingsSection === 'general'" class="settings-group user-section">
           <BaseButton
             class="profile-top"
             variant="quiet"
@@ -127,7 +127,40 @@
             ></view
           >
         </template>
-        <template v-if="['general', 'records'].includes(settingsSection)">
+        <template v-if="settingsSection === 'general'">
+          <text class="settings-label">通知</text>
+          <MuseStudyReminders />
+        </template>
+        <template v-if="settingsSection === 'permissions'">
+          <text class="settings-label">需要权限</text>
+          <view class="settings-group permission-group"
+            ><BaseListRow label="麦克风与语音识别" value="语音输入暂未开放" :actionable="false" /><BaseListRow
+              label="文件与照片"
+              value="添加资料时由系统询问"
+              :actionable="false"
+          /></view>
+          <text class="settings-label">AI 连接</text>
+          <view class="settings-group"
+            ><BaseListRow
+              label="学习内容发送给 AI"
+              :value="learning.sharingAllowed ? '已允许' : '未允许'"
+              @tap="goTo('/pages/learning/index?panel=connections')"
+          /></view>
+        </template>
+        <view v-if="settingsSection === 'channels'" class="settings-group"
+          ><text class="settings-empty" role="status">暂无可连接的消息渠道</text></view
+        >
+        <template v-if="settingsSection === 'devices'">
+          <text class="settings-label">本机</text>
+          <view class="settings-group"
+            ><BaseListRow label="当前设备" :value="deviceLabel" :actionable="false" /><BaseListRow
+              label="同步学习记录"
+              :value="learning.syncBusy ? '同步中' : ''"
+              :disabled="learning.syncBusy || learning.busy"
+              @tap="handleLearningSync"
+          /></view>
+        </template>
+        <template v-if="settingsSection === 'data'">
           <text class="settings-label">{{ t('muse.records') }}</text>
           <text
             v-if="totalQuestions || studyStore?.studyProgress?.studyMinutes"
@@ -151,17 +184,9 @@
               @tap="goTo('/pages/mistake/index')" /><BaseListRow
               :label="t('dashboard.copy105')"
               @tap="goTo('/pages/favorite/index')" /><BaseListRow
-              label="同步学习记录"
-              :value="learning.syncBusy ? '同步中' : ''"
-              :disabled="learning.syncBusy || learning.busy"
-              @tap="handleLearningSync"
+              label="备份与恢复"
+              @tap="goTo('/pages/learning/index?panel=data')"
           /></view>
-        </template>
-        <template v-if="['general', 'records'].includes(settingsSection)">
-          <text class="settings-label">通知</text>
-          <MuseStudyReminders />
-        </template>
-        <template v-if="['general', 'account', 'records'].includes(settingsSection)">
           <text class="settings-label">本机数据</text>
           <view class="settings-group reset-group">
             <BaseListRow label="清除本机数据" value="退出并重置" :disabled="resetBusy" @tap="handleLocalReset" />
@@ -172,8 +197,7 @@
             <text v-if="resetError" class="reset-error" role="alert">{{ resetError }}</text>
           </view>
         </template>
-        <template v-if="['general', 'legal'].includes(settingsSection)">
-          <text class="settings-label">{{ t('muse.legal') }}</text>
+        <template v-if="settingsSection === 'legal'">
           <view class="settings-group"
             ><BaseListRow :label="t('dashboard.copy106')" @tap="goTo('/pages/settings/privacy')" /><BaseListRow
               :label="t('dashboard.copy107')"
@@ -212,6 +236,7 @@
 <script>
 import '@/i18n/muse.js';
 import { isDesktopSettingsWindow, openDesktopWorkspace } from '@/services/desktop/windows.js';
+import { isDesktopRuntime } from '@/services/desktop/runtime.js';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import MuseAIConnectors from '@/components/business/learning/muse-ai-connectors.vue';
 import MuseStudyReminders from '@/components/business/learning/muse-study-reminders.vue';
@@ -274,11 +299,21 @@ export default {
       return [
         { id: 'general', icon: 'settings', label: t('muse.general') },
         { id: 'connectors', icon: 'shapes', label: 'AI 连接器' },
-        { id: 'account', icon: 'user', label: t('muse.account') },
-        { id: 'records', icon: 'book-open', label: t('muse.records') },
-        { id: 'legal', icon: 'shield', label: t('muse.legal') },
-        { id: 'support', icon: 'info', label: t('dashboard.copy108') }
+        { id: 'permissions', icon: 'key', label: t('muse.permissions') },
+        { id: 'channels', icon: 'chat', label: t('muse.channels') },
+        { id: 'devices', icon: 'monitor', label: t('muse.devices') },
+        { id: 'data', icon: 'lock', label: t('muse.dataControls') },
+        { id: 'support', icon: 'question', label: t('muse.support') },
+        { id: 'legal', icon: 'shield', label: t('muse.legal') }
       ];
+    },
+    deviceLabel() {
+      if (isDesktopRuntime()) return '桌面 App';
+      try {
+        return uni.getAppBaseInfo?.().uniPlatform === 'app' ? '手机 App' : '网页';
+      } catch {
+        return '网页';
+      }
     },
     languageOptions() {
       return LANGUAGE_OPTIONS.map((item) => ({
@@ -433,12 +468,12 @@ export default {
       const target = panel || consumeProfilePanel();
       this.settingsMode = ['settings', 'connectors', 'reset'].includes(target);
       if (target === 'reset') {
-        this.settingsSection = 'records';
+        this.settingsSection = 'data';
         this.handleLocalReset();
       }
       if (target === 'connectors') this.settingsSection = 'connectors';
       else if (target === 'settings') this.settingsSection = 'general';
-      else if (target === 'profile') this.settingsSection = 'account';
+      else if (target === 'profile') this.settingsSection = 'general';
       this.syncPanelTitle();
     },
     syncPanelTitle() {
@@ -496,7 +531,7 @@ export default {
     async showAccountInfo() {
       const session = readSessionSnapshot().session,
         sequence = ++this.dialogSequence;
-      this.settingsSection = 'account';
+      this.settingsSection = 'general';
       this.dialog = { kind: 'account', session, title: t('muse.account'), content: '正在读取…' };
       this.showDialog = true;
       const result = await this.userStore.readCurrentProfile({ session });
@@ -805,6 +840,12 @@ export default {
   padding: 0 4px;
   color: var(--ink-3);
   font-size: 12px;
+}
+.settings-empty {
+  display: block;
+  padding: 14px 16px;
+  color: var(--ink-2);
+  font-size: 14px;
 }
 .reset-scope {
   display: block;
