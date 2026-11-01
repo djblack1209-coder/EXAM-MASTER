@@ -148,57 +148,61 @@
         />
       </template>
 
-      <BaseCard v-else-if="learning.active.stopped" padding="large"
-        ><text class="coach-title">带练已暂停，记录保留</text
-        ><BaseButton
-          variant="primary"
-          @tap="
-            act(() => learning.commit('task.resume', { conversationId: learning.active.id, source: 'self_report' }))
-          "
-          >继续当前带练</BaseButton
-        ></BaseCard
-      >
-      <view v-else-if="!coach.profile" class="coach-intake coach-agent-message">
-        <text v-if="profileStep < 3" class="coach-question">{{
-          ['英语一还是英语二？', '考试大概什么时候？（可跳过）', '每天能学多久？（可跳过）'][profileStep]
-        }}</text>
-        <BaseSegmented
-          v-if="profileStep === 0"
-          v-model="profile.exam"
-          label="英语一还是英语二？"
-          :options="EXAM_OPTIONS"
-        />
-        <template v-else-if="profileStep === 1">
+      <BaseBubble v-else-if="learning.active.stopped" avatar rich class="coach-agent-turn">
+        <BaseCard padding="large"
+          ><text class="coach-title">带练已暂停，记录保留</text
+          ><BaseButton
+            variant="primary"
+            @tap="
+              act(() => learning.commit('task.resume', { conversationId: learning.active.id, source: 'self_report' }))
+            "
+            >继续当前带练</BaseButton
+          ></BaseCard
+        >
+      </BaseBubble>
+      <BaseBubble v-else-if="!coach.profile" avatar rich class="coach-agent-turn">
+        <view class="coach-intake coach-agent-message">
+          <text v-if="profileStep < 3" class="coach-question">{{
+            ['英语一还是英语二？', '考试大概什么时候？（可跳过）', '每天能学多久？（可跳过）'][profileStep]
+          }}</text>
+          <BaseSegmented
+            v-if="profileStep === 0"
+            v-model="profile.exam"
+            label="英语一还是英语二？"
+            :options="EXAM_OPTIONS"
+          />
+          <template v-else-if="profileStep === 1">
+            <BaseOptions
+              v-model="profile.deadlineBucket"
+              label="考试大概什么时候？（可跳过）"
+              :options="DEADLINE_OPTIONS"
+            />
+            <BaseInput
+              v-if="profile.deadlineBucket === 'other'"
+              v-model="profile.deadline"
+              label="具体日期"
+              type="date"
+              maxlength="10"
+            />
+          </template>
           <BaseOptions
-            v-model="profile.deadlineBucket"
-            label="考试大概什么时候？（可跳过）"
-            :options="DEADLINE_OPTIONS"
+            v-else-if="profileStep === 2"
+            v-model="profile.minutes"
+            label="每天能学多久？（可跳过）"
+            :options="minuteOptions"
           />
-          <BaseInput
-            v-if="profile.deadlineBucket === 'other'"
-            v-model="profile.deadline"
-            label="具体日期"
-            type="date"
-            maxlength="10"
-          />
-        </template>
-        <BaseOptions
-          v-else-if="profileStep === 2"
-          v-model="profile.minutes"
-          label="每天能学多久？（可跳过）"
-          :options="minuteOptions"
-        />
-        <text v-else class="coach-question">{{
-          materialTrack ? '目前的基础？（选填）' : '目前写作哪里最吃力？（选填）'
-        }}</text>
-        <text v-if="profileStep === 3" class="coach-muted">{{ profileDescription(profile) }}</text>
-        <view class="coach-actions">
-          <BaseButton v-if="profileStep" variant="quiet" @tap="profileStep--">{{ t('muse.back') }}</BaseButton>
-          <BaseButton v-if="profileStep < 3" variant="primary" @tap="advanceProfile">{{ t('muse.next') }}</BaseButton>
-          <BaseButton v-else variant="primary" @tap="saveProfile(false)">保存建档</BaseButton>
-          <BaseButton variant="quiet" @tap="saveProfile(true)">跳过，直接开始</BaseButton>
+          <text v-else class="coach-question">{{
+            materialTrack ? '目前的基础？（选填）' : '目前写作哪里最吃力？（选填）'
+          }}</text>
+          <text v-if="profileStep === 3" class="coach-muted">{{ profileDescription(profile) }}</text>
+          <view class="coach-actions">
+            <BaseButton v-if="profileStep" variant="quiet" @tap="profileStep--">{{ t('muse.back') }}</BaseButton>
+            <BaseButton v-if="profileStep < 3" variant="primary" @tap="advanceProfile">{{ t('muse.next') }}</BaseButton>
+            <BaseButton v-else variant="primary" @tap="saveProfile(false)">保存建档</BaseButton>
+            <BaseButton variant="quiet" @tap="saveProfile(true)">跳过，直接开始</BaseButton>
+          </view>
         </view>
-      </view>
+      </BaseBubble>
 
       <template v-else>
         <view class="coach-session-state">
@@ -240,9 +244,11 @@
           >
           <view v-for="record in visiblePractice" :key="record.key" class="coach-history-turn">
             <text class="coach-day-divider">{{ record.day }} · {{ record.title }}</text>
-            <MuseRichText v-if="record.prompt" :content="record.prompt" />
-            <text v-if="record.source" class="coach-muted">{{ sourceLabel(record.source) }}</text>
-            <text v-if="record.source?.quote" class="coach-muted" selectable>{{ record.source.quote }}</text>
+            <BaseBubble v-if="record.prompt || record.source" avatar rich class="coach-agent-turn">
+              <MuseRichText v-if="record.prompt" :content="record.prompt" />
+              <text v-if="record.source" class="coach-muted">{{ sourceLabel(record.source) }}</text>
+              <text v-if="record.source?.quote" class="coach-muted" selectable>{{ record.source.quote }}</text>
+            </BaseBubble>
             <BaseBubble author="user" avatar :avatar-src="userAvatar" class="coach-user-turn"
               ><text selectable>{{ record.answer }}</text></BaseBubble
             >
@@ -265,31 +271,38 @@
               title="仅说明提交路径，不证明未使用 AI"
               >{{ record.writingProcessSource === 'guided' ? '流程来源：带写成文' : '流程来源：未知' }}</text
             >
-            <MuseFeedbackCard
-              v-if="record.feedback"
-              :feedback="record.feedback"
-              :writing-observation="DEV_TEST ? record.writingObservation : null"
-              :material-track="materialTrack"
-              :title="`${record.feedback.target === 'diagnostic' ? '摸底反馈' : record.title} · AI 评估`"
-              :adoptable="
-                record.day === today && Object.values(day?.feedback || {}).some((f) => f.id === record.feedback.id)
-              "
-              :adopted="coach.library.map((item) => item.text)"
-              :disabled="learning.busy"
-              @adopt="act(() => learning.coachSave('adopt', { feedbackId: record.feedback.id, phrase: $event }))"
-            />
-            <view v-else-if="record.assessmentStatus === 'pending'" class="coach-agent-message" role="status">
-              <text>原答已保存，AI 评估待完成</text>
-              <BaseButton
-                v-if="record.request"
-                variant="quiet"
-                :disabled="
-                  learning.busy || !loggedIn || (record.request.status === 'closed' && !learning.sharingAllowed)
+            <BaseBubble
+              v-if="record.feedback || record.assessmentStatus === 'pending'"
+              avatar
+              rich
+              class="coach-agent-turn"
+            >
+              <MuseFeedbackCard
+                v-if="record.feedback"
+                :feedback="record.feedback"
+                :writing-observation="DEV_TEST ? record.writingObservation : null"
+                :material-track="materialTrack"
+                :title="`${record.feedback.target === 'diagnostic' ? '摸底反馈' : record.title} · AI 评估`"
+                :adoptable="
+                  record.day === today && Object.values(day?.feedback || {}).some((f) => f.id === record.feedback.id)
                 "
-                @tap="act(() => learning.requestCoach(record.phase || 'feedback', record.target, record.request.id))"
-                >{{ record.request.status === 'closed' ? '重新评估' : '查询评估结果' }}</BaseButton
-              >
-            </view>
+                :adopted="coach.library.map((item) => item.text)"
+                :disabled="learning.busy"
+                @adopt="act(() => learning.coachSave('adopt', { feedbackId: record.feedback.id, phrase: $event }))"
+              />
+              <view v-else-if="record.assessmentStatus === 'pending'" class="coach-agent-message" role="status">
+                <text>原答已保存，AI 评估待完成</text>
+                <BaseButton
+                  v-if="record.request"
+                  variant="quiet"
+                  :disabled="
+                    learning.busy || !loggedIn || (record.request.status === 'closed' && !learning.sharingAllowed)
+                  "
+                  @tap="act(() => learning.requestCoach(record.phase || 'feedback', record.target, record.request.id))"
+                  >{{ record.request.status === 'closed' ? '重新评估' : '查询评估结果' }}</BaseButton
+                >
+              </view>
+            </BaseBubble>
           </view>
         </view>
 
@@ -300,264 +313,268 @@
           题待评估</text
         >
         <view id="coach-current-turn" class="coach-current-turn">
-          <text v-if="coach" class="coach-muted" role="status" aria-live="polite"
-            >当前教法：{{
-              { hint: '只给提示', steps: '分步讲解', example: '例子讲解', explain: '直接讲解', question: '引导提问' }[
-                learning.activeStrategy.method
-              ] || '按当前计划带练'
-            }}</text
-          >
-          <BaseCard v-if="dueRewrite">
-            <text class="coach-title">次日改写</text>
-            <text>{{ dueRewrite.task }}</text>
-            <template v-if="!dueRewrite.answer">
-              <BaseInput v-model="nextRewriteAnswer" label="改写后的全文" multiline :maxlength="6000" />
-              <BaseButton
-                :disabled="learning.busy || !nextRewriteAnswer.trim()"
-                @tap="
-                  act(() =>
-                    learning.coachSave('rewriteAnswer', { rewriteId: dueRewrite.id, answer: nextRewriteAnswer })
-                  )
-                "
-                >交卷</BaseButton
-              >
-            </template>
-            <template v-else-if="!dueRewrite.feedback">
-              <text selectable>{{ dueRewrite.answer.text }}</text>
-              <BaseButton :disabled="learning.busy" @tap="act(() => learning.requestCoach('essay', 'rewrite'))"
-                >按维反馈</BaseButton
-              >
-            </template>
-            <template v-else>
-              <text>AI 评估 · 原稿与改写稿均已保留</text>
-              <text v-for="dimension in dueRewrite.feedback.dimensions" :key="dimension.name"
-                >{{ dimension.name }}：{{
-                  dimension.score === null ? '待核对' : ['需重练', '可改进', '达成本次要求'][dimension.score]
-                }}
-                · {{ dimension.comment }}</text
-              >
-            </template>
-          </BaseCard>
-          <BaseCard v-if="dueItem">
-            <text class="coach-title">{{ materialTrack ? '先复习一个知识点' : '先复习到期句式' }}</text
-            ><text>{{ dueItem.text }}</text>
-            <text class="coach-muted">提交后由系统核对原句并安排复习，近义表达保留待核对。</text>
-            <BaseButton :disabled="!answer.trim() || learning.busy" @tap="review">提交复习答案</BaseButton>
-          </BaseCard>
-          <template v-else>
-            <BaseCard v-if="!coach.diagnostic">
-              <text class="coach-title">{{ materialTrack ? '资料摸底' : '十分钟摸底' }}</text
-              ><text v-if="!materialTrack">成分、搭配、翻译、长难句和审题，每项一题。</text>
-              <BaseButton
-                variant="primary"
-                :disabled="fileBusy || learning.busy || (!needsMaterial && (!loggedIn || !learning.sharingAllowed))"
-                @tap="needsMaterial ? (showMaterials = true) : request('diagnostic')"
-                >{{ needsMaterial ? '添加学习资料' : requestLabel('diagnostic') }}</BaseButton
-              >
-            </BaseCard>
-            <BaseCard v-else-if="!coach.diagnostic.feedback && (!day || diagnosticCard)">
-              <MusePracticeSheet
-                v-model="answer"
-                shared-input
-                :title="materialTrack ? '资料摸底' : '十分钟摸底'"
-                :cards="coach.diagnostic.cards"
-                :answers="coach.diagnostic.answers"
-                :current-id="diagnosticCard?.id || ''"
-                :disabled="learning.busy"
-                @submit="submitCard($event, true)"
-              />
-              <BaseButton
-                v-if="!diagnosticCard"
-                variant="primary"
-                :disabled="requestDisabled('feedback', 'diagnostic')"
-                @tap="request('feedback', 'diagnostic')"
-                >{{ requestLabel('feedback', 'diagnostic', '生成薄弱点与今日安排') }}</BaseButton
-              >
-              <BaseButton
-                v-if="!diagnosticCard"
-                variant="quiet"
-                :disabled="requestDisabled('daily')"
-                @tap="request('daily')"
-                >先继续下一题</BaseButton
-              >
-            </BaseCard>
-            <BaseCard v-else-if="!day">
-              <text class="coach-title">{{
-                coach.profile.minutes ? `今天按 ${coach.profile.minutes} 分钟安排` : '今天的训练'
+          <BaseBubble avatar rich class="coach-agent-turn">
+            <text v-if="coach" class="coach-muted" role="status" aria-live="polite"
+              >当前教法：{{
+                { hint: '只给提示', steps: '分步讲解', example: '例子讲解', explain: '直接讲解', question: '引导提问' }[
+                  learning.activeStrategy.method
+                ] || '按当前计划带练'
               }}</text
-              ><text>{{
-                coach.diagnostic.feedback.weaknesses.slice(0, 2).join('、') ||
-                (materialTrack ? '从资料里的一个概念开始' : '先练搭配和句子，再逐段写作')
-              }}</text>
-              <BaseButton variant="primary" :disabled="requestDisabled('daily')" @tap="request('daily')">{{
-                requestLabel('daily', 'daily', '安排今日训练')
-              }}</BaseButton>
+            >
+            <BaseCard v-if="dueRewrite">
+              <text class="coach-title">次日改写</text>
+              <text>{{ dueRewrite.task }}</text>
+              <template v-if="!dueRewrite.answer">
+                <BaseInput v-model="nextRewriteAnswer" label="改写后的全文" multiline :maxlength="6000" />
+                <BaseButton
+                  :disabled="learning.busy || !nextRewriteAnswer.trim()"
+                  @tap="
+                    act(() =>
+                      learning.coachSave('rewriteAnswer', { rewriteId: dueRewrite.id, answer: nextRewriteAnswer })
+                    )
+                  "
+                  >交卷</BaseButton
+                >
+              </template>
+              <template v-else-if="!dueRewrite.feedback">
+                <text selectable>{{ dueRewrite.answer.text }}</text>
+                <BaseButton :disabled="learning.busy" @tap="act(() => learning.requestCoach('essay', 'rewrite'))"
+                  >按维反馈</BaseButton
+                >
+              </template>
+              <template v-else>
+                <text>AI 评估 · 原稿与改写稿均已保留</text>
+                <text v-for="dimension in dueRewrite.feedback.dimensions" :key="dimension.name"
+                  >{{ dimension.name }}：{{
+                    dimension.score === null ? '待核对' : ['需重练', '可改进', '达成本次要求'][dimension.score]
+                  }}
+                  · {{ dimension.comment }}</text
+                >
+              </template>
+            </BaseCard>
+            <BaseCard v-if="dueItem">
+              <text class="coach-title">{{ materialTrack ? '先复习一个知识点' : '先复习到期句式' }}</text
+              ><text>{{ dueItem.text }}</text>
+              <text class="coach-muted">提交后由系统核对原句并安排复习，近义表达保留待核对。</text>
+              <BaseButton :disabled="!answer.trim() || learning.busy" @tap="review">提交复习答案</BaseButton>
             </BaseCard>
             <template v-else>
-              <BaseCard v-if="trainingCard">
+              <BaseCard v-if="!coach.diagnostic">
+                <text class="coach-title">{{ materialTrack ? '资料摸底' : '十分钟摸底' }}</text
+                ><text v-if="!materialTrack">成分、搭配、翻译、长难句和审题，每项一题。</text>
+                <BaseButton
+                  variant="primary"
+                  :disabled="fileBusy || learning.busy || (!needsMaterial && (!loggedIn || !learning.sharingAllowed))"
+                  @tap="needsMaterial ? (showMaterials = true) : request('diagnostic')"
+                  >{{ needsMaterial ? '添加学习资料' : requestLabel('diagnostic') }}</BaseButton
+                >
+              </BaseCard>
+              <BaseCard v-else-if="!coach.diagnostic.feedback && (!day || diagnosticCard)">
                 <MusePracticeSheet
                   v-model="answer"
                   shared-input
-                  title="今日训练"
-                  :cards="day.pack.cards"
-                  :answers="day.answers"
-                  :current-id="trainingCard.id"
+                  :title="materialTrack ? '资料摸底' : '十分钟摸底'"
+                  :cards="coach.diagnostic.cards"
+                  :answers="coach.diagnostic.answers"
+                  :current-id="diagnosticCard?.id || ''"
                   :disabled="learning.busy"
-                  @submit="submitCard($event, false)"
+                  @submit="submitCard($event, true)"
                 />
-                <text v-if="cardAnswer && !learning.busy" role="status">原答已保存，AI 评估待完成</text>
                 <BaseButton
-                  v-if="cardAnswer"
+                  v-if="!diagnosticCard"
                   variant="primary"
-                  :disabled="requestDisabled('feedback', `card-${trainingCard.id}`)"
-                  @tap="request('feedback', `card-${trainingCard.id}`)"
-                  >{{ requestLabel('feedback', `card-${trainingCard.id}`, '查看本卡反馈') }}</BaseButton
+                  :disabled="requestDisabled('feedback', 'diagnostic')"
+                  @tap="request('feedback', 'diagnostic')"
+                  >{{ requestLabel('feedback', 'diagnostic', '生成薄弱点与今日安排') }}</BaseButton
                 >
-                <BaseButton v-if="cardAnswer" variant="quiet" :disabled="learning.busy" @tap="continueTraining"
+                <BaseButton
+                  v-if="!diagnosticCard"
+                  variant="quiet"
+                  :disabled="requestDisabled('daily')"
+                  @tap="request('daily')"
                   >先继续下一题</BaseButton
                 >
               </BaseCard>
-              <BaseCard v-else-if="materialTrack && !day.summary">
-                <BaseButton variant="primary" :disabled="requestDisabled('summary')" @tap="request('summary')">{{
-                  requestLabel('summary', 'summary', '生成今日小结')
+              <BaseCard v-else-if="!day">
+                <text class="coach-title">{{
+                  coach.profile.minutes ? `今天按 ${coach.profile.minutes} 分钟安排` : '今天的训练'
+                }}</text
+                ><text>{{
+                  coach.diagnostic.feedback.weaknesses.slice(0, 2).join('、') ||
+                  (materialTrack ? '从资料里的一个概念开始' : '先练搭配和句子，再逐段写作')
+                }}</text>
+                <BaseButton variant="primary" :disabled="requestDisabled('daily')" @tap="request('daily')">{{
+                  requestLabel('daily', 'daily', '安排今日训练')
                 }}</BaseButton>
               </BaseCard>
-              <BaseCard v-else-if="!materialTrack && !day.analysis">
-                <text class="coach-title">先自己审题</text><text>{{ day.pack.writing.prompt }}</text
-                ><text class="coach-muted">{{ sourceLabel(day.pack.writing.source) }}</text>
-                <BaseInput
-                  v-for="field in analysisFields"
-                  :key="field.key"
-                  v-model="analysis[field.key]"
-                  :label="field.label"
-                  maxlength="600"
-                />
-                <BaseButton variant="primary" :disabled="learning.busy" @tap="saveAnalysis">提交审题</BaseButton>
-              </BaseCard>
-              <BaseCard v-else-if="!materialTrack && !day.feedback.analysis"
-                ><text>{{ day.pack.writing.prompt }}</text
-                ><BaseButton
-                  variant="primary"
-                  :disabled="requestDisabled('feedback', 'analysis')"
-                  @tap="request('feedback', 'analysis')"
-                  >{{ requestLabel('feedback', 'analysis', '对照审题反馈') }}</BaseButton
-                ></BaseCard
-              >
-              <BaseCard v-else-if="!materialTrack && paragraphIndex < day.pack.writing.patterns.length">
-                <text class="coach-title"
-                  >第 {{ paragraphIndex + 1 }} 段 ·
-                  {{
-                    paragraphIndex === 0
-                      ? '交代目的或描述'
-                      : paragraphIndex === day.pack.writing.patterns.length - 1
-                        ? '回应目的与建议'
-                        : '展开要点与理由'
-                  }}</text
-                >
-                <text>{{ day.pack.writing.prompt }}</text
-                ><text class="coach-muted">全文字数以题干为准；先借助句式写，再按反馈改写。</text>
-                <text
-                  v-for="pattern in day.pack.writing.patterns[paragraphIndex]"
-                  :key="pattern"
-                  class="coach-pattern"
-                  >{{ pattern }}</text
-                >
-                <template v-if="!day.drafts[paragraphIndex]"
-                  ><MuseWritingCard
+              <template v-else>
+                <BaseCard v-if="trainingCard">
+                  <MusePracticeSheet
                     v-model="answer"
                     shared-input
-                    label="写下本段"
-                    submit-label="提交本段"
-                    :maxlength="1800"
-                    english
+                    title="今日训练"
+                    :cards="day.pack.cards"
+                    :answers="day.answers"
+                    :current-id="trainingCard.id"
                     :disabled="learning.busy"
-                    @submit="saveParagraph(false)"
-                /></template>
-                <template v-else-if="!day.feedback[`paragraph-${paragraphIndex}`]"
-                  ><text class="coach-saved">{{ day.drafts[paragraphIndex].text }}</text
+                    @submit="submitCard($event, false)"
+                  />
+                  <text v-if="cardAnswer && !learning.busy" role="status">原答已保存，AI 评估待完成</text>
+                  <BaseButton
+                    v-if="cardAnswer"
+                    variant="primary"
+                    :disabled="requestDisabled('feedback', `card-${trainingCard.id}`)"
+                    @tap="request('feedback', `card-${trainingCard.id}`)"
+                    >{{ requestLabel('feedback', `card-${trainingCard.id}`, '查看本卡反馈') }}</BaseButton
+                  >
+                  <BaseButton v-if="cardAnswer" variant="quiet" :disabled="learning.busy" @tap="continueTraining"
+                    >先继续下一题</BaseButton
+                  >
+                </BaseCard>
+                <BaseCard v-else-if="materialTrack && !day.summary">
+                  <BaseButton variant="primary" :disabled="requestDisabled('summary')" @tap="request('summary')">{{
+                    requestLabel('summary', 'summary', '生成今日小结')
+                  }}</BaseButton>
+                </BaseCard>
+                <BaseCard v-else-if="!materialTrack && !day.analysis">
+                  <text class="coach-title">先自己审题</text><text>{{ day.pack.writing.prompt }}</text
+                  ><text class="coach-muted">{{ sourceLabel(day.pack.writing.source) }}</text>
+                  <BaseInput
+                    v-for="field in analysisFields"
+                    :key="field.key"
+                    v-model="analysis[field.key]"
+                    :label="field.label"
+                    maxlength="600"
+                  />
+                  <BaseButton variant="primary" :disabled="learning.busy" @tap="saveAnalysis">提交审题</BaseButton>
+                </BaseCard>
+                <BaseCard v-else-if="!materialTrack && !day.feedback.analysis"
+                  ><text>{{ day.pack.writing.prompt }}</text
                   ><BaseButton
                     variant="primary"
-                    :disabled="requestDisabled('feedback', `paragraph-${paragraphIndex}`)"
-                    @tap="request('feedback', `paragraph-${paragraphIndex}`)"
-                    >{{ requestLabel('feedback', `paragraph-${paragraphIndex}`, '逐句反馈') }}</BaseButton
-                  ></template
+                    :disabled="requestDisabled('feedback', 'analysis')"
+                    @tap="request('feedback', 'analysis')"
+                    >{{ requestLabel('feedback', 'analysis', '对照审题反馈') }}</BaseButton
+                  ></BaseCard
                 >
-                <template v-else
-                  ><MuseWritingCard
-                    v-model="answer"
-                    shared-input
-                    label="改写本段"
-                    submit-label="保存改写"
-                    :maxlength="1800"
-                    english
-                    :disabled="learning.busy"
-                    @submit="saveParagraph(true)"
-                /></template>
-              </BaseCard>
-              <BaseCard v-else-if="!materialTrack && !day.essay"
-                ><text class="coach-title">你的全文</text
-                ><BaseButton
-                  v-if="artifactForDay(day.day)"
-                  variant="quiet"
-                  icon="file-text"
-                  :data-essay-artifact="artifactForDay(day.day).id"
-                  @tap="openStudentArtifact(learning, artifactForDay(day.day))"
-                  >打开文档</BaseButton
-                ><text v-for="paragraph in day.rewrites" :key="paragraph.id" class="coach-saved">{{
-                  paragraph.text
-                }}</text
-                ><BaseButton
-                  variant="primary"
-                  :disabled="learning.busy || (!canSubmitWriting && (!loggedIn || !learning.sharingAllowed))"
-                  @tap="request('essay')"
-                  >{{ canSubmitWriting ? '交卷' : requestLabel('essay', 'essay', '查看成文反馈') }}</BaseButton
-                ></BaseCard
-              >
-              <BaseCard v-else-if="!day.summary"
-                ><text class="coach-title">完成了，留一份小结</text
-                ><BaseButton variant="primary" :disabled="requestDisabled('summary')" @tap="request('summary')">{{
-                  requestLabel('summary', 'summary', '生成今日小结')
-                }}</BaseButton></BaseCard
-              >
-              <BaseCard v-else
-                ><text class="coach-title">{{ day.completed ? '今天已完成' : '今日小结' }}</text
-                ><text v-for="item in day.summary.learned" :key="item">{{ item }}</text
-                ><text class="coach-title">明天</text
-                ><text v-for="item in day.summary.tomorrow" :key="item">{{ item }}</text
-                ><BaseButton
-                  v-if="DEV_TEST && !day.completed"
-                  variant="quiet"
-                  :disabled="requestDisabled('summary')"
-                  @tap="request('summary')"
-                  >{{ requestLabel('summary', 'summary', '重新生成小结') }}</BaseButton
-                ><BaseButton
-                  v-if="!day.completed"
-                  :disabled="assessmentCounts.pending > 0"
-                  variant="primary"
-                  @tap="act(() => learning.coachSave('finish'))"
-                  >确认完成今天</BaseButton
-                ><BaseButton variant="quiet" @tap="safeNavigateTo('/pages/archive/index?view=phrases')"
-                  >查看已保存进度</BaseButton
-                ></BaseCard
-              >
+                <BaseCard v-else-if="!materialTrack && paragraphIndex < day.pack.writing.patterns.length">
+                  <text class="coach-title"
+                    >第 {{ paragraphIndex + 1 }} 段 ·
+                    {{
+                      paragraphIndex === 0
+                        ? '交代目的或描述'
+                        : paragraphIndex === day.pack.writing.patterns.length - 1
+                          ? '回应目的与建议'
+                          : '展开要点与理由'
+                    }}</text
+                  >
+                  <text>{{ day.pack.writing.prompt }}</text
+                  ><text class="coach-muted">全文字数以题干为准；先借助句式写，再按反馈改写。</text>
+                  <text
+                    v-for="pattern in day.pack.writing.patterns[paragraphIndex]"
+                    :key="pattern"
+                    class="coach-pattern"
+                    >{{ pattern }}</text
+                  >
+                  <template v-if="!day.drafts[paragraphIndex]"
+                    ><MuseWritingCard
+                      v-model="answer"
+                      shared-input
+                      label="写下本段"
+                      submit-label="提交本段"
+                      :maxlength="1800"
+                      english
+                      :disabled="learning.busy"
+                      @submit="saveParagraph(false)"
+                  /></template>
+                  <template v-else-if="!day.feedback[`paragraph-${paragraphIndex}`]"
+                    ><text class="coach-saved">{{ day.drafts[paragraphIndex].text }}</text
+                    ><BaseButton
+                      variant="primary"
+                      :disabled="requestDisabled('feedback', `paragraph-${paragraphIndex}`)"
+                      @tap="request('feedback', `paragraph-${paragraphIndex}`)"
+                      >{{ requestLabel('feedback', `paragraph-${paragraphIndex}`, '逐句反馈') }}</BaseButton
+                    ></template
+                  >
+                  <template v-else
+                    ><MuseWritingCard
+                      v-model="answer"
+                      shared-input
+                      label="改写本段"
+                      submit-label="保存改写"
+                      :maxlength="1800"
+                      english
+                      :disabled="learning.busy"
+                      @submit="saveParagraph(true)"
+                  /></template>
+                </BaseCard>
+                <BaseCard v-else-if="!materialTrack && !day.essay"
+                  ><text class="coach-title">你的全文</text
+                  ><BaseButton
+                    v-if="artifactForDay(day.day)"
+                    variant="quiet"
+                    icon="file-text"
+                    :data-essay-artifact="artifactForDay(day.day).id"
+                    @tap="openStudentArtifact(learning, artifactForDay(day.day))"
+                    >打开文档</BaseButton
+                  ><text v-for="paragraph in day.rewrites" :key="paragraph.id" class="coach-saved">{{
+                    paragraph.text
+                  }}</text
+                  ><BaseButton
+                    variant="primary"
+                    :disabled="learning.busy || (!canSubmitWriting && (!loggedIn || !learning.sharingAllowed))"
+                    @tap="request('essay')"
+                    >{{ canSubmitWriting ? '交卷' : requestLabel('essay', 'essay', '查看成文反馈') }}</BaseButton
+                  ></BaseCard
+                >
+                <BaseCard v-else-if="!day.summary"
+                  ><text class="coach-title">完成了，留一份小结</text
+                  ><BaseButton variant="primary" :disabled="requestDisabled('summary')" @tap="request('summary')">{{
+                    requestLabel('summary', 'summary', '生成今日小结')
+                  }}</BaseButton></BaseCard
+                >
+                <BaseCard v-else
+                  ><text class="coach-title">{{ day.completed ? '今天已完成' : '今日小结' }}</text
+                  ><text v-for="item in day.summary.learned" :key="item">{{ item }}</text
+                  ><text class="coach-title">明天</text
+                  ><text v-for="item in day.summary.tomorrow" :key="item">{{ item }}</text
+                  ><BaseButton
+                    v-if="DEV_TEST && !day.completed"
+                    variant="quiet"
+                    :disabled="requestDisabled('summary')"
+                    @tap="request('summary')"
+                    >{{ requestLabel('summary', 'summary', '重新生成小结') }}</BaseButton
+                  ><BaseButton
+                    v-if="!day.completed"
+                    :disabled="assessmentCounts.pending > 0"
+                    variant="primary"
+                    @tap="act(() => learning.coachSave('finish'))"
+                    >确认完成今天</BaseButton
+                  ><BaseButton variant="quiet" @tap="safeNavigateTo('/pages/archive/index?view=phrases')"
+                    >查看已保存进度</BaseButton
+                  ></BaseCard
+                >
+              </template>
             </template>
-          </template>
+          </BaseBubble>
         </view>
-        <BaseCard v-if="surveyDue"
-          ><text class="coach-title">如果每月 ¥{{ trialPrice }}，你会继续使用吗？</text
-          ><view class="coach-actions"
-            ><BaseButton
-              v-for="option in [
-                { value: 'yes', label: '会' },
-                { value: 'no', label: '暂时不会' },
-                { value: 'skip', label: '跳过' }
-              ]"
-              :key="option.value"
-              @tap="act(() => learning.coachSave('survey', { answer: option.value }))"
-              >{{ option.label }}</BaseButton
-            ></view
-          ></BaseCard
-        >
+        <BaseBubble v-if="surveyDue" avatar rich class="coach-agent-turn">
+          <BaseCard
+            ><text class="coach-title">如果每月 ¥{{ trialPrice }}，你会继续使用吗？</text
+            ><view class="coach-actions"
+              ><BaseButton
+                v-for="option in [
+                  { value: 'yes', label: '会' },
+                  { value: 'no', label: '暂时不会' },
+                  { value: 'skip', label: '跳过' }
+                ]"
+                :key="option.value"
+                @tap="act(() => learning.coachSave('survey', { answer: option.value }))"
+                >{{ option.label }}</BaseButton
+              ></view
+            ></BaseCard
+          >
+        </BaseBubble>
       </template>
       <BaseCard
         v-if="!cancellationNotice && (message || learning.coachError || learning.error)"
@@ -1306,6 +1323,15 @@ function login() {
   line-height: 26px;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
+}
+/* WeChat-style agent turns: one kitten per turn, the cards stacked beside it. */
+.coach-agent-turn :deep(.base-bubble__content) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  white-space: normal;
 }
 .coach-transcript,
 .coach-history-turn,
