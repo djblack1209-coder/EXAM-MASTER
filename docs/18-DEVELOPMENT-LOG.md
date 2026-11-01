@@ -853,3 +853,13 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 - 待批文案候选：**无**；面板／确认／冲突文案逐项复用Muse 2现有文案，存储／会话错误复用Yozi现有文案；没有新增面向学生的说明段落、emoji图标、依赖或许可公开范围。
 - 复跑：完整原样命令见[commands.txt](../tmp/shell-4.noindex/commands.txt)，含不覆盖证据的review标签、全量／逐ID／定向／后端类型／App／桌面／Rust以及原子UI锁。QA控制仅在忽略目录镜像；签名候选 `tmp/shell-4.noindex/Yozi AI.app`，前一可用回退 `before-retry.noindex/Yozi AI.app`；第3批已验基线与必要恢复材料保留。
 - 资源：全部本轮进程终态已取回，原生App正常退出、按完整路径注销，UI锁释放；应用搜索仅日常入口，未操作共享客户端。3项已核验冗余／被两份新候选覆盖的输出 **89,993,311逻辑字节** 经FileManager移入可恢复`.noindex`废纸篓，未清空；Cargo原生清理 **7426文件／2.7GiB**，清前逻辑大小 **2,849,640,184字节**，明细沿[resources.json](../tmp/shell-4.noindex/resources.json)。这些数值不是实时磁盘可用空间或RAM结论；截图／原始失败／源镜像／复跑材料／两份可用候选保留。
+
+## 开发付费兜底接入（2026-11-01，总监）
+
+- **依据**：用户 11-01 决定把 DeepSeek 作为开发模型通道的付费兜底：免费通道先答，出现 429 或质量明显不够时自动切换。密钥只在 `~/.config/deepseek-lazy-yozi.env`（600），运行时读取，不进仓库、日志或回执。
+- **落地**：`5235a4fd`。新文件 `laf-backend/functions/_shared/ai-providers/dev-paid-fallback.ts`；`proxy-ai.ts` 的模型调用包一层；`free-model-presets.ts` 为 DeepSeek 关思考（仅开发构建）；开发启动器 `start-dev-test-backend.mjs` 见到密钥文件就设 `YOZI_DEV_PAID_FALLBACK_FILE`，启动时打印「Dev paid fallback armed」。
+- **切换条件**：`RATE_LIMITED`、`UPSTREAM_QUOTA`，或非流式的空回答（`INVALID_RESPONSE`），同一请求改用 `deepseek-flash`。能力测试与图片输入不切；流式只在出正文前切。切换后模型核对、脱敏、复核、计费都跟随 DeepSeek，回执的 `provider`／`model` 写明兜底型号，后端日志有 `[dev-paid-fallback]` 一行（只含触发原因和型号）。
+- **合同**：写作合同改 `json_object`，同一 Schema 写进系统提示；原生教练工具照常走工具调用（DeepSeek 支持带 `strict` 的指定函数调用）。
+- **评测脚本**：`scripts/eval/*replay*` 不接兜底，继续只测免费模型，免得兜底作答混进免费模型成绩。
+- **测试**：新增 `tests/unit/dev-paid-fallback.spec.ts` 9 项通过；learning／writing／model 相关 123 个测试文件 3819 过、6 跳过、0 失败；后端 `tsc -p tsconfig.build.json --noEmit` 通过。
+- **真实冒烟**：编译后的后端，免费通道模拟返回 429，经真实 `callLearningProvider`（固定解析、TLS）改由 `deepseek-flash` 作答：写作 JSON 非流式、流式与原生教练工具三种都是 HTTP 200，实际型号与兜底型号一致，返回内容含 Schema 要求的字段。没有调用其他免费通道。
