@@ -3,7 +3,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { mixedDiagnosticRequest, mixedDiagnosticReply } from '../fixtures/writing-mixed.js';
+import {
+  mixedDiagnosticRequest,
+  mixedDiagnosticReply,
+  mixedDiagnosticVerification
+} from '../fixtures/writing-mixed.js';
 
 // 开发付费兜底只在 dev/test 构建出现：免费模型原答与返修都未通过教学校验后，同一请求由 DeepSeek 质量型号再答一次（:repair2）。
 const mock = vi.hoisted(() => ({ rows: new Map(), users: new Map() }));
@@ -100,7 +104,7 @@ const reply = (config: any, valid: boolean) => {
   if (!valid) wire.dimensionReviews.grammar = { score: 1, comment: '重复归因', evidenceIds: ['q2'] } as any;
   return { ...completed, actualModel: config.model, content: JSON.stringify(wire) };
 };
-// 免费作答依次返回 answers 里的结果；兜底作答一律合格；复核只做盲填。
+// 免费作答依次返回 answers 里的结果；兜底作答一律合格；盲填与全部句法题独立复核。
 function provider(answers: Array<'valid' | 'invalid' | 'limited'>) {
   const seen: string[] = [];
   vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
@@ -108,9 +112,7 @@ function provider(answers: Array<'valid' | 'invalid' | 'limited'>) {
       return {
         ...completed,
         actualModel: config.model,
-        content: JSON.stringify({
-          blanks: [{ id: 'b1', accepted: ['in'], label: 'interested in', rule: 'interested 后固定用 in' }]
-        })
+        content: JSON.stringify(mixedDiagnosticVerification())
       };
     seen.push(config.devPaidFallback ? config.model : 'free');
     if (config.devPaidFallback) return reply(config, config.model === 'deepseek-v4-pro');

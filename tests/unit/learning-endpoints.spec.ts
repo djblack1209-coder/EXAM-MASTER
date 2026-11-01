@@ -1,5 +1,9 @@
 import crypto from 'node:crypto';
-import { mixedDiagnosticRequest, mixedDiagnosticReply } from '../fixtures/writing-mixed.js';
+import {
+  mixedDiagnosticRequest,
+  mixedDiagnosticReply,
+  mixedDiagnosticVerification
+} from '../fixtures/writing-mixed.js';
 import { EventEmitter } from 'node:events';
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 const mock = vi.hoisted(() => ({
@@ -2328,10 +2332,8 @@ it.each(['success', 'missing-tool', 'invalid-again', 'rate-limited', 'secret-ech
           ...streamCompleted,
           finishReason: 'tool_calls',
           coachFunctionResult: true,
-          // 唯一错误在单词填空上，复核只做盲填：不收原答，列出可接受的词。
-          content: JSON.stringify({
-            blanks: [{ id: 'b1', accepted: ['in'], label: 'interested in', rule: 'interested 后固定用 in' }]
-          })
+          // 唯一初评错误在填空；所有句法题仍独立盲析，避免初评漏判。
+          content: JSON.stringify(mixedDiagnosticVerification())
         };
       }
       count++;
@@ -2385,7 +2387,7 @@ it.each(['success', 'missing-tool', 'invalid-again', 'rate-limited', 'secret-ech
         data: { requestId: body.requestId, repairRequestId: body.requestId + ':repair1' }
       });
       expect(ledger.calls[1]).toMatchObject({ status: 'completed', usage: expect.any(Object) });
-      expect(result.data.coachVerification).toMatchObject({ status: 'completed', checked: 1, removed: 0 });
+      expect(result.data.coachVerification).toMatchObject({ status: 'completed', checked: 3, removed: 0 });
       expect(result.data.coach.dimensions.find((d: any) => d.name === '搭配').score).toBe(1);
       expect((await ai(context(body))).success).toBe(true);
       expect(callLearningProvider).toHaveBeenCalledTimes(3);

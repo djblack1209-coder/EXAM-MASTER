@@ -51,3 +51,35 @@ export function mixedDiagnosticReply(config) {
     )
   };
 }
+
+export function mixedDiagnosticVerification() {
+  return {
+    blanks: [{ id: 'b1', accepted: ['in'], label: 'interested in', rule: 'interested 后固定用 in' }],
+    syntax: [
+      {
+        id: 's1',
+        mainSubject: 'The tool',
+        mainVerb: 'works',
+        clause: 'which we use',
+        antecedent: 'tool',
+        pronoun: 'which',
+        clauseSubject: 'we',
+        clauseVerb: 'use',
+        pronounRole: '宾语',
+        note: '主干The tool works，which we use修饰tool，which作use的宾语'
+      },
+      {
+        id: 's2',
+        mainSubject: 'The scientist',
+        mainVerb: 'is',
+        clause: 'who visited us',
+        antecedent: 'scientist',
+        pronoun: 'who',
+        clauseSubject: 'who',
+        clauseVerb: 'visited',
+        pronounRole: '主语',
+        note: '主干The scientist is helpful，who visited us修饰scientist，who作从句主语'
+      }
+    ]
+  };
+}

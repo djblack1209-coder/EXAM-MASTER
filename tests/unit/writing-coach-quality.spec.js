@@ -671,11 +671,21 @@ describe('按任务的真实答题形式送评', () => {
   });
 });
 describe('摸底错误合并复核一次：讲解题只删不加，单词填空盲填比对', () => {
-  const preparedFor = (r) =>
-    prepareCoachFeedbackModel(config, coachInferenceContext(r), false, false, false, true);
-  const prepared = () => preparedFor(mixedDiagnosticRequest());
-  const blankAnswer = (answer) => {
+  const preparedFor = (r) => prepareCoachFeedbackModel(config, coachInferenceContext(r), false, false, false, true);
+  // 填空／审题用不含定语从句的独立夹具；完整混合句法覆盖在下方，不给无关复核补默认答案。
+  const nonRelativeRequest = () => {
     const r = mixedDiagnosticRequest(),
+      tasks = r.task.split('\n'),
+      answers = r.input.split('\n');
+    tasks[0] = '分析主干：The tool works well.';
+    answers[0] = '主干The tool works well。';
+    tasks[3] = '拆分主句与时间状语：The scientist visits our school today.';
+    answers[3] = '主句The scientist visits our school today，today是时间状语。';
+    return { ...r, task: tasks.join('\n'), input: answers.join('\n') };
+  };
+  const prepared = () => preparedFor(nonRelativeRequest());
+  const blankAnswer = (answer) => {
+    const r = nonRelativeRequest(),
       lines = r.input.split('\n');
     lines[1] = answer;
     return { ...r, input: lines.join('\n') };
@@ -716,17 +726,16 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
   ];
   const outline = (points = fairPoints) => ({ id: 'p1', points, note: '给同学写邮件，介绍科学展并邀请参加，约100词' });
   const outlineAnswer = (answer) => {
-    const r = mixedDiagnosticRequest(),
+    const r = nonRelativeRequest(),
       lines = r.input.split('\n');
     lines[4] = answer;
     return { ...r, input: lines.join('\n') };
   };
   it.each([true, false])('初评漏记的明确修饰对象矛盾只在独立盲析自洽时补登：%s', async (valid) => {
-    const request = mixedDiagnosticRequest();
-    request.task = request.task.replace(
-      'The scientist, who visited us, is helpful.',
-      'The engineer, who designed the robot, visited our school.'
-    );
+    const request = nonRelativeRequest();
+    const tasks = request.task.split('\n');
+    tasks[3] = '拆分主句与从句并指出修饰对象：The engineer, who designed the robot, visited our school.';
+    request.task = tasks.join('\n');
     const answers = request.input.split('\n');
     answers[3] = '主句The engineer visited our school；who designed the robot修饰school，who作从句主语。';
     request.input = answers.join('\n');
@@ -765,6 +774,43 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
       expect(
         JSON.parse(decodeCoachResponse(p, content)).coach.dimensions.find((item) => item.name === '任务完成').score
       ).toBe(1);
+    }
+  });
+  it.each([
+    ['主干The report describes the new course', false],
+    ['主干The report our team prepared describes the new course', true],
+    ['that our team prepared是定语从句', false]
+  ])('初评漏记主干混入从句时依独立盲析补登，正确或缺少断言不补错：%s', async (trunk, added) => {
+    const request = nonRelativeRequest(),
+      tasks = request.task.split('\n'),
+      answers = request.input.split('\n');
+    tasks[0] = '分析主干与从句：The report that our team prepared describes the new course.';
+    answers[0] = trunk + '；that our team prepared修饰report，that作prepared的宾语。';
+    const p = preparedFor({ ...request, task: tasks.join('\n'), input: answers.join('\n') }),
+      wire = mixedDiagnosticReply(p);
+    wire.strengths.push({ quoteId: 'q1', label: '主干分析正确' });
+    wire.lines.push({ quoteId: 'q1', advice: '主干分析正确，不需修改。' });
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(wire),
+      verdict({
+        blanks: [fill(['in'])],
+        syntax: [
+          parsed('s1', 'The report', 'describes', 'that our team prepared', 'report', 'our team', 'prepared', '宾语')
+        ]
+      })
+    );
+    expect(receipt).toMatchObject({ status: 'completed', checked: 2, added: added ? 1 : 0 });
+    const result = JSON.parse(content);
+    expect(result.errors.filter((error) => error.quoteId === 'q1')).toHaveLength(added ? 1 : 0);
+    if (added) {
+      expect(result.errors.find((error) => error.quoteId === 'q1')).toMatchObject({
+        dimension: '任务完成',
+        errorText: null,
+        replacement: null
+      });
+      expect(result.strengths.some((item) => item.quoteId === 'q1')).toBe(false);
+      expect(result.lines.find((line) => line.quoteId === 'q1').advice).toContain('谓语为describes');
     }
   });
   it('审题题只给复核员英文题干盲列要点，提纲逐点写到就删掉挑错；填空只给题干不给原答', async () => {
@@ -845,7 +891,7 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     });
   });
   it('中译英的语法错误只看是否写错，复核说题干没要求也保留；表达类仍按两问删除（封存题 H3 时态）', async () => {
-    const r = mixedDiagnosticRequest(),
+    const r = nonRelativeRequest(),
       tasks = r.task.split('\n'),
       answers = r.input.split('\n');
     tasks[2] = '译成英文：我们昨天参观了科学展。';
@@ -1127,17 +1173,38 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
       calls.push(messages);
       return verdict({
         blanks: [fill(['in'])],
-        syntax: [parsed('s1', 'The workshop', 'starts', 'which our teacher recommended', 'workshop', 'our teacher', 'recommended', '宾语')]
+        syntax: [
+          parsed(
+            's1',
+            'The workshop',
+            'starts',
+            'which our teacher recommended',
+            'workshop',
+            'our teacher',
+            'recommended',
+            '宾语'
+          ),
+          parsed('s2', 'The coach', 'teaches', 'whom we met last week', 'coach', 'we', 'met', '宾语')
+        ]
       })();
     });
     const sent = JSON.parse(calls[0][1].content);
-    expect(sent.syntax).toEqual([{ id: 's1', sentence: 'The workshop which our teacher recommended starts tomorrow.' }]);
+    expect(sent.syntax).toEqual([
+      { id: 's1', sentence: 'The workshop which our teacher recommended starts tomorrow.' },
+      { id: 's2', sentence: 'The coach, whom we met last week, teaches beginners.' }
+    ]);
     expect(sent.errors).toEqual([]);
     expect(calls[0][1].content).not.toContain('which是recommended的宾语');
     expect(calls[0][1].content).not.toContain('定语从句主语');
-    expect(receipt).toMatchObject({ status: 'completed', checked: 2, removed: 1, added: 0 });
+    expect(receipt).toMatchObject({ status: 'completed', checked: 3, removed: 1, added: 0 });
     expect(receipt.syntax).toEqual([
-      { quoteId: 'q1', valid: true, agreed: true, claims: { trunk: true, clause: true, target: true, role: true } }
+      { quoteId: 'q1', valid: true, agreed: true, claims: { trunk: true, clause: true, target: true, role: true } },
+      {
+        quoteId: 'q4',
+        valid: true,
+        agreed: true,
+        claims: { trunk: true, clause: true, target: true, role: true, restrictive: true, kind: true }
+      }
     ]);
     expect(receipt.reviews[1]).toMatchObject({ quoteId: 'q1', kept: false, wrong: false });
     expect(JSON.parse(content).errors.map((e) => e.quoteId)).toEqual(['q2']);
@@ -1200,15 +1267,18 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
           {
             ...parsed('s1', 'The workshop', 'starts', 'which our teacher recommended', 'workshop', 'our teacher', 'recommended', '宾语'),
             ...change
-          }
+          },
+          parsed('s2', 'The coach', 'teaches', 'whom we met last week', 'coach', 'we', 'met', '宾语')
         ]
       })
     );
-    expect(receipt.syntax).toEqual([{ quoteId: 'q1', valid: false, agreed: false, claims: {} }]);
+    expect(receipt.syntax).toHaveLength(2);
+    expect(receipt.syntax[0]).toEqual({ quoteId: 'q1', valid: false, agreed: false, claims: {} });
+    expect(receipt.syntax[1]).toMatchObject({ quoteId: 'q4', valid: true, agreed: true });
     expect(receipt).toMatchObject({ status: 'failed', failure: 'VERIFICATION_INCONCLUSIVE' });
     expect(JSON.parse(content).errors.map((e) => e.quoteId)).toEqual(['q2', 'q1']);
   });
-  it('句法题要求翻译、没有定语从句或该题没有错误时不做盲析；盲析漏答整次复核失败', async () => {
+  it('句法题要求翻译或没有定语从句时不做盲析；无初评错误也须盲析，漏答整次复核失败', async () => {
     const translate = syntaxRequest(
       '分析主干并翻译：The workshop which our teacher recommended starts tomorrow.',
       '主干The workshop starts tomorrow；翻译：老师推荐的工作坊明天开始。',
@@ -1234,7 +1304,7 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
       only = mixedDiagnosticReply(c);
     only.errors.push(syntaxError('q4', 'whom成分判断错误', 'whom是从句主语'));
     const { content, receipt } = await verifyCoachErrors(c, JSON.stringify(only), verdict({ blanks: [fill(['in'])] }));
-    expect(receipt).toMatchObject({ status: 'failed', checked: 2 });
+    expect(receipt).toMatchObject({ status: 'failed', checked: 3 });
     expect(JSON.parse(content).errors).toHaveLength(2);
   });
   // 摸底开发集 6 份样本的两道句法题，正确盲析下逐份比对：只有 robotics 的 q4（修饰对象写成 school）不一致。

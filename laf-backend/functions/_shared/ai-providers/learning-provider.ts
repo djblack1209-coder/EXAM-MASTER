@@ -1235,8 +1235,7 @@ export async function verifyCoachErrors(
     .quoteRoles!.filter((role: any) => role.kind === 'cloze' && /^[A-Za-z]+$/.test(word(refs.get(role.quoteId))))
     .map((role: any, index: number) => ({ id: `b${index + 1}`, role, answer: word(refs.get(role.quoteId)) }));
   const blanked = new Set(blanks.map((blank: any) => blank.role.quoteId));
-  // 初评标错的句法题，以及明确修饰对象可能与原句位置矛盾的漏判，一并盲析。
-  // 这里只决定送核范围；原句位置并不自行判错，仍须通过完整盲析的自洽检查。
+  // 所有符合范围的句法题一并盲析；初评漏判不能决定哪些学生断言跳过复核。
   const flagged = new Set(value.errors.map((e: any) => e.quoteId));
   const parses = output
     .quoteRoles!.filter((role: any) => role.kind === 'syntax_analysis')
@@ -1249,25 +1248,6 @@ export async function verifyCoachErrors(
         /\b(?:who|whom|whose|which|that)\b/i.test(parts.at(-1))
     )
     .map(({ role, parts }: any) => ({ role, sentence: parts.at(-1).trim() }))
-    .filter(({ role, sentence }: any) => {
-      if (flagged.has(role.quoteId)) return true;
-      const note = refs.get(role.quoteId) || '';
-      const priorWords = [...sentence.matchAll(/\b(?:who|whom|whose|which|that)\b/gi)].map((match) =>
-        sentence
-          .slice(0, match.index)
-          .toLowerCase()
-          .match(/[a-z]+/g)
-          ?.at(-1)
-      );
-      return [...note.matchAll(/修饰(?:对象(?:是|为)?)?\s*([A-Za-z][A-Za-z' -]*)/gu)].some((match) => {
-        if (/\b(?:who|whom|whose|which|that)\s*$/i.test(note.slice(0, match.index))) return false;
-        const target = match[1]
-          .toLowerCase()
-          .match(/[a-z]+/g)
-          ?.at(-1);
-        return target && !priorWords.includes(target);
-      });
-    })
     .map((parse: any, index: number) => ({ id: `s${index + 1}`, ...parse }));
   const parsed = new Set(parses.map((parse: any) => parse.role.quoteId));
   // 审题题（列写作要点）上有错误时，复核员只拿英文题干盲列要点，不看学生提纲和初评说法；
@@ -1444,6 +1424,8 @@ export async function verifyCoachErrors(
       quoteId: parse.role.quoteId,
       note: structure.note,
       antecedent: structure.antecedent,
+      mainSubject: structure.mainSubject,
+      mainVerb: structure.mainVerb,
       ...syntaxAgreement(parse.sentence, structure, refs.get(parse.role.quoteId) || '')
     };
   });
@@ -1493,22 +1475,25 @@ export async function verifyCoachErrors(
   value.errors = value.errors.filter((_: any, index: number) => verdicts[index].kept);
   // 盲填判错而初评漏登记的空，按复核员的标签与规则补登一条；不代写答案，维度按题干考查点。
   const added = [];
-  // 只补已被独立盲析明确否定的修饰对象；不因缺少主干或无法读出其他断言补错。
+  // 只补独立盲析明确否定的主干或修饰对象；不因缺少笔记或无法读出断言补错。
   for (const analysis of analyses) {
     if (
       !analysis.valid ||
-      analysis.claims.target !== false ||
+      (analysis.claims.target !== false && analysis.claims.trunk !== false) ||
       value.errors.some((error: any) => error.quoteId === analysis.quoteId) ||
       value.errors.length >= 6
     )
       continue;
     const error = {
-      label: '从句修饰对象判断不符',
+      label: analysis.claims.trunk === false ? '主句主干判断不符' : '从句修饰对象判断不符',
       quoteId: analysis.quoteId,
       dimension: '任务完成',
       errorText: null,
       replacement: null,
-      rule: `本句定语从句修饰${analysis.antecedent.slice(0, 60)}；原答的修饰对象与原句不符`
+      rule:
+        analysis.claims.trunk === false
+          ? `主句主语为${analysis.mainSubject.slice(0, 60)}，谓语为${analysis.mainVerb.slice(0, 60)}；主干不包含定语从句中的成分`
+          : `本句定语从句修饰${analysis.antecedent.slice(0, 60)}；原答的修饰对象与原句不符`
     };
     value.errors.push(error);
     added.push(error);
