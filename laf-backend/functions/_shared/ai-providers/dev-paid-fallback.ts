@@ -3,6 +3,7 @@ import { DEV_TEST } from '../build-channel.js';
 import { ProviderError, type LearningMessage, type ModelConfig } from './learning-provider.js';
 
 // 开发付费兜底：免费通道先答；只有它没有给出可用回答、且是限流、额度不足或空回答时，同一请求改由 DeepSeek 回答。
+// 免费模型返修后仍未通过教学校验时，调用方传 quality，这次直接由 DeepSeek 质量型号作答（与 Lazy 一致）。
 // 仅 dev/test 构建、且环境变量 YOZI_DEV_PAID_FALLBACK_FILE 指向本人所有、权限 600 的密钥文件时启用。
 // 密钥每次调用时读取，不保存、不写日志、不返回；发布构建与未启用的开发运行保持原有不切换路径。
 // 本地评测脚本不在 dev/test 构建里运行，由脚本显式传 armed；服务端调用一律按构建通道。
@@ -40,7 +41,8 @@ export function devPaidFallbackSettings(armed = DEV_TEST) {
   }
   return {
     apiKey: values.DEEPSEEK_API_KEY,
-    model: values.DEEPSEEK_MODEL || process.env.DEEPSEEK_MODEL || 'deepseek-flash'
+    model: values.DEEPSEEK_MODEL || process.env.DEEPSEEK_MODEL || 'deepseek-flash',
+    qualityModel: values.DEEPSEEK_QUALITY_MODEL || process.env.DEEPSEEK_QUALITY_MODEL || 'deepseek-v4-pro'
   };
 }
 
@@ -97,29 +99,16 @@ export async function callWithDevPaidFallback<T>(
   model: ModelConfig,
   messages: LearningMessage[],
   origins: string[],
-  options: { enabled: boolean; stream: boolean; signal?: AbortSignal; armed?: boolean }
+  options: { enabled: boolean; stream: boolean; signal?: AbortSignal; armed?: boolean; quality?: boolean }
 ): Promise<{
   response: T;
   model: ModelConfig;
   paidFallback: { trigger: string; freeModel: string; model: string } | null;
 }> {
-  try {
-    return { response: await call(model, messages, origins), model, paidFallback: null };
-  } catch (error: any) {
-    const image = messages.some(
-      (message) => Array.isArray(message.content) && message.content.some((part) => part.type === 'image_url')
-    );
-    // 流式只在拿到正文前切换：限流与额度不足都在响应头阶段返回。
-    const trigger =
-      !options.enabled || options.signal?.aborted || image || !(error instanceof ProviderError)
-        ? null
-        : SWITCH_CODES.has(error.code)
-          ? error.code
-          : !options.stream && error.code === 'INVALID_RESPONSE'
-            ? 'EMPTY_RESPONSE'
-            : null;
-    const settings = trigger ? devPaidFallbackSettings(options.armed) : null;
-    if (!trigger || !settings) throw error;
+  const image = messages.some(
+    (message) => Array.isArray(message.content) && message.content.some((part) => part.type === 'image_url')
+  );
+  const paid = async (trigger: string, settings: { apiKey: string; model: string }) => {
     const fallback = devPaidFallbackModel(model, settings);
     const paidFallback = { trigger, freeModel: model.model, model: fallback.model };
     console.info('[dev-paid-fallback]', JSON.stringify(paidFallback));
@@ -132,5 +121,24 @@ export async function callWithDevPaidFallback<T>(
       if (paidError instanceof ProviderError) paidError.message = `DeepSeek 兜底未完成：${paidError.message}`;
       throw paidError;
     }
+  };
+  const quality =
+    options.quality && options.enabled && !options.stream && !image ? devPaidFallbackSettings(options.armed) : null;
+  if (quality) return paid('QUALITY_REJECTED', { apiKey: quality.apiKey, model: quality.qualityModel });
+  try {
+    return { response: await call(model, messages, origins), model, paidFallback: null };
+  } catch (error: any) {
+    // 流式只在拿到正文前切换：限流与额度不足都在响应头阶段返回。
+    const trigger =
+      !options.enabled || options.signal?.aborted || image || !(error instanceof ProviderError)
+        ? null
+        : SWITCH_CODES.has(error.code)
+          ? error.code
+          : !options.stream && error.code === 'INVALID_RESPONSE'
+            ? 'EMPTY_RESPONSE'
+            : null;
+    const settings = trigger ? devPaidFallbackSettings(options.armed) : null;
+    if (!trigger || !settings) throw error;
+    return paid(trigger, settings);
   }
 }

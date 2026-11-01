@@ -15,7 +15,7 @@ import {
 import { reservePlatformDay, settlePlatformDay } from './_shared/learning-daily-budget.js';
 import { assertTrialUser } from './_shared/learning-trial.js';
 import { DEV_TEST } from './_shared/build-channel.js';
-import { callWithDevPaidFallback } from './_shared/ai-providers/dev-paid-fallback.js';
+import { callWithDevPaidFallback, devPaidFallbackSettings } from './_shared/ai-providers/dev-paid-fallback.js';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import { requireActiveUser } from './_shared/active-user.js';
 import { checkRateLimitDistributed } from './_shared/api-response.js';
@@ -49,7 +49,8 @@ import {
   modelValidationPath,
   canCaptureResponseDiagnostics,
   DIAGNOSTIC_VERSION,
-  recoverStaleReservations
+  recoverStaleReservations,
+  latestRepair
 } from './_shared/learning-account.js';
 import { refreshSubscriptionEntitlement } from './_shared/learning-subscription.js';
 import {
@@ -221,6 +222,8 @@ export async function runLearningModelTask(
       configurationVersion: string;
       feedback?: ReturnType<typeof coachRepairFeedback>;
       verified?: boolean;
+      // 开发付费兜底的第二次返修：直接由 DeepSeek 质量型号作答。
+      paidQuality?: boolean;
     };
     onStart?: (metadata: any) => void;
     onPreview?: (text: string) => void;
@@ -538,9 +541,7 @@ export async function runLearningModelTask(
             reused: true
           }
         );
-      const repair = reservation.account.calls.find(
-        (call: any) => call.id === `${body.requestId}:repair1` && call.repairOf === body.requestId
-      );
+      const repair = latestRepair(reservation.account.calls, body.requestId);
       if (repair?.status === 'completed')
         return {
           code: 0,
@@ -592,7 +593,12 @@ export async function runLearningModelTask(
       model,
       messages,
       origins,
-      { enabled: !options.capabilityProbe, stream: Boolean(options.stream), signal }
+      {
+        enabled: !options.capabilityProbe,
+        stream: Boolean(options.stream),
+        signal,
+        quality: options.repair?.paidQuality
+      }
     );
     const rawResponse = called.response;
     // 开发付费兜底作答时，之后的模型核对、脱敏、复核与计费都跟随实际作答的型号。
@@ -875,30 +881,37 @@ export async function runLearningModelTask(
       // Finish and release the parent execution before starting the one independently billed repair.
       execution?.stop();
       execution = null;
-      const repaired = await runLearningModelTask(
-        { ...ctx, body: { ...ctx.body, requestId: `${reservation.call.id}:repair1` } },
-        {
-          ...options,
-          stream: false,
-          onStart: undefined,
-          onPreview: undefined,
-          repair: {
-            parentId: reservation.call.id,
-            configurationVersion: modelConfigurationVersion(usedModel),
-            feedback: coachRepairFeedback(usedModel, error, observedResponse.content),
-            verified: Boolean(coachVerification)
+      // 返修按预留时的连接校验：原请求即使已由开发付费兜底作答，返修也照常先问免费模型。
+      const repairAs = (suffix: string, paidQuality: boolean) =>
+        runLearningModelTask(
+          { ...ctx, body: { ...ctx.body, requestId: `${reservation.call.id}:${suffix}` } },
+          {
+            ...options,
+            stream: false,
+            onStart: undefined,
+            onPreview: undefined,
+            repair: {
+              parentId: reservation.call.id,
+              configurationVersion: reservation.call.configurationVersion,
+              feedback: coachRepairFeedback(usedModel!, error, observedResponse.content),
+              verified: Boolean(coachVerification),
+              ...(paidQuality ? { paidQuality } : {})
+            }
           }
-        }
-      );
+        );
+      let repairRequestId = `${reservation.call.id}:repair1`;
+      let repaired = await repairAs('repair1', false);
+      // 开发付费兜底：免费返修仍未通过教学校验，同一请求再由 DeepSeek 质量型号作答一次（仅已启用的 dev/test 构建）。
+      if (!repaired.success && repaired.error === 'COACH_INVALID' && !visualCall && devPaidFallbackSettings()) {
+        repairRequestId = `${reservation.call.id}:repair2`;
+        repaired = await repairAs('repair2', true);
+      }
       if (repaired.success)
-        return {
-          ...repaired,
-          data: { ...repaired.data, requestId: reservation.call.id, repairRequestId: `${reservation.call.id}:repair1` }
-        };
+        return { ...repaired, data: { ...repaired.data, requestId: reservation.call.id, repairRequestId } };
       return {
         ...repaired,
         status: repaired.status === 'reserved' ? 'reserved' : 'failed',
-        repairRequestId: `${reservation.call.id}:repair1`,
+        repairRequestId,
         repairExhausted: true
       };
     }

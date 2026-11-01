@@ -889,4 +889,25 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
   - `writing-generation-replay.mjs --case english2-diagnostic`：免费 6 次调用，返修后仍被拒：搭配题干留了方括号答案，盲填找到 4 个可填词。全程没有限流或空回答，兜底 0 次调用，符合切换条件。
   - `writing-mixed-replay.mjs`（legacy 样例）：免费 4 次调用，accepted；兜底 0 次。
   - 两份 summary：免费分别 0/1、1/1 通过，`paidFallback.calls` 都是 0。说明启用兜底后，免费通道正常时兜底不介入，免费账目照实记录。
-  - **待定**：质量被拒不在 Yozi 的切换条件里。Lazy 在同一页面、练习或评估第三次尝试时直接改用 `deepseek-v4-pro`。Yozi 是否在返修后仍被拒时切换，交用户决定。
+  - **质量被拒**：当时不在 Yozi 的切换条件里。Lazy 在同一页面、练习或评估第三次尝试时直接改用 `deepseek-v4-pro`。用户同日确认 Yozi 也切换，见下条。
+
+### 质量兜底：返修仍被拒时改用 DeepSeek（2026-11-01，总监）
+
+- **依据**：用户 11-01 确认，免费模型返修后仍未通过教学校验也算「质量明显不够」，同一请求改由 DeepSeek 作答。型号与 Lazy 的质量升级一致，用 `deepseek-v4-pro`；密钥文件里的 `DEEPSEEK_QUALITY_MODEL` 可改。
+- **服务端**：`proxy-ai.ts` 的返修分支里，`:repair1` 仍是 `COACH_INVALID` 时再发一次 `:repair2`。条件：兜底已启用（dev/test 构建且密钥文件就绪），且不是图片请求。
+  - 这次不问免费模型，`callWithDevPaidFallback({quality})` 直接交给质量型号，触发原因记 `QUALITY_REJECTED`。
+  - 系统提示带原请求的返修反馈，复核状态也按原请求。
+  - 用量账只在 dev/test 构建放行 `:repair2`，并且要求 `:repair1` 已因校验失败结束；发布构建仍只修一次。
+  - `learning-models.ts` 的 `result` 查询和原请求重放都以最后一次返修为准（`latestRepair`）。
+- **顺带修正**：自 `5235a4fd` 起，原答若因限流已由兜底作答，返修会拿兜底配置去对连接版本，被判成「连接配置已变化」而不发送。现在改按预留时的免费连接校验，返修照常先问免费模型。
+- **评测脚本**：两个回放脚本同样加了第三次。免费返修仍被拒且兜底已启用时，按原反馈由质量型号再答一次，不占免费账目和间隔；该行记 `paidFallback{attempt:2,trigger:'QUALITY_REJECTED'}`。
+- **测试**：`dev-paid-fallback.spec.ts` 15 项，新增质量模式 4 项、用量账 1 项。新文件 `dev-paid-quality-repair.spec.ts` 3 项，在 dev 构建下走完整个端点：
+  - 质量返修走到 `:repair2`，`result` 查询与重放都取它；
+  - 未启用兜底时只修一次；
+  - 原答因限流由兜底作答后，返修照常发出。把连接版本改回旧写法时这一项失败。
+  - `learning-provider-ledger.spec.ts` 加了一条：发布构建拒绝 `:repair2`。
+  - 全量单测（只含本次改动的干净检出）6637 过、30 跳过；失败的都与本次无关：工程评测清单在干净 HEAD 上同样失败，`mobile-viewport-smoke` 缺 Playwright 浏览器，另两项存储用例负载下超时、单独复跑通过。
+  - 后端 `tsc -p tsconfig.build.json` 通过。
+- **真实回放**：编译到 `tmp/paid-fallback-smoke-20261101.noindex/backend-quality`，免费通道是 Agnes `agnes-3.0-flash`。
+  - 出题 `english2-diagnostic`：免费原答被拒，免费返修被拒，第三次由 `deepseek-v4-pro` 作答，两轮盲填校准跑完。同一道搭配题仍有 4 个以上可填词，被拒。兜底切换本身走通；这道搭配填空的校准门对两种模型都难，是题目质量问题，不是通道问题。
+  - 混合（legacy 样例）：第一次在能力探测阶段 Agnes 超时（探测不切换，没进入样例）。重跑时免费首答通过，兜底 0 次调用。

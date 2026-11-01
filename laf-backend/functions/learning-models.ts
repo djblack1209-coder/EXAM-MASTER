@@ -23,7 +23,8 @@ import {
   modelValidationPath,
   projectResponseDiagnostics,
   cancelCall,
-  byokCallLimit
+  byokCallLimit,
+  latestRepair
 } from './_shared/learning-account.js';
 import { validateCloudEndpoint } from './_shared/ai-providers/learning-provider.js';
 import { refreshSubscriptionEntitlement } from './_shared/learning-subscription.js';
@@ -237,9 +238,7 @@ export default async function (ctx: any) {
           )
         : null;
       let call = maintained?.account.calls.find((c: any) => c.id === body.requestId);
-      const repair = maintained?.account.calls.find(
-        (c: any) => c.id === `${body.requestId}:repair1` && c.repairOf === body.requestId
-      );
+      const repair = maintained ? latestRepair(maintained.account.calls, body.requestId) : undefined;
       if (call?.status === 'failed' && repair) call = repair;
       if (!call) return { code: 404, success: false, message: '本账户没有此模型请求' };
       if (call.resultDeletedAt) return modelResultUnavailable(call, Date.now(), policy);

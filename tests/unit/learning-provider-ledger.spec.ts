@@ -465,4 +465,6 @@ it.each([true, false])('repair receipts charge student entitlement once only whe
   expect(account.calls[1].entitlementCharged).toBe(0);
   expect(account.calls[0].entitlementCharged).toBe(success ? 1 : 0);
   expect(() => reserveCall(account, { ...repair, id: `${repair.id}:repair1`, repairOf: repair.id })).toThrow();
+  // 发布构建只修一次：开发付费兜底的第二次返修不放行。
+  expect(() => reserveCall(account, { ...repair, id: `${parent.id}:repair2`, fingerprint: 'second' })).toThrow();
 });

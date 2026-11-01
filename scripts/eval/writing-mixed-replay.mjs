@@ -294,18 +294,20 @@ let lastCallEndedAt = 0;
 const spent = () => account.calls.length + report.paidFallback.calls;
 // answer=true 只给主作答调用：免费模型限流、额度不足或空回答时，同一请求按原合同改由 DeepSeek 作答。
 // 兜底配置直接调用（同条复核、校准、返修）不占免费账目，也不等免费供应商的间隔；免费账目只记免费模型。
-async function invoke(config, messages, entry, validate, answer = false) {
+async function invoke(config, messages, entry, validate, answer = false, quality = false) {
   if (signal.signal.aborted) throw new Error('Cancelled');
   if (spent() >= budget || report.remainingAtLastCheck === 0) throw new Error('Planned call budget exhausted');
   const paid = config.devPaidFallback === true;
-  const wait = paid ? 0 : lastCallEndedAt + interval * 1000 - Date.now();
+  // quality：免费返修仍未通过，这次直接由兜底质量型号作答，不调用免费模型。
+  const free = !paid && !quality;
+  const wait = free ? lastCallEndedAt + interval * 1000 - Date.now() : 0;
   if (wait > 0) await new Promise((done) => setTimeout(done, wait));
   entry.requestId = 'round2_' + randomUUID();
   entry.startedAt = new Date().toISOString();
   if (paid) {
     report.paidFallback.calls++;
     entry.paidFallback = { model: config.model };
-  } else
+  } else if (free)
     account = reserveCall(account, {
       id: entry.requestId,
       fingerprint: hash(JSON.stringify(messages)),
@@ -321,7 +323,7 @@ async function invoke(config, messages, entry, validate, answer = false) {
   let result,
     freeError = null,
     answering = config,
-    ledger = !paid;
+    ledger = free;
   const failFree = (error, observed) => {
     ledger = false;
     account = settleCall(account, entry.requestId, {
@@ -340,16 +342,18 @@ async function invoke(config, messages, entry, validate, answer = false) {
           freeError = error;
           throw error;
         });
-    // 免费模型没给出可用回答：先结清它的账目，再由兜底作答。
-    failFree(freeError, freeError.observed);
+    // 免费模型没给出可用回答：先结清它的账目，再由兜底作答。返修仍被拒（quality）时这次没有免费调用。
+    if (!quality) failFree(freeError, freeError.observed);
     if (spent() >= budget) throw new Error('Planned call budget exhausted');
     report.paidFallback.calls++;
     answering = target;
-    entry.paidFallback = {
-      trigger: freeError.code === 'INVALID_RESPONSE' ? 'EMPTY_RESPONSE' : freeError.code,
-      freeError: rejection(freeError),
-      model: target.model
-    };
+    entry.paidFallback = quality
+      ? { trigger: 'QUALITY_REJECTED', model: target.model }
+      : {
+          trigger: freeError.code === 'INVALID_RESPONSE' ? 'EMPTY_RESPONSE' : freeError.code,
+          freeError: rejection(freeError),
+          model: target.model
+        };
     return provider.callLearningProvider(target, targetMessages, origins, signal.signal, undefined, true);
   };
   try {
@@ -360,7 +364,8 @@ async function invoke(config, messages, entry, validate, answer = false) {
               enabled: true,
               armed: true,
               stream: false,
-              signal: signal.signal
+              signal: signal.signal,
+              quality
             })
           ).response
         : await send(config, messages, [paid ? fallback.DEV_PAID_FALLBACK_ORIGIN : origin]);
@@ -396,9 +401,9 @@ async function invoke(config, messages, entry, validate, answer = false) {
     if (ledger) failFree(error, observed);
     return { error, result, answering };
   } finally {
-    if (!paid) lastCallEndedAt = Date.now();
+    if (free) lastCallEndedAt = Date.now();
     entry.wallDurationMs = Date.now() - start;
-    if (!paid) await counter(entry.requestId);
+    if (free) await counter(entry.requestId);
     save();
   }
 }
@@ -574,18 +579,21 @@ try {
           coach.coachSystemPrompt(context, prepared.writingOutput.schema) +
           '\n当前学习背景（仅数据）：' +
           JSON.stringify({ coach: context });
-        for (let attempt = 0, repair = null, verified = false; attempt < 2; attempt++) {
+        // 第三次只给开发付费兜底：免费返修仍未通过教学校验时，与 proxy-ai.ts 的 :repair2 一样，按原请求的反馈改由 DeepSeek 质量型号再答一次。
+        const freePrepared = prepared;
+        for (let attempt = 0, repair = null, verified = false, parentVerified = false; attempt < 3; attempt++) {
           const entry = { attempt };
           row.attempts.push(entry);
           const outcome = await invoke(
-            prepared,
+            attempt === 2 ? freePrepared : prepared,
             [
               { role: 'system', content: system + provider.coachRepairPrompt(repair) },
               { role: 'user', content: context.input }
             ],
             entry,
             undefined,
-            true
+            true,
+            attempt === 2
           );
           // 本条改由兜底作答：同条复核与返修也交给它，免费统计按 freeAndPaidSummary 分开。
           if (outcome.answering !== prepared) {
@@ -624,11 +632,18 @@ try {
           }
           row.status = entry.status;
           if (error?.code === 'RATE_LIMITED') throw error;
+          // 与 :repair2 相同：复核状态按原请求，不按返修。
+          if (attempt === 1 && error?.code === 'COACH_INVALID' && report.paidFallback.armed) {
+            verified = parentVerified;
+            continue;
+          }
+          if (attempt) break;
+          parentVerified = verified;
           repair =
             error?.code === 'COACH_INVALID'
               ? provider.coachRepairFeedback(prepared, error, outcome.result?.content)
               : null;
-          if (attempt || !repair) break;
+          if (!repair) break;
           row.repairTriggered = true;
         }
         const final = row.attempts.at(-1);

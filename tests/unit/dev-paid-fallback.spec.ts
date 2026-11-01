@@ -10,6 +10,8 @@ const { callWithDevPaidFallback, DEV_PAID_FALLBACK_FILE } =
   await import('../../laf-backend/functions/_shared/ai-providers/dev-paid-fallback');
 const { ProviderError, buildLearningRequest } =
   await import('../../laf-backend/functions/_shared/ai-providers/learning-provider');
+const { newAccount, reserveCall, settleCall, latestRepair } =
+  await import('../../laf-backend/functions/_shared/learning-account');
 
 const free = {
   id: 'free',
@@ -155,6 +157,72 @@ describe('development paid fallback', () => {
       code: 'RATE_LIMITED'
     });
     expect(call).toHaveBeenCalledTimes(2);
+  });
+
+  it('sends a quality retry straight to the DeepSeek quality model', async () => {
+    const call = vi.fn(async () => 'paid answer');
+    const result = await callWithDevPaidFallback(call, free, messages, ['https://apihub.agnes-ai.com'], {
+      enabled: true,
+      stream: false,
+      quality: true
+    });
+    expect(result.paidFallback).toEqual({
+      trigger: 'QUALITY_REJECTED',
+      freeModel: 'agnes-3.0-flash',
+      model: 'deepseek-v4-pro'
+    });
+    expect(call).toHaveBeenCalledOnce();
+    const [target, targetMessages] = call.mock.calls[0] as any;
+    expect(target).toMatchObject({ devPaidFallback: true, model: 'deepseek-v4-pro', apiKey: KEY });
+    expect(targetMessages[0].content).toContain('"required":["reply"]');
+    expect(buildLearningRequest(target, targetMessages, false)).toMatchObject({ thinking: { type: 'disabled' } });
+  });
+
+  it.each([
+    ['caller that does not arm it', { armed: false }, messages],
+    ['stream', { stream: true }, messages],
+    ['image input', {}, [{ role: 'user', content: [{ type: 'image_url', image_url: { url: 'data:,' } }] }]]
+  ])('asks the free model as usual on a quality retry for %s', async (_name, change: any, input: any) => {
+    const call = vi.fn(async () => 'free answer');
+    const result = await callWithDevPaidFallback(call, free, input, [], {
+      enabled: true,
+      armed: change.armed,
+      stream: change.stream ?? false,
+      quality: true
+    });
+    expect(result).toEqual({ response: 'free answer', model: free, paidFallback: null });
+    expect(call).toHaveBeenCalledWith(free, input, []);
+  });
+
+  it('allows one more repair only after the free repair was rejected', () => {
+    const parent = {
+      id: 'quality-parent',
+      fingerprint: 'parent',
+      source: 'byok',
+      maxCost: 0,
+      units: 0,
+      model: 'agnes-3.0-flash',
+      provider: 'Agnes',
+      modelId: 'free',
+      configurationVersion: 'same'
+    };
+    const repair = (n: number) => ({
+      ...parent,
+      id: `${parent.id}:repair${n}`,
+      fingerprint: `r${n}`,
+      repairOf: parent.id
+    });
+    let account = reserveCall(newAccount('u1'), parent).account;
+    account = settleCall(account, parent.id, { success: false, actualCost: 0, errorCode: 'COACH_INVALID' }).account;
+    expect(() => reserveCall(account, repair(2))).toThrow();
+    account = reserveCall(account, repair(1)).account;
+    expect(() => reserveCall(account, repair(2))).toThrow();
+    account = settleCall(account, repair(1).id, { success: false, actualCost: 0, errorCode: 'COACH_INVALID' }).account;
+    account = reserveCall(account, repair(2)).account;
+    expect(latestRepair(account.calls, parent.id)).toMatchObject({ id: 'quality-parent:repair2', status: 'reserved' });
+    account = settleCall(account, repair(2).id, { success: true, actualCost: 0, result: { message: 'valid' } }).account;
+    expect(latestRepair(account.calls, parent.id)).toMatchObject({ status: 'completed' });
+    expect(() => reserveCall(account, { ...repair(3), id: `${parent.id}:repair3` })).toThrow();
   });
 
   it('labels a failed fallback without exposing the key', async () => {

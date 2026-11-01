@@ -295,7 +295,14 @@ export function reserveCall(account: any, input: any, now = Date.now(), policy =
       parent?.status === 'failed' &&
         parent.errorCode === 'COACH_INVALID' &&
         !parent.repairOf &&
-        input.id === `${parent.id}:repair1` &&
+        (input.id === `${parent.id}:repair1` ||
+          // 开发付费兜底：免费返修仍未通过教学校验时，同一请求可再由 DeepSeek 作答一次；发布构建仍只修一次。
+          (DEV_TEST &&
+            input.id === `${parent.id}:repair2` &&
+            account.calls.some(
+              (call: any) =>
+                call.id === `${parent.id}:repair1` && call.status === 'failed' && call.errorCode === 'COACH_INVALID'
+            ))) &&
         parent.modelId === input.modelId &&
         parent.configurationVersion === input.configurationVersion,
       'REPAIR_INVALID',
@@ -347,6 +354,11 @@ export function reserveCall(account: any, input: any, now = Date.now(), policy =
     '用量账户达到安全容量上限；未调用模型，已有学习记录仍可使用'
   );
   return { account: result, call, reused: false };
+}
+// 一条请求的最后一次返修：开发付费兜底可能有第二次（:repair2）。
+export function latestRepair(calls: any[], id: string) {
+  const repair = (n: number) => calls.find((call: any) => call.id === `${id}:repair${n}` && call.repairOf === id);
+  return repair(2) || repair(1);
 }
 export function cancelCall(account: any, id: string, now = Date.now()) {
   requireValue(typeof id === 'string' && /^[a-zA-Z0-9_:-]{1,160}$/.test(id), 'INPUT_INVALID', '请求标识不合法');
