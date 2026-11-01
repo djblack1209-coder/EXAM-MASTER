@@ -158,6 +158,8 @@ export type ModelConfig = {
   timeoutMs?: number;
   capabilityProbe?: { stage: 'tool' | 'json'; nonce: string; toolCall?: any };
   capabilityCheck?: { version: number; tools: boolean; structured: boolean; checkedAt: number };
+  // 仅开发付费兜底生成的配置带此标记；用户连接由服务端逐字段构造，不会带上。
+  devPaidFallback?: true;
   plainCoachRequest?: string;
   writingOutput?: {
     contract: string;

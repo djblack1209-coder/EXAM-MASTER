@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Synthetic prompt/decoder probe. No server, database, learning writes or paid fallback.
-import { readFileSync, writeFileSync, lstatSync, realpathSync } from 'node:fs';
+// Synthetic prompt/decoder probe. No server, database or learning writes. Items the free model cannot answer
+// (rate limit, quota, empty answer) go to the dev paid fallback and are reported apart; --free-only turns it off.
+import { readFileSync, writeFileSync, lstatSync, realpathSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { createHash, randomUUID } from 'node:crypto';
@@ -20,13 +21,15 @@ const { values } = parseArgs({
     model: { type: 'string', default: 'nvidia/nemotron-3-ultra-550b-a55b:free' },
     repeat: { type: 'string', default: '1' },
     budget: { type: 'string', default: '40' },
-    interval: { type: 'string', default: '15' }
+    interval: { type: 'string', default: '15' },
+    'free-only': { type: 'boolean', default: false }
   }
 });
 const repetitions = Number(values.repeat),
   budget = Number(values.budget),
   interval = Number(values.interval);
-// 供应商有并发与分钟限流：调用串行发出，两次调用之间至少间隔 interval 秒，限流即停，不连续重试。
+// 供应商有并发与分钟限流：调用串行发出，两次调用之间至少间隔 interval 秒，不连续重试；
+// 限流时该条改由开发付费兜底作答，未启用兜底则停。
 if (!Number.isInteger(interval) || interval < 0 || interval > 120) throw new Error('interval must be 0..120 seconds');
 if (![1, 3].includes(repetitions) || !Number.isInteger(budget) || budget < 1 || budget > 48)
   throw new Error('repeat must be 1 or 3; budget must be 1..48 (including probes and repair)');
@@ -70,6 +73,7 @@ const coach = await moduleAt('learning-writing-coach.js');
 const { learningTimeout } = await moduleAt('learning-runtime-policy.js');
 const { freeModelPricing, modelInferenceParameters } = await moduleAt('ai-providers/free-model-presets.js');
 const { newAccount, reserveCall, settleCall } = await moduleAt('learning-account.js');
+const fallback = await moduleAt('ai-providers/dev-paid-fallback.js').catch(() => null);
 const hash = (value) => createHash('sha256').update(value).digest('hex');
 const sampleText = readFileSync(localPath(values.sample), 'utf8');
 let samples = JSON.parse(sampleText);
@@ -247,6 +251,13 @@ model.apiKey = readFreeApiCredential(
   route.credential,
   origin + basePath
 );
+// 开发付费兜底：本机有权限 600 的密钥文件即启用（与开发后端同一文件），--free-only 关闭；运行时不含兜底模块则不启用。
+const paidFile = resolve(process.env.HOME, '.config/deepseek-lazy-yozi.env');
+const paidReady = !values['free-only'] && Boolean(fallback?.DEV_PAID_FALLBACK_ID);
+if (paidReady && !process.env[fallback.DEV_PAID_FALLBACK_FILE] && existsSync(paidFile))
+  process.env[fallback.DEV_PAID_FALLBACK_FILE] = paidFile;
+const paidModel = paidReady ? fallback.devPaidFallbackSettings(true)?.model : null;
+report.paidFallback = { armed: Boolean(paidModel), model: paidModel || null, calls: 0 };
 let account = newAccount('round2-synthetic-probe');
 account.cost.hardLimit = 0;
 const signal = new AbortController();
@@ -280,32 +291,82 @@ async function counter(stage) {
   save();
 }
 let lastCallEndedAt = 0;
-async function invoke(config, messages, entry, validate) {
+const spent = () => account.calls.length + report.paidFallback.calls;
+// answer=true 只给主作答调用：免费模型限流、额度不足或空回答时，同一请求按原合同改由 DeepSeek 作答。
+// 兜底配置直接调用（同条复核、校准、返修）不占免费账目，也不等免费供应商的间隔；免费账目只记免费模型。
+async function invoke(config, messages, entry, validate, answer = false) {
   if (signal.signal.aborted) throw new Error('Cancelled');
-  if (account.calls.length >= budget || report.remainingAtLastCheck === 0)
-    throw new Error('Planned call budget exhausted');
-  const wait = lastCallEndedAt + interval * 1000 - Date.now();
+  if (spent() >= budget || report.remainingAtLastCheck === 0) throw new Error('Planned call budget exhausted');
+  const paid = config.devPaidFallback === true;
+  const wait = paid ? 0 : lastCallEndedAt + interval * 1000 - Date.now();
   if (wait > 0) await new Promise((done) => setTimeout(done, wait));
   entry.requestId = 'round2_' + randomUUID();
   entry.startedAt = new Date().toISOString();
-  account = reserveCall(account, {
-    id: entry.requestId,
-    fingerprint: hash(JSON.stringify(messages)),
-    source: 'byok',
-    model: model.model,
-    provider: model.provider,
-    maxCost: 0,
-    units: 0,
-    callLimit: budget
-  }).account;
+  if (paid) {
+    report.paidFallback.calls++;
+    entry.paidFallback = { model: config.model };
+  } else
+    account = reserveCall(account, {
+      id: entry.requestId,
+      fingerprint: hash(JSON.stringify(messages)),
+      source: 'byok',
+      model: model.model,
+      provider: model.provider,
+      maxCost: 0,
+      units: 0,
+      callLimit: budget
+    }).account;
   save();
   const start = Date.now();
-  let result;
+  let result,
+    freeError = null,
+    answering = config,
+    ledger = !paid;
+  const failFree = (error, observed) => {
+    ledger = false;
+    account = settleCall(account, entry.requestId, {
+      success: false,
+      actualCost:
+        (observed?.actualModel === model.model && observed?.usage) || error.executionStage === 'not_called' ? 0 : null,
+      usage: observed?.usage || null,
+      errorCode: error.code || 'PROBE_FAILED'
+    }).account;
+  };
+  const send = (target, targetMessages, origins) => {
+    if (target === config)
+      return provider
+        .callLearningProvider(target, targetMessages, origins, signal.signal, undefined, true)
+        .catch((error) => {
+          freeError = error;
+          throw error;
+        });
+    // 免费模型没给出可用回答：先结清它的账目，再由兜底作答。
+    failFree(freeError, freeError.observed);
+    if (spent() >= budget) throw new Error('Planned call budget exhausted');
+    report.paidFallback.calls++;
+    answering = target;
+    entry.paidFallback = {
+      trigger: freeError.code === 'INVALID_RESPONSE' ? 'EMPTY_RESPONSE' : freeError.code,
+      freeError: rejection(freeError),
+      model: target.model
+    };
+    return provider.callLearningProvider(target, targetMessages, origins, signal.signal, undefined, true);
+  };
   try {
-    result = await provider.callLearningProvider(config, messages, [origin], signal.signal, undefined, true);
-    if (provider.modelValueHasKeyEcho(result, model.apiKey))
+    result =
+      answer && !paid && report.paidFallback.armed
+        ? (
+            await fallback.callWithDevPaidFallback(send, config, messages, [origin], {
+              enabled: true,
+              armed: true,
+              stream: false,
+              signal: signal.signal
+            })
+          ).response
+        : await send(config, messages, [paid ? fallback.DEV_PAID_FALLBACK_ORIGIN : origin]);
+    if (provider.modelValueHasKeyEcho(result, model.apiKey) || provider.modelValueHasKeyEcho(result, answering.apiKey))
       throw Object.assign(new Error('Secret echo rejected'), { code: 'SECRET_ECHO' });
-    if (result.actualModel !== model.model)
+    if (result.actualModel !== answering.model)
       throw Object.assign(new Error('Actual model mismatch'), { code: 'MODEL_MISMATCH' });
     entry.actualModel = result.actualModel;
     entry.durationMs = result.durationMs;
@@ -317,12 +378,13 @@ async function invoke(config, messages, entry, validate) {
     }
     const parsed = validate ? validate(result.content) : null;
     entry.status = 'accepted';
-    account = settleCall(account, entry.requestId, {
-      success: true,
-      actualCost: result.usage ? 0 : null,
-      usage: result.usage
-    }).account;
-    return { result, parsed };
+    if (ledger)
+      account = settleCall(account, entry.requestId, {
+        success: true,
+        actualCost: result.usage ? 0 : null,
+        usage: result.usage
+      }).account;
+    return { result, parsed, answering };
   } catch (error) {
     entry.status = error.code === 'COACH_INVALID' ? 'rejected' : 'failed';
     entry.rejection = rejection(error);
@@ -331,20 +393,40 @@ async function invoke(config, messages, entry, validate) {
     entry.usage = observed?.usage || null;
     entry.actualModel = observed?.actualModel || null;
     entry.durationMs = observed?.durationMs || entry.durationMs;
-    account = settleCall(account, entry.requestId, {
-      success: false,
-      actualCost:
-        (observed?.actualModel === model.model && observed?.usage) || error.executionStage === 'not_called' ? 0 : null,
-      usage: observed?.usage || null,
-      errorCode: error.code || 'PROBE_FAILED'
-    }).account;
-    return { error, result };
+    if (ledger) failFree(error, observed);
+    return { error, result, answering };
   } finally {
-    lastCallEndedAt = Date.now();
+    if (!paid) lastCallEndedAt = Date.now();
     entry.wallDurationMs = Date.now() - start;
-    await counter(entry.requestId);
+    if (!paid) await counter(entry.requestId);
     save();
   }
+}
+// 免费通过率只算测到免费模型的条目，兜底条目单列：首次作答就限流或额度不足的不进免费分母（无论是否兜底）；
+// 免费模型已作答过（空回答，或到返修才换）的仍记免费未通过。
+function freeAndPaidSummary(rows) {
+  const switched = rows.filter((row) => row.paidFallback);
+  const measured = rows.filter(
+    (row) =>
+      !['RATE_LIMITED', 'UPSTREAM_QUOTA'].includes(
+        row.paidFallback ? row.paidFallback.attempt === 0 && row.paidFallback.trigger : row.attempts[0]?.rejection?.code
+      )
+  );
+  const triggers = {};
+  for (const row of switched) triggers[row.paidFallback.trigger] = (triggers[row.paidFallback.trigger] || 0) + 1;
+  return {
+    free: {
+      runs: measured.length,
+      accepted: measured.filter((row) => !row.paidFallback && row.status === 'accepted').length,
+      notMeasured: rows.length - measured.length
+    },
+    paidFallback: {
+      ...report.paidFallback,
+      runs: switched.length,
+      accepted: switched.filter((row) => row.status === 'accepted').length,
+      triggers
+    }
+  };
 }
 async function capability() {
   if (values['capability-from']) {
@@ -477,7 +559,7 @@ try {
       for (let run = 1; run <= repetitions; run++) {
         const request = coach.normalizeCoachRequest(sample.request),
           context = coach.coachInferenceContext(request);
-        const prepared = provider.prepareCoachFeedbackModel(model, context, false, false, false, true);
+        let prepared = provider.prepareCoachFeedbackModel(model, context, false, false, false, true);
         if (prepared.writingOutput?.inferencePolicy !== 'native-coach-tools-v1')
           throw new Error('Native teaching contract unavailable');
         const row = {
@@ -501,8 +583,15 @@ try {
               { role: 'system', content: system + provider.coachRepairPrompt(repair) },
               { role: 'user', content: context.input }
             ],
-            entry
+            entry,
+            undefined,
+            true
           );
+          // 本条改由兜底作答：同条复核与返修也交给它，免费统计按 freeAndPaidSummary 分开。
+          if (outcome.answering !== prepared) {
+            prepared = outcome.answering;
+            row.paidFallback ??= { attempt, trigger: entry.paidFallback.trigger, model: entry.paidFallback.model };
+          }
           let error = outcome.error;
           if (outcome.result) {
             // 与 proxy-ai.ts 同一复核：初评过字段合同才复核，每套最多一次，复核失败按原错误继续。
@@ -562,6 +651,7 @@ try {
             run,
             status: row.status,
             repair: row.repairTriggered,
+            paidFallback: row.paidFallback || null,
             dimensions: row.dimensions,
             errors: row.errors,
             removedByVerification: row.verification?.reviews?.filter((review) => !review.kept) || [],
@@ -595,6 +685,8 @@ try {
     usage
   }));
   report.calls = account.calls.length;
+  if (!values.judge && report.paidFallback)
+    report.summary = freeAndPaidSummary(report.runs.filter((row) => row.attempts?.[0]?.requestId));
   if (!values.judge)
     report.notRun = samples.flatMap((sample) =>
       Array.from({ length: repetitions }, (_, index) => ({ sample: sample.name, run: index + 1 })).filter(
@@ -615,7 +707,8 @@ try {
       runs: report.runs.length,
       blocker: report.blocker,
       calls: report.calls,
-      dailyCounter: report.dailyCounters.at(-1)?.data || null
+      dailyCounter: report.dailyCounters.at(-1)?.data || null,
+      summary: report.summary || null
     })
   );
 }

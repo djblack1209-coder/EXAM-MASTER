@@ -73,6 +73,8 @@ describe('development paid fallback', () => {
     });
     const [target, targetMessages, origins] = call.mock.calls[1];
     expect(target).toMatchObject({
+      id: 'dev-paid-fallback-deepseek',
+      devPaidFallback: true,
       model: 'deepseek-flash',
       endpoint: 'https://api.deepseek.com/chat/completions',
       apiKey: KEY,
@@ -92,11 +94,17 @@ describe('development paid fallback', () => {
     expect(JSON.stringify(console.info.mock.calls)).not.toContain(KEY);
   });
 
-  it('keeps native coach tools as tools', async () => {
-    const coach = { ...free, writingOutput: { ...free.writingOutput, inferencePolicy: 'native-coach-tools-v1' } };
+  it('keeps native coach tools as tools and the capability evidence that gates calibration', async () => {
+    const capabilityCheck = { version: 1, tools: true, structured: true, checkedAt: 1 };
+    const coach = {
+      ...free,
+      capabilityCheck,
+      writingOutput: { ...free.writingOutput, inferencePolicy: 'native-coach-tools-v1' }
+    };
     const call = vi.fn().mockImplementationOnce(limited).mockResolvedValueOnce('paid answer');
     await callWithDevPaidFallback(call, coach, messages, [], { enabled: true, stream: false });
     const [target, targetMessages] = call.mock.calls[1];
+    expect(target.capabilityCheck).toEqual(capabilityCheck);
     expect(target.writingOutput.format).toBeUndefined();
     expect(targetMessages).toEqual(messages);
     expect(buildLearningRequest(target, targetMessages, false)).toMatchObject({
@@ -117,12 +125,17 @@ describe('development paid fallback', () => {
 
   it.each([
     ['capability probe', { enabled: false }, messages],
+    ['caller that does not arm it', { armed: false }, messages],
     ['image input', {}, [{ role: 'user', content: [{ type: 'image_url', image_url: { url: 'data:,' } }] }]],
     ['other failure', { code: 'KEY_REJECTED' }, messages]
   ])('keeps the original error for %s', async (_name, change: any, input: any) => {
     const call = vi.fn(() => Promise.reject(new ProviderError(change.code || 'RATE_LIMITED', '原错误')));
     await expect(
-      callWithDevPaidFallback(call, free, input, [], { enabled: change.enabled ?? true, stream: false })
+      callWithDevPaidFallback(call, free, input, [], {
+        enabled: change.enabled ?? true,
+        armed: change.armed,
+        stream: false
+      })
     ).rejects.toThrow('原错误');
     expect(call).toHaveBeenCalledTimes(1);
   });

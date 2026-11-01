@@ -860,6 +860,19 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 - **落地**：`5235a4fd`。新文件 `laf-backend/functions/_shared/ai-providers/dev-paid-fallback.ts`；`proxy-ai.ts` 的模型调用包一层；`free-model-presets.ts` 为 DeepSeek 关思考（仅开发构建）；开发启动器 `start-dev-test-backend.mjs` 见到密钥文件就设 `YOZI_DEV_PAID_FALLBACK_FILE`，启动时打印「Dev paid fallback armed」。
 - **切换条件**：`RATE_LIMITED`、`UPSTREAM_QUOTA`，或非流式的空回答（`INVALID_RESPONSE`），同一请求改用 `deepseek-flash`。能力测试与图片输入不切；流式只在出正文前切。切换后模型核对、脱敏、复核、计费都跟随 DeepSeek，回执的 `provider`／`model` 写明兜底型号，后端日志有 `[dev-paid-fallback]` 一行（只含触发原因和型号）。
 - **合同**：写作合同改 `json_object`，同一 Schema 写进系统提示；原生教练工具照常走工具调用（DeepSeek 支持带 `strict` 的指定函数调用）。
-- **评测脚本**：`scripts/eval/*replay*` 不接兜底，继续只测免费模型，免得兜底作答混进免费模型成绩。
+- **评测脚本**（同日按用户要求补接，见下条）：`writing-mixed-replay.mjs` 与 `writing-generation-replay.mjs` 也接兜底，本机有密钥文件即启用，`--free-only` 关闭；未启用时与原来一样限流即停。
 - **测试**：新增 `tests/unit/dev-paid-fallback.spec.ts` 9 项通过；learning／writing／model 相关 123 个测试文件 3819 过、6 跳过、0 失败；后端 `tsc -p tsconfig.build.json --noEmit` 通过。
 - **真实冒烟**：编译后的后端，免费通道模拟返回 429，经真实 `callLearningProvider`（固定解析、TLS）改由 `deepseek-flash` 作答：写作 JSON 非流式、流式与原生教练工具三种都是 HTTP 200，实际型号与兜底型号一致，返回内容含 Schema 要求的字段。没有调用其他免费通道。
+
+### 补接：评测脚本与校准凭据（2026-11-01，总监）
+
+- **评测脚本**：只接主作答调用。免费模型限流、额度不足或空回答时，该条改由 DeepSeek 作答，同条的复核、盲填校准和返修也由它完成。免费账目只记免费模型；兜底调用单列在 `report.paidFallback`，每条记 `paidFallback{attempt,trigger,model}`。`report.summary` 把免费与兜底的通过数分开：首次作答就限流或额度不足的条目没测到免费模型，不进免费分母；空回答或到返修才换的，仍记免费未通过。兜底调用计入 `--budget`，不等免费供应商的间隔。
+- **校准凭据修正**：`5235a4fd` 的兜底配置清掉了 `capabilityCheck`，切换后出题的盲填校准（`calibrateCoachExercises`）会被静默跳过。现保留原请求的能力往返凭据，复核与校准照常执行；DeepSeek 带 `strict` 的指定函数调用与 `json_object` 已于 11-01 实测。
+- **关思考的条件**：从「仅开发构建」改为兜底配置自带的 `devPaidFallback` 标记。用户连接由服务端逐字段构造，带不上这个标记，用户自己接的 DeepSeek 连接不变。不在开发构建里运行的评测脚本也能关掉思考。`devPaidFallbackSettings(armed)` 与 `callWithDevPaidFallback({armed})` 只供本地评测脚本显式传入，服务端一律按构建通道。
+- **测试**：`dev-paid-fallback.spec.ts` 10 项（新增：保留能力凭据；调用方不启用就不切）；`free-model-presets.spec.ts` 加一条：只有兜底配置关思考。12 个相关测试文件 493 过，0 失败；后端 `tsc -p tsconfig.build.json` 通过。
+- **真实冒烟**：后端编译到 `tmp/paid-fallback-smoke-20261101.noindex/`，用预加载桩让免费通道（Agnes）返回 429，DeepSeek 为真实调用。能力凭据是冒烟用的合成文件，免费通道已被桩住，无法真跑能力测试。
+  - `writing-generation-replay.mjs --case english2-diagnostic`：DeepSeek 出题，两轮盲填校准完成，accepted。
+  - `writing-mixed-replay.mjs`（legacy 样例）：DeepSeek 初评并复核，accepted。
+  - 两者的 summary 都是免费 0 条可计（1 条未测到）、兜底 1/1。
+  - `--free-only` 同样遇到 429 时照旧停在 `RATE_LIMITED`，没有调用 DeepSeek。
+  - 扫描报告、脚本与编译产物，均未发现密钥。

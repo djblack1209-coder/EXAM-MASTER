@@ -4,7 +4,7 @@ import { MODEL_CONNECTION_PRESETS } from './model-endpoints.js';
 // 只保存公开接入事实；密钥来自用户保险库，目录存在不代表账户额度可用。
 export const FREE_MODEL_PRESETS = MODEL_CONNECTION_PRESETS;
 // Only documented native chat routes; output bounds and other profiles stay unchanged.
-export function modelInferenceParameters(model: { model: string; endpoint?: string }) {
+export function modelInferenceParameters(model: { model: string; endpoint?: string; devPaidFallback?: boolean }) {
   if (
     model.model === 'glm-4.7-flash' &&
     ['https://open.bigmodel.cn/api/paas/v4/chat/completions', 'https://api.z.ai/api/paas/v4/chat/completions'].includes(
@@ -27,8 +27,8 @@ export function modelInferenceParameters(model: { model: string; endpoint?: stri
     model.endpoint === 'https://openrouter.ai/api/v1/chat/completions'
   )
     return { reasoning: { effort: 'high' } };
-  // 仅开发付费兜底：思考与正文共用输出上限，保持关闭。
-  if (DEV_TEST && model.endpoint === 'https://api.deepseek.com/chat/completions')
+  // 仅开发付费兜底：思考与正文共用输出上限，保持关闭。标记只由兜底配置生成，用户连接不会带上。
+  if (model.devPaidFallback === true && model.endpoint === 'https://api.deepseek.com/chat/completions')
     return { thinking: { type: 'disabled' } };
   return null;
 }

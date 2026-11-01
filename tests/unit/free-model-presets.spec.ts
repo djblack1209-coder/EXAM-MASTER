@@ -411,6 +411,12 @@ describe('免费型号是可核验接入事实，不是任意零价格声明', (
       'reasoning_effort'
     );
     expect(buildLearningRequest({ ...nvidia, model: 'other-model' }, [])).not.toHaveProperty('reasoning_effort');
+    // DeepSeek 只在开发付费兜底配置上关思考；用户自己接的同端点连接不变。
+    const deepseek = { ...config, model: 'deepseek-flash', endpoint: 'https://api.deepseek.com/chat/completions' };
+    expect(buildLearningRequest({ ...deepseek, devPaidFallback: true }, [])).toMatchObject({
+      thinking: { type: 'disabled' }
+    });
+    expect(buildLearningRequest(deepseek, [])).not.toHaveProperty('thinking');
   });
   it('连接状态取同一配置的最近真实调用，失败及过期不会显示仍然连接', () => {
     const model = { id: 'selected', model: 'glm-4.7-flash' };

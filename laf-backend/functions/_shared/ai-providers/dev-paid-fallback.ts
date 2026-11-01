@@ -5,13 +5,15 @@ import { ProviderError, type LearningMessage, type ModelConfig } from './learnin
 // 开发付费兜底：免费通道先答；只有它没有给出可用回答、且是限流、额度不足或空回答时，同一请求改由 DeepSeek 回答。
 // 仅 dev/test 构建、且环境变量 YOZI_DEV_PAID_FALLBACK_FILE 指向本人所有、权限 600 的密钥文件时启用。
 // 密钥每次调用时读取，不保存、不写日志、不返回；发布构建与未启用的开发运行保持原有不切换路径。
+// 本地评测脚本不在 dev/test 构建里运行，由脚本显式传 armed；服务端调用一律按构建通道。
 export const DEV_PAID_FALLBACK_FILE = 'YOZI_DEV_PAID_FALLBACK_FILE';
 export const DEV_PAID_FALLBACK_ORIGIN = 'https://api.deepseek.com';
+export const DEV_PAID_FALLBACK_ID = 'dev-paid-fallback-deepseek';
 const SWITCH_CODES = new Set(['RATE_LIMITED', 'UPSTREAM_QUOTA']);
 
-export function devPaidFallbackSettings() {
+export function devPaidFallbackSettings(armed = DEV_TEST) {
   const path = process.env[DEV_PAID_FALLBACK_FILE];
-  if (!DEV_TEST || !path) return null;
+  if (!armed || !path) return null;
   let text: string;
   try {
     const info = fs.lstatSync(path);
@@ -43,20 +45,21 @@ export function devPaidFallbackSettings() {
 }
 
 // 兜底按原请求的合同回答：教学工具照常调用；DeepSeek 不收 json_schema，改为 json_object 并把同一 Schema 写进系统提示。
+// 保留原请求的能力往返凭据，复核与盲填校准照常执行（DeepSeek 的严格工具与 json_object 已于 2026-11-01 实测）。
 export function devPaidFallbackModel(config: ModelConfig, settings: { apiKey: string; model: string }): ModelConfig {
   const output = config.writingOutput;
   return {
     ...config,
-    id: 'dev-paid-fallback-deepseek',
+    id: DEV_PAID_FALLBACK_ID,
     provider: 'DeepSeek（开发付费兜底）',
     model: settings.model,
     endpoint: `${DEV_PAID_FALLBACK_ORIGIN}/chat/completions`,
     apiKey: settings.apiKey,
     source: 'byok',
+    devPaidFallback: true,
     inputPerMillion: undefined,
     outputPerMillion: undefined,
     priceVersion: undefined,
-    capabilityCheck: undefined,
     ...(output
       ? {
           writingOutput: {
@@ -94,7 +97,7 @@ export async function callWithDevPaidFallback<T>(
   model: ModelConfig,
   messages: LearningMessage[],
   origins: string[],
-  options: { enabled: boolean; stream: boolean; signal?: AbortSignal }
+  options: { enabled: boolean; stream: boolean; signal?: AbortSignal; armed?: boolean }
 ): Promise<{
   response: T;
   model: ModelConfig;
@@ -115,7 +118,7 @@ export async function callWithDevPaidFallback<T>(
           : !options.stream && error.code === 'INVALID_RESPONSE'
             ? 'EMPTY_RESPONSE'
             : null;
-    const settings = trigger ? devPaidFallbackSettings() : null;
+    const settings = trigger ? devPaidFallbackSettings(options.armed) : null;
     if (!trigger || !settings) throw error;
     const fallback = devPaidFallbackModel(model, settings);
     const paidFallback = { trigger, freeModel: model.model, model: fallback.model };
