@@ -68,7 +68,7 @@ fn settings_only(window: &WebviewWindow) -> Result<(), String> {
     if window.label() == "settings" { Ok(()) } else { Err("此操作仅限设置窗口".into()) }
 }
 fn workspace_route(route: &str) -> bool {
-    ["/pages/learning/index", "/pages/archive/index", "/pages/archive/index?view=plan", "/pages/archive/index?view=materials", "/pages/mistake/index", "/pages/favorite/index",
+    ["/pages/learning/index", "/pages/learning/index?panel=data", "/pages/archive/index", "/pages/archive/index?view=plan", "/pages/archive/index?view=materials", "/pages/mistake/index", "/pages/favorite/index",
         "/pages/login/index", "/pages/index/index", "/pages/profile/index?panel=reset", "/pages/settings/privacy", "/pages/settings/terms"].contains(&route)
 }
 
@@ -229,6 +229,8 @@ mod tests {
     fn settings_routes_are_closed_to_remote_and_arbitrary_paths() {
         assert!(workspace_route("/pages/learning/index"));
         assert!(workspace_route("/pages/archive/index?view=plan"));
+        assert!(workspace_route("/pages/learning/index?panel=data"));
+        assert!(!workspace_route("/pages/learning/index?panel=other"));
         assert!(workspace_route("/pages/archive/index?view=materials"));
         assert!(!workspace_route("/pages/archive/index?view=other"));
         assert!(!workspace_route("https://example.com"));

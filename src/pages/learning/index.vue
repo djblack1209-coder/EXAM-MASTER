@@ -1997,7 +1997,7 @@ import BaseBubble from '@/components/base/base-bubble/base-bubble.vue';
 import BaseOptions from '@/components/base/base-options/base-options.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
-import { visibleReply, cancelledNotice } from '@/services/learning/shell-navigation.js';
+import { visibleReply, cancelledNotice, studentAvatar } from '@/services/learning/shell-navigation.js';
 import { answerFeedback, answerOptionState } from '@/components/business/learning/learning-feedback.js';
 import './messages.js';
 import { learningText } from '@/i18n/learning.js';
@@ -2472,10 +2472,7 @@ onMounted(() => {
 onUnmounted(() => unbindKeyboard());
 // Slot updates can run while the old conversation is being removed.
 const conversationMessages = computed(() => learning.active?.messages || []);
-// Owner is the reactive key: the saved account photo only belongs to a signed-in learner.
-const userAvatar = computed(() =>
-  learning.state.owner === 'guest' ? '' : storageService.get('userInfo')?.avatarUrl || ''
-);
+const userAvatar = computed(() => studentAvatar(learning.state.owner));
 const correctionOf = ref(null);
 const lastEditableMessage = computed(() =>
   !learning.activeQuestion && !learning.active?.stopped

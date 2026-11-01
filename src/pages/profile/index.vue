@@ -144,7 +144,7 @@
             ><BaseListRow
               label="学习内容发送给 AI"
               :value="learning.sharingAllowed ? '已允许' : '未允许'"
-              @tap="goTo('/pages/learning/index?panel=connections')"
+              :actionable="false"
           /></view>
         </template>
         <view v-if="settingsSection === 'channels'" class="settings-group"

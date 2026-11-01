@@ -74,7 +74,9 @@
       @action="handleModelAction"
     />
     <view class="coach-workspace">
-      <view v-if="coach" class="coach-user-message" selectable>{{ learning.active.goal }}</view>
+      <BaseBubble v-if="coach" author="user" avatar :avatar-src="userAvatar" class="coach-user-turn"
+        ><text selectable>{{ learning.active.goal }}</text></BaseBubble
+      >
       <CustomModal
         :visible="showMaterials"
         title="资料"
@@ -241,7 +243,9 @@
             <MuseRichText v-if="record.prompt" :content="record.prompt" />
             <text v-if="record.source" class="coach-muted">{{ sourceLabel(record.source) }}</text>
             <text v-if="record.source?.quote" class="coach-muted" selectable>{{ record.source.quote }}</text>
-            <text class="coach-user-message" selectable>{{ record.answer }}</text>
+            <BaseBubble author="user" avatar :avatar-src="userAvatar" class="coach-user-turn"
+              ><text selectable>{{ record.answer }}</text></BaseBubble
+            >
             <BaseButton
               v-if="record.phase === 'essay' && artifactForDay(record.day)"
               variant="quiet"
@@ -567,7 +571,7 @@
   </LearningShell>
 </template>
 <script setup>
-import { visibleReply, cancelledNotice } from '@/services/learning/shell-navigation.js';
+import { visibleReply, cancelledNotice, studentAvatar } from '@/services/learning/shell-navigation.js';
 import { studentEssaySources, openStudentArtifact } from '@/services/learning/learning-artifacts.js';
 import { computed, ref, reactive, watch, onMounted, onBeforeUnmount, onUnmounted, nextTick } from 'vue';
 import { coachSavedRecords } from '../../../../laf-backend/functions/_shared/learning-coach-records.js';
@@ -623,6 +627,7 @@ const theme = useThemeStore(),
 const profileStep = ref(0);
 const composerHeight = ref(60);
 const intakePanel = ref(null);
+const userAvatar = computed(() => studentAvatar(learning.state.owner));
 const showChatEmpty = computed(() => props.connectionTone === 'mint' && !learning.state.intake && !learning.intakeBusy);
 const goal = ref(''),
   answer = ref(''),

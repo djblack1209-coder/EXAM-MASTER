@@ -1,3 +1,5 @@
+import { storageService } from '@/services/storageService.js';
+
 // Frontend bootstrap only. Muse 2 navigation.ts/useNavigation.ts: validate the
 // complete snapshot before replacing it; an invalid refresh keeps current work.
 export const NAVIGATION_KEY = 'yozi_shell_navigation_v1';
@@ -113,3 +115,7 @@ export const visibleReply = (reply) =>
   Boolean(reply && !(reply.cancelled && !reply.content?.trim() && !reply.contentBlocks));
 
 export const cancelledNotice = (error) => (error === '请求已取消，费用状态请查看模型用量' ? error : '');
+
+// WeChat-style rows: only a signed-in learner's saved account photo sits beside their messages.
+export const studentAvatar = (owner) =>
+  owner && owner !== 'guest' ? storageService.get('userInfo')?.avatarUrl || '' : '';

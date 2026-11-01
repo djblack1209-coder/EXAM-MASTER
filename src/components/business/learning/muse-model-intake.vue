@@ -14,7 +14,7 @@
       <BaseBubble avatar
         ><text selectable>{{ turn.question }}</text></BaseBubble
       >
-      <BaseBubble author="user"
+      <BaseBubble author="user" avatar :avatar-src="userAvatar"
         ><text selectable>{{ turn.answer }}</text></BaseBubble
       >
     </template>
@@ -119,9 +119,11 @@ import LearningMessage from '@/pages/learning/components/learning-message.vue';
 import MuseModelFeedback from './muse-model-feedback.vue';
 import { modelErrorPresentation } from '../../../../laf-backend/functions/_shared/model-errors.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
+import { studentAvatar } from '@/services/learning/shell-navigation.js';
 const props = defineProps({ sharedInput: Boolean, emptyGreeting: Boolean, modelValue: { type: String, default: '' } });
 const emit = defineEmits(['accepted', 'update:modelValue']);
 const learning = useConversationLearningStore();
+const userAvatar = computed(() => studentAvatar(learning.state.owner));
 const editing = ref(false);
 const choice = ref(''),
   localInput = ref(''),
