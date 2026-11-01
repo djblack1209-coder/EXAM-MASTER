@@ -27,6 +27,9 @@ export function modelInferenceParameters(model: { model: string; endpoint?: stri
     model.endpoint === 'https://openrouter.ai/api/v1/chat/completions'
   )
     return { reasoning: { effort: 'high' } };
+  // 仅开发付费兜底：思考与正文共用输出上限，保持关闭。
+  if (DEV_TEST && model.endpoint === 'https://api.deepseek.com/chat/completions')
+    return { thinking: { type: 'disabled' } };
   return null;
 }
 // Exact zero-price routes checked against the provider's public catalog.

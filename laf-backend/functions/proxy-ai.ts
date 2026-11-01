@@ -15,6 +15,7 @@ import {
 import { reservePlatformDay, settlePlatformDay } from './_shared/learning-daily-budget.js';
 import { assertTrialUser } from './_shared/learning-trial.js';
 import { DEV_TEST } from './_shared/build-channel.js';
+import { callWithDevPaidFallback } from './_shared/ai-providers/dev-paid-fallback.js';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import { requireActiveUser } from './_shared/active-user.js';
 import { checkRateLimitDistributed } from './_shared/api-response.js';
@@ -572,19 +573,30 @@ export async function runLearningModelTask(
     });
     upstreamStarted = true;
     const upstreamAt = Date.now();
-    const rawResponse = options.stream
-      ? await callStreamingLearningProvider(model, messages, origins, {
-          signal: execution.signal,
-          onPreview: (raw) => options.onPreview?.(learningMessagePreview(raw, model!.apiKey))
-        })
-      : await (options.capabilityProbe ? callCapabilityProvider : callLearningProvider)(
-          model,
-          messages,
-          origins,
-          execution.signal,
-          undefined,
-          captureDiagnostics
-        );
+    const signal = execution.signal;
+    const called = await callWithDevPaidFallback(
+      (target, targetMessages, targetOrigins) =>
+        options.stream
+          ? callStreamingLearningProvider(target, targetMessages, targetOrigins, {
+              signal,
+              onPreview: (raw) => options.onPreview?.(learningMessagePreview(raw, target.apiKey))
+            })
+          : (options.capabilityProbe ? callCapabilityProvider : callLearningProvider)(
+              target,
+              targetMessages,
+              targetOrigins,
+              signal,
+              undefined,
+              captureDiagnostics
+            ),
+      model,
+      messages,
+      origins,
+      { enabled: !options.capabilityProbe, stream: Boolean(options.stream), signal }
+    );
+    const rawResponse = called.response;
+    // 开发付费兜底作答时，之后的模型核对、脱敏、复核与计费都跟随实际作答的型号。
+    if (called.paidFallback) usedModel = model = called.model;
     // 上游响应也不可信；意外回显的密钥不能进入学习消息、普通账户备份或导出。
     const response = redactModelValue(rawResponse, model.apiKey);
     observedResponse = response;

@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { resolve } from 'node:path';
 import { readFreeApiCatalog, readFreeApiCredential } from './free-api-catalog.mjs';
@@ -60,8 +61,14 @@ process.env.LEARNING_ALLOWED_ORIGINS = [
     ...FREE_SEED_ORIGINS
   ])
 ].join(',');
+// Development paid fallback: DeepSeek answers only when the free channel is rate-limited, out of quota or empty.
+// The key stays in the user's 0600 file and is read per call by the backend; it never enters this environment.
+const paidFallbackFile = resolve(homedir(), '.config/deepseek-lazy-yozi.env');
+if (!process.env.YOZI_DEV_PAID_FALLBACK_FILE && existsSync(paidFallbackFile))
+  process.env.YOZI_DEV_PAID_FALLBACK_FILE = paidFallbackFile;
 console.info(
   enablePlatform ? '[qa] Explicit free platform mode enabled.' : '[qa] BYOK default; platform calls disabled.'
 );
+console.info(`[qa] Dev paid fallback ${process.env.YOZI_DEV_PAID_FALLBACK_FILE ? 'armed (DeepSeek)' : 'off'}.`);
 console.info('[qa] Runtime ownership', JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }));
 await import('../../tmp/yozi-candidate-build/backend/standalone/server.js');
