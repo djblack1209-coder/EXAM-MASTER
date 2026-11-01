@@ -12,16 +12,18 @@ import {
   restoredConversation
 } from '@/services/learning/shell-navigation.js';
 beforeEach(() => uni.clearStorageSync());
-it('A17 maps the four entrances and leaves Feed/Ideas hidden without changing the current work', () => {
+it('follows the Muse rail order with Ideas after Search and keeps Feed hidden', () => {
   expect(SHELL_ROUTES).toMatchObject({
     learning: '/pages/learning/index',
     search: null,
+    ideas: '/pages/archive/index?view=ideas',
     plan: '/pages/archive/index?view=plan',
     materials: '/pages/archive/index?view=materials'
   });
   expect(DEFAULT_NAVIGATION.modules.filter((item) => item.visible).map((item) => item.id)).toEqual([
     'learning',
     'search',
+    'ideas',
     'plan',
     'materials'
   ]);

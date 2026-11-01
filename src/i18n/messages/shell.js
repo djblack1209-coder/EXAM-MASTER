@@ -27,6 +27,7 @@ export const PAGE_TITLE_KEYS = {
 // Archive subviews share one route; lifecycle and locale refreshes must keep its visible title.
 export const ARCHIVE_TITLE_KEYS = Object.freeze({
   plan: 'muse.goals',
+  ideas: 'muse.ideas',
   phrases: 'muse.phrases',
   materials: 'muse.library',
   all: 'muse.activity',

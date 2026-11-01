@@ -5,27 +5,26 @@ import { storageService } from '@/services/storageService.js';
 export const NAVIGATION_KEY = 'yozi_shell_navigation_v1';
 export const SIDEBAR_KEY = 'yozi_shell_sidebar_v1';
 export const LOCATION_KEY = 'learning_shell_location_v1';
+// Muse rail order: Chat, Search, Ideas, Goals, Library; Feed stays a hidden slot.
 export const SHELL_ROUTES = Object.freeze({
   learning: '/pages/learning/index',
   search: null,
+  ideas: '/pages/archive/index?view=ideas',
   plan: '/pages/archive/index?view=plan',
   materials: '/pages/archive/index?view=materials',
-  feed: null,
-  ideas: null
+  feed: null
 });
 export const SHELL_MODULES = Object.freeze({
   learning: { label: 'muse.chat', icon: 'chat' },
   search: { label: 'learning.ki6', shortLabel: 'muse.nav.search', icon: 'search' },
+  ideas: { label: 'muse.ideas', shortLabel: 'muse.nav.ideas', icon: 'bulb' },
   plan: { label: 'muse.goals', shortLabel: 'muse.nav.plan', icon: 'checkbox-on' },
   materials: { label: 'muse.library', shortLabel: 'muse.nav.materials', icon: 'shapes' },
-  feed: {},
-  ideas: {}
+  feed: {}
 });
 export const DEFAULT_NAVIGATION = Object.freeze({
   schema: 'yozi.shell.navigation.v1',
-  modules: Object.freeze(
-    Object.keys(SHELL_ROUTES).map((id) => Object.freeze({ id, visible: !['feed', 'ideas'].includes(id) }))
-  )
+  modules: Object.freeze(Object.keys(SHELL_ROUTES).map((id) => Object.freeze({ id, visible: id !== 'feed' })))
 });
 const object = (value) => value && typeof value === 'object' && !Array.isArray(value);
 export function parseShellNavigation(value) {
@@ -45,7 +44,7 @@ export function parseShellNavigation(value) {
       !Object.hasOwn(SHELL_ROUTES, item.id) ||
       seen.has(item.id) ||
       typeof item.visible !== 'boolean' ||
-      (['feed', 'ideas'].includes(item.id) && item.visible)
+      (item.id === 'feed' && item.visible)
     )
       return null;
     seen.add(item.id);

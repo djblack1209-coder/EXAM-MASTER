@@ -80,17 +80,34 @@
     </view>
     <view class="library-main">
       <view class="library-head"
-        ><text class="library-title" role="heading" aria-level="1">{{ sectionTitle }}</text
-        ><view class="library-head-actions"
-          ><BaseButton class="lib-action" variant="quiet" @tap="safeNavigateTo('/pages/learning/knowledge')"
-            >知识框架</BaseButton
+        ><text class="library-title" role="heading" aria-level="1" aria-live="polite">{{
+          selecting ? `已选择 ${selected.length} 项` : sectionTitle
+        }}</text
+        ><view v-if="selecting" class="library-head-actions"
           ><BaseButton
             class="lib-action"
             variant="quiet"
-            :selected="selecting"
-            :aria-pressed="selecting"
+            icon="star"
+            :disabled="!selectedPinnable.length"
+            @tap="pinSelected"
+            >{{
+              selectedPinnable.length && selectedPinnable.every((item) => pins[item.id]) ? '取消置顶' : '置顶'
+            }}</BaseButton
+          ><BaseButton class="lib-action" variant="quiet" :disabled="!items.length" @tap="selectAll">{{
+            allSelected ? '取消全选' : '全选'
+          }}</BaseButton
+          ><BaseButton
+            class="lib-action lib-action-icon"
+            variant="quiet"
+            icon="close"
+            icon-only
+            label="退出选择"
             @tap="toggleSelection"
-            >{{ selecting ? `完成 (${selected.length})` : '选择' }}</BaseButton
+        /></view>
+        <view v-else class="library-head-actions"
+          ><BaseButton class="lib-action" variant="quiet" @tap="safeNavigateTo('/pages/learning/knowledge')"
+            >知识框架</BaseButton
+          ><BaseButton class="lib-action" variant="quiet" @tap="toggleSelection">选择</BaseButton
           ><BaseButton
             ref="filterButton"
             class="lib-action lib-action-icon"
@@ -149,45 +166,48 @@
         ><BaseInput v-model="query" label="搜索资料库" placeholder="搜索资料库" hide-label maxlength="120"
       /></view>
       <view class="library-scroll">
-        <text v-if="selecting" class="selection-count" role="status">已选择 {{ selected.length }} 项</text>
-        <view v-if="items.length" class="library-grid"
-          ><view v-for="item in items" :key="item.id" class="artifact-entry"
-            ><BaseButton
-              class="artifact"
-              :class="{ 'is-selected': selected.includes(item.id) }"
-              variant="quiet"
-              align="start"
-              :aria-pressed="selecting ? selected.includes(item.id) : undefined"
-              :label="`${selecting ? '选择 ' : '打开 '}${item.title}`"
-              @tap="openArtifact(item)"
-              ><view class="artifact-cover" :class="`artifact-cover-${item.kind}`"
-                ><BaseIcon :name="item.icon" size="30px" /><BaseIcon
-                  v-if="selecting"
-                  class="artifact-selection"
-                  :name="selected.includes(item.id) ? 'checkbox-on' : 'checkbox-off'"
-                  size="20px" /></view
-              ><view class="artifact-meta"
-                ><text class="artifact-title">{{ item.title }}</text
-                ><text class="artifact-subject">{{
-                  item.sources.length
-                    ? '来源对话：' + item.sources.map((source) => source.label).join('、')
-                    : '未归类 · 暂无来源对话'
-                }}</text
-                ><text>{{ kindLabel(item.kind) }} · {{ dateLabel(item.at, item.day) }} · {{ item.detail }}</text></view
-              ></BaseButton
-            ><BaseButton
-              v-if="item.source && !selecting"
-              class="artifact-pin"
-              variant="quiet"
-              icon="star"
-              icon-only
-              :label="pins[item.id] ? '取消置顶' : '置顶'"
-              :selected="!!pins[item.id]"
-              :aria-pressed="!!pins[item.id]"
-              @tap="togglePin(item)"
-            /> </view
-        ></view>
-        <view v-else class="library-empty" role="status"
+        <template v-for="block in blocks" :key="block.id"
+          ><text v-if="block.label" class="library-section" role="heading" aria-level="2">{{ block.label }}</text
+          ><view class="library-grid"
+            ><view v-for="item in block.items" :key="item.id" class="artifact-entry"
+              ><BaseButton
+                class="artifact"
+                :class="{ 'is-selected': selected.includes(item.id) }"
+                variant="quiet"
+                align="start"
+                :aria-pressed="selecting ? selected.includes(item.id) : undefined"
+                :label="`${selecting ? '选择 ' : '打开 '}${item.title}`"
+                @tap="openArtifact(item)"
+                ><view class="artifact-cover" :class="`artifact-cover-${item.kind}`"
+                  ><BaseIcon :name="item.icon" size="30px" /><BaseIcon
+                    v-if="selecting"
+                    class="artifact-selection"
+                    :name="selected.includes(item.id) ? 'checkbox-on' : 'checkbox-off'"
+                    size="20px" /></view
+                ><view class="artifact-meta"
+                  ><text class="artifact-title">{{ item.title }}</text
+                  ><text class="artifact-subject">{{
+                    item.sources.length
+                      ? '来源对话：' + item.sources.map((source) => source.label).join('、')
+                      : '未归类 · 暂无来源对话'
+                  }}</text
+                  ><text
+                    >{{ kindLabel(item.kind) }} · {{ dateLabel(item.at, item.day) }} · {{ item.detail }}</text
+                  ></view
+                ></BaseButton
+              ><BaseButton
+                v-if="item.source && !selecting"
+                class="artifact-pin"
+                variant="quiet"
+                icon="star"
+                icon-only
+                :label="pins[item.id] ? '取消置顶' : '置顶'"
+                :selected="!!pins[item.id]"
+                :aria-pressed="!!pins[item.id]"
+                @tap="togglePin(item)"
+              /> </view></view
+        ></template>
+        <view v-if="!items.length" class="library-empty" role="status"
           ><view class="library-empty-mark"><BaseIcon :name="sectionIcon" size="26px" /></view
           ><text>{{ emptyLabel }}</text></view
         >
@@ -370,6 +390,40 @@ function dateLabel(at, day) {
 function toggleSelection() {
   selecting.value = !selecting.value;
   if (!selecting.value) selected.value = [];
+}
+// Muse select mode: pinned first, then recent. Learning records are never
+// deleted from here; only device-side pins change.
+const blocks = computed(() => {
+  const pinned = items.value.filter((item) => pins.value[item.id]);
+  const recent = items.value.filter((item) => !pins.value[item.id]);
+  return pinned.length
+    ? [
+        { id: 'pinned', label: '置顶', items: pinned },
+        { id: 'recent', label: '最近', items: recent }
+      ].filter((block) => block.items.length)
+    : items.value.length
+      ? [{ id: 'recent', label: '', items: recent }]
+      : [];
+});
+const allSelected = computed(
+  () => !!items.value.length && items.value.every((item) => selected.value.includes(item.id))
+);
+const selectedPinnable = computed(() => items.value.filter((item) => item.source && selected.value.includes(item.id)));
+function selectAll() {
+  selected.value = allSelected.value ? [] : items.value.map((item) => item.id);
+}
+function pinSelected() {
+  const pinned = !selectedPinnable.value.every((item) => pins.value[item.id]);
+  try {
+    const client = createLearningArtifacts();
+    if (client.owner !== learning.state.owner) return;
+    const next = { ...pins.value };
+    for (const item of selectedPinnable.value) next[item.id] = client.setPin(item.id, pinned);
+    pins.value = next;
+    pinError.value = '';
+  } catch (e) {
+    pinError.value = e.message;
+  }
 }
 function createArtifact() {
   if (learning.busy) return;
@@ -665,11 +719,6 @@ onUnmounted(() => (root.value?.$el || root.value)?.removeEventListener?.('keydow
 }
 .library-section:first-child {
   margin-top: 2px;
-}
-.selection-count {
-  color: var(--ink-3);
-  font-size: 12px;
-  font-weight: 400;
 }
 .recent-card {
   display: block;

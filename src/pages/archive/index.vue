@@ -7,6 +7,7 @@
   >
     <view class="archive-content" :class="{ 'archive-workspace': workspace }">
       <MuseSavedLibrary v-if="view === 'phrases'" />
+      <MuseIdeas v-else-if="view === 'ideas'" />
       <MuseWorkspacePages
         v-else-if="['all', 'plan', 'materials', 'usage'].includes(view)"
         :view="view"
@@ -24,7 +25,7 @@
           :show-navigation="false"
         />
       </template>
-      <view v-if="!workspace && !['phrases', 'materials'].includes(view)" class="archive-legacy">
+      <view v-if="!workspace && !['phrases', 'ideas', 'materials'].includes(view)" class="archive-legacy">
         <BaseButton v-if="hasGeneralRecords" variant="quiet" :aria-expanded="showLegacy" @tap="showLegacy = !showLegacy"
           >历史学习档案</BaseButton
         >
@@ -52,6 +53,7 @@ import '@/i18n/muse.js';
 import MuseSavedLibrary from '@/components/business/learning/muse-saved-library.vue';
 import MuseCoachRecords from '@/components/business/learning/muse-coach-records.vue';
 import MuseWorkspacePages from '@/components/business/learning/muse-workspace-pages.vue';
+import MuseIdeas from '@/components/business/learning/muse-ideas.vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { t } from '@/i18n/index.js';
 import { ARCHIVE_TITLE_KEYS } from '@/i18n/messages/shell.js';
@@ -63,18 +65,18 @@ import BaseButton from '@/components/base/base-button/base-button.vue';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 const view = ref('all');
 const showLegacy = ref(false);
-const workspace = computed(() => ['all', 'plan', 'materials', 'phrases', 'usage'].includes(view.value));
+const workspace = computed(() => ['all', 'plan', 'materials', 'phrases', 'ideas', 'usage'].includes(view.value));
 const learning = useConversationLearningStore();
 const hasGeneralRecords = computed(() => learning.state.conversations.some((item) => !item.coach));
 const hasCoachRecords = computed(() => learning.state.conversations.some((item) => item.coach));
 const active = computed(() =>
-  ['plan', 'phrases', 'materials', 'usage'].includes(view.value) ? view.value : 'archive'
+  ['plan', 'phrases', 'ideas', 'materials', 'usage'].includes(view.value) ? view.value : 'archive'
 );
 const title = computed(() =>
   t(Object.hasOwn(ARCHIVE_TITLE_KEYS, view.value) ? ARCHIVE_TITLE_KEYS[view.value] : 'tutor.archive.title')
 );
 function selectView(value, navigate = true) {
-  const next = ['all', 'plan', 'mistake', 'phrases', 'materials', 'usage'].includes(value) ? value : 'all';
+  const next = ['all', 'plan', 'mistake', 'phrases', 'ideas', 'materials', 'usage'].includes(value) ? value : 'all';
   if (navigate && next !== view.value) {
     uni.redirectTo({ url: `/pages/archive/index?view=${next}` });
     return;

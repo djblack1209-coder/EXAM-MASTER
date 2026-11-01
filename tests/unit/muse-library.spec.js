@@ -73,6 +73,14 @@ describe('Muse library keeps selection and private reading local', () => {
     await wrapper.get('[aria-label="选择 我的私人资料"]').trigger('tap');
     expect(wrapper.get('[aria-label="选择 我的私人资料"]').attributes('aria-pressed')).toBe('true');
     expect(wrapper.find('.material-reader').exists()).toBe(false);
+    // Muse select mode: the title carries the count; private files have no pin to change.
+    expect(wrapper.get('.library-title').text()).toBe('已选择 1 项');
+    expect(button('置顶').attributes('disabled')).toBeDefined();
+    await button('全选').trigger('tap');
+    expect(wrapper.get('.library-title').text()).toBe('已选择 2 项');
+    expect(wrapper.find('[aria-label="筛选资料"]').exists()).toBe(false);
+    await wrapper.get('[aria-label="退出选择"]').trigger('tap');
+    expect(wrapper.get('.library-title').text()).not.toContain('已选择');
     await wrapper.get('[aria-label="筛选资料"]').trigger('tap');
     await button('图片').trigger('tap');
     expect(wrapper.findAll('.artifact')).toHaveLength(0);

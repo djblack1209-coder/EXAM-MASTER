@@ -130,6 +130,7 @@ describe('lightweight i18n', () => {
     ['plan', 'muse.goals'],
     ['all', 'muse.activity'],
     ['phrases', 'muse.phrases'],
+    ['ideas', 'muse.ideas'],
     ['usage', 'muse.usage']
   ])('keeps the %s workspace title when a global onShow runs after search closes', async (view, key) => {
     await import('@/i18n/muse.js');

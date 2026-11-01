@@ -14,7 +14,7 @@
       'is-workspace': layout === 'workspace',
       'is-resizing': panelResizing || panelOpening,
       'is-chat': active === 'learning',
-      'is-library': ['archive', 'plan', 'phrases', 'materials', 'usage'].includes(active),
+      'is-library': ['archive', 'plan', 'phrases', 'ideas', 'materials', 'usage'].includes(active),
       'is-settings': active === 'settings' || active === 'profile',
       'is-desktop-settings': nativeSettings,
       'has-notice': !!notice,
