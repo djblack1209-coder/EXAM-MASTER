@@ -39,7 +39,7 @@
           variant="quiet"
           :label="BRAND.name"
           @tap="openView('learning')"
-          ><image :src="BRAND.mark" mode="aspectFit" style="width: 56px; height: 56px" aria-hidden="true"
+          ><AnimatedAvatar :size="56" autoplay perceptible :business="avatarBusiness"
         /></BaseButton>
         <view class="rail-body">
           <view class="rail-group">
@@ -381,18 +381,10 @@
             <text v-if="active !== 'learning'" class="space-title">{{ title }}</text>
           </view>
           <view v-if="active === 'learning'" class="muse-chat-identity"
-            ><image
-              class="brand-mark"
-              :src="BRAND.mark"
-              mode="aspectFit"
-              style="width: 56px; height: 56px"
-              aria-hidden="true"
-            />
+            ><AnimatedAvatar class="brand-mark" :size="56" autoplay perceptible :business="avatarBusiness" />
             <view class="brand-label"
               ><text class="brand-name" :title="BRAND.name">{{ BRAND.name }}</text>
-              <text class="brand-status" :title="learning.active?.goal || title">{{
-                learning.active?.goal || title
-              }}</text></view
+              <text class="brand-status" role="status" :title="identityStatus">{{ identityStatus }}</text></view
             ></view
           >
           <BaseButton
@@ -456,6 +448,8 @@ import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
 import MuseLaunch from './muse-launch.vue';
+import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
+import { avatarBusinessForLearning, avatarStateFor } from '@/design/avatar-state.js';
 
 import { computed, ref, onMounted, onUnmounted, onBeforeUpdate, onUpdated, nextTick, useAttrs, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
@@ -513,6 +507,26 @@ const syncLogin = () => {
 };
 syncLogin();
 let releaseIdentity = () => {};
+// 顶部小猫跟随真实学习事件切换状态；空闲时状态行显示当前目标。
+const avatarEvent = ref(null);
+const avatarBusiness = computed(() => avatarBusinessForLearning(learning, avatarEvent.value));
+const identityStatus = computed(() => {
+  const value = avatarBusiness.value,
+    state = avatarStateFor(value);
+  if (!value.stopped && state === 'idle') return learning.active?.goal || props.title;
+  const key = value.stopped
+    ? 'stopped'
+    : value.busy && ['feedback', 'essay', 'daily', 'summary'].includes(value.activity)
+      ? value.activity
+      : state;
+  return t(`muse.avatar.${key}`);
+});
+watch(
+  () => learning.state?.events?.at(-1)?.id,
+  (id, previous) => {
+    if (previous && id !== previous) avatarEvent.value = learning.state.events.at(-1);
+  }
+);
 const theme = useThemeStore();
 const root = ref(null);
 // Resize the reserved input space without covering the last message. This only

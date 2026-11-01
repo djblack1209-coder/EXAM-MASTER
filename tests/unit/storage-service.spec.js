@@ -88,7 +88,9 @@ describe('storageService', () => {
         expect(listener).toHaveBeenLastCalledWith({ type: 'records' });
         for (const event of ['user:logout', 'loginStatusChanged', 'auth:userdata', 'auth:restore']) {
           uni.$on.mock.calls.findLast(([name]) => name === event)[1]();
-          expect(listener).toHaveBeenLastCalledWith(event === 'user:logout' ? { type: 'logout' } : undefined);
+          expect(listener).toHaveBeenLastCalledWith(
+            { 'user:logout': { type: 'logout' }, loginStatusChanged: { type: 'login' } }[event]
+          );
         }
         expect(listener).toHaveBeenCalledTimes(5);
         window.dispatchEvent(new StorageEvent('storage', { key: null }));

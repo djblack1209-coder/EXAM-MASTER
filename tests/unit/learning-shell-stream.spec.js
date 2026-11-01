@@ -162,10 +162,9 @@ describe('S2 continuous reply', () => {
     const css = readFileSync('src/components/business/learning/learning-space.css', 'utf8');
     expect(css).toContain('.has-composer.has-notice .space-content');
   });
-  it('S3 reserves the static brand outside the history scroller', () => {
+  it('S3 reserves the header kitten outside the history scroller', () => {
     const wrapper = render(LearningShell, { LearningShell: false });
-    expect(wrapper.get('.muse-chat-identity .brand-mark').attributes('src')).toBeTruthy();
-    expect(wrapper.find('.muse-chat-identity animated-avatar-stub').exists()).toBe(false);
+    expect(wrapper.find('.muse-chat-identity animated-avatar-stub.brand-mark').exists()).toBe(true);
     const css = readFileSync('src/components/business/learning/learning-space.css', 'utf8');
     expect(css).toMatch(/\.is-chat \.space-content \{[^}]*margin-top: calc\(116px[^}]*padding-top: 0/s);
   });

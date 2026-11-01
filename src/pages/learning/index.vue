@@ -34,9 +34,18 @@
         v-if="learning.active"
         variant="quiet"
         :disabled="learning.busy"
-        @tap="run(() => learning.dispatchLearningAction({ type: 'hint_only' }))"
+        @tap="sendDirective('提示')"
         >只要提示</BaseButton
       >
+      <BaseButton
+        v-if="learning.active && !learning.active.stopped"
+        variant="quiet"
+        icon="pause"
+        icon-only
+        label="停止当前任务"
+        :disabled="learning.busy"
+        @tap="sendDirective('停止当前任务')"
+      />
       <BaseButton
         v-if="learning.active"
         variant="quiet"
@@ -3314,7 +3323,12 @@ async function send() {
   // A clarification keeps the draft for explicit submission; failed writes and newer typing stay available.
   if (!feedback.value && !learning.error && !result?.clarification && draft.value.trim() === input) draft.value = '';
   await nextTick();
-  if (!feedback.value && !learning.error && learning.reply?.requestId !== ticket.id && documentFollowingLatest())
+  if (
+    !feedback.value &&
+    !learning.error &&
+    (learning.active?.stopped || learning.reply?.requestId !== ticket.id) &&
+    documentFollowingLatest()
+  )
     revealLearningTarget(
       learning.active?.stopped
         ? 'learning-stop-state'
@@ -3346,6 +3360,7 @@ async function sendDirective(action) {
   const originalQuestionKey = learning.active?.activeQuestionKey;
   const commands = {
     继续当前任务: 'resume',
+    停止当前任务: 'stop',
     读参考信件: 'read_reference',
     提示: 'hint_only',
     直接讲解: 'explain',
@@ -3355,14 +3370,16 @@ async function sendDirective(action) {
   const result = await run(() => learning.dispatchLearningAction({ type: commands[action] }));
   await nextTick();
   if (learning.selectedConversationId !== conversationId) return result;
-  const sentenceHint =
-    action === '提示' &&
-    learning.selectedMode === 'offline' &&
-    !learning.batchTrainingActive &&
-    learning.activeQuestion?.sentenceExercise &&
-    learning.active?.activeQuestionKey === originalQuestionKey;
-  if (sentenceHint && !learning.error) {
-    sentenceHintTargetId.value = conversationMessages.value.at(-1)?.id || null;
+  // 提示与讲解交付到真实气泡后再定位；只回执切换或已换题时不抢焦点。
+  const helpMessageId =
+    ['提示', '直接讲解'].includes(action) &&
+    !learning.error &&
+    learning.active?.activeQuestionKey === originalQuestionKey &&
+    conversationMessages.value.some((message) => message.id === result?.messageId)
+      ? result.messageId
+      : null;
+  if (helpMessageId) {
+    sentenceHintTargetId.value = helpMessageId;
     messageStart.value = Math.max(0, conversationMessages.value.length - 50);
     await nextTick();
     revealLearningTarget(

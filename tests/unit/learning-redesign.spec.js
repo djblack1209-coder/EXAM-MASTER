@@ -8,6 +8,8 @@ import JourneyReview from '@/pages/learning/components/journey-review.vue';
 import LearningOverview from '@/components/business/learning/learning-overview.vue';
 import LearningJourney from '@/pages/learning/components/learning-journey.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
+import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
+import { avatarStateFor } from '@/design/avatar-state.js';
 import MuseChatEmpty from '@/components/business/learning/muse-chat-empty.vue';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import MuseComposer from '@/components/business/learning/muse-composer.vue';
@@ -318,6 +320,22 @@ describe('learning interface states preserve learning facts', () => {
       Element.prototype.scrollIntoView = originalScroll;
     }
   });
+  it('the header stop control stops through a structured action without submitting an answer', async () => {
+    const store = useConversationLearningStore();
+    store.start('12 + 8');
+    const wrapper = render();
+    await flushPromises();
+    const action = vi.spyOn(store, 'dispatchLearningAction');
+    const stop = wrapper.findAll('button').find((button) => button.attributes('aria-label') === '停止当前任务');
+    expect(stop.element.closest('#learning-composer')).toBeNull();
+    await stop.trigger('tap');
+    await flushPromises();
+    expect(action).toHaveBeenCalledWith({ type: 'stop' });
+    expect(store.active.stopped).toBe(true);
+    expect(store.state.attempts).toHaveLength(0);
+    expect(document.activeElement).toBe(wrapper.get('#learning-stop-state').element);
+    expect(wrapper.findAll('button').some((button) => button.attributes('aria-label') === '停止当前任务')).toBe(false);
+  });
   it('resuming a completed group locates its saved results without adding an answer', async () => {
     const store = useConversationLearningStore();
     store.start('分数练习');
@@ -386,10 +404,11 @@ describe('learning interface states preserve learning facts', () => {
   it('shows the Muse chat empty state and composer without creating a conversation', async () => {
     const store = useConversationLearningStore(),
       wrapper = render();
-    // Disconnected entrance retains intake; the header uses the static brand.
+    // Disconnected entrance retains intake; the header kitten follows the learning state (brief 2026-11-01).
     expect(wrapper.findComponent(MuseChatEmpty).exists()).toBe(false);
     const identity = wrapper.getComponent(LearningShell).get('.muse-chat-identity');
-    expect(identity.get('image.brand-mark').attributes('src')).toBe('/static/brand/mascot-256.webp');
+    expect(identity.get('.brand-mark').classes()).toContain('animated-avatar');
+    expect(identity.get('.brand-status').text()).toBe('对话学习');
     expect(identity.get('.brand-name').text()).toBe('Yozi AI');
     expect(wrapper.get('.space-content').text()).not.toContain('未连接');
     expect(wrapper.get('.space-content').findAllComponents(BaseChip)).toHaveLength(0);
@@ -398,19 +417,20 @@ describe('learning interface states preserve learning facts', () => {
     expect(composer.get('textarea').element.value).toBe('');
     expect(store.state.conversations).toHaveLength(0);
   });
-  it('thinking loops while replying, pauses for answer input, and stops on reply or error', async () => {
+  it('the header kitten thinks while replying and returns to the question when the reply or error ends', async () => {
     const store = useConversationLearningStore();
     store.start('12 + 8');
     const wrapper = render();
+    const identity = () => wrapper.get('.muse-chat-identity');
     store.busy = true;
     await flushPromises();
-    expect(pose(wrapper, 'think').props('play')).toBe('loop');
-    const input = wrapper.find('.composer textarea');
-    await input.trigger('focus');
-    expect(pose(wrapper, 'think').attributes('data-moving')).toBe('false');
-    await input.trigger('blur');
+    const kitten = () => avatarStateFor(identity().getComponent(AnimatedAvatar).props('business'));
+    expect(kitten()).toBe('working');
+    expect(identity().get('.brand-status').text()).toBe('正在思考');
     store.busy = false;
     await flushPromises();
+    expect(kitten()).toBe('waiting');
+    expect(identity().get('.brand-status').text()).toBe(t('muse.avatar.waiting'));
     expect(wrapper.find('.reply-state').exists()).toBe(false);
     store.busy = true;
     store.error = '合成连接错误';
@@ -533,8 +553,8 @@ describe('learning interface states preserve learning facts', () => {
     const identity = wrapper.getComponent(LearningShell).get('.muse-chat-identity');
     await flushPromises();
     expect(matchMedia).toHaveBeenCalledWith('(prefers-reduced-motion: reduce)');
-    expect(identity.findAll('canvas')).toHaveLength(0);
-    expect(identity.get('image.brand-mark').attributes('src')).toBe('/static/brand/mascot-256.webp');
+    expect(identity.get('.brand-mark').attributes('data-avatar-fallback')).toBe('reduce-motion');
+    expect(identity.findAll('video')).toHaveLength(0);
     expect(play).not.toHaveBeenCalled();
     expect(wrapper.getComponent(MuseComposer).find('textarea').exists()).toBe(true);
     expect(useConversationLearningStore().state.conversations).toHaveLength(0);

@@ -1548,7 +1548,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       } catch {
         return;
       }
-      if (change?.type === 'records') reloadRecords();
+      // 登录完成后账号记录可能刚写入；重读才能把损坏或不兼容的记录显示为短错误与重试，而不是停在「正在读取」。
+      if (change?.type === 'records' || change?.type === 'login') reloadRecords();
     },
     {
       $on: (event, listener) => uni.$on?.(event, listener),
@@ -2858,12 +2859,19 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           'resume',
           'read_reference',
           'independent_check',
-          'prerequisite'
+          'prerequisite',
+          'stop'
         ].includes(command.type),
       'INVALID_INPUT',
       '未识别此操作，未执行'
     );
     if (command.type === 'submit') return submit(command.answer, true);
+    if (command.type === 'stop') {
+      if (active.value.stopped) return null;
+      const stopped = commit('task.stop', { conversationId: active.value.id });
+      notice('当前任务已停止。');
+      return stopped;
+    }
     if (command.type === 'resume')
       return commit('task.resume', { conversationId: active.value.id, source: 'self_report' });
     if (command.type === 'read_reference') return readChatWritingReference(learningId('reference'));
@@ -2896,10 +2904,26 @@ export const useConversationLearningStore = defineStore('conversation-learning',
       source: 'self_report',
       deliveryManaged: true
     });
+    // 按钮本身就是求助：切换教法后立刻交付本题的本地帮助，没有可交付内容时才只回执切换。
+    const delivered = deliverRequestedTeaching(method);
+    if (delivered) return { ...result, ...delivered };
     notice(command.type === 'hint_only' ? '已切换为只给提示。' : '已更换讲解方法。');
     return result;
   }
-  function send(raw, options = {}) {
+  function deliverRequestedTeaching(method) {
+    const question = activeQuestion.value;
+    if (!question || active.value.stopped || batchTrainingActive.value) return null;
+    const id = learningId('help');
+    if (method === 'hint' && question.sentenceExercise) {
+      const content = recordSentenceHelp(writingContext());
+      return { sentenceHint: content, ...notice(content, `${id}:sentence-hint`) };
+    }
+    const level = Math.min(3, Math.max(0, ...active.value.pendingHints.map((hint) => hint.level || 1)) + 1);
+    const segment = localTeaching(question, method, level);
+    return segment ? deliverTeaching(segment, `${id}:local-teaching`) : null;
+  }
+  // async keeps the action wrapper's promise contract: a stale session rejects instead of throwing synchronously.
+  async function send(raw, options = {}) {
     const id = options.id || learningId('turn');
     if (sending.has(id)) return sending.get(id);
     // A correction is a new, explicitly sent user message. Keep the original
@@ -2979,10 +3003,12 @@ export const useConversationLearningStore = defineStore('conversation-learning',
         '图片与本机当前题目提取版本不一致'
       );
     }
+    // 输入框里完整的「停止当前任务」是独立的停止入口，不当作作答提交；其他文字仍按作答处理。
+    const stopRequest =
+      !options.visual && !options.feedbackAttemptId && /^(?:停止当前任务|结束当前任务)[。！!]?$/u.test(raw.trim());
+    const answering = options.answering === true && !stopRequest;
     if (busy.value) {
-      const requested = userDirective(raw, state.value, selectedConversationId.value, {
-        answering: options.answering === true
-      });
+      const requested = userDirective(raw, state.value, selectedConversationId.value, { answering });
       if (requested?.type !== 'task.stop') {
         error.value = '当前模型任务仍在执行，可以先取消请求或停止当前任务';
         return;
@@ -3000,7 +3026,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           event.data?.conversationId === selectedConversationId.value
       );
     if (
-      options.answering === true &&
+      answering &&
       activeQuestion.value &&
       !resumingMessage &&
       !options.discussionOnly &&
@@ -3137,7 +3163,7 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     const directive = options.visual
       ? null
       : userDirective(raw, state.value, selectedConversationId.value, {
-          answering: Boolean(activeQuestion.value && !options.discussionOnly)
+          answering: Boolean(activeQuestion.value && !options.discussionOnly && !stopRequest)
         });
     if (directive && ['profile.set', 'plan.set'].includes(directive.type)) {
       const { source: _source, conversationId: _conversationId, ...proposalData } = directive.data;

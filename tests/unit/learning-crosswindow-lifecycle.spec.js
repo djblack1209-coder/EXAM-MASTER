@@ -590,7 +590,8 @@ describe('加密同账户会话与凭据请求边界', () => {
     expect(store.models).toEqual([]);
     expect(store.modelPresets).toEqual([]);
     expect(store.usage).toBeNull();
-    expect(store.modelId).toBe('');
+    // Same owner restores the saved BYOK choice (2026-10-26 rule); it stays offline until the catalog confirms it.
+    expect(store.modelId).toBe('explicit-model');
     expect(store.selectedMode).toBe('offline');
     expect(store.localConnection).toBeNull();
     expect(store.materialConnection).toBeNull();
@@ -1153,7 +1154,8 @@ describe('加密同账户会话与凭据请求边界', () => {
       token: originalToken,
       userInfo: {}
     });
-    expect(store.modelId).toBe('');
+    // The logged-out choice is dropped; the account's saved choice returns offline until the catalog confirms it.
+    expect(store.modelId).toBe('explicit-model');
     expect(store.selectedMode).toBe('offline');
     expect(store.sharingAllowed).toBe(true);
   });

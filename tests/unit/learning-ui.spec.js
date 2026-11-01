@@ -635,8 +635,8 @@ describe('选择项与明确保存', () => {
       expect(response.attributes('tabindex')).toBe('-1');
       expect(response.element).not.toBe(empty);
       expect(document.activeElement).toBe(response.element);
-      for (const key of ['attempts', 'questions', 'profile', 'strategy'])
-        expect(p.store.state[key]).toEqual(before[key]);
+      for (const key of ['attempts', 'questions', 'profile']) expect(p.store.state[key]).toEqual(before[key]);
+      expect(p.store.state.strategy).toMatchObject({ method: 'hint', source: 'self_report' });
       expect(p.store.active.pendingHints).toHaveLength(1);
     } finally {
       p.wrapper.unmount();
@@ -2537,9 +2537,8 @@ describe('学习空间的实际入口与目录', () => {
     wrapper.unmount();
     const shell = mount(LearningShell, { global: { stubs } });
     expect(shell.find('.brand-name').text()).toContain(BRAND.chinese);
-    expect(shell.find('.brand-mark').attributes('src')).toBe(BRAND.mark);
-    expect(shell.find('.brand-mark').classes()).not.toContain('animated-avatar');
-    expect(shell.find('.brand-mark canvas').exists()).toBe(false);
+    expect(shell.find('.brand-mark').classes()).toContain('animated-avatar');
+    expect(shell.find('.brand-status').attributes('role')).toBe('status');
     shell.unmount();
   });
   it('聊天发送向辅助工具说明禁用状态，填写目标后才创建学习记录', async () => {

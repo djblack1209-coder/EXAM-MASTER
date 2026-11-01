@@ -876,8 +876,10 @@ class StorageService {
       event,
       () => {
         // Logout notifications only trigger a reread; the owning transaction already revoked.
-
-        changed(event === 'user:logout' ? { type: 'logout' } : undefined);
+        // A completed login may have written account records after the session switch, so consumers can reread them.
+        changed(
+          event === 'user:logout' ? { type: 'logout' } : event === 'loginStatusChanged' ? { type: 'login' } : undefined
+        );
       }
     ]);
     for (const [event, handler] of authListeners) eventBus.$on?.(event, handler);
