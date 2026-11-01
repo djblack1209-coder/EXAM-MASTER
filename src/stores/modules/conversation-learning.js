@@ -301,6 +301,7 @@ export const CONVERSATION_ACTION_EFFECTS = Object.freeze({
   cancel: 'send',
   commit: 'write',
   loadModels: 'send',
+  suggestIdeas: 'send',
   loadUsage: 'send',
   loadModelDiscovery: 'read',
   saveModel: 'send',
@@ -4085,6 +4086,49 @@ export const useConversationLearningStore = defineStore('conversation-learning',
   function loadModelDiscovery(input) {
     return readModelResource('discover', input);
   }
+  // Ideas page: one suggestion request on the learner's own API. The reply is only
+  // shown on that page; it never becomes a learning fact or starts a task.
+  const ideasModelReady = computed(() => {
+    const model = models.value.find((item) => item.id === modelId.value);
+    return (
+      state.value.owner !== 'guest' &&
+      model?.source === 'byok' &&
+      model.configured &&
+      !model.requiresModelSelection &&
+      sharingAllowed.value
+    );
+  });
+  async function suggestIdeas(context) {
+    const owner = state.value.owner,
+      selected = modelId.value;
+    assert(ideasModelReady.value, 'NEEDS_CONNECTION', '请先连接自己的 API 并允许发送学习内容');
+    const requestId = learningId('ideas'),
+      requestBinding = learningId('ideas');
+    const result = await modelAction((options) =>
+      generateLearningTurn(
+        {
+          modelId: selected,
+          requestId,
+          requestBinding,
+          shareConsent: true,
+          messages: [{ role: 'user', content: '请给出今天的学习灵感。' }],
+          learningContext: { owner, ideas: context }
+        },
+        options
+      )
+    );
+    assert(modelId.value === selected && sharingAllowed.value, 'CONTEXT_CHANGED', '模型或共享授权已变化，未采用旧建议');
+    if (!result.success) return result;
+    assert(
+      result.data?.requestId === requestId &&
+        result.data.requestBinding === requestBinding &&
+        result.data.modelId === selected &&
+        Array.isArray(result.data.ideas),
+      'CONTEXT_CHANGED',
+      '结果与本次请求不符'
+    );
+    return { success: true, requestId, model: result.data.model, ideas: result.data.ideas };
+  }
   async function modelAction(action) {
     refresh();
     const context = recordContext();
@@ -5433,6 +5477,8 @@ export const useConversationLearningStore = defineStore('conversation-learning',
     cancel,
     commit,
     loadModels,
+    suggestIdeas,
+    ideasModelReady,
     loadUsage,
     loadModelDiscovery,
     saveModel,

@@ -2395,3 +2395,68 @@ it.each(['success', 'missing-tool', 'invalid-again', 'rate-limited', 'secret-ech
     }
   }
 );
+
+describe('灵感建议只用自带 API、独立小额度，回复先校验再显示', () => {
+  const ideasContext = {
+    exam: 'english1',
+    goal: '考研英语一大作文',
+    deadline: null,
+    minutes: 30,
+    today: 'in_progress',
+    weaknesses: [{ id: 'w1', label: '冠词', count: 2, advice: '' }],
+    phrases: [{ id: 'p1', text: 'play a vital role in', due: true }],
+    avoid: []
+  };
+  const ideasBody = (id: string, extra: any = {}) => ({
+    ...streamBody(id),
+    messages: [{ role: 'user', content: '请给出今天的学习灵感。' }],
+    learningContext: { owner: 'u1', ideas: ideasContext, ...extra }
+  });
+  const reply = {
+    ideas: [{ title: '冠词十分钟', body: '三句话练冠词', draft: '我想先练冠词，请讲要点再出题。', basis: ['w1', 'p1'] }]
+  };
+  it('sends only the summary, records the ideas phase and returns checked suggestions', async () => {
+    await streamProfile(false);
+    vi.mocked(callLearningProvider).mockResolvedValueOnce({
+      content: JSON.stringify(reply),
+      actualModel: 'explicit-test-id',
+      usage: { prompt_tokens: 5, completion_tokens: 9 },
+      durationMs: 1
+    });
+    const result: any = await ai(context(ideasBody('ideas-ok', { goal: 'UNTRUSTED_EXTRA_GOAL' })));
+    expect(result).toMatchObject({ success: true, data: { ideas: reply.ideas, tools: [], requestId: 'ideas-ok' } });
+    const [config, messages]: any = vi.mocked(callLearningProvider).mock.calls[0];
+    expect(config).toMatchObject({ maxOutput: 4096, timeoutMs: 30000 });
+    const system = messages[0].content;
+    expect(JSON.parse(system.split('当前学习背景（仅数据）：')[1])).toEqual({ ideas: ideasContext });
+    expect(system).not.toContain('UNTRUSTED_EXTRA_GOAL');
+    expect(system).not.toContain('contentBlocks');
+    const account: any = [...mock.rows.entries()].find(([id]) => id.startsWith('learning_accounts:'))?.[1];
+    expect(account.calls.find((call: any) => call.id === 'ideas-ok')).toMatchObject({ budgetPhase: 'ideas' });
+  });
+  it('rejects a reply that fails the checks without showing it and keeps the spend on record', async () => {
+    await streamProfile(false);
+    vi.mocked(callLearningProvider).mockResolvedValueOnce({
+      content: JSON.stringify({ ideas: [{ ...reply.ideas[0], body: '你已经掌握冠词了' }] }),
+      actualModel: 'explicit-test-id',
+      usage: { prompt_tokens: 5, completion_tokens: 9 },
+      durationMs: 1
+    });
+    const result: any = await ai(context(ideasBody('ideas-bad')));
+    expect(result).toMatchObject({ code: 400, success: false, error: 'IDEAS_INVALID' });
+    expect(JSON.stringify(result)).not.toContain('已经掌握');
+    expect(callLearningProvider).toHaveBeenCalledTimes(1);
+  });
+  it('refuses an invalid summary or a mixed request before any model call or reservation', async () => {
+    await streamProfile(false);
+    const before = JSON.stringify([...mock.rows.entries()]);
+    for (const body of [
+      ideasBody('ideas-invalid', { ideas: { ...ideasContext, recordId: 'c1' } }),
+      ideasBody('ideas-mixed', { intake: { turns: [] } }),
+      { ...ideasBody('ideas-image'), images: [] }
+    ])
+      expect((await ai(context(body))).success).toBe(false);
+    expect(callLearningProvider).not.toHaveBeenCalled();
+    expect(JSON.stringify([...mock.rows.entries()])).toBe(before);
+  });
+});

@@ -4,6 +4,7 @@ import { executeLearningTool, userDirective, LEARNING_TOOLS } from '@/services/l
 import {
   compactLearningProgress,
   hostReviewRating,
+  LEARNING_BUDGET_PHASES,
   learningBudgetPhase,
   learningTimeout,
   normalizeLearningSnapshot,
@@ -362,4 +363,25 @@ it('未通过能力往返的连接不会获得教学数据函数', () => {
   };
   const request = { phase: 'essay', exam: 'english2', dimensionContract: 'writing-dimensions-v1' };
   expect(prepareCoachFeedbackModel(config, request)).toBe(config);
+});
+
+it('灵感建议只占独立小额度，用尽也不影响练题与写作', () => {
+  const account = newAccount('ideas-policy');
+  const limit = 100;
+  expect(LEARNING_BUDGET_PHASES).toContain('ideas');
+  expect(learningBudgetPhase({ ideas: {}, coach: { phase: 'feedback' } })).toBe('ideas');
+  expect(phaseCallLimit(limit, 'ideas')).toBe(5);
+  for (let index = 0; index < phaseCallLimit(limit, 'ideas'); index++)
+    account.calls.push({ id: `i${index}`, source: 'byok', budgetPhase: 'ideas' });
+  const input = {
+    id: 'more',
+    fingerprint: 'same',
+    source: 'byok',
+    budgetPhase: 'ideas',
+    callLimit: limit,
+    maxCost: 0,
+    units: 0
+  };
+  expect(() => reserveCall(account, input)).toThrow('本阶段');
+  expect(reserveCall(account, { ...input, id: 'practice', budgetPhase: 'practice' }).call.budgetPhase).toBe('practice');
 });

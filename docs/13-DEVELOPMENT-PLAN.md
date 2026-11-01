@@ -19,7 +19,7 @@
 | Y-G3 学习过程数据化呈现 | 分科正确率、薄弱点在整棵知识框架中的定位、只读思维导图；先数据层（掌握判定挂知识树、按预测效度定义）后展示层；知识卡、答题卡、数据图结构化整卡呈现，不流式拼凑 | 桌面与手机 App 实际操作；每个数字可追到事件 |
 | Y-G4 原版 Muse 外壳复刻 | 先逐页截图核对原版 Muse（Chat、Search、Ideas、Goals、Library、Feed、Settings 及简报第 1 节 B–G 的局部），再按截图完全复刻；与 Yozi 既定移动端形态冲突时以 Yozi 为准 | 每页与原版截图逐项对照，差异有记录；桌面 App 实操截图 |
 | Y-G5 对话体验 | 微信式排版，虚拟形象出现在每条消息旁、状态机比 Muse 更丰富；回复一开始就以打字机呈现；语音输入边说边出可矫正的文字；对话节奏按 Claude Code：主线里自然推进、该说就说、卡住才问，过程可视化保留但不压制对话 | 桌面 App 实操录屏或逐帧截图 |
-| Y-G6 Goals、Library、Ideas 模型驱动 | Goals 按 Muse 设计与运作（打勾、右上「…」）；Library 按 Muse 图、视频、文档版式归置知识卡、题目、数据图，含选择与筛选器；Ideas 在 Yozi 是知识点拓展流，属后期，现阶段只核对形态 | Goals、Library 实操走通且由已保存事实或模型产出驱动；Ideas 只交形态对照 |
+| Y-G6 Goals、Library、Ideas 模型驱动 | Goals 按 Muse 设计与运作（打勾、右上「…」）；Library 按 Muse 图、视频、文档版式归置知识卡、题目、数据图，含选择与筛选器；Ideas 在 Yozi 是知识点拓展流，属后期；11-01 客户批准先做最小一条：灵感页每天用学生自带 API 生成 1–3 条建议，只预填草稿 | Goals、Library 实操走通且由已保存事实或模型产出驱动；Ideas 形态对照，AI 建议只预填草稿、不写学习事实 |
 | Y-G7 设置与选择器 | 设置分通用、连接器、消息渠道、设备、数据控制、权限（合并电脑使用、文件系统访问、语音输入、权限）、帮助与支持、法律信息；不做钱包、安全储存；侧边窗口与模型、思考强度选择器参考 ChatGPT 与 WorkBuddy 取长补短 | 逐页对照截图 |
 | Y-G8 发动机能力 | Chat 按 Claude2 的运作原理：Goal 持续驱动、Artifacts、多 Agent 编排、自定义模型供应商；BYOK 主流程；官网是正式一端 | 分批登记；每批实操验收 |
 
@@ -130,7 +130,7 @@
 | 项 | 当前值 |
 | --- | --- |
 | 代码基线 | `git HEAD 3f314e9f`「docs: 固定写作质量主线与Muse外壳参照边界」；工作树干净，未提交项只有 `.collab/` 工具状态 |
-| 测试候选（固定路径） | `tmp/dev-test.noindex/Yozi AI.app`，2.2.0，可执行 `b3dbe6b6…`（11-01 外壳第7批：灵感页与资料库选择，旧包在废纸篓 `dev-test-coach-kitten-superseded-20261101.noindex`）；同目录有 0600 的 `runtime.env` 与多个 `*-before` 原文回退 |
+| 测试候选（固定路径） | `tmp/dev-test.noindex/Yozi AI.app`，2.2.0，可执行 `ff0580cb…`（11-01 外壳第8批：自带 API 灵感建议，严格签名通过；第7批包在废纸篓 `dev-test-before-ideas-ai-20261101.noindex`）；同目录有 0600 的 `runtime.env` 与多个 `*-before` 原文回退 |
 | 最新候选 | `tmp/task-kitten-final-20261027.noindex/Yozi AI.app`，2.2.0，可执行 `00be2a4a…`；今日编译、严格签名、逐态实屏通过 |
 | 日常入口 | `/Users/blackdj/Applications/Yozi AI.app`（`2e85d945…`）未替换，仍是客户可见的唯一入口 |
 | 既有回退 | `task-kitten-20261027.noindex`（上一候选）、`host-policy-resume-20261026.noindex`（指定回退）、`handoff-final-20261026.noindex`（上批完整基线）、`p13-candidate`（正式程序归档＋验证收据＋私有学习资料备份）、`yozi-candidate-build/backend-before-handoff-20261026`（后端回退）、`ab-contract-offline-before`（WIP 原文回退） |

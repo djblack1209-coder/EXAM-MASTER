@@ -86,6 +86,7 @@ describe('profile panel navigation across page registration', () => {
     const context = {
       settingsMode: false,
       syncTheme: vi.fn(),
+      syncIdeasModel: vi.fn(),
       initLayout: vi.fn(),
       studyStore: { restoreProgress: vi.fn() },
       userStore: { restoreUserInfo: vi.fn() }

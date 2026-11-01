@@ -7,6 +7,9 @@
       ><view class="muse-page-body">
         <view v-for="section in sections" :key="section.id" class="idea-section"
           ><text class="idea-section-title" role="heading" aria-level="2">{{ section.label }}</text
+          ><view v-if="section.status" class="idea-status" role="status"
+            ><text>{{ section.status }}</text
+            ><BaseButton v-if="section.retry" variant="quiet" icon="refresh" @tap="loadAi(true)">重试</BaseButton></view
           ><view v-for="item in section.items" :key="item.id" class="idea-row"
             ><BaseButton class="idea-main" variant="quiet" align="start" :label="item.title" @tap="start(item)"
               ><view class="idea-icon"><BaseIcon :name="item.icon" size="20px" /></view
@@ -40,7 +43,18 @@
 <script setup>
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
-import { ideaDismissals, museLearningIdeas } from '@/services/learning/muse-learning-ideas.js';
+import { dayKey } from '@/services/learning/learning-domain.js';
+import {
+  ideaDismissals,
+  ideasModelContext,
+  ideasModelEnabled,
+  modelIdeaItems,
+  modelIdeas,
+  modelIdeasRunning,
+  museLearningIdeas,
+  requestModelIdeas
+} from '@/services/learning/muse-learning-ideas.js';
+import { modelErrorPresentation } from '../../../../laf-backend/functions/_shared/model-errors.js';
 import { workspaceDrafts } from '@/services/learning/workspace-drafts.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
@@ -50,7 +64,9 @@ const learning = useConversationLearningStore();
 const root = ref(null),
   menuFor = ref(''),
   error = ref(''),
-  dismissed = ref(new Set());
+  dismissed = ref(new Set()),
+  aiSaved = ref(null),
+  aiRunning = ref(false);
 const drafts = workspaceDrafts(learning);
 const dismissals = computed(() => ideaDismissals(learning.state.owner));
 watch(
@@ -61,7 +77,67 @@ watch(
   },
   { immediate: true }
 );
-const sections = computed(() => museLearningIdeas(learning.state, learning.calendarTime, dismissed.value));
+const today = () => dayKey(learning.calendarTime, learning.state.timezone);
+const AI_FAILURE = {
+  PHASE_BUDGET_LIMIT: '灵感建议的调用额度已用完，教学额度不受影响',
+  IDEAS_INVALID: '模型的建议没有通过检查，没有显示',
+  CONTEXT_CHANGED: '账号、模型或共享授权已变化，没有采用这次建议'
+};
+const CONNECTION_FAILURES = [
+  'NEEDS_CONNECTION',
+  'AUTH_REQUIRED',
+  'KEY_INVALID',
+  'MODEL_UNAVAILABLE',
+  'QUOTA_EXHAUSTED',
+  'ADDRESS_INVALID',
+  'RATE_LIMITED'
+];
+const failureText = (code) =>
+  AI_FAILURE[code] ||
+  (CONNECTION_FAILURES.includes(code) ? modelErrorPresentation({ error: code }).message : '这次没有生成建议');
+// At most one automatic request a day on the learner's own API; a manual retry
+// is offered only after a failure or an interrupted request.
+let aiToken = 0;
+function loadAi(manual = false) {
+  const owner = learning.state.owner,
+    day = today(),
+    token = ++aiToken;
+  if (!ideasModelEnabled(owner)) {
+    aiSaved.value = null;
+    aiRunning.value = false;
+    return;
+  }
+  const cache = modelIdeas(owner);
+  let run = modelIdeasRunning(owner, day);
+  if (!run && learning.ideasModelReady && (manual || !cache.today(day))) {
+    const built = ideasModelContext(learning.state, learning.calendarTime, cache.recentTitles());
+    if (built) run = requestModelIdeas(owner, day, built, learning.suggestIdeas);
+  }
+  aiSaved.value = cache.today(day);
+  aiRunning.value = Boolean(run);
+  run?.then(() => {
+    if (token !== aiToken) return;
+    aiRunning.value = false;
+    aiSaved.value = cache.today(day);
+  });
+}
+watch([() => learning.state.owner, () => learning.ideasModelReady, today], () => loadAi(), { immediate: true });
+const aiSection = computed(() => {
+  const saved = aiSaved.value;
+  const items = modelIdeaItems(saved).filter((item) => !dismissed.value.has(item.id));
+  const status = aiRunning.value
+    ? '正在用你的 API 生成建议…'
+    : saved?.status === 'failed'
+      ? failureText(saved.code)
+      : saved?.status === 'pending'
+        ? '上次生成没有完成'
+        : '';
+  if (!items.length && !status) return null;
+  return { id: 'ai', label: 'AI 建议', items, status, retry: !aiRunning.value && learning.ideasModelReady };
+});
+const sections = computed(() =>
+  [aiSection.value, ...museLearningIdeas(learning.state, learning.calendarTime, dismissed.value)].filter(Boolean)
+);
 function start(item) {
   if (learning.busy) return;
   menuFor.value = '';
@@ -115,6 +191,17 @@ onUnmounted(() => (root.value?.$el || root.value)?.removeEventListener?.('keydow
   font-size: 15px;
   line-height: 22px;
   font-weight: 600;
+}
+.idea-status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  padding: 2px 12px 6px;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--ink-3);
+  overflow-wrap: anywhere;
 }
 .idea-row {
   position: relative;

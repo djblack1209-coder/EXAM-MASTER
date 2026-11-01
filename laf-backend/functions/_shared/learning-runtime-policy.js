@@ -10,9 +10,10 @@ export const MODEL_TOOL_NAMES = Object.freeze([
   'entry.query',
   'entry.aggregate'
 ]);
-export const LEARNING_BUDGET_PHASES = Object.freeze(['diagnostic', 'practice', 'writing', 'review']);
+export const LEARNING_BUDGET_PHASES = Object.freeze(['diagnostic', 'practice', 'writing', 'review', 'ideas']);
 export function learningBudgetPhase(context = {}) {
   const request = context.coach;
+  if (context.ideas) return 'ideas';
   if (request?.phase === 'diagnostic' || request?.target === 'diagnostic' || context.intake) return 'diagnostic';
   if (['essay', 'summary'].includes(request?.phase) || /^(analysis|paragraph-|rewrite$)/u.test(request?.target || ''))
     return 'writing';
@@ -23,7 +24,8 @@ export function learningBudgetPhase(context = {}) {
   return 'practice';
 }
 export function phaseCallLimit(limit, phase) {
-  const shares = { diagnostic: 0.15, practice: 0.35, writing: 0.35, review: 0.15 };
+  // Ideas run unasked, so they get a small fixed slice and can never eat into teaching.
+  const shares = { diagnostic: 0.15, practice: 0.3, writing: 0.35, review: 0.15, ideas: 0.05 };
   return Math.max(1, Math.floor(limit * (shares[phase] || shares.practice)));
 }
 export function learningTimeout(context = {}) {

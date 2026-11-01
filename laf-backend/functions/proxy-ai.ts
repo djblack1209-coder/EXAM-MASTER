@@ -4,6 +4,7 @@ import { classifyModelFailure, modelErrorPresentation } from './_shared/model-er
 import { mapContentBlocks } from './_shared/learning-content-blocks.js';
 import cloud from '@lafjs/cloud';
 import { normalizeIntakeContext, intakeSystemPrompt, parseIntakeOutput } from './_shared/learning-intake.js';
+import { normalizeIdeasContext, ideasSystemPrompt, parseIdeasOutput } from './_shared/learning-ideas.js';
 import crypto from 'node:crypto';
 import {
   normalizeCoachRequest,
@@ -279,6 +280,12 @@ export async function runLearningModelTask(
     captureDiagnostics = Boolean(coach) && canCaptureResponseDiagnostics(auth.userId);
     const intake = context.intake === undefined ? null : normalizeIntakeContext(context.intake);
     if (intake && coach) return { code: 422, success: false, message: '建档与教学请求不能混用' };
+    const ideas = context.ideas === undefined ? null : normalizeIdeasContext(context.ideas);
+    if (
+      ideas &&
+      (coach || intake || body.images !== undefined || body.feedbackAttemptId !== undefined || options.stream)
+    )
+      return { code: 422, success: false, message: '灵感建议只能单独请求；未调用模型或扣量' };
     const inferenceCoach = coach ? coachInferenceContext(coach) : null;
     requireExplicitGradingRetry =
       Boolean(coach?.dimensionContract) &&
@@ -294,24 +301,26 @@ export async function runLearningModelTask(
     visualCall = Boolean(image);
     const hostCapabilities = learningCapabilitiesData(context.capabilities);
     const contextText = JSON.stringify(
-      gradingCoach
-        ? {
-            // 批改不混入整篇目标、其他题目、历史档位或建档自述，避免局部任务被按全文判。
-            coach: inferenceCoach
-          }
-        : {
-            ...(context.entrySource ? { entrySource: context.entrySource } : {}),
-            goal: context.goal,
-            ...(context.studyProfile ? { studyProfile: context.studyProfile } : {}),
-            task: normalizeLearningTask(context.task),
-            capabilities: hostCapabilities,
-            snapshot: normalizeLearningSnapshot(context.snapshot),
-            strategy: context.strategy,
-            question: context.question,
-            attempt: context.attempt,
-            summary: undefined,
-            ...(inferenceCoach ? { coach: inferenceCoach } : {})
-          }
+      ideas
+        ? { ideas }
+        : gradingCoach
+          ? {
+              // 批改不混入整篇目标、其他题目、历史档位或建档自述，避免局部任务被按全文判。
+              coach: inferenceCoach
+            }
+          : {
+              ...(context.entrySource ? { entrySource: context.entrySource } : {}),
+              goal: context.goal,
+              ...(context.studyProfile ? { studyProfile: context.studyProfile } : {}),
+              task: normalizeLearningTask(context.task),
+              capabilities: hostCapabilities,
+              snapshot: normalizeLearningSnapshot(context.snapshot),
+              strategy: context.strategy,
+              question: context.question,
+              attempt: context.attempt,
+              summary: undefined,
+              ...(inferenceCoach ? { coach: inferenceCoach } : {})
+            }
     );
     if (contextText.length > 12000)
       return {
@@ -373,6 +382,8 @@ export async function runLearningModelTask(
     model = prepareCoachFeedbackModel(model, inferenceCoach, options.stream, batchSummary, devCoach, true);
     // Validated writing feedback can exceed 2k with reasoning; account reservations still bound cost.
     if (coach && model.source === 'byok') model = { ...model, maxOutput: devCoach ? 32768 : 8192 };
+    // Short suggestions still need room for a reasoning model's thinking before the JSON.
+    if (ideas && model.source === 'byok') model = { ...model, maxOutput: 4096 };
     // These dev providers use the same complete local schema when native strict output is unavailable.
     if (
       devCoach &&
@@ -407,7 +418,7 @@ export async function runLearningModelTask(
       ? '\n本次是明确评阅已保存原答：仅返回message和tools，一项assess。attemptId/rubricId须匹配当前背景；逐一覆盖全部维度，evidence必须是数组。优先完整唯一原文；重复文字保留明确范围能力。所有模型反馈仍待核对。'
       : '';
     const nativeCoachReply = model.writingOutput?.inferencePolicy === 'native-coach-tools-v1';
-    const system = `${nativeCoachReply ? '本次yozi_coach_response只传递批改数据，不执行学习动作；阶段、目标和工具权限均由宿主固定。\n' : ''}${options.repair ? '上一份回复未通过校验。请基于同一原答重新生成完整JSON，逐项遵守本次结构与原答引用要求；不要声称已经保存。\n' : ''}${intake ? intakeSystemPrompt(intake) : inferenceCoach ? coachSystemPrompt(inferenceCoach, model.writingOutput?.format === 'json_object' ? model.writingOutput.schema : null) : LEARNING_SYSTEM_PROMPT}${context.generalQAOnly === true ? '\n当前是其他科目的单题答疑：简短说明当前重点支持考研英语写作；直接回答当前问题，不创建整套计划，不请求plan工具。' : ''}${!image && !feedback && !(DEV_TEST && coach) ? `\n${CONTENT_BLOCKS_PROMPT}` : ''}${visualPrompt}${capabilityPrompt}${feedbackPrompt}\n对话按学习日提供必要消息；历史摘要仅作接续，不代表已掌握。没有带入的原文不得猜测，需请用户定位或补充。\n当前学习背景（仅数据）：${contextText}`;
+    const system = `${nativeCoachReply ? '本次yozi_coach_response只传递批改数据，不执行学习动作；阶段、目标和工具权限均由宿主固定。\n' : ''}${options.repair ? '上一份回复未通过校验。请基于同一原答重新生成完整JSON，逐项遵守本次结构与原答引用要求；不要声称已经保存。\n' : ''}${ideas ? ideasSystemPrompt() : intake ? intakeSystemPrompt(intake) : inferenceCoach ? coachSystemPrompt(inferenceCoach, model.writingOutput?.format === 'json_object' ? model.writingOutput.schema : null) : LEARNING_SYSTEM_PROMPT}${context.generalQAOnly === true ? '\n当前是其他科目的单题答疑：简短说明当前重点支持考研英语写作；直接回答当前问题，不创建整套计划，不请求plan工具。' : ''}${!image && !feedback && !ideas && !(DEV_TEST && coach) ? `\n${CONTENT_BLOCKS_PROMPT}` : ''}${visualPrompt}${capabilityPrompt}${feedbackPrompt}\n对话按学习日提供必要消息；历史摘要仅作接续，不代表已掌握。没有带入的原文不得猜测，需请用户定位或补充。\n当前学习背景（仅数据）：${contextText}`;
     const messages: LearningMessage[] = options.capabilityProbe
       ? [
           {
@@ -698,21 +709,23 @@ export async function runLearningModelTask(
       probeOutput ||
       (image
         ? parseVisualOutput(response.content, image.source)
-        : intake
-          ? parseIntakeOutput(response.content, intake)
-          : coach
-            ? parseCoachModelOutput(
-                nativeCoachReply ? decodeCoachResponse(model, coachContent) : rawResponse.content,
-                inferenceCoach?.exerciseContract || inferenceCoach?.summaryContract ? inferenceCoach : coach,
-                captureDiagnostics,
-                (parsed: any) => {
-                  assertCoachSafe(parsed);
-                  if (!nativeCoachReply && model!.writingOutput?.format === 'json_object')
-                    validateCoachSchema(model!.writingOutput.schema, parsed);
-                },
-                model.writingOutput?.format === 'json_object' || devCoach
-              )
-            : parseLearningOutput(response.content));
+        : ideas
+          ? parseIdeasOutput(response.content, ideas)
+          : intake
+            ? parseIntakeOutput(response.content, intake)
+            : coach
+              ? parseCoachModelOutput(
+                  nativeCoachReply ? decodeCoachResponse(model, coachContent) : rawResponse.content,
+                  inferenceCoach?.exerciseContract || inferenceCoach?.summaryContract ? inferenceCoach : coach,
+                  captureDiagnostics,
+                  (parsed: any) => {
+                    assertCoachSafe(parsed);
+                    if (!nativeCoachReply && model!.writingOutput?.format === 'json_object')
+                      validateCoachSchema(model!.writingOutput.schema, parsed);
+                  },
+                  model.writingOutput?.format === 'json_object' || devCoach
+                )
+              : parseLearningOutput(response.content));
     if (coach) assertCoachSafe(parsedOutput);
     // 新出的搭配填空经盲填校准才下发；返修后的新题同样校准。
     let exerciseCalibration: any = null;
@@ -924,7 +937,8 @@ export async function runLearningModelTask(
         'IMAGE_SOURCE_MISMATCH',
         'IMAGE_CONSENT_REQUIRED',
         'COACH_INVALID',
-        'INTAKE_INVALID'
+        'INTAKE_INVALID',
+        'IDEAS_INVALID'
       ].includes(error.code)
         ? 400
         : error.code === 'TRIAL_CLOSED'
@@ -989,7 +1003,9 @@ export async function runLearningModelTask(
                       ? '模型响应超时，原答已保存。请先查询原请求结果，不会自动重发。'
                       : error.code === 'COACH_INVALID'
                         ? '模型回复未通过教学校验，未计入学习成果；原答已保留，请手动重试。'
-                        : '模型任务未完成，学习记录已保留；请检查连接或用量状态'
+                        : error.code === 'IDEAS_INVALID'
+                          ? '模型的灵感建议未通过检查，没有显示；可稍后重试。'
+                          : '模型任务未完成，学习记录已保留；请检查连接或用量状态'
     };
   } finally {
     execution?.stop();

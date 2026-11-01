@@ -145,7 +145,19 @@
               label="学习内容发送给 AI"
               :value="learning.sharingAllowed ? '已允许' : '未允许'"
               :actionable="false"
-          /></view>
+            /><view class="settings-check"
+              ><BaseCheckbox
+                :model-value="ideasModelDraft ?? ideasModelOn"
+                @update:model-value="ideasModelDraft = $event === ideasModelOn ? null : $event"
+                >灵感页每天用我的 API 生成一次建议</BaseCheckbox
+              ></view
+            ></view
+          >
+          <view class="settings-actions"
+            ><BaseButton variant="primary" :disabled="ideasModelDraft === null" @tap="saveIdeasModel"
+              >保存</BaseButton
+            ></view
+          >
         </template>
         <view v-if="settingsSection === 'channels'" class="settings-group"
           ><text class="settings-empty" role="status">暂无可连接的消息渠道</text></view
@@ -245,6 +257,8 @@ import '@/i18n/messages/dashboard.js';
 import BaseListRow from '@/components/base/base-list-row/base-list-row.vue';
 import BaseStat from '@/components/base/base-stat/base-stat.vue';
 import BaseButton from '@/components/base/base-button/base-button.vue';
+import BaseCheckbox from '@/components/base/base-checkbox/base-checkbox.vue';
+import { ideasModelEnabled, setIdeasModelEnabled } from '@/services/learning/muse-learning-ideas.js';
 import '@/styles/yozi-pages.scss';
 
 import { useUserStore } from '@/stores/modules/user';
@@ -270,6 +284,7 @@ export default {
     BaseButton,
     BaseStat,
     BaseListRow,
+    BaseCheckbox,
     CustomModal
   },
 
@@ -281,6 +296,8 @@ export default {
       languageOpen: false,
       draftLanguage: null,
       draftAppearance: null,
+      ideasModelOn: true,
+      ideasModelDraft: null,
       resetBusy: false,
       resetError: '',
       statusBarHeight: 44,
@@ -418,6 +435,7 @@ export default {
   mounted() {
     this.releaseSettingsIdentity = storageService.onIdentityChange(() => {
       this.draftLanguage = this.draftAppearance = null;
+      this.syncIdeasModel();
       this.languageOpen = false;
       this.showDialog = false;
       this.dialogSequence++;
@@ -449,6 +467,7 @@ export default {
     if (panel) this.setProfilePanel(panel);
     this.syncPanelTitle();
     this.syncTheme();
+    this.syncIdeasModel();
     // 每次进入刷新数据
     try {
       this.studyStore.restoreProgress();
@@ -502,6 +521,16 @@ export default {
         return toast.info('外观未保存，请重试');
       this.draftLanguage = this.draftAppearance = null;
       this.syncPanelTitle();
+    },
+    syncIdeasModel() {
+      this.ideasModelOn = ideasModelEnabled(this.learning.state.owner);
+      this.ideasModelDraft = null;
+    },
+    saveIdeasModel() {
+      if (!setIdeasModelEnabled(this.learning.state.owner, this.ideasModelDraft))
+        return toast.info('设置未保存，请重试');
+      this.ideasModelOn = this.ideasModelDraft;
+      this.ideasModelDraft = null;
     },
     syncTheme(mode) {
       if (['dark', 'light'].includes(mode) && this.themeStore.isDark !== (mode === 'dark')) {
@@ -861,6 +890,9 @@ export default {
   color: var(--ink);
   font-size: 13px;
   line-height: 1.6;
+}
+.settings-check {
+  padding: 6px 0;
 }
 .settings-actions {
   display: flex;
