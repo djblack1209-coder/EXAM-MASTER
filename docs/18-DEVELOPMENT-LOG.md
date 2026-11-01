@@ -885,3 +885,8 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
   - 两者的 summary 都是免费 0 条可计（1 条未测到）、兜底 1/1。
   - `--free-only` 同样遇到 429 时照旧停在 `RATE_LIMITED`，没有调用 DeepSeek。
   - 扫描报告、脚本与编译产物，均未发现密钥。
+- **真实回放（免费通道不打桩，兜底已启用）**：同一编译后端，Agnes `agnes-3.0-flash` 真实作答，能力往返通过，`--interval 15`。
+  - `writing-generation-replay.mjs --case english2-diagnostic`：免费 6 次调用，返修后仍被拒：搭配题干留了方括号答案，盲填找到 4 个可填词。全程没有限流或空回答，兜底 0 次调用，符合切换条件。
+  - `writing-mixed-replay.mjs`（legacy 样例）：免费 4 次调用，accepted；兜底 0 次。
+  - 两份 summary：免费分别 0/1、1/1 通过，`paidFallback.calls` 都是 0。说明启用兜底后，免费通道正常时兜底不介入，免费账目照实记录。
+  - **待定**：质量被拒不在 Yozi 的切换条件里。Lazy 在同一页面、练习或评估第三次尝试时直接改用 `deepseek-v4-pro`。Yozi 是否在返修后仍被拒时切换，交用户决定。
