@@ -12,6 +12,8 @@ import { setLanguage } from '@/i18n/index.js';
 let wrapper;
 beforeEach(() => {
   uni.clearStorageSync();
+  // Exercise the explicitly collapsed device layout; S3 tests cover the open default.
+  uni.setStorageSync('yozi_shell_sidebar_v1', { version: 1, collapsed: true, width: 217 });
   setActivePinia(createPinia());
 });
 afterEach(() => {
@@ -236,9 +238,14 @@ describe('学习路线的明确操作与阅读', () => {
     expect(wrapper.findAll('.message').length).toBeLessThanOrEqual(50);
     await wrapper.get('.directory-pill').trigger('tap');
     await flushPromises();
-    expect(wrapper.findAll('.directory-date').map((e) => e.text())).not.toContain('10 / 02');
+    expect(wrapper.findAll('.directory-day-link').map((e) => e.attributes('aria-label'))).not.toContain(
+      '查看原对话 · 2026-10-02'
+    );
     await wrapper.find('[data-test="earlier-learning-days"]').trigger('tap');
-    expect(wrapper.findAll('.directory-date').map((e) => e.text())).toContain('10 / 02');
+    expect(wrapper.findAll('.directory-day-link').map((e) => e.attributes('aria-label'))).toContain(
+      '查看原对话 · 2026-10-02'
+    );
+    expect(wrapper.findAll('.directory-day-link').every((e) => !/\d/.test(e.text()))).toBe(true);
     expect(s.active.id).toBe(id);
     expect(s.active.stopped).toBe(true);
     expect(s.active.messages).toHaveLength(72);

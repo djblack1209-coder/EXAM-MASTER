@@ -344,8 +344,8 @@ it('预览只在临时区域出现，完整终止前无计划/工具/教学事�
   harness.preview();
   await flushPromises();
   expect(store.streamPreview).toContain('映射');
-  expect(wrapper.find('.message.notice[aria-live="polite"]').text()).toContain('生成中 · 未确认');
-  expect(wrapper.find('.message.notice[aria-live="polite"]').text()).toContain('映射');
+  expect(wrapper.get('[id="stream-task:reply"] .learning-card-placeholder').exists()).toBe(true);
+  expect(wrapper.get('[id="stream-task:reply"]').text()).toContain('映射');
   expect(store.state.plans).toHaveLength(0);
   expect(store.state.executions).toHaveLength(0);
   expect(store.active.messages.filter((m) => m.role === 'assistant')).toHaveLength(0);

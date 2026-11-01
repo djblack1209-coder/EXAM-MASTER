@@ -3,6 +3,17 @@ import { createPinia, setActivePinia } from 'pinia';
 beforeEach(() => setActivePinia(createPinia()));
 import { mount } from '@vue/test-utils';
 import MuseComposer from '@/components/business/learning/muse-composer.vue';
+vi.mock('@/composables/useVoiceDictation.js', () => ({
+  useVoiceDictation: () => ({
+    active: false,
+    phase: 'idle',
+    error: '',
+    capability: { platform: 'macos', available: true },
+    start: vi.fn(),
+    stop: vi.fn(),
+    cancel: vi.fn()
+  })
+}));
 import { workspaceDrafts } from '@/services/learning/workspace-drafts.js';
 
 let wrapper;
@@ -14,6 +25,10 @@ describe('Muse App input behavior', () => {
     await textarea.trigger('keydown', { key: 'Enter', isComposing: true });
     await textarea.trigger('keydown', { key: 'Enter', keyCode: 229 });
     await textarea.trigger('keydown', { key: 'Enter', shiftKey: true });
+    await textarea.trigger('keydown', { key: 'Enter', repeat: true });
+    await textarea.trigger('compositionstart');
+    await textarea.trigger('keydown', { key: 'Enter' });
+    await textarea.trigger('compositionend');
     expect(wrapper.emitted('submit')).toBeUndefined();
     await textarea.trigger('keydown', { key: 'Enter' });
     expect(wrapper.emitted('submit')).toHaveLength(1);
@@ -169,4 +184,10 @@ it('review keeps the draft local until explicit submission and lets the host der
     store.$dispose();
     learningWriteLease.release();
   }
+});
+
+it('S3 A5 keeps unverified voice entry hidden while preserving the composer implementation', () => {
+  wrapper = mount(MuseComposer, { props: { modelValue: '原答' } });
+  expect(wrapper.findAll('button')).toHaveLength(2);
+  expect(wrapper.findAll('button').some((button) => button.attributes('icon') === 'microphone')).toBe(false);
 });

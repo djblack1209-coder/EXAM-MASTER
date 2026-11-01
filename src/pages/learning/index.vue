@@ -11,6 +11,8 @@
   <LearningShell
     v-else
     active="learning"
+    :dismiss-overlay="dismissOverlay"
+    :notice="cancellationNotice"
     :style="{ '--muse-composer-height': `${composerHeight || 80}px` }"
     :title="$t('pages.learning')"
     @materials="showMaterial = true"
@@ -94,7 +96,7 @@
             ? writingAnswerLimit(learning.activeQuestion)
             : 8000
         "
-        :busy="learning.busy"
+        :busy="learning.busy || learning.reply?.pending"
         :disabled="!!learning.active?.stopped || learning.accountRecordState !== 'ready'"
         @attach="showMaterial = !showMaterial"
         @stop="learning.cancel()"
@@ -470,12 +472,16 @@
             v-for="message in chapter.messages"
             :id="message.id"
             :key="message.id"
+            :data-reply-pending="message.pending ? 'true' : undefined"
             class="message"
             :class="[message.role, { 'sentence-hint-target': message.id === sentenceHintTargetId }]"
             :tabindex="message.id === sentenceHintTargetId ? -1 : undefined"
             :author="message.role === 'user' ? 'user' : 'assistant'"
             :group="message.groupPosition"
-            :rich="message.rich"
+            :rich="message.rich && !message.id.endsWith(':reply')"
+            :avatar="message.role === 'assistant'"
+            :avatar-identity="message.id"
+            :avatar-business="{ busy: !!message.pending, producing: !!message.pending && !!message.content }"
           >
             <template v-if="message.groupTime" #time>{{ message.groupTime }}</template>
             <text v-if="sentenceAnswersByFeedback[message.id]" class="message-content sentence-saved-answer" selectable
@@ -491,9 +497,18 @@
             <LearningMessage
               v-else-if="message.role !== 'user'"
               :content-blocks="message.contentBlocks"
+              :pending="!!message.pending"
               :content="message.role === 'notice' ? learningText(message.content) : message.content"
             />
             <text v-else class="message-content" selectable>{{ message.content }}</text>
+            <BaseButton
+              v-if="message.id === lastEditableMessage?.id"
+              icon="edit"
+              icon-only
+              variant="quiet"
+              label="修改回答"
+              @tap="editLastMessage"
+            />
           </BaseBubble>
         </view>
         <view id="learning-chat-latest" tabindex="-1" />
@@ -506,11 +521,6 @@
             t(topic)
           }}</BaseButton>
         </view>
-        <view v-if="learning.busy && !learning.error && !learning.streamPreview" class="reply-state" role="status"
-          ><YoziMascot pose="think" play="loop" size="state" /><view class="reply-dots" aria-hidden="true"
-            ><view /><view /><view /></view
-          ><text class="reply-state__label">{{ t('learning.replying') }}</text></view
-        >
 
         <BaseCard
           v-if="learning.locatedRecord?.attemptId"
@@ -533,6 +543,13 @@
                 )
               }}</BaseTag>
               <BaseTag v-if="learning.locatedRecord.helped" tone="neutral">{{ t('learning.records.helped') }}</BaseTag>
+              <BaseButton
+                v-if="essayForAttempt(learning.locatedRecord.attemptId)"
+                variant="quiet"
+                icon="file-text"
+                @tap="openStudentArtifact(learning, essayForAttempt(learning.locatedRecord.attemptId))"
+                >打开文档</BaseButton
+              >
               <BaseButton variant="quiet" @tap="learning.dismissLocatedRecord()">{{
                 t('learning.records.close')
               }}</BaseButton>
@@ -698,6 +715,13 @@
               :play="answerMascot.play"
               size="small"
             /><BaseTag :tone="answerMascot.tone">{{ t(answerMascot.label) }}</BaseTag></view
+          ><BaseButton
+            v-if="essayForAttempt(latestAnswer?.id)"
+            variant="quiet"
+            icon="file-text"
+            :data-essay-artifact="essayForAttempt(latestAnswer.id).id"
+            @tap="openStudentArtifact(learning, essayForAttempt(latestAnswer.id))"
+            >打开文档</BaseButton
           ><view class="question-actions"
             ><view class="question-secondary" role="group" :aria-label="t('learning.questionActions')"
               ><BaseChip
@@ -955,17 +979,13 @@
         <view v-if="hasConversationAttempts && !learning.active?.journey && !showJourney" class="button-row">
           <BaseButton variant="quiet" @tap="showJourney = true">{{ t('learning.chatPlanReview') }}</BaseButton>
         </view>
-        <BaseBubble v-if="learning.streamPreview" class="stream-preview message notice" aria-live="polite">
-          <text class="subtle">{{ t('learning.ki3') }}</text>
-          <text>{{ learning.streamPreview }}</text>
-        </BaseBubble>
         <view v-if="learning.recoverableRequest && !learning.busy" class="button-row">
           <text class="subtle">{{ t('learning.kp2') }}</text>
           <BaseButton variant="quiet" @tap="run(() => learning.recoverModelResult())">{{
             t('learning.khs')
           }}</BaseButton>
         </view>
-        <view v-if="learning.error" id="learning-request-error" tabindex="-1">
+        <view v-if="learning.error && !cancellationNotice" id="learning-request-error" tabindex="-1">
           <BaseEmpty v-if="publicError(learning.error, null)" state="error" :title="publicError(learning.error)" />
           <MuseModelFeedback
             v-else
@@ -1941,7 +1961,7 @@
           </text>
         </BaseCard>
       </view>
-      <view v-if="learning.error && !learning.active" id="learning-request-error" tabindex="-1">
+      <view v-if="learning.error && !cancellationNotice && !learning.active" id="learning-request-error" tabindex="-1">
         <BaseEmpty state="error" :title="publicError(learning.error)" mascot-size="small" />
       </view>
       <text v-if="!learning.error && feedback" class="feedback" role="status">{{ learningText(feedback) }}</text>
@@ -1971,6 +1991,7 @@ import BaseBubble from '@/components/base/base-bubble/base-bubble.vue';
 import BaseOptions from '@/components/base/base-options/base-options.vue';
 import YoziMascot from '@/components/base/yozi-mascot/yozi-mascot.vue';
 import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
+import { visibleReply, cancelledNotice } from '@/services/learning/shell-navigation.js';
 import { answerFeedback, answerOptionState } from '@/components/business/learning/learning-feedback.js';
 import './messages.js';
 import { learningText } from '@/i18n/learning.js';
@@ -2011,6 +2032,11 @@ import { DEV_TEST } from '@/config/build-channel.js';
 import { onShow, onHide, onLoad, onBackPress } from '@dcloudio/uni-app';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import WritingCoach from '@/pages/learning/components/writing-coach.vue';
+import {
+  studentEssaySources,
+  openStudentArtifact,
+  createLearningArtifacts
+} from '@/services/learning/learning-artifacts.js';
 import MuseComposer from '@/components/business/learning/muse-composer.vue';
 import { groupLearningMessages } from '@/services/learning/message-groups.js';
 import CustomModal from '@/components/common/CustomModal.vue';
@@ -2023,6 +2049,7 @@ import LearningOverview from '@/components/business/learning/learning-overview.v
 import LearningJourney from '@/pages/learning/components/learning-journey.vue';
 import { learningLeaveOperation } from './learning-adherence-view.js';
 import LearningMessage from '@/pages/learning/components/learning-message.vue';
+import { dayKey } from '@/services/learning/learning-domain.js';
 import LearningProfileDraft from '@/components/business/learning/learning-profile-draft.vue';
 import LearningInsights from '@/components/business/learning/learning-insights.vue';
 import LearningProposalCard from '@/components/business/learning/learning-proposal-card.vue';
@@ -2067,6 +2094,9 @@ import { getUserId, getToken } from '@/services/auth-storage.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 const learning = useConversationLearningStore();
+const essayArtifacts = computed(() => studentEssaySources(learning.state));
+const essayForAttempt = (id) =>
+  essayArtifacts.value.find((item) => item.source.kind === 'writing-attempt' && item.source.sourceId === id);
 const modelFailure = ref(null);
 
 const latestAnswer = computed(
@@ -2279,13 +2309,58 @@ watch(
   }
 );
 const messageStart = ref(0);
+const cancellationNotice = computed(() => cancelledNotice(learning.error));
+const presentedTimeline = computed(() => {
+  const chapters = learning.timeline.map((chapter) => {
+    const users = new Set(chapter.messages.filter((message) => message.role === 'user').map((message) => message.id));
+    const replies = new Map(
+      chapter.messages
+        .filter((message) => message.role === 'assistant' && message.id.endsWith(':reply'))
+        .map((message) => [message.id.slice(0, -6) + ':message', message])
+    );
+    return {
+      ...chapter,
+      messages: chapter.messages.flatMap((message) => {
+        if (
+          message.role === 'assistant' &&
+          message.id.endsWith(':reply') &&
+          users.has(message.id.slice(0, -6) + ':message')
+        )
+          return [];
+        return replies.has(message.id) ? [message, replies.get(message.id)] : [message];
+      })
+    };
+  });
+  const reply = learning.reply;
+  if (reply?.kind !== 'chat' || reply.conversationId !== learning.active?.id || !visibleReply(reply)) return chapters;
+  const savedChapter = chapters.find((chapter) => chapter.messages.some((message) => message.id === reply.id));
+  if (savedChapter) {
+    const index = savedChapter.messages.findIndex((message) => message.id === reply.id);
+    const [saved] = savedChapter.messages.splice(index, 1);
+    const userIndex = savedChapter.messages.findIndex((message) => message.id === `${reply.requestId}:message`);
+    // Tool proposals are saved before the reply. Keep their presentation below
+    // the growing reply so completion never moves that message down the page.
+    savedChapter.messages.splice(userIndex < 0 ? index : userIndex + 1, 0, saved);
+    return chapters;
+  }
+  const day = dayKey(reply.at, learning.active?.journey?.timezone || learning.state.timezone);
+  let chapter = chapters.find((chapter) => chapter.day === day);
+  if (!chapter) {
+    chapter = { day, messages: [], groups: [] };
+    chapters.push(chapter);
+  }
+  chapter.messages.push({ ...reply, role: 'assistant', index: learning.active?.messages.length || 0 });
+  return chapters;
+});
 const visibleChapters = computed(() =>
-  learning.timeline
+  presentedTimeline.value
     .map((chapter) => ({
       ...chapter,
       messages: groupLearningMessages(
         chapter.messages.filter(
-          (message) => message.index >= messageStart.value && message.index < messageStart.value + 50
+          (message) =>
+            message.id === learning.reply?.id ||
+            (message.index >= messageStart.value && message.index < messageStart.value + 50)
         ),
         learning.active?.journey?.timezone || learning.state.timezone
       )
@@ -2352,7 +2427,7 @@ function revealLearningTarget(id, isCurrent = () => true) {
 watch(
   () => learning.error,
   async (error) => {
-    if (!error) return;
+    if (!error || cancelledNotice(error)) return;
     const conversationId = learning.active?.id;
     const isCurrent = () =>
       labVisible.value &&
@@ -2379,7 +2454,7 @@ watch(
 watch(
   () => learning.active?.messages.length || 0,
   (length, before) => {
-    if (!learning.conversationLocation?.day && messageStart.value + 50 >= before)
+    if (!learning.conversationLocation?.day && messageStart.value + 50 >= before && documentFollowingLatest())
       messageStart.value = Math.max(0, length - 50);
   }
 );
@@ -2391,6 +2466,24 @@ onMounted(() => {
 onUnmounted(() => unbindKeyboard());
 // Slot updates can run while the old conversation is being removed.
 const conversationMessages = computed(() => learning.active?.messages || []);
+const correctionOf = ref(null);
+const lastEditableMessage = computed(() =>
+  !learning.activeQuestion && !learning.active?.stopped
+    ? conversationMessages.value.filter((message) => message.role === 'user' && !message.attemptId).at(-1)
+    : null
+);
+function editLastMessage() {
+  if (!lastEditableMessage.value) return;
+  if (learning.busy || learning.reply?.pending) learning.cancel();
+  correctionOf.value = lastEditableMessage.value.id;
+  draft.value = lastEditableMessage.value.content;
+}
+watch(
+  () => learning.selectedConversationId,
+  () => {
+    correctionOf.value = null;
+  }
+);
 const sentenceAnswersByFeedback = computed(() => {
   const session = learning.active;
   const answers = Object.create(null);
@@ -2458,7 +2551,7 @@ const navigationDrafts = workspaceDrafts(learning);
 let navigationDraftBinding;
 let activeDraftSends = 0;
 function saveNavigationDraft() {
-  if (navigationDraftBinding?.context === learning.recordContext())
+  if (appPageAlive && navigationDraftBinding?.context === learning.recordContext())
     navigationDrafts.save(navigationDraftBinding.context, navigationDraftBinding.key, { draft: draft.value });
 }
 watch(
@@ -3017,7 +3110,7 @@ watch(
     showLocator.value = false;
     restorePreview.value = null;
     guestPreview.value = null;
-    draft.value = '';
+    // The synchronous account/conversation binding above restores only this owner's draft.
     feedback.value = '';
     showJourney.value = false;
     profile.value = {
@@ -3061,13 +3154,23 @@ onLoad((options) => {
   if (options.panel === 'profile') showProfile.value = true;
 });
 async function run(action) {
+  const context = learning.recordContext(),
+    previous = learning.reply?.operationId;
+  let operation;
+  const current = () =>
+    context === learning.recordContext() &&
+    (!operation || (learning.reply?.operationId === operation && !learning.reply.cancelled));
   feedback.value = '';
   modelFailure.value = null;
   try {
-    const result = await action();
+    const pending = action();
+    operation = learning.reply?.operationId !== previous ? learning.reply?.operationId : null;
+    const result = await pending;
+    if (!current()) return result;
     if (result?.success === false) modelFailure.value = result;
     return result;
   } catch (e) {
+    if (!current()) return;
     const knownMessage = publicError(e, null);
     if (knownMessage) feedback.value = knownMessage;
     else {
@@ -3165,6 +3268,7 @@ function prepareSubmission(kind, input) {
   });
 }
 function finishSubmission(ticket) {
+  if (!appPageAlive) return false;
   const conversationId =
     ticket.kind === 'send'
       ? learning.state.events.find((event) => event.id === `${ticket.id}:message`)?.data?.conversationId ||
@@ -3187,6 +3291,7 @@ async function send() {
     result = await run(() =>
       learning.send(input, {
         id: ticket.id,
+        ...(correctionOf.value ? { correctionOf: correctionOf.value } : {}),
         chatEntry: true,
         discussionOnly: learning.batchTrainingActive,
         answering: Boolean(learning.activeQuestion) && !learning.batchTrainingActive
@@ -3196,6 +3301,9 @@ async function send() {
     activeDraftSends--;
   }
   if (!finishSubmission(ticket)) return;
+  if (learning.active?.messages.some((message) => message.id === `${ticket.id}:message`)) correctionOf.value = null;
+  if (!ticket.conversationId && learning.active && !feedback.value && !learning.error && !result?.clarification)
+    navigationDrafts.remove(ticket.recordContext, 'chat:new');
   if (
     !feedback.value &&
     !learning.error &&
@@ -3206,7 +3314,7 @@ async function send() {
   // A clarification keeps the draft for explicit submission; failed writes and newer typing stay available.
   if (!feedback.value && !learning.error && !result?.clarification && draft.value.trim() === input) draft.value = '';
   await nextTick();
-  if (!feedback.value && !learning.error)
+  if (!feedback.value && !learning.error && learning.reply?.requestId !== ticket.id && documentFollowingLatest())
     revealLearningTarget(
       learning.active?.stopped
         ? 'learning-stop-state'
@@ -3214,6 +3322,24 @@ async function send() {
           ? 'active-learning-question'
           : 'learning-chat-latest'
     );
+}
+function documentFollowingLatest() {
+  // #ifdef H5
+  const element = learningRoot.value?.$el || learningRoot.value;
+  return element?.closest?.('.space-content')?.dataset.followLatest !== 'false';
+  // #endif
+  // #ifndef H5
+  return false;
+  // #endif
+}
+function dismissOverlay() {
+  for (const open of [showConnections, showMaterial]) {
+    if (open.value) {
+      open.value = false;
+      return true;
+    }
+  }
+  return false;
 }
 async function sendDirective(action) {
   const conversationId = learning.selectedConversationId;
@@ -4207,7 +4333,12 @@ function deleteRecords() {
     content:
       '删除当前用户的新学习记录、材料与恢复副本。旧题库和旧版学习数据保留；未确认原件的无正文定位待办保留，以便核对/取消，识别服务中的原件与云端密钥需另行确认删除。',
     success: (res) => {
-      if (res.confirm) run(() => learning.deleteData());
+      if (res.confirm)
+        run(() => {
+          const copies = createLearningArtifacts();
+          learning.deleteData();
+          copies.clearDeviceState();
+        });
     }
   });
 }
@@ -4414,6 +4545,7 @@ onHide(() => {
   learning.cancelSync({ clearFeedback: true });
 });
 onUnmounted(() => {
+  saveNavigationDraft();
   labVisible.value = false;
   appPageAlive = false;
   cancelRecordFile();

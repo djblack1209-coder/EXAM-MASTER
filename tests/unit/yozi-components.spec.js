@@ -277,7 +277,8 @@ describe('surfaces, feedback and translations', () => {
     expect(render(BaseStat, { label: 'Tasks', value: 3, denominator: 5 }).text()).toContain('/ 5');
     expect(render(BaseBubble, { author: 'user' }, { default: 'Answer' }).attributes('aria-label')).toBe('你的消息');
     expect(render(BaseBubble).findComponent(AnimatedAvatar).exists()).toBe(false);
-    const avatar = render(BaseBubble, { avatar: true }).getComponent(AnimatedAvatar);
+    expect(render(BaseBubble, { avatar: true }).find('.base-bubble__still').exists()).toBe(true);
+    const avatar = render(BaseBubble, { avatar: true, avatarBusiness: { busy: true } }).getComponent(AnimatedAvatar);
     expect(avatar.props('size')).toBe(48);
     expect(avatar.attributes('aria-hidden')).toBe('true');
   });

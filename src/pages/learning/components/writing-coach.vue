@@ -1,6 +1,7 @@
 <template>
   <LearningShell
     active="learning"
+    :notice="cancellationNotice"
     :title="materialTrack ? '计算机专业课' : '考研英语写作'"
     :style="{ '--muse-composer-height': `${composerHeight}px`, '--learning-composer-height': `${composerHeight}px` }"
     @new="newSession"
@@ -53,13 +54,15 @@
                   ? 3000
                   : 400
         "
-        :busy="learning.busy || learning.intakeBusy"
+        :busy="learning.busy || learning.intakeBusy || learning.reply?.pending"
         :disabled="Boolean(coach && (learning.active.stopped || !answerTarget))"
         :submit-disabled="false"
         :attachment-disabled="fileBusy || learning.busy"
         @submit="submitComposer"
         @attach="showMaterials = !showMaterials"
-        @stop="learning.intakeBusy ? learning.cancelModelIntake() : learning.cancel()"
+        @stop="
+          learning.intakeBusy || learning.reply?.kind === 'intake' ? learning.cancelModelIntake() : learning.cancel()
+        "
         @height="composerHeight = $event"
       />
     </template>
@@ -132,7 +135,15 @@
       >
 
       <template v-if="!coach">
-        <MuseModelIntake v-if="!DEV_TEST" ref="intakePanel" v-model="goal" shared-input @accepted="acceptedProfile" />
+        <MuseChatEmpty v-if="showChatEmpty" connected @draft="goal = $event" />
+        <MuseModelIntake
+          v-if="!DEV_TEST"
+          ref="intakePanel"
+          v-model="goal"
+          :empty-greeting="showChatEmpty"
+          shared-input
+          @accepted="acceptedProfile"
+        />
       </template>
 
       <BaseCard v-else-if="learning.active.stopped" padding="large"
@@ -193,14 +204,18 @@
 
           <BaseButton v-if="!loggedIn" variant="primary" @tap="login">登录后开始带练</BaseButton>
           <text v-if="yesterday" class="coach-muted">{{ reentryText }}</text>
-          <view v-if="learning.busy && !learning.streamPreview" class="reply-state" role="status">
-            <view class="reply-dots" aria-hidden="true"><view /><view /><view /></view>
-            <text class="reply-state__label">{{ t('learning.replying') }}</text>
-          </view>
-          <BaseBubble v-if="learning.streamPreview" class="stream-preview" aria-live="polite">
-            <text>{{ learning.streamPreview }}</text>
+          <BaseBubble
+            v-if="coachReply"
+            :id="coachReply.id"
+            :data-reply-pending="coachReply.pending ? 'true' : undefined"
+            avatar
+            :avatar-identity="coachReply.id"
+            :avatar-business="{ busy: coachReply.pending, producing: coachReply.pending && !!coachReply.content }"
+            class="coach-reply"
+            aria-live="polite"
+          >
+            <LearningMessage :content="coachReply.content" :pending="coachReply.pending" />
           </BaseBubble>
-          <BaseButton v-if="learning.busy" variant="quiet" @tap="learning.cancel()">取消等待</BaseButton>
         </view>
 
         <BaseCard
@@ -227,6 +242,14 @@
             <text v-if="record.source" class="coach-muted">{{ sourceLabel(record.source) }}</text>
             <text v-if="record.source?.quote" class="coach-muted" selectable>{{ record.source.quote }}</text>
             <text class="coach-user-message" selectable>{{ record.answer }}</text>
+            <BaseButton
+              v-if="record.phase === 'essay' && artifactForDay(record.day)"
+              variant="quiet"
+              icon="file-text"
+              :data-essay-artifact="artifactForDay(record.day).id"
+              @tap="openStudentArtifact(learning, artifactForDay(record.day))"
+              >打开文档</BaseButton
+            >
             <text
               v-if="
                 record.phase === 'essay' &&
@@ -469,6 +492,13 @@
               </BaseCard>
               <BaseCard v-else-if="!materialTrack && !day.essay"
                 ><text class="coach-title">你的全文</text
+                ><BaseButton
+                  v-if="artifactForDay(day.day)"
+                  variant="quiet"
+                  icon="file-text"
+                  :data-essay-artifact="artifactForDay(day.day).id"
+                  @tap="openStudentArtifact(learning, artifactForDay(day.day))"
+                  >打开文档</BaseButton
                 ><text v-for="paragraph in day.rewrites" :key="paragraph.id" class="coach-saved">{{
                   paragraph.text
                 }}</text
@@ -526,7 +556,7 @@
         >
       </template>
       <BaseCard
-        v-if="message || learning.coachError || learning.error"
+        v-if="!cancellationNotice && (message || learning.coachError || learning.error)"
         :id="DEV_TEST ? 'coach-action-error' : undefined"
         :role="modelFailure?.error === 'NEEDS_CONNECTION' ? 'status' : 'alert'"
         ><text>{{
@@ -537,15 +567,19 @@
   </LearningShell>
 </template>
 <script setup>
-import { computed, ref, reactive, watch, onMounted, onUnmounted, nextTick } from 'vue';
+import { visibleReply, cancelledNotice } from '@/services/learning/shell-navigation.js';
+import { studentEssaySources, openStudentArtifact } from '@/services/learning/learning-artifacts.js';
+import { computed, ref, reactive, watch, onMounted, onBeforeUnmount, onUnmounted, nextTick } from 'vue';
 import { coachSavedRecords } from '../../../../laf-backend/functions/_shared/learning-coach-records.js';
 import { coachDueItem } from '../../../../laf-backend/functions/_shared/learning-reminders.js';
 import { workspaceDrafts } from '@/services/learning/workspace-drafts.js';
 import BaseBubble from '@/components/base/base-bubble/base-bubble.vue';
+import LearningMessage from './learning-message.vue';
 import '@/i18n/muse.js';
 import { t } from '@/i18n/index.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import MuseComposer from '@/components/business/learning/muse-composer.vue';
+import MuseChatEmpty from '@/components/business/learning/muse-chat-empty.vue';
 import MuseModelControl from '@/components/business/learning/muse-model-control.vue';
 import MuseModelFeedback from '@/components/business/learning/muse-model-feedback.vue';
 import { modelErrorPresentation } from '../../../../laf-backend/functions/_shared/model-errors.js';
@@ -589,6 +623,7 @@ const theme = useThemeStore(),
 const profileStep = ref(0);
 const composerHeight = ref(60);
 const intakePanel = ref(null);
+const showChatEmpty = computed(() => props.connectionTone === 'mint' && !learning.state.intake && !learning.intakeBusy);
 const goal = ref(''),
   answer = ref(''),
   materialText = ref(''),
@@ -674,6 +709,14 @@ const analysisFields = [
 ];
 const analysis = reactive(Object.fromEntries(analysisFields.map((f) => [f.key, ''])));
 const coach = computed(() => learning.active?.coach);
+const cancellationNotice = computed(() => cancelledNotice(learning.error));
+const coachReply = computed(() =>
+  learning.reply?.kind === 'coach' &&
+  learning.reply.conversationId === learning.active?.id &&
+  visibleReply(learning.reply)
+    ? learning.reply
+    : null
+);
 const materialTrack = computed(() => coachUsesMaterials(coach.value) || profile.subject === 'kaoyan_major');
 const today = computed(() => dayKey(learning.calendarTime, learning.state.timezone));
 const day = computed(() => coach.value?.days.find((d) => d.day === today.value));
@@ -712,6 +755,10 @@ const cardAnswer = computed(() => day.value?.answers.find((a) => a.cardId === tr
 const paragraphIndex = computed(() => day.value?.rewrites.length || 0);
 const historyLimit = ref(1);
 const savedPractice = computed(() => coachSavedRecords(learning.active));
+const essayArtifacts = computed(() =>
+  studentEssaySources(learning.state).filter((item) => item.conversationId === learning.active?.id)
+);
+const artifactForDay = (day) => essayArtifacts.value.filter((item) => item.day === day).at(-1);
 const visiblePractice = computed(() => savedPractice.value.slice(-historyLimit.value));
 watch(
   () => learning.selectedConversationId,
@@ -807,7 +854,14 @@ async function submitComposer() {
     const previousConversation = learning.selectedConversationId;
     if (!DEV_TEST && !learning.state.intake?.acceptedConversationId) {
       const result = await intakePanel.value?.submitDraft();
-      if (result?.success) goal.value = '';
+      if (
+        draftAlive &&
+        submittedDraft === draftBinding &&
+        submittedDraft.context === learning.recordContext() &&
+        result?.success &&
+        goal.value.trim() === input
+      )
+        goal.value = '';
       return;
     }
     emit('general', input);
@@ -839,9 +893,10 @@ calendar.show();
 onUnmounted(() => calendar.dispose());
 const drafts = workspaceDrafts(learning);
 let draftBinding;
+let draftAlive = true;
 let restoringDraft = false;
 function saveDraft() {
-  if (!restoringDraft && draftBinding && draftBinding.context === learning.recordContext())
+  if (draftAlive && !restoringDraft && draftBinding && draftBinding.context === learning.recordContext())
     drafts.save(draftBinding.context, draftBinding.key, {
       answer: answer.value,
       goal: goal.value,
@@ -900,23 +955,38 @@ watch(
   { immediate: true, flush: 'sync' }
 );
 watch([answer, goal, profile, profileStep], saveDraft, { deep: true, flush: 'sync' });
+onBeforeUnmount(() => {
+  saveDraft();
+  draftAlive = false;
+});
 async function revealCurrentTurn() {
   await nextTick();
   // #ifdef H5
   if (!learning.locatedRecord && typeof document !== 'undefined')
-    document.getElementById('coach-current-turn')?.scrollIntoView?.({ block: 'end' });
+    if (document.querySelector('.space-content')?.dataset.followLatest !== 'false')
+      document.getElementById('coach-current-turn')?.scrollIntoView?.({ block: 'end' });
   // #endif
 }
 onMounted(revealCurrentTurn);
 watch([() => savedPractice.value.length, () => coach.value?.profile], revealCurrentTurn);
 async function act(action) {
+  const context = learning.recordContext(),
+    previous = learning.reply?.operationId;
+  let operation;
+  const current = () =>
+    context === learning.recordContext() &&
+    (!operation || (learning.reply?.operationId === operation && !learning.reply.cancelled));
   message.value = '';
   try {
     modelFailure.value = null;
-    const result = await action();
+    const pending = action();
+    operation = learning.reply?.operationId !== previous ? learning.reply?.operationId : null;
+    const result = await pending;
+    if (!current()) return result;
     if (result?.success === false) modelFailure.value = result;
     return result;
   } catch (error) {
+    if (!current()) return;
     modelFailure.value = { error: error.code || 'MODEL_FAILED' };
     message.value = modelErrorPresentation(modelFailure.value).message;
     if (DEV_TEST) {
@@ -927,6 +997,8 @@ async function act(action) {
   }
 }
 function acceptedProfile(conversation) {
+  if (!draftAlive) return;
+  drafts.remove(learning.recordContext(), `coach:new:${today.value}`);
   goal.value = '';
   if (!conversation.coach) emit('general', { conversationId: conversation.id });
 }
@@ -1225,7 +1297,8 @@ function login() {
   border-radius: 22px;
   color: var(--muse-user-ink);
   background: var(--muse-user);
-  line-height: 22px;
+  font-size: 16px;
+  line-height: 26px;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }

@@ -221,3 +221,56 @@ it('混合摸底拒收后保留五项原答、关闭失败意图并允许下一�
   expect(store.active.coach.diagnostic.feedback).toBeTruthy();
   expect(store.active.coach.diagnostic.answers.map(({ cardId, answer }) => ({ cardId, answer }))).toEqual(answers);
 });
+
+it('S3 restores an earlier selected conversation and its connection after store recreation', async () => {
+  store.start('First conversation');
+  const first = store.active.id;
+  store.start('Latest conversation');
+  store.locateConversation(first);
+  fetchLearningModels.mockResolvedValue(
+    catalog([connection('first'), connection('second')], { selectedModelId: 'second', sharingAllowed: true })
+  );
+  await store.loadModels();
+  store.$dispose();
+  setActivePinia(createPinia());
+  store = useConversationLearningStore();
+  expect(store.selectedConversationId).toBe(first);
+  expect(store.modelId).toBe('second');
+  expect(store.selectedMode).toBe('offline');
+  await store.loadModels();
+  expect(store.selectedMode).toBe('cloud');
+  expect(store.models).toHaveLength(2);
+  await store.selectModel('first');
+  expect(store.modelId).toBe('first');
+});
+it('S3 a retired selection is explicit and another saved connection remains selectable', async () => {
+  fetchLearningModels.mockResolvedValue(
+    catalog([connection('second')], { selectedModelId: 'retired', sharingAllowed: true })
+  );
+  await store.loadModels();
+  expect(store.modelId).toBe('');
+  expect(store.selectedMode).toBe('offline');
+  expect(store.modelListState.selectionError).toBe('MODEL_NOT_FOUND');
+  await store.selectModel('second');
+  expect(store.modelId).toBe('second');
+  expect(generateLearningTurn).not.toHaveBeenCalled();
+});
+it('S3 switching accounts cannot retain the other owner selection or receive a late catalog', async () => {
+  let finish;
+  fetchLearningModels.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      })
+  );
+  const pending = store.loadModels();
+  const rejected = expect(pending).rejects.toMatchObject({ code: 'CONTEXT_CHANGED' });
+  await vi.waitFor(() => expect(finish).toBeTruthy());
+  await login('second-owner');
+  store.refresh();
+  finish(catalog([connection('private-first')], { selectedModelId: 'private-first', sharingAllowed: true }));
+  await rejected;
+  expect(store.models).toEqual([]);
+  expect(store.modelId).toBe('');
+  expect(store.selectedConversationId).toBeNull();
+});

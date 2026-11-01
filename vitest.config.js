@@ -7,8 +7,10 @@
 import { defineConfig } from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
+import { fileURLToPath } from 'node:url';
 import crypto from 'crypto';
 import { readYoziTokens } from './scripts/build/read-yozi-tokens.mjs';
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 // Polyfill crypto.hash for Node < 20.12 (used by @vitejs/plugin-vue@6 internally)
 if (typeof crypto.hash !== 'function') {
@@ -18,6 +20,10 @@ if (typeof crypto.hash !== 'function') {
 }
 
 export default defineConfig({
+  cacheDir:
+    process.env.YOZI_ISOLATED_BUILD === '1' || process.env.WENLI_ISOLATED_BUILD === '1'
+      ? resolve(__dirname, 'tmp/vitest-cache')
+      : undefined,
   envDir: process.env.YOZI_ISOLATED_BUILD === '1' || process.env.WENLI_ISOLATED_BUILD === '1' ? false : undefined,
   define: { __YOZI_TOKENS__: JSON.stringify(readYoziTokens()) },
   plugins: [vue()],

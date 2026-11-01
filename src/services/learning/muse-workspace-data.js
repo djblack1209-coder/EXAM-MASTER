@@ -6,6 +6,7 @@ import { dayKey, effectiveGrade, questionKey } from './learning-domain.js';
 import { museSafeLink } from './muse-rich-content.js';
 import { conversationCategoryId, conversationLabel } from './workspace-context.js';
 import { coachFeedbackPreview, museLearningInsights } from './muse-learning-insights.js';
+import { studentEssaySources } from './learning-artifacts.js';
 
 // Display-only academic subjects. A task type alone never establishes a subject.
 export function museSubjects(source = {}, includeGoal = false) {
@@ -224,6 +225,7 @@ export function museActivity(state) {
 }
 
 export function museArtifacts(state) {
+  const essays = studentEssaySources(state);
   const output = state.materials.map((material) => ({
     id: `material:${material.id}`,
     materialId: material.id,
@@ -329,7 +331,10 @@ export function museArtifacts(state) {
         icon: 'list',
         detail: `${day.answers.length} / ${day.pack.cards.length}`
       });
-      if (day.drafts.length || day.rewrites.length)
+      if (
+        (day.drafts.length || day.rewrites.length) &&
+        !essays.some((item) => item.conversationId === conversation.id && item.day === day.day)
+      )
         output.push({
           ...common,
           id: `writing:${conversation.id}:${day.day}`,
@@ -349,6 +354,7 @@ export function museArtifacts(state) {
         });
     }
   }
+  output.push(...essays);
   return output.sort((a, b) => b.at - a.at);
 }
 

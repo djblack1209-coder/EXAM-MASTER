@@ -24,6 +24,17 @@
         >{{ item.label }}</BaseButton
       >
       <BaseButton
+        class="rail-settings"
+        variant="quiet"
+        icon="equal"
+        :label="t('nav.settings')"
+        :title="t('nav.settings')"
+        :icon-only="collapsed"
+        :selected="panel === 'settings'"
+        @tap="panel = 'settings'"
+        >{{ t('nav.settings') }}</BaseButton
+      >
+      <BaseButton
         v-if="signedIn"
         class="rail-logout"
         variant="quiet"
@@ -103,6 +114,11 @@
           ><a class="portal-download-link" :href="MAC_DOWNLOAD.url" download>下载 Mac 版</a>
         </article>
       </section>
+      <section v-else-if="panel === 'settings'" class="portal-content portal-settings">
+        <h1>{{ t('nav.settings') }}</h1>
+        <BaseButton variant="quiet" @tap="policy('privacy')">隐私政策</BaseButton>
+        <BaseButton variant="quiet" @tap="policy('terms')">用户协议</BaseButton>
+      </section>
       <section v-else class="portal-content">
         <text class="portal-eyebrow">YOUR ACCOUNT</text>
         <h1>One account.<br />Your own progress.</h1>
@@ -123,6 +139,8 @@ import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import { onHide, onShow } from '@dcloudio/uni-app';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import ProgressOverview from '@/components/business/learning/progress/progress-overview.vue';
+import { t } from '@/i18n/index.js';
+import '@/i18n/muse.js';
 import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
 import { captureSession, checkSession } from '@/services/auth-storage.js';
 import { readLearningSnapshot } from '@/services/learning/learning-sync.js';
@@ -297,8 +315,13 @@ onBeforeUnmount(() => {
 .portal-rail :deep(.is-selected) {
   background: #e2e1d8;
 }
-.rail-logout {
+.rail-settings {
   margin-top: auto;
+}
+.portal-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 .portal-main {
   min-width: 0;
@@ -560,7 +583,7 @@ p,
 .sidebar-collapsed .portal-rail :deep(.base-button:active) {
   transform: scale(0.98);
 }
-.sidebar-collapsed .rail-logout {
+.sidebar-collapsed .rail-settings {
   margin-top: auto;
 }
 @media (prefers-reduced-motion: reduce) {

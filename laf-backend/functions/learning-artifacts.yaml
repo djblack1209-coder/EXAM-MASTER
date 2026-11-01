@@ -1,0 +1,5 @@
+name: learning-artifacts
+desc: JWT用户隔离的作文副本与CAS版本，不修改学习事实
+methods:
+  - POST
+tags: []

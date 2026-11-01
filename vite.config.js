@@ -6,6 +6,7 @@ import { appBootPlugin } from './scripts/build/app-boot.mjs';
 import { defineConfig, loadEnv } from 'vite';
 import uniModule from '@dcloudio/vite-plugin-uni';
 import path from 'path';
+import { fileURLToPath } from 'node:url';
 import fs from 'fs';
 import { createRequire } from 'module';
 import { normalizeAppRuntimeIndexFile } from './scripts/build/app-runtime-html.js';
@@ -13,6 +14,7 @@ import { copyPwaIconAssets, copyPwaRuntimeAssets } from './scripts/build/pwa-ass
 import { VitePWA } from 'vite-plugin-pwa';
 import { compression, defineAlgorithm } from 'vite-plugin-compression2';
 import postcssColorMixFallback from './scripts/build/postcss-color-mix-fallback.js';
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 const require = createRequire(path.join(process.cwd(), 'vite.config.js'));
 const uniCliSharedUtils = require('@dcloudio/uni-cli-shared/dist/utils.js');
@@ -336,6 +338,7 @@ export default defineConfig(({ command, mode }) => {
   console.log(`[Vite] Building for mode: ${mode}, command: ${command}, platform: ${platform || 'unknown'}`);
 
   return {
+    cacheDir: isolatedBuild ? path.resolve(viteRootDir, 'tmp/vite-cache') : undefined,
     root: viteRootDir,
 
     base: isAppPlus ? './' : '/',

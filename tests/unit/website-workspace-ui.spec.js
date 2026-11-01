@@ -132,3 +132,13 @@ describe('personal progress workspace', () => {
     expect(wrapper.text()).not.toContain('99');
   });
 });
+
+it('S3 website settings remain reachable at the bottom through existing read-only policy pages', async () => {
+  render(false);
+  const before = mocks.read.mock.calls.length;
+  await wrapper.get('.rail-settings').trigger('tap');
+  expect(wrapper.find('.portal-settings').exists()).toBe(true);
+  expect(wrapper.find('.portal-settings input, .portal-settings textarea').exists()).toBe(false);
+  expect(wrapper.findAll('.portal-settings button').map((button) => button.text())).toEqual(['隐私政策', '用户协议']);
+  expect(mocks.read).toHaveBeenCalledTimes(before);
+});

@@ -75,6 +75,18 @@
           >
         </template>
         <template v-else-if="view === 'plan'">
+          <view class="workspace-filters goal-entry-links">
+            <BaseButton variant="quiet" icon="calendar" :disabled="learning.busy" @tap="openToday">{{
+              t('tutor.insights.todayPlan')
+            }}</BaseButton>
+            <BaseButton
+              variant="quiet"
+              icon="refresh"
+              :disabled="learning.busy"
+              @tap="safeNavigateTo('/pages/learning/review')"
+              >分批复习</BaseButton
+            >
+          </view>
           <ConversationEntries />
           <view v-if="current" class="goals-hero"
             ><view class="goal-hero-main"
@@ -155,6 +167,7 @@ import MuseConversationFilter from './muse-conversation-filter.vue';
 import { workspaceConversationContext } from '@/services/learning/workspace-context.js';
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import '@/i18n/muse.js';
+import '@/i18n/tutor.js';
 import { t } from '@/i18n/index.js';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { dayKey } from '@/services/learning/learning-domain.js';
@@ -255,6 +268,12 @@ function open(id, day) {
   if (learning.busy) return;
   learning.locateConversation(id, day);
   safeNavigateTo('/pages/learning/index');
+}
+function openToday() {
+  if (learning.busy) return;
+  const id = current.value?.id || learning.selectedConversationId;
+  if (id) open(id);
+  else safeNavigateTo('/pages/learning/index');
 }
 function start() {
   if (learning.busy) return;

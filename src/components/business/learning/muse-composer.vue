@@ -35,14 +35,15 @@
       :maxlength="maxlength"
       multiline
       auto-grow
-      :max-rows="5"
+      :max-rows="7"
+      focus-visible-only
       hide-label
       :disabled="disabled"
       :readonly="voice.active"
       @update:model-value="emit('update:modelValue', $event)"
     />
     <BaseButton
-      v-if="voice.capability.platform === 'macos' && !voice.active"
+      v-if="voiceEntryEnabled && voice.capability.platform === 'macos' && !voice.active"
       class="muse-attach"
       variant="quiet"
       icon-only
@@ -97,6 +98,8 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:modelValue', 'submit', 'attach', 'stop', 'height']);
 const root = ref(null);
+// Retain implementation; expose only after native voice acceptance (director A5).
+const voiceEntryEnabled = false;
 const voice = useVoiceDictation(
   props,
   emit,
@@ -113,6 +116,13 @@ const voiceMessage = computed(() => {
 });
 const instance = getCurrentInstance();
 let observer, keyTarget;
+let composing = false;
+const compositionStart = () => {
+  composing = true;
+};
+const compositionEnd = () => {
+  composing = false;
+};
 function measureNative() {
   // #ifndef H5
   uni
@@ -126,7 +136,7 @@ function measureNative() {
   // #endif
 }
 function submit() {
-  if (voice.active) return;
+  if (voice.active || composing) return;
   if (!props.disabled && !props.submitDisabled && !props.busy && props.modelValue.trim()) emit('submit');
 }
 function keydown(event) {
@@ -135,7 +145,7 @@ function keydown(event) {
     voice.cancel();
     return;
   }
-  if (event.key !== 'Enter' || event.shiftKey || event.isComposing || event.keyCode === 229) return;
+  if (event.key !== 'Enter' || event.shiftKey || composing || event.isComposing || event.keyCode === 229) return;
   if (event.target?.tagName?.toLowerCase() !== 'textarea') return;
   event.preventDefault();
   event.stopPropagation();
@@ -147,6 +157,8 @@ onMounted(() => {
   // uni-view normalizes away target, shiftKey and IME fields on keyboard events.
   keyTarget = element;
   keyTarget?.addEventListener('keydown', keydown);
+  keyTarget?.addEventListener('compositionstart', compositionStart);
+  keyTarget?.addEventListener('compositionend', compositionEnd);
   if (element?.getBoundingClientRect) emit('height', Math.ceil(element.getBoundingClientRect().height));
   if (element && typeof ResizeObserver !== 'undefined') {
     observer = new ResizeObserver(() => emit('height', Math.ceil(element.getBoundingClientRect().height)));
@@ -159,6 +171,8 @@ onUpdated(measureNative);
 onBeforeUnmount(() => {
   observer?.disconnect();
   keyTarget?.removeEventListener('keydown', keydown);
+  keyTarget?.removeEventListener('compositionstart', compositionStart);
+  keyTarget?.removeEventListener('compositionend', compositionEnd);
 });
 </script>
 <style scoped>
@@ -166,13 +180,15 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: flex-end;
   gap: 4px;
-  min-height: 58px;
-  padding: 7px 6px;
-  border-radius: 32px;
+  box-sizing: border-box;
+  min-height: 54px;
+  padding: 5px 6px;
+  border-radius: 27px;
   background: var(--muse-composer);
   box-shadow: 0 2px 8px #00000014;
-  backdrop-filter: blur(36px);
-  -webkit-backdrop-filter: blur(36px);
+  --field-grow-min: 22px;
+  --field-grow-line: 22px;
+  --field-grow-padding: 0px;
 }
 .muse-composer-field {
   flex: 1;
@@ -208,10 +224,6 @@ onBeforeUnmount(() => {
   justify-content: flex-end;
   gap: var(--s-2);
 }
-.muse-composer:focus-within {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-}
 .muse-composer :deep(.base-field__group) {
   outline: none !important;
   background: transparent;
@@ -222,10 +234,16 @@ onBeforeUnmount(() => {
   padding: 0;
 }
 .muse-composer :deep(.base-field__input) {
-  padding: 10px 0;
-  min-height: 44px;
-  line-height: 24px;
+  padding: 0;
+  margin: 11px 0;
+  min-height: 22px;
+  max-height: 154px;
+  line-height: 22px;
   font-size: 15px;
+}
+.muse-composer :deep(.is-keyboard-focused .base-field__input) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 .muse-composer .muse-attach {
   min-width: 44px;
@@ -252,14 +270,18 @@ onBeforeUnmount(() => {
   inset: 6px;
   z-index: -1;
   border-radius: 50%;
-  background: #0074e8;
+  background: var(--clay-face);
+  transition: background-color 150ms var(--ease);
+}
+.muse-composer .muse-send:not([disabled]):hover::before {
+  background: var(--clay-face-hover);
 }
 .muse-composer .muse-send[disabled] {
   background: transparent;
   opacity: 1;
 }
 .muse-composer .muse-send[disabled]::before {
-  background: #0074e866;
+  opacity: 0.4;
 }
 .muse-composer .muse-send[disabled] :deep(.base-icon) {
   color: var(--ink-3) !important;

@@ -1,6 +1,6 @@
 <template>
   <view v-if="!intake?.acceptedConversationId" class="model-intake" aria-live="polite">
-    <view v-if="!intake" class="intake-agent">
+    <view v-if="!intake && !emptyGreeting" class="intake-agent">
       <text>连接自己的 API 后，告诉我你想学什么。</text>
       <BaseButton
         v-if="learning.modelId && !learning.needsConnection"
@@ -11,75 +11,87 @@
       >
     </view>
     <template v-for="(turn, index) in intake?.turns || []" :key="index">
-      <view class="intake-agent"
-        ><text selectable>{{ turn.question }}</text></view
+      <BaseBubble avatar
+        ><text selectable>{{ turn.question }}</text></BaseBubble
       >
-      <view class="intake-user"
-        ><text selectable>{{ turn.answer }}</text></view
+      <BaseBubble author="user"
+        ><text selectable>{{ turn.answer }}</text></BaseBubble
       >
     </template>
-    <view v-if="intake?.status === 'ready' && reply" class="intake-agent">
-      <text class="intake-question" selectable>{{ reply.message }}</text>
-      <template v-if="proposal">
-        <view class="intake-profile">
-          <text>{{ proposal.goal }}</text>
-          <text v-if="proposal.subjects.length">{{ proposal.subjects.join(' · ') }}</text>
-          <text v-if="proposal.minutes">每天 {{ proposal.minutes }} 分钟</text>
-          <text v-if="proposal.deadline">{{ proposal.deadline }}</text>
-          <text v-if="proposal.foundation">{{ proposal.foundation }}</text>
-        </view>
-        <BaseButton variant="primary" :disabled="learning.intakeBusy" @tap="accept">确认目标</BaseButton>
-        <BaseButton variant="quiet" @tap="editing = !editing">修改回答</BaseButton>
-        <template v-if="editing"
-          ><BaseInput
-            v-if="!sharedInput"
+    <BaseBubble
+      v-if="(intake?.status === 'ready' && reply) || learning.reply?.kind === 'intake' || learning.intakeBusy"
+      avatar
+      class="intake-reply"
+      :data-reply-pending="learning.intakeBusy || learning.reply?.pending ? 'true' : undefined"
+      :avatar-identity="learning.reply?.id || intake?.requestId || 'intake'"
+      :avatar-business="{ busy: learning.intakeBusy || !!learning.reply?.pending, producing: false }"
+    >
+      <LearningMessage
+        pending-label="正在等待回复…"
+        :pending="learning.intakeBusy || !!learning.reply?.pending"
+        :content="intake?.status === 'ready' ? reply?.message : ''"
+      />
+      <template v-if="intake?.status === 'ready' && reply">
+        <template v-if="proposal">
+          <view class="intake-profile">
+            <text>{{ proposal.goal }}</text>
+            <text v-if="proposal.subjects.length">{{ proposal.subjects.join(' · ') }}</text>
+            <text v-if="proposal.minutes">每天 {{ proposal.minutes }} 分钟</text>
+            <text v-if="proposal.deadline">{{ proposal.deadline }}</text>
+            <text v-if="proposal.foundation">{{ proposal.foundation }}</text>
+          </view>
+          <BaseButton variant="primary" :disabled="learning.intakeBusy" @tap="accept">确认目标</BaseButton>
+          <BaseButton variant="quiet" @tap="editing = !editing">修改回答</BaseButton>
+          <template v-if="editing"
+            ><BaseInput
+              v-if="!sharedInput"
+              v-model="input"
+              label="修改回答"
+              hide-label
+              placeholder="输入你的调整"
+              maxlength="500"
+            /><BaseButton
+              variant="primary"
+              :disabled="!input.trim() || learning.intakeBusy"
+              @tap="act(() => learning.answerModelIntake(input.trim()))"
+              >发送</BaseButton
+            ></template
+          >
+        </template>
+        <BaseButton v-else-if="intake.turns.length >= 4" variant="quiet" @tap="act(() => learning.restartModelIntake())"
+          >重新选择方向</BaseButton
+        >
+        <template v-else>
+          <BaseOptions
+            v-if="reply.intake.options.length"
+            v-model="choice"
+            :label="reply.message"
+            :options="reply.intake.options"
+            :disabled="learning.intakeBusy"
+          />
+          <BaseInput
+            v-if="!sharedInput && reply.intake.input && (!reply.intake.options.length || choice === 'other')"
             v-model="input"
-            label="修改回答"
+            label="你的回答"
             hide-label
-            placeholder="输入你的调整"
+            placeholder="输入你的回答"
             maxlength="500"
-          /><BaseButton
-            variant="primary"
-            :disabled="!input.trim() || learning.intakeBusy"
-            @tap="act(() => learning.answerModelIntake(input.trim()))"
-            >发送</BaseButton
-          ></template
-        >
+          />
+          <BaseButton variant="primary" :disabled="learning.intakeBusy || !answer" @tap="submit">发送</BaseButton>
+          <BaseButton
+            v-if="!reply.intake.options.some((item) => /尚未确定|不确定|跳过/.test(item.label))"
+            variant="quiet"
+            :disabled="learning.intakeBusy"
+            @tap="act(() => learning.answerModelIntake('跳过'))"
+            >跳过</BaseButton
+          >
+        </template>
       </template>
-      <BaseButton v-else-if="intake.turns.length >= 4" variant="quiet" @tap="act(() => learning.restartModelIntake())"
-        >重新选择方向</BaseButton
-      >
-      <template v-else>
-        <BaseOptions
-          v-if="reply.intake.options.length"
-          v-model="choice"
-          :label="reply.message"
-          :options="reply.intake.options"
-          :disabled="learning.intakeBusy"
-        />
-        <BaseInput
-          v-if="!sharedInput && reply.intake.input && (!reply.intake.options.length || choice === 'other')"
-          v-model="input"
-          label="你的回答"
-          hide-label
-          placeholder="输入你的回答"
-          maxlength="500"
-        />
-        <BaseButton variant="primary" :disabled="learning.intakeBusy || !answer" @tap="submit">发送</BaseButton>
-        <BaseButton
-          v-if="!reply.intake.options.some((item) => /尚未确定|不确定|跳过/.test(item.label))"
-          variant="quiet"
-          :disabled="learning.intakeBusy"
-          @tap="act(() => learning.answerModelIntake('跳过'))"
-          >跳过</BaseButton
-        >
-      </template>
-    </view>
-    <view v-if="learning.intakeBusy" class="intake-status reply-state" role="status">
-      <view class="reply-dots" aria-hidden="true"><view /><view /><view /></view>
-      <text class="reply-state__label">正在等待回复…</text>
-    </view>
-    <view v-else-if="['pending', 'failed'].includes(intake?.status)" class="intake-agent">
+    </BaseBubble>
+    <view
+      v-if="!learning.intakeBusy && !learning.reply?.pending && ['pending', 'failed'].includes(intake?.status)"
+      class="intake-agent"
+    >
       <text role="status">{{
         learning.intakeError ||
         modelErrorPresentation({
@@ -102,10 +114,12 @@ import { useConversationLearningStore } from '@/stores/modules/conversation-lear
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseOptions from '@/components/base/base-options/base-options.vue';
+import BaseBubble from '@/components/base/base-bubble/base-bubble.vue';
+import LearningMessage from '@/pages/learning/components/learning-message.vue';
 import MuseModelFeedback from './muse-model-feedback.vue';
 import { modelErrorPresentation } from '../../../../laf-backend/functions/_shared/model-errors.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
-const props = defineProps({ sharedInput: Boolean, modelValue: { type: String, default: '' } });
+const props = defineProps({ sharedInput: Boolean, emptyGreeting: Boolean, modelValue: { type: String, default: '' } });
 const emit = defineEmits(['accepted', 'update:modelValue']);
 const learning = useConversationLearningStore();
 const editing = ref(false);
@@ -129,7 +143,9 @@ watch(
   () => {
     editing.value = false;
     choice.value = '';
-    input.value = '';
+    // The shared composer owns its draft and clears only a confirmed, unchanged
+    // submission. A new request id must not erase typing during model intake.
+    if (!props.sharedInput) input.value = '';
     failure.value = null;
   }
 );
@@ -137,12 +153,22 @@ function failureState(value) {
   failure.value = value;
 }
 async function act(action) {
+  const context = learning.recordContext(),
+    previous = learning.reply?.operationId;
+  let operation;
+  const current = () =>
+    context === learning.recordContext() &&
+    (!operation || (learning.reply?.operationId === operation && !learning.reply.cancelled));
   failure.value = null;
   try {
-    const result = await action();
+    const pending = action();
+    operation = learning.reply?.operationId !== previous ? learning.reply?.operationId : null;
+    const result = await pending;
+    if (!current()) return result;
     if (result?.success === false) failure.value = result;
     return result;
   } catch (failure) {
+    if (!current()) return;
     failureState({ error: failure.code || 'MODEL_FAILED' });
   }
 }
@@ -231,6 +257,12 @@ function accept() {
   border-radius: 20px 20px 4px 20px;
   padding: 10px 16px;
   line-height: 1.6;
+}
+.intake-reply :deep(.base-bubble__content) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
 }
 .intake-profile {
   display: flex;

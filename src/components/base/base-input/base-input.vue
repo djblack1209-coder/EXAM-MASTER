@@ -210,7 +210,7 @@ const emit = defineEmits(['update:modelValue', 'resend', 'focus', 'blur', 'input
 const textarea = ref(null);
 const nativeRows = ref(1);
 const nativeGrowingStyle = computed(() => ({
-  height: `max(var(--touch-min), calc(var(--leading-body) * ${nativeRows.value} + var(--s-2) * 2))`
+  height: `max(var(--field-grow-min, var(--touch-min)), calc(var(--field-grow-line, var(--leading-body)) * ${nativeRows.value} + var(--field-grow-padding, calc(var(--s-2) * 2))))`
 }));
 function resizeTextarea() {
   // #ifdef H5

@@ -16,7 +16,10 @@
       'is-chat': active === 'learning',
       'is-library': ['archive', 'plan', 'phrases', 'materials', 'usage'].includes(active),
       'is-settings': active === 'settings' || active === 'profile',
-      'has-composer': !!$slots.composer
+      'is-desktop-settings': nativeSettings,
+      'has-notice': !!notice,
+      'has-composer': !!$slots.composer,
+      'has-artifact': !!artifactTarget
     }"
     :style="[platformInsets, dockStyle, { '--muse-panel-width': `${panelWidth}px` }]"
   >
@@ -36,7 +39,7 @@
           variant="quiet"
           :label="BRAND.name"
           @tap="openView('learning')"
-          ><AnimatedAvatar :size="56" autoplay perceptible :business="avatarBusiness"
+          ><image :src="BRAND.mark" mode="aspectFit" style="width: 56px; height: 56px" aria-hidden="true"
         /></BaseButton>
         <view class="rail-body">
           <view class="rail-group">
@@ -279,15 +282,15 @@
                   >
                     <view v-for="chapter in directoryDays" :key="chapter.day" class="directory-day">
                       <BaseButton
-                        class="directory-date"
-                        align="start"
-                        :disabled="learning.busy"
-                        :aria-disabled="learning.busy"
+                        v-if="learning.timeline.length > 1"
+                        class="directory-day-link"
                         variant="quiet"
+                        icon="calendar"
+                        icon-only
+                        :label="`查看原对话 · ${chapter.day}`"
+                        :disabled="learning.busy"
                         @tap="locate(conversation.id, chapter.day)"
-                      >
-                        {{ chapter.day.slice(5).replace('-', ' / ') }}
-                      </BaseButton>
+                      />
                       <BaseButton
                         v-for="group in chapter.groups"
                         :key="group.id"
@@ -329,12 +332,12 @@
           tabindex="0"
           aria-orientation="vertical"
           :aria-label="t('muse.resize')"
-          :aria-valuemin="240"
+          :aria-valuemin="180"
           :aria-valuemax="420"
           :aria-valuenow="panelWidth"
           @pointerdown="startPanelResize"
           @keydown="resizePanelKey"
-          @dblclick="panelWidth = 240"
+          @dblclick="resetPanelWidth"
         />
         <!-- #endif -->
       </view>
@@ -378,26 +381,20 @@
             <text v-if="active !== 'learning'" class="space-title">{{ title }}</text>
           </view>
           <view v-if="active === 'learning'" class="muse-chat-identity"
-            ><AnimatedAvatar class="brand-mark" :size="72" autoplay perceptible :business="avatarBusiness" />
+            ><image
+              class="brand-mark"
+              :src="BRAND.mark"
+              mode="aspectFit"
+              style="width: 56px; height: 56px"
+              aria-hidden="true"
+            />
             <view class="brand-label"
               ><text class="brand-name" :title="BRAND.name">{{ BRAND.name }}</text>
-              <text class="brand-status" role="status">{{ avatarStatus }}</text></view
+              <text class="brand-status" :title="learning.active?.goal || title">{{
+                learning.active?.goal || title
+              }}</text></view
             ></view
           >
-          <view v-if="avatarQA" class="avatar-qa" role="group" aria-label="头像验收，仅切换外观，不改变学习状态">
-            <text>头像验收 · 仅外观</text>
-            <button
-              v-for="item in avatarQAStates"
-              :key="item.state"
-              role="button"
-              :aria-label="item.label"
-              :data-avatar-preview-state="item.state"
-              @tap="previewAvatar(item.state)"
-            >
-              {{ item.label }}
-            </button>
-            <button role="button" aria-label="实际状态" @tap="previewAvatar(null)">实际状态</button>
-          </view>
           <BaseButton
             v-if="compactHeader && learning.recordReadState === 'ready'"
             ref="headerActionsButton"
@@ -432,8 +429,20 @@
             @action="learning.reloadRecords()"
           />
         </view>
-        <view v-if="$slots.composer" class="muse-composer-dock"><slot name="composer"></slot></view>
+        <view v-if="$slots.composer" class="muse-composer-dock">
+          <text v-if="notice" id="learning-request-error" class="shell-notice" role="status">{{
+            learningText(notice)
+          }}</text>
+          <slot name="composer"></slot>
+        </view>
       </view>
+      <MuseArtifactPanel
+        v-if="artifactTarget"
+        :key="artifactTarget.id"
+        ref="artifactPanel"
+        :target="artifactTarget"
+        @close="artifacts.target = null"
+      />
     </view>
     <BaseEmpty v-if="error" class="shell-error" state="error" :title="learningText(error)" />
   </view>
@@ -446,22 +455,33 @@ import { learningText } from '@/i18n/learning.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
-import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
 import MuseLaunch from './muse-launch.vue';
-import { avatarBusinessForLearning, avatarStateFor } from '@/design/avatar-state.js';
-import { DEV_TEST } from '@/config/build-channel.js';
 
-import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import { computed, ref, onMounted, onUnmounted, onBeforeUpdate, onUpdated, nextTick, useAttrs, watch } from 'vue';
 import { useConversationLearningStore } from '@/stores/modules/conversation-learning.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
 import { safeNavigateTo, requestProfilePanel } from '@/utils/safe-navigate';
 import { getToken } from '@/services/auth-storage.js';
+import MuseArtifactPanel from './muse-artifact-panel.vue';
+import { artifactWorkspace } from '@/services/learning/learning-artifacts.js';
 import { storageService } from '@/services/storageService.js';
 import { bindLearningKeyboard } from '@/services/learning/keyboard-controls.js';
 import { bindBusinessMotion } from '@/design/business-motion.js';
 import { BRAND } from '@/config/brand.js';
 import { publicError, t } from '@/i18n/index.js';
+import { bindMessageFollow } from './message-follow.js';
+import { isDesktopSettingsWindow } from '@/services/desktop/windows.js';
+import {
+  shellNavigation,
+  SHELL_MODULES,
+  SHELL_ROUTES,
+  readSidebar,
+  saveSidebar,
+  clampSidebarWidth
+} from '@/services/learning/shell-navigation.js';
 const props = defineProps({
+  dismissOverlay: { type: Function, default: null },
+  notice: { type: String, default: '' },
   sidePanel: { type: Boolean, default: false },
   active: { type: String, default: 'learning' },
   title: { type: String, default: '' },
@@ -469,6 +489,20 @@ const props = defineProps({
 });
 const emit = defineEmits(['materials', 'new', 'connections']);
 const learning = useConversationLearningStore();
+const artifacts = artifactWorkspace(learning);
+const artifactPanel = ref(null);
+const shellRoute = typeof getCurrentPages === 'function' ? getCurrentPages().at(-1)?.route || '' : '';
+const artifactTarget = computed(() =>
+  artifacts.target?.route === shellRoute && artifacts.target?.context === learning.recordContext()
+    ? artifacts.target
+    : null
+);
+watch(
+  () => learning.recordContext(),
+  () => {
+    artifacts.target = null;
+  }
+);
 const loggedIn = ref(false);
 const syncLogin = () => {
   try {
@@ -479,57 +513,57 @@ const syncLogin = () => {
 };
 syncLogin();
 let releaseIdentity = () => {};
-const avatarEvent = ref(null);
-const avatarQA = DEV_TEST && import.meta.env.VITE_AVATAR_QA === 'true';
-const avatarPreview = ref(null);
-const avatarQAStates = [
-  { state: 'idle', label: '就绪' },
-  { state: 'waiting', label: '等待' },
-  { state: 'working', label: '思考' },
-  { state: 'making', label: '处理' },
-  { state: 'celebrate', label: '完成' },
-  { state: 'error', label: '出错' },
-  { state: 'resume', label: '恢复' }
-];
-function previewAvatar(state) {
-  avatarPreview.value = state
-    ? {
-        busy: ['working', 'making'].includes(state),
-        producing: state === 'making',
-        waiting: state === 'waiting',
-        completed: state === 'celebrate',
-        error: state === 'error',
-        resuming: state === 'resume',
-        completionId: `avatar-qa-${Date.now()}`
-      }
-    : null;
-}
-const avatarBusiness = computed(() => avatarPreview.value || avatarBusinessForLearning(learning, avatarEvent.value));
-const avatarStatus = computed(() => {
-  const value = avatarBusiness.value,
-    state = avatarStateFor(value);
-  const key = value.stopped
-    ? 'stopped'
-    : value.busy && ['feedback', 'essay', 'daily', 'summary'].includes(value.activity)
-      ? value.activity
-      : state;
-  return t(`muse.avatar.${key}`);
-});
-watch(
-  () => learning.state?.events?.at(-1)?.id,
-  (id, previous) => {
-    if (previous && id !== previous) avatarEvent.value = learning.state.events.at(-1);
-  }
-);
 const theme = useThemeStore();
 const root = ref(null);
+// Resize the reserved input space without covering the last message. This only
+// follows composer height changes; message/stream updates keep their own lifecycle.
+// #ifdef H5
+let composerResizeFrame;
+let releaseMessageFollow = () => {};
+const shellAttrs = useAttrs();
+onBeforeUpdate(() => {
+  composerResizeFrame = null;
+  const element = root.value?.$el || root.value;
+  const height = parseFloat(element?.style?.getPropertyValue('--muse-composer-height'));
+  const nextHeight = parseFloat(shellAttrs.style?.['--muse-composer-height']);
+  // Message-only updates never force a layout read or change the reading position.
+  if (!Number.isFinite(height) || !Number.isFinite(nextHeight) || nextHeight === height) return;
+  const scroller = element?.querySelector?.('.space-content');
+  if (!scroller || !element.querySelector('.muse-composer-dock')) return;
+  composerResizeFrame = {
+    element,
+    scroller,
+    height,
+    atEnd: scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight <= 48
+  };
+});
+onUpdated(() => {
+  const before = composerResizeFrame;
+  composerResizeFrame = null;
+  if (!before?.atEnd || before.scroller.dataset.followLatest === 'false' || !Number.isFinite(before.height)) return;
+  const height = parseFloat(before.element.style.getPropertyValue('--muse-composer-height'));
+  if (Number.isFinite(height) && height !== before.height) before.scroller.scrollTop = before.scroller.scrollHeight;
+});
+// #endif
 const menuButton = ref(null);
 const closeButton = ref(null);
 const searchInput = ref(null);
-const menuOpen = ref(false);
+const nativeSettings = isDesktopSettingsWindow();
+const sidebar = readSidebar();
+const menuOpen = ref(
+  props.active === 'learning' &&
+    !nativeSettings &&
+    !sidebar.collapsed &&
+    (typeof window !== 'undefined' ? window.innerWidth : uni.getWindowInfo?.().windowWidth || 1024) > 760
+);
+const navigationConfig = shellNavigation();
+const navigationSnapshot = ref(navigationConfig.snapshot());
+function applyNavigation(value) {
+  if (navigationConfig.apply(value)) navigationSnapshot.value = navigationConfig.snapshot();
+}
 const searchOnOpen = ref(false);
 const directoryOptions = ref(false);
-const panelPinned = ref(false);
+const panelPinned = ref(true);
 const viewportWidth = ref(1024);
 const compactHeader = computed(() => props.active === 'learning' && viewportWidth.value <= 480);
 const headerActionsOpen = ref(false);
@@ -573,8 +607,17 @@ let previousDirectoryFocus = null;
 function toggleMenu() {
   searchOnOpen.value = false;
   menuOpen.value = !menuOpen.value;
+  persistSidebar();
 }
-const panelWidth = ref(240);
+const panelWidth = ref(sidebar.width);
+function persistSidebar() {
+  if (props.active === 'learning' && viewportWidth.value > 760 && !nativeSettings)
+    saveSidebar({ version: 1, collapsed: !menuOpen.value, width: panelWidth.value });
+}
+function resetPanelWidth() {
+  panelWidth.value = 217;
+  persistSidebar();
+}
 const panelResizing = ref(false);
 const panelOpening = ref(false);
 const panelReveal = ref(0);
@@ -585,6 +628,7 @@ function openPanelKey(event) {
   event.preventDefault();
   searchOnOpen.value = false;
   menuOpen.value = true;
+  persistSidebar();
 }
 function startPanelOpen(event) {
   // #ifdef H5
@@ -614,6 +658,7 @@ function startPanelOpen(event) {
     if (open) {
       searchOnOpen.value = false;
       menuOpen.value = true;
+      persistSidebar();
     }
   };
   const cancel = (next) => {
@@ -640,10 +685,11 @@ function resizePanelKey(event) {
   const step = event.shiftKey ? 64 : 16;
   panelWidth.value =
     event.key === 'Home'
-      ? 240
+      ? 180
       : event.key === 'End'
         ? 420
-        : Math.max(240, Math.min(420, panelWidth.value + (event.key === 'ArrowRight' ? step : -step)));
+        : clampSidebarWidth(panelWidth.value + (event.key === 'ArrowRight' ? step : -step));
+  persistSidebar();
 }
 function startPanelResize(event) {
   // #ifdef H5
@@ -659,12 +705,13 @@ function startPanelResize(event) {
     if (next.pointerId !== event.pointerId) return;
     moved ||= Math.abs(next.clientX - startX) > 4;
     requested = startWidth + next.clientX - startX;
-    panelWidth.value = Math.max(240, Math.min(420, requested));
+    panelWidth.value = clampSidebarWidth(requested);
   };
   const finish = (next) => {
     if (next.pointerId !== event.pointerId) return;
     releasePanelResize();
-    if (!moved || requested < 180) closeMenu();
+    if (!moved) return;
+    persistSidebar();
   };
   const cancel = (next) => {
     if (next.pointerId !== event.pointerId) return;
@@ -749,7 +796,13 @@ function updateDockMetrics(event) {
       ? { windowHeight: window.innerHeight, windowWidth: window.innerWidth }
       : event?.size || uni.getWindowInfo?.();
   if (info?.windowHeight) viewportHeight.value = info.windowHeight;
-  if (info?.windowWidth) viewportWidth.value = info.windowWidth;
+  if (info?.windowWidth) {
+    const wasNarrow = viewportWidth.value <= 760;
+    viewportWidth.value = info.windowWidth;
+    if (wasNarrow !== viewportWidth.value <= 760 && !searchOnOpen.value)
+      menuOpen.value =
+        props.active === 'learning' && viewportWidth.value > 760 && !nativeSettings && !readSidebar().collapsed;
+  }
 }
 let releaseViewport = () => undefined;
 
@@ -767,14 +820,16 @@ try {
 }
 // #endif
 const error = ref('');
-const navigation = computed(() => [
-  { id: 'learning', label: t('muse.chat'), icon: 'chat' },
-  { id: 'search', label: t('learning.ki6'), shortLabel: t('muse.nav.search'), icon: 'search' },
-  { id: 'archive', label: t('muse.activity'), icon: 'list' },
-  { id: 'phrases', label: t('muse.phrases'), shortLabel: t('muse.nav.phrases'), icon: 'bulb' },
-  { id: 'plan', label: t('muse.goals'), shortLabel: t('muse.nav.plan'), icon: 'checkbox-on' },
-  { id: 'materials', label: t('muse.library'), shortLabel: t('muse.nav.materials'), icon: 'shapes' }
-]);
+const navigation = computed(() =>
+  navigationSnapshot.value.modules
+    .filter((item) => item.visible)
+    .map(({ id }) => ({
+      id,
+      ...SHELL_MODULES[id],
+      label: t(SHELL_MODULES[id].label),
+      shortLabel: SHELL_MODULES[id].shortLabel ? t(SHELL_MODULES[id].shortLabel) : undefined
+    }))
+);
 function railActive(id) {
   return props.active === id;
 }
@@ -807,7 +862,10 @@ watch(menuOpen, async (open) => {
 });
 async function closeMenu() {
   directoryOptions.value = false;
-  menuOpen.value = false;
+  const wasSearch = searchOnOpen.value;
+  menuOpen.value = wasSearch && props.active === 'learning' && viewportWidth.value > 760 && !readSidebar().collapsed;
+  searchOnOpen.value = false;
+  if (!wasSearch) persistSidebar();
   await nextTick();
   // #ifdef H5
   (previousDirectoryFocus?.isConnected ? previousDirectoryFocus : menuButton.value?.$el || menuButton.value)?.focus?.();
@@ -829,6 +887,18 @@ function escapeMenu(event) {
   if (event.key === 'Escape' && panelOpening.value) {
     event.preventDefault();
     releasePanelOpen();
+    return;
+  }
+  if (
+    (event.metaKey || event.ctrlKey) &&
+    event.key.toLowerCase() === 'b' &&
+    !event.shiftKey &&
+    !event.altKey &&
+    props.active === 'learning' &&
+    !nativeSettings
+  ) {
+    event.preventDefault();
+    if (!event.repeat) toggleMenu();
     return;
   }
   if ((event.metaKey || event.ctrlKey) && ['k', 'j', ','].includes(event.key.toLowerCase())) {
@@ -861,7 +931,7 @@ function escapeMenu(event) {
     }
   }
   // #endif
-  if (event.key === 'Escape') {
+  if (event.key === 'Escape' && directoryModal.value) {
     event.preventDefault();
     closeMenu();
   }
@@ -885,9 +955,64 @@ function escapeMenu(event) {
   }
   // #endif
 }
+// Window runs after the existing document/dialog handlers. One Escape has one owner.
+function escapeGeneration(event) {
+  if (
+    event.key !== 'Escape' ||
+    event.defaultPrevented ||
+    event.isComposing ||
+    event.keyCode === 229 ||
+    event.repeat ||
+    event.shiftKey ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey
+  )
+    return;
+  const element = root.value?.$el || root.value;
+  if (!element?.getClientRects?.().length) return;
+  if (props.dismissOverlay?.()) {
+    event.preventDefault();
+    return;
+  }
+  const layers = document.querySelectorAll(
+    '.custom-modal-container, [role="dialog"], [role="listbox"], uni-picker-view'
+  );
+  if (
+    [...layers].some((layer) => {
+      for (let node = layer; node; node = node.parentElement) {
+        const style = getComputedStyle(node);
+        if (
+          node.hidden ||
+          node.hasAttribute('inert') ||
+          node.getAttribute('aria-hidden') === 'true' ||
+          style.display === 'none' ||
+          style.visibility === 'hidden'
+        )
+          return false;
+      }
+      return true;
+    })
+  )
+    return;
+  if (event.target?.closest?.('select')) return;
+  if (artifactTarget.value) {
+    event.preventDefault();
+    artifactPanel.value?.close();
+    return;
+  }
+  if (learning.intakeBusy || (learning.reply?.kind === 'intake' && learning.reply.pending)) {
+    learning.cancelModelIntake();
+    event.preventDefault();
+    return;
+  }
+  if (learning.busy || learning.reply?.pending) {
+    learning.cancel();
+    event.preventDefault();
+  }
+}
 function openView(view) {
   directoryOptions.value = false;
-  menuOpen.value = false;
   const route = getCurrentPages().at(-1)?.route;
   if (view === 'search') {
     recordFilter.value = 'all';
@@ -909,32 +1034,35 @@ function openView(view) {
     else safeNavigateTo('/pages/profile/index');
     return;
   }
-  const target = ['archive', 'phrases', 'plan', 'materials', 'usage'].includes(view)
-    ? `/pages/archive/index?view=${view === 'archive' ? 'all' : view}`
-    : view === 'connections'
-      ? '/pages/learning/index?panel=connections'
-      : `/pages/${view}/index`;
+  if (directoryModal.value) menuOpen.value = false;
+  const target =
+    SHELL_ROUTES[view] ||
+    (['archive', 'phrases', 'plan', 'materials', 'usage'].includes(view)
+      ? `/pages/archive/index?view=${view === 'archive' ? 'all' : view}`
+      : view === 'connections'
+        ? '/pages/learning/index?panel=connections'
+        : `/pages/${view}/index`);
   if (route !== target.slice(1).split('?')[0]) safeNavigateTo(target);
   else if (props.active !== view) uni.redirectTo({ url: target });
 }
 function newSession() {
   if (learning.busy) return;
   learning.selectedConversationId = null;
-  menuOpen.value = false;
+  if (directoryModal.value) menuOpen.value = false;
   emit('new');
   if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
 }
 function resume(id) {
   if (learning.busy) return;
   learning.locateConversation(id);
-  menuOpen.value = false;
+  if (directoryModal.value) menuOpen.value = false;
   if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
 }
 function openRecord(id, context) {
   try {
     learning.openRecord(id, context);
     error.value = '';
-    menuOpen.value = false;
+    if (directoryModal.value) menuOpen.value = false;
     if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
   } catch (failure) {
     error.value = publicError(failure);
@@ -942,7 +1070,7 @@ function openRecord(id, context) {
 }
 function locate(id, day, groupId = null) {
   learning.locateConversation(id, day, groupId);
-  menuOpen.value = false;
+  if (directoryModal.value) menuOpen.value = false;
   if (getCurrentPages().at(-1)?.route !== 'pages/learning/index') safeNavigateTo('/pages/learning/index');
 }
 function outsideDirectory(event) {
@@ -954,6 +1082,8 @@ function outsideDirectory(event) {
 }
 onMounted(() => {
   updateDockMetrics();
+  if (viewportWidth.value <= 760 || nativeSettings) menuOpen.value = false;
+  uni.$on('shellNavigationChanged', applyNavigation);
   syncLogin();
   releaseIdentity = storageService.onIdentityChange(syncLogin);
   if (typeof uni.onWindowResize === 'function') {
@@ -974,6 +1104,8 @@ onMounted(() => {
   const element = root.value?.$el || root.value;
   // #ifdef H5
   document.addEventListener('keydown', escapeMenu);
+  window.addEventListener('keydown', escapeGeneration);
+  if (props.active === 'learning') releaseMessageFollow = bindMessageFollow(element?.querySelector('.space-content'));
   // #endif
   element?.addEventListener?.('focusout', headerActionsFocusOut);
   element?.addEventListener?.('keydown', headerActionKey, true);
@@ -986,6 +1118,7 @@ onMounted(() => {
   }
 });
 onUnmounted(() => {
+  uni.$off('shellNavigationChanged', applyNavigation);
   releaseIdentity();
   releaseViewport();
   releasePanelResize();
@@ -997,6 +1130,8 @@ onUnmounted(() => {
   const element = root.value?.$el || root.value;
   // #ifdef H5
   document.removeEventListener('keydown', escapeMenu);
+  window.removeEventListener('keydown', escapeGeneration);
+  releaseMessageFollow();
   // #endif
   element?.removeEventListener?.('focusout', headerActionsFocusOut);
   element?.removeEventListener?.('keydown', headerActionKey, true);

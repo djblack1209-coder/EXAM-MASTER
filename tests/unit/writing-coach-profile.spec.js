@@ -150,7 +150,7 @@ it('未连接时保留输入目标，不自动建立未经确认的学习事实'
   expect(wrapper.text()).toContain('请先连接自己的 API');
 });
 
-it('重新打开进入最新写作带练；旧对话仍能从目录定位且不改写记录', () => {
+it('重新打开接续上次选择的对话；写作带练仍能从目录定位且不改写记录', () => {
   vi.stubEnv('VITE_ENABLE_WRITING_COACH', 'true');
   let store = useConversationLearningStore();
   store.startCoach('考研英语二写作');
@@ -162,10 +162,10 @@ it('重新打开进入最新写作带练；旧对话仍能从目录定位且不�
   learningWriteLease.release();
   setActivePinia(createPinia());
   store = useConversationLearningStore();
-  expect(store.active.id).toBe(coachId);
-  expect(store.exportData()).toBe(before);
-  store.locateConversation(legacyId);
   expect(store.active.id).toBe(legacyId);
+  expect(store.exportData()).toBe(before);
+  store.locateConversation(coachId);
+  expect(store.active.id).toBe(coachId);
   expect(store.exportData()).toBe(before);
   vi.unstubAllEnvs();
 });
