@@ -1268,10 +1268,12 @@ describe('新出搭配填空经盲填校准才下发', () => {
   };
   const generated = (asked = request, pack = exercisePack()) =>
     parseCoachModelOutput(JSON.stringify({ message: '开始', tools: [], question: null, coach: pack }), asked).coach;
-  const verifier = (reply) => {
+  // 传数组时按调用顺序逐次回复，用完后重复最后一个。
+  const verifier = (replies) => {
     const calls = [];
     const call = async (verifierConfig, messages) => {
       calls.push({ verifierConfig, messages });
+      const reply = Array.isArray(replies) ? replies[Math.min(calls.length, replies.length) - 1] : replies;
       if (reply instanceof Error) throw reply;
       return typeof reply === 'string' ? reply : JSON.stringify(reply);
     };
@@ -1294,13 +1296,16 @@ describe('新出搭配填空经盲填校准才下发', () => {
     expect(receipt).toEqual({
       status: 'completed',
       checked: 3,
+      passes: 2,
       blanks: [
         { cardId: 'c1', acceptedCount: 1 },
         { cardId: 'c2', acceptedCount: 2 },
         { cardId: 'c3', acceptedCount: 1 }
       ]
     });
-    expect(calls).toHaveLength(1);
+    // 两次盲填各自独立、题干相同。
+    expect(calls).toHaveLength(2);
+    expect(calls[1].messages).toEqual(calls[0].messages);
     expect(calls[0].verifierConfig.writingOutput.contract).toBe('writing-exercise-calibration-v2');
     expect(JSON.parse(calls[0].messages[1].content)).toEqual({
       blanks: [
@@ -1397,17 +1402,44 @@ describe('新出搭配填空经盲填校准才下发', () => {
     const coach = parseCoachModelOutput(decoded, request).coach;
     expect(coach.cards[0].prompt).toContain('The company will do ___ with the old rule.');
     expect(coach.cards[2].prompt).toContain('The plan was put ___ effect.');
-    // 复核员把 away 全判成不能填；第二题没标原词，照常只看复核员。
-    const { calls, call } = verifier({
+    // 第一次盲填把 away 判成不能填，第二次判对；两次合并后照常计数。
+    const missed = {
       blanks: [
         { id: 'b1', candidates: candidates([]), rule: '没有单词能填' },
         { id: 'b2', candidates: candidates(['for']), rule: '固定搭配' },
         { id: 'b3', candidates: candidates(['into']), rule: '固定搭配' }
       ]
-    });
+    };
+    const { calls, call } = verifier([missed, fills(['away'], ['for'], ['into'])]);
     expect(await calibrateCoachExercises(prepared, coach, call)).toEqual({
       status: 'completed',
       checked: 3,
+      passes: 2,
+      blanks: [
+        { cardId: 'c1', acceptedCount: 1 },
+        { cardId: 'c2', acceptedCount: 1 },
+        { cardId: 'c3', acceptedCount: 1 }
+      ]
+    });
+    // 两次都判原词不能填：句子或空格本身可疑，退回。
+    await expect(calibrateCoachExercises(prepared, coach, verifier(missed).call)).rejects.toMatchObject({
+      code: 'COACH_INVALID',
+      path: 'cards[0].exercise.source',
+      message: expect.stringContaining('两次盲填都认为标出的away不能填')
+    });
+    // 第二次盲填失败、只剩一次结果时，漏判的原词仍补上，收据写明。
+    expect(
+      await calibrateCoachExercises(
+        prepared,
+        coach,
+        verifier([missed, Object.assign(new Error('复核时间不足'), { code: 'TIMEOUT' })]).call
+      )
+    ).toEqual({
+      status: 'completed',
+      checked: 3,
+      passes: 1,
+      attempts: 2,
+      secondFailure: 'TIMEOUT',
       blanks: [
         { cardId: 'c1', acceptedCount: 1, verifierMissed: true },
         { cardId: 'c2', acceptedCount: 1 },
@@ -1499,8 +1531,35 @@ describe('新出搭配填空经盲填校准才下发', () => {
     const receipt = await calibrateCoachExercises(config, generated(), async () =>
       count++ ? JSON.stringify(fills(['for'], ['for'], ['on'])) : '{"blanks":'
     );
-    expect(count).toBe(2);
-    expect(receipt).toMatchObject({ status: 'completed', attempts: 2, checked: 3 });
+    // 第一次盲填重问一次，第二次盲填一次答对。
+    expect(count).toBe(3);
+    expect(receipt).toMatchObject({ status: 'completed', passes: 2, attempts: 3, checked: 3 });
+  });
+  it('一次盲填少报近义词时，两次合并后开放空照样退回', async () => {
+    const { call } = verifier([
+      fills(['for'], ['aware'], ['on']),
+      fills(['for'], ['aware', 'conscious', 'mindful'], ['on'])
+    ]);
+    await expect(calibrateCoachExercises(config, generated(), call)).rejects.toMatchObject({
+      code: 'COACH_INVALID',
+      path: 'cards[1].exercise.source',
+      message: expect.stringContaining('盲填找到aware、conscious、mindful')
+    });
+  });
+  it.each([
+    ['be', 'The new rule is set to [be] rolled out next year.'],
+    ['the', 'She is [the] best candidate for the job.'],
+    ['should', 'Every student [should] hand in the form today.']
+  ])('方括号标在冠词、be 动词或情态动词上考的是语法，不发校准就退回：%s', async (word, sentence) => {
+    const prepared = prepareCoachFeedbackModel(config, request);
+    const coach = parseCoachModelOutput(decodeCoachResponse(prepared, slots(undefined, sentence)), request).coach;
+    const { calls, call } = verifier(fills(['for'], [word], ['on']));
+    await expect(calibrateCoachExercises(prepared, coach, call)).rejects.toMatchObject({
+      code: 'COACH_INVALID',
+      path: 'cards[1].exercise.source',
+      message: expect.stringContaining(`方括号标在了${word}上，考的是语法不是搭配`)
+    });
+    expect(calls).toHaveLength(0);
   });
   it('停止生成时不吞掉取消', async () => {
     const { call } = verifier(Object.assign(new Error('stopped'), { code: 'CANCELLED' }));

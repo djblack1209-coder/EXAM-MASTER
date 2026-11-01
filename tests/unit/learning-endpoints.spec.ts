@@ -2242,7 +2242,8 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
       if (config.writingOutput?.contract === 'writing-exercise-calibration-v2') {
         calibrations++;
         if (mode === 'verifier-fails') return { ...done, content: '{"blanks":' };
-        const bad = mode === 'bad-twice' || (mode === 'bad-then-good' && calibrations === 1);
+        // 每套题独立盲填两次；返修前那套两次都判第二题无词可填。
+        const bad = mode === 'bad-twice' || (mode === 'bad-then-good' && generations === 1);
         // 只看题干盲填：第二题没有单个单词能填对时整套拒收。
         return {
           ...done,
@@ -2267,7 +2268,7 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
     expect(blanks.map((blank: any) => blank.task)).toEqual(english.slice(0, 3));
     if (mode === 'calibrated' || mode === 'verifier-fails') {
       // 校准员回坏格式会再问一次，两次都坏才按失败收据放行。
-      expect([generations, calibrations]).toEqual(mode === 'calibrated' ? [1, 1] : [1, 2]);
+      expect([generations, calibrations]).toEqual([1, 2]);
       expect(result.success).toBe(true);
       expect(result.data.coach.cards).toHaveLength(8);
       expect(result.data.exerciseCalibration).toMatchObject(
@@ -2275,6 +2276,7 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
           ? {
               status: 'completed',
               checked: 3,
+              passes: 2,
               blanks: [
                 { cardId: 'c1', acceptedCount: 1 },
                 { cardId: 'c2', acceptedCount: 2 },
@@ -2292,7 +2294,7 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
       expect(JSON.stringify(result.data.exerciseCalibration)).not.toMatch(/"for"|"on"/);
       return;
     }
-    expect([generations, calibrations]).toEqual([2, 2]);
+    expect([generations, calibrations]).toEqual([2, 4]);
     const repairMessages = calls.filter(
       ([config]: any) => config.writingOutput?.contract !== 'writing-exercise-calibration-v2'
     )[1][1];
