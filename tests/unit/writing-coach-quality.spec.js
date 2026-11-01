@@ -721,6 +721,52 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     lines[4] = answer;
     return { ...r, input: lines.join('\n') };
   };
+  it.each([true, false])('初评漏记的明确修饰对象矛盾只在独立盲析自洽时补登：%s', async (valid) => {
+    const request = mixedDiagnosticRequest();
+    request.task = request.task.replace(
+      'The scientist, who visited us, is helpful.',
+      'The engineer, who designed the robot, visited our school.'
+    );
+    const answers = request.input.split('\n');
+    answers[3] = '主句The engineer visited our school；who designed the robot修饰school，who作从句主语。';
+    request.input = answers.join('\n');
+    const p = preparedFor(request),
+      wire = mixedDiagnosticReply(p),
+      calls = [];
+    wire.strengths.push({ quoteId: 'q4', label: '修饰对象判断正确' });
+    const structure = parsed(
+      's1',
+      'The engineer',
+      'visited',
+      'who designed the robot',
+      valid ? 'engineer' : 'school',
+      'who',
+      'designed',
+      '主语'
+    );
+    const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(wire), async (_, messages) => {
+      calls.push(JSON.parse(messages[1].content));
+      return JSON.stringify({ blanks: [fill(['in'])], syntax: [structure] });
+    });
+    expect(calls).toHaveLength(1);
+    expect(calls[0].syntax).toEqual([
+      { id: 's1', sentence: 'The engineer, who designed the robot, visited our school.' }
+    ]);
+    expect(JSON.stringify(calls[0].syntax)).not.toContain('修饰school');
+    const raw = JSON.parse(content);
+    expect(raw.errors.filter((error) => error.quoteId === 'q4')).toHaveLength(valid ? 1 : 0);
+    expect(receipt.added).toBe(valid ? 1 : 0);
+    if (valid) {
+      expect(raw.errors.find((error) => error.quoteId === 'q4')).toMatchObject({
+        dimension: '任务完成',
+        replacement: null
+      });
+      expect(raw.strengths.some((item) => item.quoteId === 'q4')).toBe(false);
+      expect(
+        JSON.parse(decodeCoachResponse(p, content)).coach.dimensions.find((item) => item.name === '任务完成').score
+      ).toBe(1);
+    }
+  });
   it('审题题只给复核员英文题干盲列要点，提纲逐点写到就删掉挑错；填空只给题干不给原答', async () => {
     const p = prepared();
     const calls = [];
@@ -773,7 +819,8 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
       JSON.stringify(overflagged(p)),
       verdict({ blanks: [fill(['in'])], outlines: [outline(points)] })
     );
-    expect(receipt).toMatchObject({ status: 'completed', checked: 2, removed: 0 });
+    expect(receipt).toMatchObject({ status: valid ? 'completed' : 'failed', checked: 2, removed: 0 });
+    if (!valid) expect(receipt.failure).toBe('VERIFICATION_INCONCLUSIVE');
     expect(receipt.reviews[1]).toMatchObject({ quoteId: 'q5', kept: true });
     expect(receipt.outlines[0]).toMatchObject({ quoteId: 'q5', valid, agreed: false });
     expect(JSON.parse(decodeCoachResponse(p, content)).coach.dimensions[3].score).toBe(1);
@@ -885,7 +932,7 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
       JSON.stringify(wire),
       verdict({ blanks: [{ ...fill(accepted), rule }] })
     );
-    expect(receipt).toMatchObject({ status: 'completed', checked: 1, removed: 0, added });
+    expect(receipt).toMatchObject({ status: correct === null ? 'failed' : 'completed', checked: 1, removed: 0, added });
     expect(receipt.blanks[0]).toEqual({
       quoteId: 'q2',
       accepted: kept,
@@ -902,7 +949,7 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
       JSON.stringify(mixedDiagnosticReply(p)),
       verdict({ blanks: [{ ...fill(['at']), rule: 'at不合搭配' }] })
     );
-    expect(receipt).toMatchObject({ status: 'completed', removed: 0, added: 0 });
+    expect(receipt).toMatchObject({ status: 'failed', failure: 'VERIFICATION_INCONCLUSIVE', removed: 0, added: 0 });
     expect(receipt.reviews[0]).toMatchObject({ quoteId: 'q2', kept: true });
     expect(JSON.parse(content).errors).toHaveLength(1);
   });
@@ -950,6 +997,25 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     expect(coach.dimensions.find((d) => d.name === '搭配')).toMatchObject({ score: 2 });
     expect(coach.weaknesses).toEqual([]);
   });
+  it('复核撤销填空误报后，过渡语与讲解不残留初评问题或未请求的候选词优劣', async () => {
+    const p = preparedFor(blankAnswer('in')),
+      wire = mixedDiagnosticReply(p);
+    wire.message = '主要问题集中在搭配上。';
+    wire.errors[0].errorText = 'in';
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(wire),
+      verdict({
+        blanks: [{ ...fill(['in', 'at']), rule: 'in最规范，at也可以，不够正式时建议换成in' }]
+      })
+    );
+    expect(receipt).toMatchObject({ status: 'completed', removed: 1 });
+    const result = JSON.parse(content);
+    expect(result.message).not.toContain('问题');
+    expect(result.lines.find((line) => line.quoteId === 'q2').advice).not.toMatch(/at|最规范|正式/u);
+    expect(result.dimensionReviews.collocation.comment).not.toMatch(/at|最规范|正式/u);
+    expect(JSON.parse(decodeCoachResponse(p, content)).coach.weaknesses).toEqual([]);
+  });
   it.each([
     ['限流', async () => Promise.reject(Object.assign(new Error('limit'), { code: 'RATE_LIMITED' }))],
     ['漏答填空', verdict({ outlines: [outline()] })],
@@ -961,7 +1027,7 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
       verdict({ outlines: [outline([{ span: 'Write an email', keywords: ['信'] }, ...fairPoints.slice(1)])], blanks: [fill(['in'])] })
     ],
     ['不是JSON', async () => 'not json']
-  ])('复核失败（%s）时原错误照常进门禁，不当成无错', async (_name, call) => {
+  ])('复核失败（%s）时诊断原文保留并标失败，不当成无错', async (_name, call) => {
     const p = prepared(),
       wire = overflagged(p);
     const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(wire), call);
@@ -1139,6 +1205,7 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
       })
     );
     expect(receipt.syntax).toEqual([{ quoteId: 'q1', valid: false, agreed: false, claims: {} }]);
+    expect(receipt).toMatchObject({ status: 'failed', failure: 'VERIFICATION_INCONCLUSIVE' });
     expect(JSON.parse(content).errors.map((e) => e.quoteId)).toEqual(['q2', 'q1']);
   });
   it('句法题要求翻译、没有定语从句或该题没有错误时不做盲析；盲析漏答整次复核失败', async () => {
@@ -1288,7 +1355,12 @@ describe('新出搭配填空经盲填校准才下发', () => {
       .map((word) => ({ word, fits: false }))
   ];
   const fills = (...accepted) => ({
-    blanks: accepted.map((words, i) => ({ id: `b${i + 1}`, candidates: candidates(words), rule: '固定搭配' }))
+    blanks: accepted.map((words, i) => ({
+      id: `b${i + 1}`,
+      candidates: candidates(words),
+      infinitiveTo: false,
+      rule: '固定搭配'
+    }))
   });
   it('只把三道搭配题的题干交给复核员盲填，一到两个词能填对就通过，收据不带答案', async () => {
     const { calls, call } = verifier(fills(['for'], ['for', 'to'], ['on']));
@@ -1306,7 +1378,7 @@ describe('新出搭配填空经盲填校准才下发', () => {
     // 两次盲填各自独立、题干相同。
     expect(calls).toHaveLength(2);
     expect(calls[1].messages).toEqual(calls[0].messages);
-    expect(calls[0].verifierConfig.writingOutput.contract).toBe('writing-exercise-calibration-v2');
+    expect(calls[0].verifierConfig.writingOutput.contract).toBe('writing-exercise-calibration-v3');
     expect(JSON.parse(calls[0].messages[1].content)).toEqual({
       blanks: [
         { id: 'b1', task: 'We raise money ___ children.' },
@@ -1331,7 +1403,14 @@ describe('新出搭配填空经盲填校准才下发', () => {
     ['broken-json', '{"blanks":'],
     [
       'repeated-id',
-      { blanks: ['b1', 'b1', 'b3'].map((id) => ({ id, candidates: candidates(['for']), rule: '固定搭配' })) }
+      {
+        blanks: ['b1', 'b1', 'b3'].map((id) => ({
+          id,
+          candidates: candidates(['for']),
+          infinitiveTo: false,
+          rule: '固定搭配'
+        }))
+      }
     ],
     ['free-list', { blanks: ['b1', 'b2', 'b3'].map((id) => ({ id, accepted: ['for'], rule: '固定搭配' })) }],
     ['timeout', Object.assign(new Error('复核时间不足'), { code: 'TIMEOUT' })]
@@ -1348,7 +1427,7 @@ describe('新出搭配填空经盲填校准才下发', () => {
   it('复核员逐个判候选词，判为能填的近义词都计数，开放空照样退回', async () => {
     const { calls, call } = verifier({
       blanks: [
-        { id: 'b1', candidates: candidates(['for']), rule: '固定搭配' },
+        { id: 'b1', candidates: candidates(['for']), infinitiveTo: false, rule: '固定搭配' },
         {
           id: 'b2',
           candidates: [
@@ -1357,9 +1436,10 @@ describe('新出搭配填空经盲填校准才下发', () => {
             { word: 'decrease', fits: true },
             { word: 'increase', fits: false }
           ],
+          infinitiveTo: false,
           rule: '降低风险，几个近义动词都可'
         },
-        { id: 'b3', candidates: candidates(['on']), rule: '固定搭配' }
+        { id: 'b3', candidates: candidates(['on']), infinitiveTo: false, rule: '固定搭配' }
       ]
     });
     await expect(calibrateCoachExercises(config, generated(), call)).rejects.toMatchObject({
@@ -1405,9 +1485,9 @@ describe('新出搭配填空经盲填校准才下发', () => {
     // 第一次盲填把 away 判成不能填，第二次判对；两次合并后照常计数。
     const missed = {
       blanks: [
-        { id: 'b1', candidates: candidates([]), rule: '没有单词能填' },
-        { id: 'b2', candidates: candidates(['for']), rule: '固定搭配' },
-        { id: 'b3', candidates: candidates(['into']), rule: '固定搭配' }
+        { id: 'b1', candidates: candidates([]), infinitiveTo: false, rule: '没有单词能填' },
+        { id: 'b2', candidates: candidates(['for']), infinitiveTo: false, rule: '固定搭配' },
+        { id: 'b3', candidates: candidates(['into']), infinitiveTo: false, rule: '固定搭配' }
       ]
     };
     const { calls, call } = verifier([missed, fills(['away'], ['for'], ['into'])]);
@@ -1512,9 +1592,9 @@ describe('新出搭配填空经盲填校准才下发', () => {
   it('校准时依据否定的词不计入能填对的词数', async () => {
     const { call } = verifier({
       blanks: [
-        { id: 'b1', candidates: candidates(['for']), rule: '固定搭配' },
-        { id: 'b2', candidates: candidates(['for', 'to', 'into']), rule: 'into不规范' },
-        { id: 'b3', candidates: candidates(['on']), rule: '固定搭配' }
+        { id: 'b1', candidates: candidates(['for']), infinitiveTo: false, rule: '固定搭配' },
+        { id: 'b2', candidates: candidates(['for', 'to', 'into']), infinitiveTo: false, rule: 'into不规范' },
+        { id: 'b3', candidates: candidates(['on']), infinitiveTo: false, rule: '固定搭配' }
       ]
     });
     expect(await calibrateCoachExercises(config, generated(), call)).toMatchObject({
@@ -1560,6 +1640,52 @@ describe('新出搭配填空经盲填校准才下发', () => {
       message: expect.stringContaining(`方括号标在了${word}上，考的是语法不是搭配`)
     });
     expect(calls).toHaveLength(0);
+  });
+  it.each([
+    'The committee made its decision [to] postpone the meeting.',
+    'We hope [to] carefully review the proposal.',
+    'They agreed [to] not disclose the results.'
+  ])('两次盲填任一次判空在不定式 to 上即退回：%s', async (sentence) => {
+    const prepared = prepareCoachFeedbackModel(config, request);
+    const coach = parseCoachModelOutput(decodeCoachResponse(prepared, slots(undefined, sentence)), request).coach;
+    const first = fills(['for'], ['to'], ['on']);
+    const second = structuredClone(first);
+    second.blanks[1].infinitiveTo = true;
+    const { calls, call } = verifier([first, second]);
+    await expect(calibrateCoachExercises(prepared, coach, call)).rejects.toMatchObject({
+      code: 'COACH_INVALID',
+      path: 'cards[1].exercise.source',
+      message: expect.stringContaining('不定式标记to')
+    });
+    expect(calls).toHaveLength(2);
+    expect(calls[0].messages[0].content).toContain('结合空后成分判断');
+    expect(calls[0].messages[1].content).not.toContain('[to]');
+  });
+  it.each([
+    'Most residents object [to] the proposal.',
+    'These changes may lead [to] improved results.',
+    'Small steps can lead [to] change.',
+    'We look forward [to] hearing from you.',
+    'The committee is committed [to] supporting local students.'
+  ])('介词 to 接名词或动名词仍按搭配校准，不靠词尾或动词表误拒：%s', async (sentence) => {
+    const prepared = prepareCoachFeedbackModel(config, request);
+    const coach = parseCoachModelOutput(decodeCoachResponse(prepared, slots(undefined, sentence)), request).coach;
+    const { call } = verifier(fills(['for'], ['to'], ['on']));
+    expect(await calibrateCoachExercises(prepared, coach, call)).toMatchObject({
+      status: 'completed',
+      passes: 2,
+      blanks: [{ cardId: 'c1' }, { cardId: 'c2', acceptedCount: 1 }, { cardId: 'c3' }]
+    });
+  });
+  it('只有一次有效盲填也不能放行已经识别的不定式空', async () => {
+    const reply = fills(['for'], ['to'], ['on']);
+    reply.blanks[1].infinitiveTo = true;
+    const { call } = verifier([reply, Object.assign(new Error('复核时间不足'), { code: 'TIMEOUT' })]);
+    await expect(calibrateCoachExercises(config, generated(), call)).rejects.toMatchObject({
+      code: 'COACH_INVALID',
+      path: 'cards[1].exercise.source',
+      message: expect.stringContaining('不定式标记to')
+    });
   });
   it('停止生成时不吞掉取消', async () => {
     const { call } = verifier(Object.assign(new Error('stopped'), { code: 'CANCELLED' }));
@@ -1609,8 +1735,11 @@ describe('新出搭配填空经盲填校准才下发', () => {
       path: 'cards[1].exercise.source'
     });
     const feedback = coachRepairFeedback(prepared, error, JSON.stringify({ exercises: { c2: { english: 'x' } } }));
-    expect(feedback).toMatchObject({ path: 'exercises.c2', rule: error.message });
-    expect(coachRepairPrompt(feedback)).toContain('"path":"exercises.c2"');
+    expect(feedback).toMatchObject({ generation: true, path: 'exercises.c2', rule: error.message });
+    const prompt = coachRepairPrompt(feedback);
+    expect(prompt).toContain('"path":"exercises.c2"');
+    expect(prompt).toContain('允许替换原句和考查空位');
+    expect(prompt).not.toContain('其余判断保持不变');
     const words = Object.assign(new Error('写作任务字数须写约100词'), {
       code: 'COACH_INVALID',
       path: 'writing.prompt'
@@ -1626,6 +1755,7 @@ describe('新出搭配填空经盲填校准才下发', () => {
     for (const prompt of [coachSystemPrompt(request, prepared.writingOutput.schema), coachSystemPrompt(request)]) {
       expect(prompt).toContain('换近义词就不成立');
       expect(prompt).toContain('能填对的单词超过两个即退回重出');
+      expect(prompt).toContain('不空实义动词、形容词、名词');
     }
     // 模型照题位逐条出题，锁定要求和方括号标词要写进搭配题位本身。
     const diagnostic = { ...request, phase: 'diagnostic', target: 'diagnostic', input: '开始十分钟摸底' };

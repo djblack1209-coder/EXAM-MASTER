@@ -8,7 +8,7 @@ vi.mock('../../laf-backend/functions/_shared/build-channel', () => ({ DEV_TEST: 
 const KEY = 'synthetic-paid-key-secret';
 const { callWithDevPaidFallback, DEV_PAID_FALLBACK_FILE } =
   await import('../../laf-backend/functions/_shared/ai-providers/dev-paid-fallback');
-const { ProviderError, buildLearningRequest } =
+const { ProviderError, buildLearningRequest, readCoachFunctionResponse } =
   await import('../../laf-backend/functions/_shared/ai-providers/learning-provider');
 const { newAccount, reserveCall, settleCall, latestRepair } =
   await import('../../laf-backend/functions/_shared/learning-account');
@@ -109,9 +109,73 @@ describe('development paid fallback', () => {
     expect(target.capabilityCheck).toEqual(capabilityCheck);
     expect(target.writingOutput.format).toBeUndefined();
     expect(targetMessages).toEqual(messages);
-    expect(buildLearningRequest(target, targetMessages, false)).toMatchObject({
-      tools: [{ function: { name: 'yozi_coach_response', strict: true } }]
+    const wire = buildLearningRequest(target, targetMessages, false) as any;
+    expect(wire).toMatchObject({
+      tools: [{ function: { name: 'yozi_coach_response', parameters: coach.writingOutput.schema } }],
+      tool_choice: { type: 'function', function: { name: 'yozi_coach_response' } },
+      thinking: { type: 'disabled' }
     });
+    expect(wire.tools[0].function.strict).toBeUndefined();
+  });
+
+  it('uses DeepSeek thinking-compatible tools without changing the endpoint or host validation', () => {
+    const coach = {
+      ...free,
+      model: 'deepseek-v4-pro',
+      endpoint: 'https://api.deepseek.com/chat/completions',
+      writingOutput: { ...free.writingOutput, inferencePolicy: 'native-coach-tools-v1' }
+    } as any;
+    const wire = buildLearningRequest(coach, messages, false) as any;
+    expect(wire.tool_choice).toBe('auto');
+    expect(wire.thinking).toBeUndefined();
+    expect(wire.tools[0].function.strict).toBeUndefined();
+    expect(wire.tools[0].function.parameters).toEqual(coach.writingOutput.schema);
+    expect(coach.endpoint).toBe('https://api.deepseek.com/chat/completions');
+    expect(() =>
+      readCoachFunctionResponse(coach, {
+        choices: [{ finish_reason: 'stop', message: { content: '{"reply":"unverified prose"}' } }]
+      })
+    ).toThrow(expect.objectContaining({ code: 'COACH_INVALID' }));
+    const response = {
+      choices: [
+        {
+          finish_reason: 'tool_calls',
+          message: {
+            content: null,
+            tool_calls: [
+              {
+                type: 'function',
+                function: { name: 'yozi_coach_response', arguments: '{"reply":"checked next"}' }
+              }
+            ]
+          }
+        }
+      ]
+    };
+    expect(readCoachFunctionResponse(coach, response)).toBe('{"reply":"checked next"}');
+    response.choices[0].message.tool_calls.push(response.choices[0].message.tool_calls[0]);
+    expect(() => readCoachFunctionResponse(coach, response)).toThrow(
+      expect.objectContaining({ code: 'COACH_INVALID' })
+    );
+    const beta = buildLearningRequest(
+      { ...coach, endpoint: 'https://api.deepseek.com/beta/chat/completions' },
+      messages
+    ) as any;
+    expect(beta.tool_choice).toBe('auto');
+    expect(beta.tools[0].function.strict).toBe(true);
+    const probe = buildLearningRequest(
+      { ...coach, capabilityProbe: { stage: 'tool', nonce: 'nonce' } },
+      messages
+    ) as any;
+    expect(probe.tool_choice).toBe('auto');
+    const jsonProbe = buildLearningRequest(
+      { ...coach, capabilityProbe: { stage: 'json', nonce: 'nonce' } },
+      messages
+    ) as any;
+    expect(jsonProbe.response_format).toEqual({ type: 'json_object' });
+    const other = buildLearningRequest({ ...coach, endpoint: free.endpoint }, messages) as any;
+    expect(other.tool_choice).toEqual({ type: 'function', function: { name: 'yozi_coach_response' } });
+    expect(other.tools[0].function.strict).toBe(true);
   });
 
   it('switches an empty non-stream answer but never a stream that may have shown text', async () => {

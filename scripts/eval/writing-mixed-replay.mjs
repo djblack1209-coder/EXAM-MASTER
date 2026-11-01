@@ -613,8 +613,17 @@ try {
               });
               content = checked.content;
               entry.verificationReceipt = checked.receipt;
-              verified = Boolean(checked.receipt);
               if (checked.receipt?.failure === 'RATE_LIMITED') report.verificationRateLimited = true;
+              if (checked.receipt?.status === 'failed') {
+                entry.status = row.status = 'rejected';
+                entry.rejection = {
+                  code: 'COACH_INVALID',
+                  path: 'coachVerification',
+                  message: '批改复核未完成，初评未采用；原答已保留'
+                };
+                break;
+              }
+              verified = Boolean(checked.receipt);
             }
             try {
               entry.verifiedRaw = JSON.parse(content);

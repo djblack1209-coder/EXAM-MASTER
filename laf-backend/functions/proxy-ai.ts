@@ -650,9 +650,9 @@ export async function runLearningModelTask(
       });
     let verificationUsage: any = null;
     const verify = async (verifier: any, verifierMessages: LearningMessage[]) => {
-      // 客户端教学等待70秒：初评与复核合计不超过65秒，剩余不足就按复核失败保留原错误。
+      // 客户端教学等待70秒：初评与复核合计不超过65秒，剩余不足则保留失败收据，不采用初评。
       const remaining = 65000 - (Date.now() - upstreamAt);
-      if (remaining < 8000) throw new ProviderError('TIMEOUT', '复核时间不足，保留初评错误');
+      if (remaining < 8000) throw new ProviderError('TIMEOUT', '复核时间不足，初评未采用');
       const checked = await callLearningProvider(
         { ...verifier, timeoutMs: Math.min(30000, remaining) },
         verifierMessages,
@@ -682,7 +682,17 @@ export async function runLearningModelTask(
         rawResponse.content,
         verify
       ));
-      if (coachVerification) coachVerification.usage = verificationUsage;
+      if (coachVerification) coachVerification.usage = redactModelValue(verificationUsage, model.apiKey);
+      if (coachVerification?.status === 'failed') {
+        // Preserve known primary/verification usage without pretending the failed check cost nothing.
+        if (verificationUsage)
+          observedResponse.usage = { ...(response.usage || {}), verification: coachVerification.usage };
+        throw Object.assign(new ProviderError('COACH_INVALID', '批改复核未完成，初评未采用；原答已保留'), {
+          path: 'coachVerification',
+          repairForbidden: true,
+          verificationIncomplete: true
+        });
+      }
     }
     let probeOutput: any = null;
     if (options.capabilityProbe) {
@@ -806,7 +816,7 @@ export async function runLearningModelTask(
           dailyReservation,
           notCalled
             ? 0
-            : observedResponse && usedModel && !visualCall
+            : !error.verificationIncomplete && observedResponse && usedModel && !visualCall
               ? costFromUsage(observedResponse.usage, usedModel)
               : null,
           notCalled
@@ -828,7 +838,8 @@ export async function runLearningModelTask(
               actualCost:
                 !upstreamStarted || error.executionStage === 'not_called'
                   ? 0
-                  : observedResponse &&
+                  : !error.verificationIncomplete &&
+                      observedResponse &&
                       usedModel &&
                       !visualCall &&
                       observedResponse.actualModel === usedModel.model &&

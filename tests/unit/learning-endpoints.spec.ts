@@ -2239,7 +2239,7 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
       calibrations = 0;
     vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
       const done = { ...streamCompleted, finishReason: 'tool_calls', coachFunctionResult: true };
-      if (config.writingOutput?.contract === 'writing-exercise-calibration-v2') {
+      if (config.writingOutput?.contract === 'writing-exercise-calibration-v3') {
         calibrations++;
         if (mode === 'verifier-fails') return { ...done, content: '{"blanks":' };
         // 每套题独立盲填两次；返修前那套两次都判第二题无词可填。
@@ -2251,6 +2251,7 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
             blanks: [['for'], bad ? [] : ['for', 'to'], ['on']].map((accepted, i) => ({
               id: `b${i + 1}`,
               candidates: ['for', 'to', 'on', 'at'].map((word) => ({ word, fits: accepted.includes(word) })),
+              infinitiveTo: false,
               rule: '固定搭配'
             }))
           })
@@ -2263,7 +2264,7 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
     const result = await ai(context(body));
     const calls = vi.mocked(callLearningProvider).mock.calls;
     const blanks = JSON.parse(
-      calls.find(([config]: any) => config.writingOutput?.contract === 'writing-exercise-calibration-v2')![1][1].content
+      calls.find(([config]: any) => config.writingOutput?.contract === 'writing-exercise-calibration-v3')![1][1].content
     ).blanks;
     expect(blanks.map((blank: any) => blank.task)).toEqual(english.slice(0, 3));
     if (mode === 'calibrated' || mode === 'verifier-fails') {
@@ -2296,7 +2297,7 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
     }
     expect([generations, calibrations]).toEqual([2, 4]);
     const repairMessages = calls.filter(
-      ([config]: any) => config.writingOutput?.contract !== 'writing-exercise-calibration-v2'
+      ([config]: any) => config.writingOutput?.contract !== 'writing-exercise-calibration-v3'
     )[1][1];
     expect(repairMessages[0].content).toContain('"path":"exercises.c2"');
     expect(repairMessages[0].content).toContain('搭配填空没有单个英文单词能填对');
@@ -2395,6 +2396,51 @@ it.each(['success', 'missing-tool', 'invalid-again', 'rate-limited', 'secret-ech
     }
   }
 );
+
+it.each(['timeout', 'bad-json'])('批改复核失败不保存初评或自动追加调用，原答和未知费用保留：%s', async (mode) => {
+  await streamProfile(false);
+  let checks = 0;
+  vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
+    if (config.writingOutput?.contract === 'writing-error-verification-v1') {
+      checks++;
+      if (mode === 'timeout') throw new ProviderError('TIMEOUT', 'synthetic verification timeout');
+      return { ...streamCompleted, content: '{"blanks":' };
+    }
+    const wire = mixedDiagnosticReply(config);
+    wire.errors.push({
+      label: '无据的提纲缺项',
+      quoteId: 'q5',
+      dimension: '任务完成',
+      errorText: null,
+      replacement: null,
+      rule: '错误地要求学生写出完整邮件称呼'
+    });
+    return { ...streamCompleted, finishReason: 'tool_calls', coachFunctionResult: true, content: JSON.stringify(wire) };
+  });
+  const body = {
+    ...streamBody('verification-failed-' + mode),
+    learningContext: { owner: 'u1', coach: mixedDiagnosticRequest() }
+  };
+  const result = await ai(context(body));
+  expect(result).toMatchObject({ success: false, error: 'COACH_INVALID' });
+  expect(result).not.toHaveProperty('data.coach');
+  expect(result).not.toHaveProperty('repairRequestId');
+  expect(checks).toBe(mode === 'timeout' ? 1 : 2);
+  const ledger = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && row.calls);
+  expect(ledger.calls).toHaveLength(1);
+  expect(ledger.calls[0]).toMatchObject({
+    status: 'failed',
+    result: null,
+    actualCost: null,
+    costStatus: 'pending',
+    usage: { prompt_tokens: 4, completion_tokens: 8 }
+  });
+  if (mode === 'bad-json')
+    expect(ledger.calls[0].usage.verification).toMatchObject({ prompt_tokens: 8, completion_tokens: 16 });
+  const calls = vi.mocked(callLearningProvider).mock.calls.length;
+  await ai(context(body));
+  expect(callLearningProvider).toHaveBeenCalledTimes(calls);
+});
 
 describe('灵感建议只用自带 API、独立小额度，回复先校验再显示', () => {
   const ideasContext = {
