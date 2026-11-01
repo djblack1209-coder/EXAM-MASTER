@@ -130,7 +130,7 @@
 | 项 | 当前值 |
 | --- | --- |
 | 代码基线 | `git HEAD 3f314e9f`「docs: 固定写作质量主线与Muse外壳参照边界」；工作树干净，未提交项只有 `.collab/` 工具状态 |
-| 测试候选（固定路径） | `tmp/dev-test.noindex/Yozi AI.app`，2.2.0，可执行 `507f0e45…`（10-31 外壳第 6 批，旧包在废纸篓 `dev-test-app-20261025-superseded.app`）；同目录有 0600 的 `runtime.env` 与多个 `*-before` 原文回退 |
+| 测试候选（固定路径） | `tmp/dev-test.noindex/Yozi AI.app`，2.2.0，可执行 `f58a12bc…`（11-01 带练小猫头像，旧包在废纸篓 `dev-test-batch6-superseded-20261101.noindex`）；同目录有 0600 的 `runtime.env` 与多个 `*-before` 原文回退 |
 | 最新候选 | `tmp/task-kitten-final-20261027.noindex/Yozi AI.app`，2.2.0，可执行 `00be2a4a…`；今日编译、严格签名、逐态实屏通过 |
 | 日常入口 | `/Users/blackdj/Applications/Yozi AI.app`（`2e85d945…`）未替换，仍是客户可见的唯一入口 |
 | 既有回退 | `task-kitten-20261027.noindex`（上一候选）、`host-policy-resume-20261026.noindex`（指定回退）、`handoff-final-20261026.noindex`（上批完整基线）、`p13-candidate`（正式程序归档＋验证收据＋私有学习资料备份）、`yozi-candidate-build/backend-before-handoff-20261026`（后端回退）、`ab-contract-offline-before`（WIP 原文回退） |
