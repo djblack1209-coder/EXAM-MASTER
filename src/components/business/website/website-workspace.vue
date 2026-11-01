@@ -90,6 +90,7 @@
             ><text v-if="progress.daysToExam !== null">{{ progress.daysToExam }} days to your exam</text></view
           >
         </template>
+        <ProgressOverview v-if="progress && !loading && !failed" :model="progress.learningProgress" :openable="false" />
       </section>
       <section v-else-if="panel === 'downloads'" class="portal-content">
         <text class="portal-eyebrow">TAKE YOUR COACH WITH YOU</text>
@@ -121,6 +122,7 @@
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import { onHide, onShow } from '@dcloudio/uni-app';
 import BaseButton from '@/components/base/base-button/base-button.vue';
+import ProgressOverview from '@/components/business/learning/progress/progress-overview.vue';
 import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
 import { captureSession, checkSession } from '@/services/auth-storage.js';
 import { readLearningSnapshot } from '@/services/learning/learning-sync.js';

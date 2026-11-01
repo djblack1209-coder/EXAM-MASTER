@@ -31,7 +31,12 @@ const displayStandards = {
   collocation: '辨认语境中自然、准确的动词搭配'
 };
 
-export function knowledgeGraphView(seed, width = 680) {
+export function knowledgeGraphTitle(seed) {
+  const subject = typeof seed?.subjectLabel === 'string' ? seed.subjectLabel.trim() : '';
+  return subject ? `${subject} · 知识框架` : '知识框架';
+}
+
+export function knowledgeGraphView(seed, width = 680, progress = null) {
   const canvasWidth = Math.max(280, Math.min(720, Number(width) || 680));
   const columns = canvasWidth < 500 ? 2 : 3;
   const gap = 18,
@@ -52,11 +57,12 @@ export function knowledgeGraphView(seed, width = 680) {
         id: topic.id,
         name: topic.name,
         chapter,
-        // The batch 15 seed has no reviewed, node-addressed evidence source.
-        status: 'untested',
-        statusLabel: '未测',
+        status: 'insufficient',
+        statusLabel: '数据不足',
         recordLabel: '暂无记录 · 待审核',
-        masteryCriteria: [displayStandards[topic.id] || '掌握标准待审核'],
+        evidenceIds: [],
+        ...(progress?.nodes.find((item) => item.id === topic.id) || {}),
+        masteryCriteria: [displayStandards[topic.id] || '待审核'],
         diagnosticPrompt: topic.diagnostic?.prompt || '',
         x: inset + (i % columns) * (nodeWidth + gap),
         y: y + 34 + Math.floor(i / columns) * (nodeHeight + 14),
@@ -76,7 +82,7 @@ export function knowledgeGraphView(seed, width = 680) {
       fromName: byId.get(edge.from).name,
       toName: byId.get(edge.to).name
     }));
-  return { width: canvasWidth, height: y, nodes, edges, groups };
+  return { title: knowledgeGraphTitle(seed), width: canvasWidth, height: y, nodes, edges, groups };
 }
 
 export function knowledgeNodeDetail(graph, id) {
@@ -94,18 +100,43 @@ export function knowledgeGraphSvg(graph, dark = false, selectedId = '') {
   const byId = new Map(graph.nodes.map((node) => [node.id, node]));
   const line = dark ? '#a7aaad' : '#65686c';
   const paths = graph.edges
+    // Keep the complete graph for details; the framework draws local relations
+    // and only the selected node's cross-group relations.
+    .filter(
+      (edge) =>
+        byId.get(edge.from).chapter === byId.get(edge.to).chapter || selectedId === edge.from || selectedId === edge.to
+    )
     .map((edge, i) => {
       const a = byId.get(edge.from),
         b = byId.get(edge.to);
       const left = i % 2 === 0;
-      const ax = left ? a.x : a.x + a.width,
-        bx = left ? b.x : b.x + b.width;
-      const ay = a.y + a.height / 2,
-        by = b.y + b.height / 2;
+      const ay = a.y + a.height / 2;
       const lane = left ? 4 + (i % 5) * 3 : graph.width - 4 - (i % 5) * 3;
       const active = selectedId === edge.from || selectedId === edge.to;
       const opacity = selectedId ? (active ? 0.95 : 0.12) : 0.42;
-      return `<path data-strength="${xml(edge.strength)}" d="M${ax} ${ay} C${lane} ${ay} ${lane} ${by} ${bx} ${by}" fill="none" stroke="${line}" stroke-width="${active ? 2 : 1.3}" opacity="${opacity}"${edge.strength === 'soft' ? ' stroke-dasharray="5 4"' : ''} marker-end="url(#arrow)"/>`;
+      let path;
+      if (a.chapter === b.chapter && a.y === b.y) {
+        const forward = a.x < b.x;
+        const blocked = graph.nodes.some(
+          (node) => node.y === a.y && node.x > Math.min(a.x, b.x) && node.x < Math.max(a.x, b.x)
+        );
+        path = blocked
+          ? `M${a.x + a.width / 2} ${a.y} V${a.y - 7} H${b.x + b.width / 2} V${b.y}`
+          : `M${forward ? a.x + a.width : a.x} ${ay} H${forward ? b.x : b.x + b.width}`;
+      } else if (a.chapter === b.chapter && Math.abs(a.y - b.y) <= a.height + 14) {
+        const down = a.y < b.y;
+        const start = down ? a.y + a.height : a.y;
+        const end = down ? b.y : b.y + b.height;
+        path = `M${a.x + a.width / 2} ${start} V${(start + end) / 2} H${b.x + b.width / 2} V${end}`;
+      } else {
+        const down = a.y < b.y;
+        const start = down ? a.y + a.height : a.y;
+        const end = down ? b.y : b.y + b.height;
+        // Leave through the row gap before entering an outer lane, including
+        // selected cross-group relations whose endpoints may be in middle columns.
+        path = `M${a.x + a.width / 2} ${start} V${start + (down ? 7 : -7)} H${lane} V${end + (down ? -7 : 7)} H${b.x + b.width / 2} V${end}`;
+      }
+      return `<path data-from="${xml(edge.from)}" data-to="${xml(edge.to)}" data-strength="${xml(edge.strength)}" d="${path}" fill="none" stroke="${line}" stroke-width="${active ? 2 : 1.3}" opacity="${opacity}"${edge.strength === 'soft' ? ' stroke-dasharray="5 4"' : ''} marker-end="url(#arrow)"/>`;
     })
     .join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${graph.width}" height="${graph.height}" viewBox="0 0 ${graph.width} ${graph.height}"><defs><marker id="arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0 0 L5 2.5 L0 5" fill="${line}"/></marker></defs>${paths}</svg>`;
