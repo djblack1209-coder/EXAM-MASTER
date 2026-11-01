@@ -138,6 +138,62 @@ describe('练习和小结按事实组装', () => {
     expect(coachSystemPrompt(request, prepared.writingOutput.schema)).toContain('只调用yozi_coach_response');
     expect(() => decodeCoachResponse(prepared, JSON.stringify({ ...generated, coach: { kind: 'daily' } }))).toThrow();
   });
+  it('DeepSeek 出题用 JSON Output，仍按同一闭合题源合同拒绝坏字段', () => {
+    const prepared = prepareCoachFeedbackModel(
+      { ...config, endpoint: 'https://api.deepseek.com/chat/completions', model: 'deepseek-v4-pro' },
+      request
+    );
+    expect(prepared.writingOutput.inferencePolicy).toBe('native-coach-json-v1');
+    const pack = exercisePack();
+    const raw = {
+      message: '继续练习',
+      exercises: Object.fromEntries(
+        pack.cards.map((card) => [
+          card.id,
+          {
+            [card.kind === 'translate_en' ? 'chinese' : 'english']: card.exercise.source,
+            sourceId: null,
+            sourceQuote: null,
+            sourcePage: null
+          }
+        ])
+      ),
+      writing: { prompt: pack.writing.prompt, sourceId: null, sourceQuote: null, sourcePage: null }
+    };
+    expect(parseCoachModelOutput(decodeCoachResponse(prepared, JSON.stringify(raw)), request).coach.cards).toHaveLength(
+      8
+    );
+    expect(() => decodeCoachResponse(prepared, JSON.stringify({ ...raw, extra: 'untrusted' }))).toThrow(
+      expect.objectContaining({ code: 'COACH_INVALID' })
+    );
+    expect(() => decodeCoachResponse(prepared, JSON.stringify(raw) + '}')).toThrow(
+      expect.objectContaining({ code: 'COACH_INVALID' })
+    );
+  });
+  it('无资料时先指定三个不同的固定搭配考点并轮换，仍要求模型写完整新句与独立盲填', () => {
+    const p = prepareCoachFeedbackModel(config, request);
+    const prompt = coachSystemPrompt(request, p.writingOutput.schema);
+    const frames = [...prompt.matchAll(/c[123]用 ([^；。]+)/gu)].map((match) => match[1]);
+    expect(frames).toHaveLength(3);
+    expect(new Set(frames).size).toBe(3);
+    expect(frames.every((frame) => (frame.match(/\[[a-z]+\]/gu) || []).length === 1)).toBe(true);
+    expect(prompt).toContain('完整、自然的新英文句');
+    expect(prompt).toContain('能填对的单词超过两个即退回');
+    expect(coachSystemPrompt({ ...request, day: '2026-10-28' }, p.writingOutput.schema)).not.toBe(prompt);
+    const diagnostic = { ...request, phase: 'diagnostic', target: 'diagnostic' };
+    const d = prepareCoachFeedbackModel(config, diagnostic);
+    expect(coachSystemPrompt(diagnostic, d.writingOutput.schema)).toMatch(/d2用 [^；。]+/u);
+  });
+  it('资料出题保留材料依据，不强加材料中没有的固定短语结构', () => {
+    const withSource = {
+      ...request,
+      sources: [{ id: 'private-material', name: '笔记', page: 1, content: 'Students depend on one another.' }]
+    };
+    const p = prepareCoachFeedbackModel(config, withSource);
+    const prompt = coachSystemPrompt(withSource, p.writingOutput.schema);
+    expect(prompt).not.toContain('本次搭配题先定考点');
+    expect(prompt).toContain('sourceQuote逐字引用原片段');
+  });
   it.each(['direction', 'synonyms', 'unverified_choice', 'leak', 'free_prompt', 'example'])(
     '拒绝错误方向、多解单选及泄题内容：%s',
     (kind) => {
@@ -608,9 +664,9 @@ describe('按任务的真实答题形式送评', () => {
     expect(projected.input).toBe(r.input);
     const prepared = prepareCoachFeedbackModel(config, projected, false, false, false, true);
     expect(prepared.writingOutput.scorePolicy).toBe('host-derived-v1');
-    expect(Object.keys(prepared.writingOutput.schema.properties.dimensionReviews.properties.grammar.properties)).toEqual([
-      'comment'
-    ]);
+    expect(
+      Object.keys(prepared.writingOutput.schema.properties.dimensionReviews.properties.grammar.properties)
+    ).toEqual(['comment']);
     expect(prepared.writingOutput.schema.properties.errors.items.required).toContain('rule');
     const wire = {
       quoteVersion: prepared.writingOutput.schema.properties.quoteVersion.enum[0],
@@ -704,7 +760,12 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     wire.dimensionReviews.task.comment = '缺少邮件格式要素';
     return wire;
   };
-  const fill = (accepted) => ({ id: 'b1', accepted, label: 'interested in', rule: 'be interested in 是固定搭配，介词用 in' });
+  const fill = (accepted) => ({
+    id: 'b1',
+    accepted,
+    label: 'interested in',
+    rule: 'be interested in 是固定搭配，介词用 in'
+  });
   const parsed = (id, mainSubject, mainVerb, clause, antecedent, clauseSubject, clauseVerb, pronounRole) => ({
     id,
     mainSubject,
@@ -718,11 +779,12 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     note: `主干是${mainSubject} ${mainVerb}，${clause}修饰${antecedent}`
   });
   const verdict = (raw) => async () => JSON.stringify(raw);
+  const point = (span, answerQuote) => ({ span, covered: answerQuote !== null, answerQuote });
   const fairPoints = [
-    { span: 'Write an email to classmates', keywords: ['邮件', '同学'] },
-    { span: 'introduce a science fair', keywords: ['介绍', '科学展'] },
-    { span: 'invite them', keywords: ['邀请'] },
-    { span: 'About 100 words', keywords: ['100', '一百'] }
+    point('Write an email to classmates', '写给同学的邀请邮件'),
+    point('introduce a science fair', '介绍科学展并邀请参与'),
+    point('invite them', '介绍科学展并邀请参与'),
+    point('About 100 words', '约100词')
   ];
   const outline = (points = fairPoints) => ({ id: 'p1', points, note: '给同学写邮件，介绍科学展并邀请参加，约100词' });
   const outlineAnswer = (answer) => {
@@ -813,24 +875,141 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
       expect(result.lines.find((line) => line.quoteId === 'q1').advice).toContain('谓语为describes');
     }
   });
-  it('审题题只给复核员英文题干盲列要点，提纲逐点写到就删掉挑错；填空只给题干不给原答', async () => {
+  it.each([
+    ['who作从句宾语', '关系词成分'],
+    ['这是宾语从句', '从句类型'],
+    ['这是限制性定语从句', '从句限制性'],
+    ['who designs the robot是定语从句', '从句范围']
+  ])('盲析只补明确矛盾，不沿用初评漏判：%s', async (claim, label) => {
+    const request = nonRelativeRequest(),
+      tasks = request.task.split('\n'),
+      answers = request.input.split('\n');
+    tasks[3] = '拆分主句与从句并指出修饰对象：The engineer, who designed the robot, visited our school.';
+    answers[3] = '主句The engineer visited our school；' + claim + '，修饰engineer。';
+    const p = preparedFor({ ...request, task: tasks.join('\n'), input: answers.join('\n') });
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(mixedDiagnosticReply(p)),
+      verdict({
+        blanks: [fill(['in'])],
+        syntax: [
+          parsed('s1', 'The engineer', 'visited', 'who designed the robot', 'engineer', 'who', 'designed', '主语')
+        ]
+      })
+    );
+    expect(receipt).toMatchObject({ status: 'completed', added: 1 });
+    const errors = JSON.parse(content).errors.filter((error) => error.quoteId === 'q4');
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toMatchObject({ label: label + '判断不符', dimension: '任务完成', replacement: null });
+  });
+  it('同处修饰对象错误与无据的关系词错因合并为一条盲析支持的反馈', async () => {
+    const request = nonRelativeRequest(),
+      tasks = request.task.split('\n'),
+      answers = request.input.split('\n');
+    tasks[3] = '拆分主句与从句并指出修饰对象：The engineer, who designed the robot, visited our school.';
+    answers[3] = '主句The engineer visited our school；who designed the robot修饰school，who作从句主语。';
+    const p = preparedFor({ ...request, task: tasks.join('\n'), input: answers.join('\n') }),
+      wire = mixedDiagnosticReply(p);
+    wire.errors.push(
+      ...['修饰对象错误', '从句主语错误'].map((label) => ({
+        label,
+        quoteId: 'q4',
+        dimension: '任务完成',
+        errorText: null,
+        replacement: null,
+        rule: '初评混淆修饰对象与关系词成分'
+      }))
+    );
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(wire),
+      verdict({
+        blanks: [fill(['in'])],
+        syntax: [
+          parsed('s1', 'The engineer', 'visited', 'who designed the robot', 'engineer', 'who', 'designed', '主语')
+        ]
+      })
+    );
+    const errors = JSON.parse(content).errors.filter((error) => error.quoteId === 'q4');
+    expect(receipt).toMatchObject({ status: 'completed', removed: 1, added: 0 });
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toMatchObject({ label: '从句修饰对象判断不符', rule: '本句定语从句修饰engineer' });
+    expect(JSON.parse(content).dimensionReviews.task.comment).not.toContain('从句主语错误');
+  });
+  it.each([true, false])('句法盲析确认一致才撤疑，矛盾转为明确错误：%s', async (correct) => {
+    const request = nonRelativeRequest(),
+      tasks = request.task.split('\n'),
+      answers = request.input.split('\n');
+    tasks[0] = '分析主干与从句：The workshop, which I attended yesterday, was useful.';
+    answers[0] = `主句The workshop was useful；which I attended yesterday是非限制性定语从句，修饰${correct ? 'workshop' : 'yesterday'}，which作attended的宾语。`;
+    const p = preparedFor({ ...request, task: tasks.join('\n'), input: answers.join('\n') }),
+      wire = mixedDiagnosticReply(p);
+    wire.uncertainties.push({ quoteId: 'q1', label: 'which修饰对象未明确写出' });
+    wire.lines.push({ quoteId: 'q1', advice: '需要补上which的修饰对象再自查。' });
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(wire),
+      verdict({
+        blanks: [fill(['in'])],
+        syntax: [parsed('s1', 'The workshop', 'was', 'which I attended yesterday', 'workshop', 'I', 'attended', '宾语')]
+      })
+    );
+    expect(receipt.status).toBe('completed');
+    const result = JSON.parse(content);
+    expect(result.uncertainties.some((item) => item.quoteId === 'q1')).toBe(false);
+    expect(result.errors.some((item) => item.quoteId === 'q1')).toBe(!correct);
+    expect(result.lines.find((item) => item.quoteId === 'q1').advice).not.toContain('补上which的修饰对象');
+  });
+  it('只有主干而缺少关系词判断时，保留未说明成分的存疑', async () => {
+    const request = nonRelativeRequest(),
+      tasks = request.task.split('\n'),
+      answers = request.input.split('\n');
+    tasks[0] = '分析主干与从句：The workshop, which I attended yesterday, was useful.';
+    answers[0] = '主句The workshop was useful。';
+    const p = preparedFor({ ...request, task: tasks.join('\n'), input: answers.join('\n') }),
+      wire = mixedDiagnosticReply(p);
+    wire.uncertainties.push({ quoteId: 'q1', label: '尚未说明which的关系词成分' });
+    const { content } = await verifyCoachErrors(
+      p,
+      JSON.stringify(wire),
+      verdict({
+        blanks: [fill(['in'])],
+        syntax: [parsed('s1', 'The workshop', 'was', 'which I attended yesterday', 'workshop', 'I', 'attended', '宾语')]
+      })
+    );
+    expect(JSON.parse(content).uncertainties).toContainEqual({ quoteId: 'q1', label: '尚未说明which的关系词成分' });
+  });
+  it('审题独立逐点核对题干与提纲，不给初评标签；填空仍只给题干不给原答', async () => {
     const p = prepared();
     const calls = [];
-    const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(overflagged(p)), async (verifier, messages) => {
-      calls.push({ verifier, messages });
-      return verdict({ blanks: [fill(['in'])], outlines: [outline()] })();
-    });
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(overflagged(p)),
+      async (verifier, messages) => {
+        calls.push({ verifier, messages });
+        return verdict({ blanks: [fill(['in'])], outlines: [outline()] })();
+      }
+    );
     expect(calls).toHaveLength(1);
-    expect(calls[0].verifier.writingOutput.contract).toBe('writing-error-verification-v1');
+    expect(calls[0].verifier.writingOutput.contract).toBe('writing-error-verification-v2');
     const sent = JSON.parse(calls[0].messages[1].content);
     expect(sent.errors).toEqual([]);
     expect(sent.blanks).toEqual([{ id: 'b1', task: '补全固定搭配：We are interested ___ science. 只填介词。' }]);
     expect(sent.outlines).toEqual([
-      { id: 'p1', prompt: 'Write an email to classmates to introduce a science fair and invite them. About 100 words.' }
+      {
+        id: 'p1',
+        prompt: 'Write an email to classmates to introduce a science fair and invite them. About 100 words.',
+        answer: '写给同学的邀请邮件，介绍科学展并邀请参与，约100词。',
+        answerClauses: ['写给同学的邀请邮件', '介绍科学展并邀请参与', '约100词']
+      }
     ]);
     expect(sent).not.toHaveProperty('syntax');
+    expect(
+      calls[0].verifier.writingOutput.schema.properties.outlines.items.properties.points.items.properties.answerQuote
+        .enum
+    ).toEqual(['写给同学的邀请邮件', '介绍科学展并邀请参与', '约100词', null]);
     expect(calls[0].messages[1].content).not.toContain('"at"');
-    expect(calls[0].messages[1].content).not.toContain('邀请邮件');
+    expect(calls[0].messages[1].content).toContain('邀请邮件');
     expect(calls[0].messages[1].content).not.toContain('未列邮件格式要素');
     expect(receipt).toMatchObject({ status: 'completed', checked: 2, removed: 1, added: 0 });
     expect(receipt.reviews[0]).toMatchObject({ quoteId: 'q2', kept: true, wrong: true });
@@ -839,6 +1018,7 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     expect(receipt.outlines).toEqual([
       { quoteId: 'q5', valid: true, agreed: true, points: fairPoints.map(({ span }) => ({ span, covered: true })) }
     ]);
+    expect(JSON.stringify(receipt)).not.toContain('写给同学的邀请邮件');
     const coach = JSON.parse(decodeCoachResponse(p, content)).coach;
     expect(coach.dimensions.map((d) => [d.name, d.score])).toEqual([
       ['语法', 2],
@@ -850,14 +1030,62 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     expect(coach.lines.find((line) => line.original.startsWith('写给同学')).advice).toBe(
       '给同学写邮件，介绍科学展并邀请参加，约100词'
     );
-    expect(coach.weaknesses).toEqual(['固定搭配介词选择错误']);
+    expect(coach.weaknesses).toEqual(['interested in']);
   });
   it.each([
-    ['提纲漏写一个要点', '写给同学的邮件，介绍科学展，约100词。', fairPoints, true],
-    ['要点所在分句带否定', '写给同学的邮件，介绍科学展，不用邀请，约100词。', fairPoints, true],
-    ['要点片段不是题干原文', null, [{ span: 'Write a letter to classmates', keywords: ['邮件', '同学'] }, ...fairPoints.slice(1)], false],
+    [
+      '提纲漏写一个要点',
+      '写给同学的邮件，介绍科学展，约100词。',
+      [
+        point('Write an email to classmates', '写给同学的邮件'),
+        point('introduce a science fair', '介绍科学展'),
+        point('invite them', null),
+        fairPoints[3]
+      ],
+      true
+    ],
+    [
+      '要点所在分句带否定',
+      '写给同学的邮件，介绍科学展，不用邀请，约100词。',
+      [
+        point('Write an email to classmates', '写给同学的邮件'),
+        point('introduce a science fair', '介绍科学展'),
+        point('invite them', null),
+        fairPoints[3]
+      ],
+      true
+    ],
+    [
+      '要点片段不是题干原文',
+      null,
+      [point('Write a letter to classmates', '写给同学的邀请邮件'), ...fairPoints.slice(1)],
+      false
+    ],
     ['题干有一句没列要点', null, fairPoints.slice(0, 3), false],
-    ['同一关键词出现在两个要点下', null, [...fairPoints.slice(0, 2), { span: 'invite them', keywords: ['邀请', '邮件'] }, fairPoints[3]], false]
+    ['同一要点重复登记', null, [...fairPoints.slice(0, 2), fairPoints[1], fairPoints[3]], false],
+    ['原答引用是编造的', null, [point(fairPoints[0].span, '原答里没有这句话'), ...fairPoints.slice(1)], false],
+    [
+      '截掉否定词的片段不能作为完整分句',
+      '写给同学的邮件，介绍科学展，不用邀请，约100词。',
+      [
+        point('Write an email to classmates', '写给同学的邮件'),
+        point('introduce a science fair', '介绍科学展'),
+        point('invite them', '邀请'),
+        fairPoints[3]
+      ],
+      false
+    ],
+    [
+      '完整否定分句不能假称已覆盖',
+      '写给同学的邮件，介绍科学展，不用邀请，约100词。',
+      [
+        point('Write an email to classmates', '写给同学的邮件'),
+        point('introduce a science fair', '介绍科学展'),
+        point('invite them', '不用邀请'),
+        fairPoints[3]
+      ],
+      false
+    ]
   ])('审题错误保留：%s', async (_name, answer, points, valid) => {
     const p = answer ? preparedFor(outlineAnswer(answer)) : prepared();
     const { content, receipt } = await verifyCoachErrors(
@@ -865,30 +1093,101 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
       JSON.stringify(overflagged(p)),
       verdict({ blanks: [fill(['in'])], outlines: [outline(points)] })
     );
-    expect(receipt).toMatchObject({ status: valid ? 'completed' : 'failed', checked: 2, removed: 0 });
-    if (!valid) expect(receipt.failure).toBe('VERIFICATION_INCONCLUSIVE');
-    expect(receipt.reviews[1]).toMatchObject({ quoteId: 'q5', kept: true });
-    expect(receipt.outlines[0]).toMatchObject({ quoteId: 'q5', valid, agreed: false });
+    if (['原答引用是编造的', '截掉否定词的片段不能作为完整分句'].includes(_name)) {
+      expect(receipt).toMatchObject({
+        status: 'failed',
+        checked: 2,
+        attempts: 2,
+        failure: 'COACH_INVALID',
+        failurePath: expect.stringMatching(/outlines.*answerQuote/u),
+        reviews: []
+      });
+    } else {
+      expect(receipt).toMatchObject({ status: valid ? 'completed' : 'failed', checked: 2, removed: 0 });
+      if (!valid) expect(receipt.failure).toBe('VERIFICATION_INCONCLUSIVE');
+      expect(receipt.reviews[1]).toMatchObject({ quoteId: 'q5', kept: true });
+      expect(receipt.outlines[0]).toMatchObject({ quoteId: 'q5', valid, agreed: false });
+    }
     expect(JSON.parse(decodeCoachResponse(p, content)).coach.dimensions[3].score).toBe(1);
   });
-  it('开发集园艺感谢信：提纲逐条写到题干要点，盲列要点判为一致', () => {
+  it('开发集园艺感谢信：按语义与完整分句匹配提纲，不要求固定关键词', () => {
     const prompt =
       'Write a letter to volunteers thanking them for their work in the school garden. Mention their contribution and express your appreciation. About 100 words.';
     const points = [
-      { span: 'Write a letter', keywords: ['感谢信', '书信', '写信'] },
-      { span: 'to volunteers', keywords: ['志愿者', '义工'] },
-      { span: 'thanking them for their work in the school garden', keywords: ['感谢', '园艺', '花园'] },
-      { span: 'Mention their contribution', keywords: ['贡献', '付出'] },
-      { span: 'express your appreciation', keywords: ['谢意', '感激', '致谢'] },
-      { span: 'About 100 words.', keywords: ['100', '一百'] }
+      point('Write a letter', '感谢信'),
+      point('to volunteers', '写给志愿者'),
+      point('thanking them for their work in the school garden', '感谢校园园艺工作'),
+      point('Mention their contribution', '提到志愿者的贡献并表达谢意'),
+      point('express your appreciation', '提到志愿者的贡献并表达谢意'),
+      point('About 100 words.', '约100词')
     ];
     const answer = '感谢信，写给志愿者，感谢校园园艺工作；提到志愿者的贡献并表达谢意，约100词。';
     expect(outlineAgreement(prompt, points, answer)).toMatchObject({ valid: true, agreed: true });
-    expect(outlineAgreement(prompt, points, '感谢信，写给志愿者，感谢校园园艺工作，约100词。')).toMatchObject({
+    const missing = points.map((item, i) => ([3, 4].includes(i) ? point(item.span, null) : item));
+    expect(outlineAgreement(prompt, missing, '感谢信，写给志愿者，感谢校园园艺工作，约100词。')).toMatchObject({
       valid: true,
       agreed: false,
       points: expect.arrayContaining([{ span: 'Mention their contribution', covered: false }])
     });
+  });
+  it('独立逐点确认覆盖后撤下无依据的提纲不确定性，不新增错误', async () => {
+    const p = prepared(),
+      wire = mixedDiagnosticReply(p);
+    wire.uncertainties.push({ label: '提纲是否足够具体', quoteId: 'q5' });
+    wire.lines.push({ quoteId: 'q5', advice: '需要另补具体时间地点再自查。' });
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(wire),
+      verdict({ blanks: [fill(['in'])], outlines: [outline()] })
+    );
+    expect(receipt.outlines[0]).toMatchObject({ valid: true, agreed: true });
+    const result = JSON.parse(content);
+    expect(result.uncertainties).toEqual([]);
+    expect(result.errors.map((item) => item.quoteId)).toEqual(['q2']);
+    expect(result.lines.find((line) => line.quoteId === 'q5').advice).not.toContain('具体时间地点');
+    expect(JSON.parse(decodeCoachResponse(p, content)).coach.dimensions[3].score).toBe(2);
+  });
+  it('原答短引文按所在完整分句核对，允许同义提纲且不截断否定语境', () => {
+    const prompt =
+      'Write a notice to students. Introduce its purpose and explain what participants should bring. About 100 words.';
+    const points = [
+      point('Write a notice to students', '面向学生'),
+      point('Introduce its purpose', '说明活动目的'),
+      point('explain what participants should bring', '参加者应带的物品'),
+      point('About 100 words', '约100词')
+    ];
+    expect(outlineAgreement(prompt, points, '通知，面向学生；说明活动目的和参加者应带的物品，约100词。')).toMatchObject(
+      { valid: true, agreed: true }
+    );
+    expect(
+      outlineAgreement(prompt, points, '通知，面向学生；不需要说明活动目的和参加者应带的物品，约100词。').valid
+    ).toBe(false);
+    const english = 'Write an email to classmates. About 100 words.';
+    const quotes = [
+      point('Write an email to classmates', 'email to classmates'),
+      point('About 100 words', '100 words')
+    ];
+    expect(outlineAgreement(english, quotes, 'An email to classmates, about 100 words.').valid).toBe(true);
+    expect(outlineAgreement(english, quotes, 'Not an email to classmates, about 100 words.').valid).toBe(false);
+    expect(outlineAgreement(english, quotes, 'An eemail to classmates, about 100 words.').valid).toBe(false);
+  });
+  it('完整原答引用可含结尾标点或连续多个分句，仍不能截掉词内前缀', () => {
+    const prompt = 'Write a notice to students. About 100 words.';
+    const answer = '通知，面向学生，约100词。';
+    expect(
+      outlineAgreement(
+        prompt,
+        [point('Write a notice to students', '通知，面向学生'), point('About 100 words', '约100词。')],
+        answer
+      )
+    ).toMatchObject({ valid: true, agreed: true });
+    expect(
+      outlineAgreement(
+        prompt,
+        [point('Write a notice to students', '知'), point('About 100 words', '约100词。')],
+        answer
+      ).valid
+    ).toBe(false);
   });
   it('中译英的语法错误只看是否写错，复核说题干没要求也保留；表达类仍按两问删除（封存题 H3 时态）', async () => {
     const r = nonRelativeRequest(),
@@ -929,9 +1228,15 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     });
     expect(sent[0].errors.map((item) => item.index)).toEqual([1, 2]);
     expect(receipt).toMatchObject({ status: 'completed', checked: 3, removed: 1 });
-    expect(receipt.reviews[1]).toMatchObject({ quoteId: 'q3', dimension: '语法', required: false, wrong: true, kept: true });
+    expect(receipt.reviews[1]).toMatchObject({
+      quoteId: 'q3',
+      dimension: '语法',
+      required: false,
+      wrong: true,
+      kept: true
+    });
     expect(receipt.reviews[2]).toMatchObject({ quoteId: 'q3', dimension: '表达', kept: false });
-    expect(JSON.parse(content).errors.map((e) => e.label)).toEqual(['固定搭配介词选择错误', '时态错误']);
+    expect(JSON.parse(content).errors.map((e) => e.label)).toEqual(['interested in', '时态错误']);
   });
   it('初评漏登记的错填由盲填补登一条，不代写答案，矛盾的优点撤下', async () => {
     const p = prepared(),
@@ -958,6 +1263,51 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     });
     expect(coach.lines.find((line) => line.original === 'at').advice).toBe('be interested in 是固定搭配，介词用 in');
     expect(coach.weaknesses).toEqual(['interested in']);
+  });
+  it('盲填确认搭配错后不沿用初评的大小写标签或语法维度', async () => {
+    const p = prepared(),
+      wire = mixedDiagnosticReply(p);
+    wire.errors[0] = { ...wire.errors[0], label: '句首大写缺失', dimension: '语法', rule: '需要首字母大写' };
+    wire.lines[0].advice = '请改为大写。';
+    const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(wire), verdict({ blanks: [fill(['in'])] }));
+    expect(receipt).toMatchObject({ status: 'completed', removed: 0 });
+    const raw = JSON.parse(content);
+    expect(raw.errors).toEqual([
+      {
+        quoteId: 'q2',
+        label: 'interested in',
+        dimension: '搭配',
+        errorText: 'at',
+        replacement: null,
+        rule: 'be interested in 是固定搭配，介词用 in'
+      }
+    ]);
+    expect(raw.lines[0].advice).not.toContain('大写');
+    const coach = JSON.parse(decodeCoachResponse(p, content)).coach;
+    expect(coach.dimensions.find((item) => item.name === '语法').score).toBe(2);
+    expect(coach.dimensions.find((item) => item.name === '搭配').score).toBe(1);
+  });
+  it('摸底第二题无搭配标题时仍按宿主固定题型归维度', async () => {
+    const r = nonRelativeRequest(),
+      tasks = r.task.split('\n');
+    tasks[1] = '补全句子：She is interested ___ science.';
+    const p = preparedFor({ ...r, task: tasks.join('\n') }),
+      wire = mixedDiagnosticReply(p);
+    expect(p.writingOutput.quoteRoles.find((role) => role.quoteId === 'q2').task).toMatch(/^固定搭配：/u);
+    const { content } = await verifyCoachErrors(p, JSON.stringify(wire), verdict({ blanks: [fill(['in'])] }));
+    expect(JSON.parse(content).errors).toEqual([expect.objectContaining({ quoteId: 'q2', dimension: '搭配' })]);
+  });
+  it('盲填判错后清除其他维度里对同一原答的旧正确说法', async () => {
+    const p = prepared(),
+      wire = mixedDiagnosticReply(p);
+    wire.errors = [];
+    wire.dimensionReviews.task.comment = '各题均已完成，填空“at”正确。';
+    wire.dimensionReviews.expression.comment = '翻译表达自然。';
+    const { content } = await verifyCoachErrors(p, JSON.stringify(wire), verdict({ blanks: [fill(['in'])] }));
+    const checked = JSON.parse(content);
+    expect(checked.dimensionReviews.task.comment).toBe('本维未发现已核实的错误。');
+    expect(checked.dimensionReviews.expression.comment).toBe('翻译表达自然。');
+    expect(checked.errors).toEqual([expect.objectContaining({ quoteId: 'q2', dimension: '搭配' })]);
   });
   it.each([
     [
@@ -1036,7 +1386,11 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     const p = preparedFor(blankAnswer(answer)),
       wire = mixedDiagnosticReply(p);
     wire.errors[0].errorText = answer;
-    const { content, receipt } = await verifyCoachErrors(p, JSON.stringify(wire), verdict({ blanks: [fill(accepted)] }));
+    const { content, receipt } = await verifyCoachErrors(
+      p,
+      JSON.stringify(wire),
+      verdict({ blanks: [fill(accepted)] })
+    );
     expect(receipt).toMatchObject({ status: 'completed', checked: 1, removed: 1, added: 0 });
     expect(receipt.blanks[0]).toMatchObject({ quoteId: 'q2', correct: true });
     const coach = JSON.parse(decodeCoachResponse(p, content)).coach;
@@ -1069,8 +1423,11 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     ['重复回答', verdict({ outlines: [outline(), outline()], blanks: [fill(['in'])] })],
     ['填空列出短语', verdict({ outlines: [outline()], blanks: [fill(['interested in'])] })],
     [
-      '关键词只有一个字',
-      verdict({ outlines: [outline([{ span: 'Write an email', keywords: ['信'] }, ...fairPoints.slice(1)])], blanks: [fill(['in'])] })
+      '原答引用不是字符串',
+      verdict({
+        outlines: [outline([{ span: 'Write an email', covered: true, answerQuote: 1 }, ...fairPoints.slice(1)])],
+        blanks: [fill(['in'])]
+      })
     ],
     ['不是JSON', async () => 'not json']
   ])('复核失败（%s）时诊断原文保留并标失败，不当成无错', async (_name, call) => {
@@ -1242,7 +1599,7 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
       }
     ]);
     expect(JSON.parse(content).errors.map((e) => [e.quoteId, e.label])).toEqual([
-      ['q4', '非限制性定语从句修饰对象判断错误'],
+      ['q4', '从句修饰对象判断不符'],
       ['q2', 'interested in']
     ]);
     expect(JSON.parse(decodeCoachResponse(p, content)).coach.dimensions[3].score).toBe(1);
@@ -1265,7 +1622,16 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
         blanks: [fill(['in'])],
         syntax: [
           {
-            ...parsed('s1', 'The workshop', 'starts', 'which our teacher recommended', 'workshop', 'our teacher', 'recommended', '宾语'),
+            ...parsed(
+              's1',
+              'The workshop',
+              'starts',
+              'which our teacher recommended',
+              'workshop',
+              'our teacher',
+              'recommended',
+              '宾语'
+            ),
             ...change
           },
           parsed('s2', 'The coach', 'teaches', 'whom we met last week', 'coach', 'we', 'met', '宾语')
@@ -1309,16 +1675,66 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
   });
   // 摸底开发集 6 份样本的两道句法题，正确盲析下逐份比对：只有 robotics 的 q4（修饰对象写成 school）不一致。
   it.each([
-    ['The guide that we received explains the library rules.', ['The guide', 'explains', 'that we received', 'guide', 'we', 'received', '宾语'], '主干The guide explains the library rules；that we received是修饰guide的定语从句，that作received的宾语。', true],
-    ['The librarian, who helped us yesterday, will attend the meeting.', ['The librarian', 'will attend', 'who helped us yesterday', 'librarian', 'who', 'helped', '主语'], '主句The librarian will attend the meeting；who helped us yesterday是非限制性定语从句，修饰librarian，who作从句主语。', true],
-    ['The coach, whom we met last week, teaches beginners.', ['The coach', 'teaches', 'whom we met last week', 'coach', 'we', 'met', '宾语'], '主句The coach teaches beginners；whom we met last week是非限制性定语从句，修饰coach，whom是met的宾语。', true],
-    ['The engineer, who designed the robot, visited our school.', ['The engineer', 'visited', 'who designed the robot', 'engineer', 'who', 'designed', '主语'], '主句The engineer visited our school；who designed the robot是非限制性定语从句，修饰school，who作从句主语。', false],
-    ['The seeds which we planted have grown.', ['The seeds', 'have grown', 'which we planted', 'seeds', 'we', 'planted', '宾语'], '主干The seeds have grown；which we planted修饰seeds，which作planted的宾语。', true],
-    ['The gardener, whose advice we followed, thanked our class.', ['The gardener', 'thanked', 'whose advice we followed', 'gardener', 'we', 'followed', '定语'], '主句The gardener thanked our class；whose advice we followed是非限制性定语从句，修饰gardener，whose修饰advice，advice是followed的宾语。', true],
-    ['The bike that my father bought last year still runs well.', ['The bike', 'runs', 'that my father bought last year', 'bike', 'my father', 'bought', '宾语'], '主干The bike still runs well；that my father bought last year是定语从句，修饰bike。', true],
-    ['The guide, who showed us around, answered every question.', ['The guide', 'answered', 'who showed us around', 'guide', 'who', 'showed', '主语'], '主句The guide answered every question；从句who showed us around修饰guide。', true],
-    ['The volunteers who cleaned the park received a prize.', ['The volunteers', 'received', 'who cleaned the park', 'volunteers', 'who', 'cleaned', '主语'], '主干The volunteers received a prize；who cleaned the park修饰volunteers，who作cleaned的主语。', true],
-    ['The park, which opened last spring, is near our school.', ['The park', 'is', 'which opened last spring', 'park', 'which', 'opened', '主语'], '主句The park is near our school；which opened last spring是非限制性定语从句，修饰park，which作从句主语。', true]
+    [
+      'The guide that we received explains the library rules.',
+      ['The guide', 'explains', 'that we received', 'guide', 'we', 'received', '宾语'],
+      '主干The guide explains the library rules；that we received是修饰guide的定语从句，that作received的宾语。',
+      true
+    ],
+    [
+      'The librarian, who helped us yesterday, will attend the meeting.',
+      ['The librarian', 'will attend', 'who helped us yesterday', 'librarian', 'who', 'helped', '主语'],
+      '主句The librarian will attend the meeting；who helped us yesterday是非限制性定语从句，修饰librarian，who作从句主语。',
+      true
+    ],
+    [
+      'The coach, whom we met last week, teaches beginners.',
+      ['The coach', 'teaches', 'whom we met last week', 'coach', 'we', 'met', '宾语'],
+      '主句The coach teaches beginners；whom we met last week是非限制性定语从句，修饰coach，whom是met的宾语。',
+      true
+    ],
+    [
+      'The engineer, who designed the robot, visited our school.',
+      ['The engineer', 'visited', 'who designed the robot', 'engineer', 'who', 'designed', '主语'],
+      '主句The engineer visited our school；who designed the robot是非限制性定语从句，修饰school，who作从句主语。',
+      false
+    ],
+    [
+      'The seeds which we planted have grown.',
+      ['The seeds', 'have grown', 'which we planted', 'seeds', 'we', 'planted', '宾语'],
+      '主干The seeds have grown；which we planted修饰seeds，which作planted的宾语。',
+      true
+    ],
+    [
+      'The gardener, whose advice we followed, thanked our class.',
+      ['The gardener', 'thanked', 'whose advice we followed', 'gardener', 'we', 'followed', '定语'],
+      '主句The gardener thanked our class；whose advice we followed是非限制性定语从句，修饰gardener，whose修饰advice，advice是followed的宾语。',
+      true
+    ],
+    [
+      'The bike that my father bought last year still runs well.',
+      ['The bike', 'runs', 'that my father bought last year', 'bike', 'my father', 'bought', '宾语'],
+      '主干The bike still runs well；that my father bought last year是定语从句，修饰bike。',
+      true
+    ],
+    [
+      'The guide, who showed us around, answered every question.',
+      ['The guide', 'answered', 'who showed us around', 'guide', 'who', 'showed', '主语'],
+      '主句The guide answered every question；从句who showed us around修饰guide。',
+      true
+    ],
+    [
+      'The volunteers who cleaned the park received a prize.',
+      ['The volunteers', 'received', 'who cleaned the park', 'volunteers', 'who', 'cleaned', '主语'],
+      '主干The volunteers received a prize；who cleaned the park修饰volunteers，who作cleaned的主语。',
+      true
+    ],
+    [
+      'The park, which opened last spring, is near our school.',
+      ['The park', 'is', 'which opened last spring', 'park', 'which', 'opened', '主语'],
+      '主句The park is near our school；which opened last spring是非限制性定语从句，修饰park，which作从句主语。',
+      true
+    ]
   ])('%s', (sentence, fields, note, agreed) => {
     const result = syntaxAgreement(sentence, parsed('s1', ...fields), note);
     expect(result.valid).toBe(true);
@@ -1330,7 +1746,11 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     ['从句原文抄错', '主干The device works well；that our team tested works修饰device。', 'clause'],
     ['成分说成主语', '主干The device works well；that our team tested修饰device，that作从句主语。', 'role'],
     ['成分所属动词写错', '主干The device works well；that our team tested修饰device，that作works的宾语。', 'role'],
-    ['限制性说成非限制性', '主干The device works well；that our team tested是非限制性定语从句，修饰device。', 'restrictive'],
+    [
+      '限制性说成非限制性',
+      '主干The device works well；that our team tested是非限制性定语从句，修饰device。',
+      'restrictive'
+    ],
     ['从句类型写错', '主干The device works well；that our team tested是状语从句，修饰device。', 'kind']
   ])('学生笔记有错（%s）时不删错', (_name, note, claim) => {
     const result = syntaxAgreement(
@@ -1340,6 +1760,18 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     );
     expect(result).toMatchObject({ valid: true, agreed: false });
     expect(result.claims[claim]).toBe(false);
+  });
+  it.each(['curator', 'paintings'])('另一处分词短语的修饰对象不冒充关系从句断言：%s', (target) => {
+    const result = syntaxAgreement(
+      'The curator, who arrived yesterday, examined the paintings donated by local artists.',
+      parsed('s1', 'The curator', 'examined', 'who arrived yesterday', 'curator', 'who', 'arrived', '主语'),
+      `主干The curator examined the paintings；who arrived yesterday是修饰${target}的非限制性定语从句，who在从句中作主语；donated by local artists是过去分词短语，后置修饰paintings。`
+    );
+    expect(result).toMatchObject({
+      valid: true,
+      agreed: target === 'curator',
+      claims: { target: target === 'curator' }
+    });
   });
   it('主干删去形容词后冠词随之改变（an→a）仍算一致', () => {
     expect(
@@ -1386,7 +1818,11 @@ describe('摸底错误合并复核一次：讲解题只删不加，单词填空�
     } catch (error) {
       rejected = error;
     }
-    expect(rejected).toMatchObject({ code: 'COACH_INVALID', path: 'root.errors[0].rule', schemaKeyword: 'stringLength' });
+    expect(rejected).toMatchObject({
+      code: 'COACH_INVALID',
+      path: 'root.errors[0].rule',
+      schemaKeyword: 'stringLength'
+    });
     const feedback = coachRepairFeedback(p, rejected, JSON.stringify(wire));
     expect(feedback.expected).toMatchObject({ type: 'string', minLength: 1, maxLength: 180, actualLength: 200 });
     expect(coachRepairPrompt(feedback)).toContain('"maxLength":180,"actualLength":200');
@@ -1552,7 +1988,7 @@ describe('新出搭配填空经盲填校准才下发', () => {
     const coach = parseCoachModelOutput(decoded, request).coach;
     expect(coach.cards[0].prompt).toContain('The company will do ___ with the old rule.');
     expect(coach.cards[2].prompt).toContain('The plan was put ___ effect.');
-    // 第一次盲填把 away 判成不能填，第二次判对；两次合并后照常计数。
+    // 一次否定、一次肯定不算校准一致，不能用合并词表覆盖分歧。
     const missed = {
       blanks: [
         { id: 'b1', candidates: candidates([]), infinitiveTo: false, rule: '没有单词能填' },
@@ -1561,23 +1997,18 @@ describe('新出搭配填空经盲填校准才下发', () => {
       ]
     };
     const { calls, call } = verifier([missed, fills(['away'], ['for'], ['into'])]);
-    expect(await calibrateCoachExercises(prepared, coach, call)).toEqual({
-      status: 'completed',
-      checked: 3,
-      passes: 2,
-      blanks: [
-        { cardId: 'c1', acceptedCount: 1 },
-        { cardId: 'c2', acceptedCount: 1 },
-        { cardId: 'c3', acceptedCount: 1 }
-      ]
+    await expect(calibrateCoachExercises(prepared, coach, call)).rejects.toMatchObject({
+      code: 'COACH_INVALID',
+      path: 'cards[0].exercise.source',
+      message: expect.stringContaining('未一致认可标出的away')
     });
     // 两次都判原词不能填：句子或空格本身可疑，退回。
     await expect(calibrateCoachExercises(prepared, coach, verifier(missed).call)).rejects.toMatchObject({
       code: 'COACH_INVALID',
       path: 'cards[0].exercise.source',
-      message: expect.stringContaining('两次盲填都认为标出的away不能填')
+      message: expect.stringContaining('未一致认可标出的away')
     });
-    // 第二次盲填失败、只剩一次结果时，漏判的原词仍补上，收据写明。
+    // 第二次失败不能把单轮结果下发为完成，未知费用仍由调用方保留。
     expect(
       await calibrateCoachExercises(
         prepared,
@@ -1585,16 +2016,11 @@ describe('新出搭配填空经盲填校准才下发', () => {
         verifier([missed, Object.assign(new Error('复核时间不足'), { code: 'TIMEOUT' })]).call
       )
     ).toEqual({
-      status: 'completed',
+      status: 'failed',
       checked: 3,
       passes: 1,
       attempts: 2,
-      secondFailure: 'TIMEOUT',
-      blanks: [
-        { cardId: 'c1', acceptedCount: 1, verifierMissed: true },
-        { cardId: 'c2', acceptedCount: 1 },
-        { cardId: 'c3', acceptedCount: 1 }
-      ]
+      failure: 'TIMEOUT'
     });
     expect(calls[0].messages[1].content).not.toMatch(/\baway\b|\binto\b/u);
     // 同一配置再出一套没标词的题，上一套的原词不再算数。

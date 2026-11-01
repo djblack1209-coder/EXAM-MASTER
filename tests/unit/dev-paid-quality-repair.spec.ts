@@ -102,13 +102,19 @@ const completed = {
 const reply = (config: any, valid: boolean) => {
   const wire = mixedDiagnosticReply(config);
   if (!valid) wire.dimensionReviews.grammar = { score: 1, comment: '重复归因', evidenceIds: ['q2'] } as any;
-  return { ...completed, actualModel: config.model, content: JSON.stringify(wire) };
+  return {
+    ...completed,
+    actualModel: config.model,
+    finishReason: config.writingOutput?.inferencePolicy === 'native-coach-json-v1' ? 'stop' : 'tool_calls',
+    coachFunctionResult: config.writingOutput?.inferencePolicy === 'native-coach-json-v1' ? undefined : true,
+    content: JSON.stringify(wire)
+  };
 };
 // 免费作答依次返回 answers 里的结果；兜底作答一律合格；盲填与全部句法题独立复核。
 function provider(answers: Array<'valid' | 'invalid' | 'limited'>) {
   const seen: string[] = [];
   vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
-    if (config.writingOutput?.contract === 'writing-error-verification-v1')
+    if (config.writingOutput?.contract === 'writing-error-verification-v2')
       return {
         ...completed,
         actualModel: config.model,
@@ -171,6 +177,65 @@ afterEach(() => {
   fs.rmSync(dir, { recursive: true, force: true });
 });
 
+it.each(['valid', 'secret-echo', 'wrong-model', 'unfinished'])(
+  '免费复核限流后仅开发兜底核对，来源与待结算费用保留：%s',
+  async (mode) => {
+    vi.stubEnv('LEARNING_ALLOWED_ORIGINS', 'https://provider.example,https://apihub.agnes-ai.com');
+    expect(
+      (
+        await models(
+          context({
+            action: 'save',
+            shareConsent: true,
+            profile: {
+              id: 'fixture-stream',
+              provider: 'Agnes AI',
+              model: 'agnes-3.0-flash',
+              endpoint: 'https://apihub.agnes-ai.com/v1/chat/completions',
+              apiKey: 'fixture-only-stream-key'
+            }
+          })
+        )
+      ).success
+    ).toBe(true);
+    ledger().calls = [];
+    vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
+      if (config.writingOutput?.contract === 'writing-error-verification-v2') {
+        if (!config.devPaidFallback) throw new ProviderError('RATE_LIMITED', 'synthetic free verification limit');
+        return {
+          ...completed,
+          finishReason: mode === 'unfinished' ? 'length' : 'stop',
+          coachFunctionResult: undefined,
+          actualModel: mode === 'wrong-model' ? 'unselected-model' : config.model,
+          content:
+            mode === 'secret-echo' ? JSON.stringify({ echo: PAID_KEY }) : JSON.stringify(mixedDiagnosticVerification())
+        };
+      }
+      return reply(config, true);
+    });
+    const result = await ai(context(body('verification-fallback-' + mode)));
+    expect(callLearningProvider).toHaveBeenCalledTimes(mode === 'unfinished' ? 5 : 3);
+    expect(ledger().calls).toHaveLength(1);
+    expect(ledger().calls[0]).toMatchObject({ actualCost: null, costStatus: 'pending' });
+    if (mode === 'valid') {
+      expect(result).toMatchObject({
+        success: true,
+        data: {
+          model: 'agnes-3.0-flash',
+          usageStatus: 'pending',
+          coachVerification: { status: 'completed', sources: [{ model: 'deepseek-flash', paidFallback: true }] }
+        }
+      });
+      expect(ledger().calls[0].usage.verification).toMatchObject({ prompt_tokens: 4, completion_tokens: 8 });
+    } else {
+      expect(result.success).toBe(false);
+      expect(result).not.toHaveProperty('data.coach');
+      expect(ledger().calls[0]).toMatchObject({ status: 'failed', result: null });
+    }
+    expect(JSON.stringify(ledger())).not.toContain(PAID_KEY);
+  }
+);
+
 it('sends the same request to the DeepSeek quality model once the free repair is rejected', async () => {
   const seen = provider(['invalid', 'invalid']);
   const request = body('quality-repair');
@@ -178,7 +243,7 @@ it('sends the same request to the DeepSeek quality model once the free repair is
   expect(seen).toEqual(['free', 'free', 'deepseek-v4-pro']);
   expect(result).toMatchObject({
     success: true,
-    data: { requestId: request.requestId, repairRequestId: request.requestId + ':repair2' }
+    data: { requestId: request.requestId, modelId: request.modelId, repairRequestId: request.requestId + ':repair2' }
   });
   expect(ledger().calls.map((call: any) => [call.id, call.status])).toEqual([
     [request.requestId, 'failed'],
@@ -194,7 +259,10 @@ it('sends the same request to the DeepSeek quality model once the free repair is
   expect(JSON.stringify(ledger())).not.toContain(PAID_KEY);
   const calls = vi.mocked(callLearningProvider).mock.calls.length;
   const status = await models(context({ action: 'result', requestId: request.requestId }));
-  expect(status).toMatchObject({ success: true, data: { repairRequestId: request.requestId + ':repair2' } });
+  expect(status).toMatchObject({
+    success: true,
+    data: { modelId: request.modelId, repairRequestId: request.requestId + ':repair2' }
+  });
   expect(await ai(context(request))).toMatchObject({
     success: true,
     reused: true,

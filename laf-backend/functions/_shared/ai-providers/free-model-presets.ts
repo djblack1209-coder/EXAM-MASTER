@@ -28,7 +28,12 @@ export function modelInferenceParameters(model: { model: string; endpoint?: stri
   )
     return { reasoning: { effort: 'high' } };
   // 仅开发付费兜底：思考与正文共用输出上限，保持关闭。标记只由兜底配置生成，用户连接不会带上。
-  if (model.devPaidFallback === true && model.endpoint === 'https://api.deepseek.com/chat/completions')
+  if (
+    model.devPaidFallback === true &&
+    ['https://api.deepseek.com/chat/completions', 'https://api.deepseek.com/beta/chat/completions'].includes(
+      model.endpoint || ''
+    )
+  )
     return { thinking: { type: 'disabled' } };
   return null;
 }

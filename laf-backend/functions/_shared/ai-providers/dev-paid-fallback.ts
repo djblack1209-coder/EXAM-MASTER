@@ -46,8 +46,8 @@ export function devPaidFallbackSettings(armed = DEV_TEST) {
   };
 }
 
-// 兜底按原请求的合同回答：教学工具照常调用；DeepSeek 不收 json_schema，改为 json_object 并把同一 Schema 写进系统提示。
-// 保留原请求的能力往返凭据，复核与盲填校准照常执行（DeepSeek 的严格工具与 json_object 已于 2026-11-01 实测）。
+// 兜底按原请求的合同回答：DeepSeek 教学使用 JSON Output；原始闭合 Schema 与能力往返凭据保留。
+// 复核与两次盲填校准照常执行，JSON 格式不构成内容质量结论。
 export function devPaidFallbackModel(config: ModelConfig, settings: { apiKey: string; model: string }): ModelConfig {
   const output = config.writingOutput;
   return {
@@ -68,6 +68,9 @@ export function devPaidFallbackModel(config: ModelConfig, settings: { apiKey: st
             ...output,
             reasoningEffort: undefined,
             omitResponseFormatForRequest: undefined,
+            ...(['native-coach-tools-v1', 'native-coach-json-v1'].includes(output.inferencePolicy)
+              ? { inferencePolicy: 'native-coach-json-v1' as const, format: 'json_object' as const }
+              : {}),
             ...(output.inferencePolicy === 'native-coach-tools-v1' ? {} : { format: 'json_object' as const })
           }
         }
@@ -78,7 +81,11 @@ export function devPaidFallbackModel(config: ModelConfig, settings: { apiKey: st
 export function devPaidFallbackMessages(config: ModelConfig, messages: LearningMessage[]): LearningMessage[] {
   const output = config.writingOutput;
   const rules = [
-    ...(output && output.inferencePolicy !== 'native-coach-tools-v1' && output.format !== 'json_object'
+    ...(output &&
+    output.inferencePolicy !== 'native-coach-tools-v1' &&
+    !messages.some(
+      (message) => typeof message.content === 'string' && message.content.includes(JSON.stringify(output.schema))
+    )
       ? [`只输出一个 JSON 对象，不写其他文字；它必须符合下面的 JSON Schema：\n${JSON.stringify(output.schema)}`]
       : []),
     // json_object 要求提示里出现 json 一词。
@@ -113,7 +120,7 @@ export async function callWithDevPaidFallback<T>(
     const paidFallback = { trigger, freeModel: model.model, model: fallback.model };
     console.info('[dev-paid-fallback]', JSON.stringify(paidFallback));
     try {
-      const response = await call(fallback, devPaidFallbackMessages(model, messages), [
+      const response = await call(fallback, devPaidFallbackMessages(fallback, messages), [
         ...new Set([...origins, DEV_PAID_FALLBACK_ORIGIN])
       ]);
       return { response, model: fallback, paidFallback };

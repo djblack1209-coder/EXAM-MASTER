@@ -8,7 +8,7 @@ vi.mock('../../laf-backend/functions/_shared/build-channel', () => ({ DEV_TEST: 
 const KEY = 'synthetic-paid-key-secret';
 const { callWithDevPaidFallback, DEV_PAID_FALLBACK_FILE } =
   await import('../../laf-backend/functions/_shared/ai-providers/dev-paid-fallback');
-const { ProviderError, buildLearningRequest, readCoachFunctionResponse } =
+const { ProviderError, buildLearningRequest, readCoachFunctionResponse, validateCoachSchema } =
   await import('../../laf-backend/functions/_shared/ai-providers/learning-provider');
 const { newAccount, reserveCall, settleCall, latestRepair } =
   await import('../../laf-backend/functions/_shared/learning-account');
@@ -96,7 +96,7 @@ describe('development paid fallback', () => {
     expect(JSON.stringify(console.info.mock.calls)).not.toContain(KEY);
   });
 
-  it('keeps native coach tools as tools and the capability evidence that gates calibration', async () => {
+  it('uses the same closed coach contract in JSON Output and keeps capability evidence for verification', async () => {
     const capabilityCheck = { version: 1, tools: true, structured: true, checkedAt: 1 };
     const coach = {
       ...free,
@@ -107,15 +107,44 @@ describe('development paid fallback', () => {
     await callWithDevPaidFallback(call, coach, messages, [], { enabled: true, stream: false });
     const [target, targetMessages] = call.mock.calls[1];
     expect(target.capabilityCheck).toEqual(capabilityCheck);
-    expect(target.writingOutput.format).toBeUndefined();
-    expect(targetMessages).toEqual(messages);
+    expect(target.writingOutput.format).toBe('json_object');
+    expect(target.writingOutput.inferencePolicy).toBe('native-coach-json-v1');
+    expect(targetMessages[0].content).toContain('JSON');
     const wire = buildLearningRequest(target, targetMessages, false) as any;
     expect(wire).toMatchObject({
-      tools: [{ function: { name: 'yozi_coach_response', parameters: coach.writingOutput.schema } }],
-      tool_choice: { type: 'function', function: { name: 'yozi_coach_response' } },
+      response_format: { type: 'json_object' },
       thinking: { type: 'disabled' }
     });
-    expect(wire.tools[0].function.strict).toBeUndefined();
+    expect(wire.tools).toBeUndefined();
+    expect(target.writingOutput.schema).toEqual(coach.writingOutput.schema);
+    const probe = buildLearningRequest(
+      { ...target, capabilityProbe: { stage: 'tool', nonce: 'nonce' } },
+      targetMessages
+    ) as any;
+    expect(probe).toMatchObject({
+      thinking: { type: 'disabled' },
+      tool_choice: 'auto'
+    });
+  });
+  it('uses JSON Output for DeepSeek generation fallback while keeping capability evidence', async () => {
+    const generation = {
+      ...free,
+      capabilityCheck: { version: 1, tools: true, structured: true },
+      writingOutput: {
+        ...free.writingOutput,
+        inferencePolicy: 'native-coach-tools-v1',
+        responseMode: 'generation'
+      }
+    } as any;
+    const call = vi.fn().mockImplementationOnce(limited).mockResolvedValueOnce('paid answer');
+    await callWithDevPaidFallback(call, generation, messages, [], { enabled: true, stream: false });
+    const target = call.mock.calls[1][0] as any;
+    expect(target.capabilityCheck).toEqual(generation.capabilityCheck);
+    expect(target.writingOutput.inferencePolicy).toBe('native-coach-json-v1');
+    const wire = buildLearningRequest(target, messages) as any;
+    expect(wire.response_format).toEqual({ type: 'json_object' });
+    expect(wire.tools).toBeUndefined();
+    expect(wire.thinking).toEqual({ type: 'disabled' });
   });
 
   it('uses DeepSeek thinking-compatible tools without changing the endpoint or host validation', () => {
@@ -176,6 +205,42 @@ describe('development paid fallback', () => {
     const other = buildLearningRequest({ ...coach, endpoint: free.endpoint }, messages) as any;
     expect(other.tool_choice).toEqual({ type: 'function', function: { name: 'yozi_coach_response' } });
     expect(other.tools[0].function.strict).toBe(true);
+  });
+  it('adapts only Beta wire constraints while preserving every local schema boundary', () => {
+    const schema = {
+      type: 'object',
+      additionalProperties: false,
+      required: ['text', 'rows'],
+      properties: {
+        text: { type: 'string', minLength: 3, maxLength: 8 },
+        rows: { type: 'array', minItems: 1, maxItems: 2, items: { type: 'string', minLength: 1, maxLength: 5 } }
+      }
+    };
+    const target = {
+      ...free,
+      model: 'deepseek-v4-pro',
+      endpoint: 'https://api.deepseek.com/beta/chat/completions',
+      devPaidFallback: true,
+      writingOutput: { ...free.writingOutput, inferencePolicy: 'native-coach-tools-v1', schema }
+    } as any;
+    const wire = buildLearningRequest(target, messages) as any;
+    expect(wire).toMatchObject({ thinking: { type: 'disabled' }, tool_choice: 'auto' });
+    expect(wire.tools[0].function.strict).toBe(true);
+    const remote = wire.tools[0].function.parameters;
+    expect(remote.properties.text.minLength).toBeUndefined();
+    expect(remote.properties.rows.maxItems).toBeUndefined();
+    expect(remote.properties.rows.items.maxLength).toBeUndefined();
+    expect(schema.properties.text.minLength).toBe(3);
+    expect(schema.properties.rows.minItems).toBe(1);
+    expect(() => validateCoachSchema(schema, { text: '', rows: [] })).toThrow(
+      expect.objectContaining({ code: 'COACH_INVALID' })
+    );
+    expect(() => validateCoachSchema(schema, { text: 'valid', rows: ['tool'] })).not.toThrow();
+    const normal = buildLearningRequest(
+      { ...target, endpoint: 'https://api.deepseek.com/chat/completions' },
+      messages
+    ) as any;
+    expect(normal.tools[0].function.parameters).toEqual(schema);
   });
 
   it('switches an empty non-stream answer but never a stream that may have shown text', async () => {

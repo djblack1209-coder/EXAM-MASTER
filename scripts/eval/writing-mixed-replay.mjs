@@ -565,7 +565,7 @@ try {
         const request = coach.normalizeCoachRequest(sample.request),
           context = coach.coachInferenceContext(request);
         let prepared = provider.prepareCoachFeedbackModel(model, context, false, false, false, true);
-        if (prepared.writingOutput?.inferencePolicy !== 'native-coach-tools-v1')
+        if (!['native-coach-tools-v1', 'native-coach-json-v1'].includes(prepared.writingOutput?.inferencePolicy))
           throw new Error('Native teaching contract unavailable');
         const row = {
           sample: sample.name,

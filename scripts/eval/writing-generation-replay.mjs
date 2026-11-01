@@ -455,7 +455,7 @@ try {
       const request = coach.normalizeCoachRequest(sample.request),
         context = coach.coachInferenceContext(request);
       let prepared = provider.prepareCoachFeedbackModel(model, context, false, false, false, true);
-      if (prepared.writingOutput?.inferencePolicy !== 'native-coach-tools-v1')
+      if (!['native-coach-tools-v1', 'native-coach-json-v1'].includes(prepared.writingOutput?.inferencePolicy))
         throw new Error('Native exercise contract unavailable');
       const row = { sample: sample.name, run, attempts: [], repairTriggered: false };
       report.runs.push(row);
@@ -507,6 +507,12 @@ try {
                 return done.result.content;
               }
             );
+            if (entry.calibration?.status !== 'completed' || entry.calibration?.passes !== 2)
+              throw Object.assign(new Error('练习核对未完成，题目未下发'), {
+                code: 'COACH_INVALID',
+                path: 'exerciseCalibration',
+                repairForbidden: true
+              });
             entry.output = exercises(generated);
             entry.status = 'accepted';
           } catch (caught) {
@@ -520,6 +526,7 @@ try {
           break;
         }
         row.status = entry.status;
+        if (error?.repairForbidden) break;
         if (error?.code === 'RATE_LIMITED') throw error;
         if (attempt === 1 && error?.code === 'COACH_INVALID' && report.paidFallback.armed) continue;
         if (attempt) break;

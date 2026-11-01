@@ -1091,7 +1091,7 @@ function streamResponse(backpressure = false) {
   };
   return response;
 }
-async function streamProfile(enabled = true, owner = 'u1', fixtureKey = 'fixture-only-stream-key') {
+async function streamProfile(enabled = true, owner = 'u1', fixtureKey = 'fixture-only-stream-key', overrides = {}) {
   await models(
     context(
       {
@@ -1102,7 +1102,8 @@ async function streamProfile(enabled = true, owner = 'u1', fixtureKey = 'fixture
           model: 'explicit-test-id',
           apiKey: fixtureKey,
           endpoint: 'https://provider.example/chat',
-          stream: enabled
+          stream: enabled,
+          ...overrides
         }
       },
       owner
@@ -2192,10 +2193,28 @@ it('Agnes 3.0 exact reviewed route costs zero only with supported, consistent us
   }
 });
 
-it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
+it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails', 'second-rate-limited', 'deepseek-json'])(
   'new cloze items pass a blind fill before they ship: %s',
   async (mode) => {
     await streamProfile(false);
+    if (mode === 'deepseek-json') {
+      vi.stubEnv('LEARNING_ALLOWED_ORIGINS', 'https://provider.example,https://api.deepseek.com');
+      const saved = await models(
+        context({
+          action: 'save',
+          shareConsent: true,
+          profile: {
+            id: 'fixture-stream',
+            provider: 'DeepSeek',
+            model: 'deepseek-v4-pro',
+            endpoint: 'https://api.deepseek.com/chat/completions',
+            apiKey: 'fixture-only-stream-key',
+            stream: false
+          }
+        })
+      );
+      expect(saved.success).toBe(true);
+    }
     const request = {
       contract: 'kaoyan-writing-coach-v1',
       phase: 'daily',
@@ -2242,9 +2261,17 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
     let generations = 0,
       calibrations = 0;
     vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
-      const done = { ...streamCompleted, finishReason: 'tool_calls', coachFunctionResult: true };
+      const jsonReply = config.writingOutput?.inferencePolicy === 'native-coach-json-v1';
+      const done = {
+        ...streamCompleted,
+        actualModel: config.model,
+        finishReason: jsonReply ? 'stop' : 'tool_calls',
+        coachFunctionResult: !jsonReply
+      };
       if (config.writingOutput?.contract === 'writing-exercise-calibration-v3') {
         calibrations++;
+        if (mode === 'second-rate-limited' && calibrations === 2)
+          throw new ProviderError('RATE_LIMITED', 'synthetic calibration limit');
         if (mode === 'verifier-fails') return { ...done, content: '{"blanks":' };
         // 每套题独立盲填两次；返修前那套两次都判第二题无词可填。
         const bad = mode === 'bad-twice' || (mode === 'bad-then-good' && generations === 1);
@@ -2271,13 +2298,31 @@ it.each(['calibrated', 'bad-then-good', 'bad-twice', 'verifier-fails'])(
       calls.find(([config]: any) => config.writingOutput?.contract === 'writing-exercise-calibration-v3')![1][1].content
     ).blanks;
     expect(blanks.map((blank: any) => blank.task)).toEqual(english.slice(0, 3));
-    if (mode === 'calibrated' || mode === 'verifier-fails') {
-      // 校准员回坏格式会再问一次，两次都坏才按失败收据放行。
+    if (mode === 'verifier-fails' || mode === 'second-rate-limited') {
+      expect([generations, calibrations]).toEqual([1, 2]);
+      expect(result).toMatchObject({ success: false, error: 'COACH_INVALID' });
+      expect(result).not.toHaveProperty('data.coach');
+      const ledger = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && row.calls);
+      expect(ledger.calls).toHaveLength(1);
+      expect(ledger.calls[0]).toMatchObject({
+        status: 'failed',
+        result: null,
+        actualCost: null,
+        costStatus: 'pending'
+      });
+      expect(ledger.calls[0].usage.calibration).toMatchObject(
+        mode === 'verifier-fails'
+          ? { prompt_tokens: 8, completion_tokens: 16 }
+          : { prompt_tokens: 4, completion_tokens: 8 }
+      );
+      return;
+    }
+    if (mode === 'calibrated' || mode === 'deepseek-json') {
       expect([generations, calibrations]).toEqual([1, 2]);
       expect(result.success).toBe(true);
       expect(result.data.coach.cards).toHaveLength(8);
       expect(result.data.exerciseCalibration).toMatchObject(
-        mode === 'calibrated'
+        mode === 'calibrated' || mode === 'deepseek-json'
           ? {
               status: 'completed',
               checked: 3,
@@ -2326,7 +2371,7 @@ it.each(['success', 'missing-tool', 'invalid-again', 'rate-limited', 'secret-ech
     let count = 0,
       verifications = 0;
     vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
-      if (config.writingOutput?.contract === 'writing-error-verification-v1') {
+      if (config.writingOutput?.contract === 'writing-error-verification-v2') {
         verifications++;
         return {
           ...streamCompleted,
@@ -2403,7 +2448,7 @@ it.each(['timeout', 'bad-json'])('批改复核失败不保存初评或自动追�
   await streamProfile(false);
   let checks = 0;
   vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
-    if (config.writingOutput?.contract === 'writing-error-verification-v1') {
+    if (config.writingOutput?.contract === 'writing-error-verification-v2') {
       checks++;
       if (mode === 'timeout') throw new ProviderError('TIMEOUT', 'synthetic verification timeout');
       return { ...streamCompleted, content: '{"blanks":' };
@@ -2443,6 +2488,63 @@ it.each(['timeout', 'bad-json'])('批改复核失败不保存初评或自动追�
   await ai(context(body));
   expect(callLearningProvider).toHaveBeenCalledTimes(calls);
 });
+
+it.each(['completed', 'timeout', 'bad-json', 'unfinished', 'groq-verified'])(
+  '已验证原生批改仍须复核且正常结束，失败不采用初评：%s',
+  async (mode) => {
+    const groq = mode === 'groq-verified';
+    vi.stubEnv('LEARNING_ALLOWED_ORIGINS', 'https://provider.example,https://api.deepseek.com,https://api.groq.com');
+    await streamProfile(false, 'u1', 'fixture-only-stream-key', {
+      model: groq ? 'openai/gpt-oss-120b' : 'deepseek-v4-pro',
+      endpoint: groq ? 'https://api.groq.com/openai/v1/chat/completions' : 'https://api.deepseek.com/chat/completions'
+    });
+    let checks = 0;
+    vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
+      if (config.writingOutput?.contract === 'writing-error-verification-v2') {
+        checks++;
+        if (mode === 'timeout') throw new ProviderError('TIMEOUT', 'synthetic timeout');
+        return {
+          ...streamCompleted,
+          actualModel: config.model,
+          content: mode === 'bad-json' ? '{"blanks":' : JSON.stringify(mixedDiagnosticVerification())
+        };
+      }
+      expect(config.writingOutput.inferencePolicy).toBe(groq ? 'native-coach-tools-v1' : 'native-coach-json-v1');
+      if (groq) {
+        expect(config.plainCoachRequest).toBeUndefined();
+        expect(config.writingOutput.omitResponseFormatForRequest).toBeUndefined();
+      }
+      return {
+        ...streamCompleted,
+        actualModel: config.model,
+        finishReason: mode === 'unfinished' ? 'length' : groq ? 'tool_calls' : 'stop',
+        ...(groq ? { coachFunctionResult: true } : {}),
+        content: JSON.stringify(mixedDiagnosticReply(config))
+      };
+    });
+    const body = {
+      ...streamBody('deepseek-json-feedback-' + mode),
+      learningContext: { owner: 'u1', coach: mixedDiagnosticRequest() }
+    };
+    const result = await ai(context(body));
+    const ledger = [...mock.rows.values()].find((row: any) => row.user_id === 'u1' && row.calls);
+    expect(checks).toBe(mode === 'unfinished' ? 0 : mode === 'bad-json' ? 2 : 1);
+    expect(ledger.calls).toHaveLength(mode === 'unfinished' ? 2 : 1);
+    if (mode === 'completed' || groq) {
+      expect(result).toMatchObject({ success: true, data: { coachVerification: { status: 'completed', checked: 3 } } });
+      expect(result.data.coach.dimensions.find((d: any) => d.name === '搭配').score).toBe(1);
+    } else {
+      expect(result.success).toBe(false);
+      expect(result).not.toHaveProperty('data.coach');
+      expect(ledger.calls[0]).toMatchObject({
+        status: 'failed',
+        result: null,
+        actualCost: null,
+        costStatus: 'pending'
+      });
+    }
+  }
+);
 
 describe('灵感建议只用自带 API、独立小额度，回复先校验再显示', () => {
   const ideasContext = {

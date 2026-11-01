@@ -396,6 +396,18 @@ it('received nonstream failures keep shape, usage and duration without reply or 
     expect(rejected).toMatchObject({ code: 'KEY_REJECTED', upstreamStatus: 401 });
     expect(rejected.upstreamCode).toBeUndefined();
     expect(JSON.stringify(rejected)).not.toContain(config.apiKey);
+    for (const [endpoint, status, upstreamCode, expectedCode] of [
+      ['https://api.groq.com/openai/v1/chat/completions', 413, 'rate_limit_exceeded', 'RATE_LIMITED'],
+      ['https://api.groq.com/openai/v1/chat/completions', 413, 'request_too_large', 'UPSTREAM_FAILED'],
+      ['https://model.example/chat', 413, 'rate_limit_exceeded', 'UPSTREAM_FAILED'],
+      ['https://api.groq.com/openai/v1/chat/completions', 401, 'rate_limit_exceeded', 'KEY_REJECTED']
+    ] as const) {
+      responseStatus = status;
+      responseText = JSON.stringify({ error: { code: upstreamCode, message: 'private_fixture_limit' } });
+      const error = await callLearningProvider({ ...config, endpoint }, [], [new URL(endpoint).origin]).catch((e) => e);
+      expect(error).toMatchObject({ code: expectedCode, upstreamStatus: status, upstreamCode });
+      expect(JSON.stringify(error)).not.toMatch(/private_fixture_limit|fixture-private-key/);
+    }
   } finally {
     request.mockRestore();
     ipv4.mockRestore();
