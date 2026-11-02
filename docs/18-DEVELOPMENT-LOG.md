@@ -959,3 +959,12 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 - **Ideas 不扩**：维持每天 1–3 条建议、仅预填草稿的最小一条；知识点拓展流仍属后期（裁定 11）。
 - **Chat 交互组件**：客户实测 GPT 学习模式「不主动要求就很少给组件」，因此方向定为**默认给足交互式组件、用户可用一句指令调整**；路线是「模型产组件描述 → 宿主白名单渲染 → 保留现有结构校验」，不放开任意 HTML／JS（裁定 13）。待定：渲染路线（自研白名单 vs MCP Apps／Apps SDK 风格）、默认密度、指令词表，以及与 65／120 秒预算的冲突（docs/13 第 6 节第 8 项）。
 - **调研结论（公开资料）**：学习模式官方写明由 custom system instructions 驱动，五类行为是苏格拉底式提问、分块脚手架、按水平个性化、知识检查、随时开关，**没有 reasoning effort 门槛**；xhigh 是 API 推理档位，面向深研究与长时异步任务，与学习模式无绑定关系。交互式组件是 2026-10 GPT-6「Intelligent UI」的能力，官方 UI 指南给出 inline／card／carousel／fullscreen 等展示形态与 `@openai/apps-sdk-ui` 组件库；开源侧有 MCP Apps 规范与 `mcp-ui` 实现，另有第三方 Study Mode 复刻项目（Socratic + Agents SDK + MCP，非官方）。有两篇针对学习模式的实证／专家评分研究可作为方法论参考，但都不是实现源码。
+
+## 2026-11-02 UI/UX 复查与节奏裁定（客户）
+
+- **版本前提**：日常入口 `/Users/blackdj/Applications/Yozi AI.app` 仍是 2026-10-22 的构建（2.2.0），测试候选已到 11-01 14:55，两边不同步。客户看到的"巨大差异"部分是版本落后，但下列五条在当前源码里都存在。
+- **五条瑕疵**（逐条落到代码）：U1 会话历史带"答错／部分正确"标签（`learning-shell.js` 的 `learning.records.wrong/partial`）；U2 搜索框重复蓝色焦点框（`BaseInput` focus-visible 与 `.directory-search` 叠了两层）；U3 Chat 右上"换法／只要提示／停止／档案"四个控件（`learning/index.vue` 的 `#controls`）；U4 设置子页整页包在 `LearningShell` 里，带着主侧栏（`pages/profile/index.vue`）；U5 小猫只有 7 个姿态切换（`avatar-state.js`），不够有生活感。
+- **小猫重做方向**：不做 Logo 微调，做角色表演——静候 → 3 分钟打瞌睡 → 10 分钟睡着 → 被唤醒伸懒腰 → 学习时对笔记本打字 → 思考托腮 → 完成伸爪 → 出错压耳；状态只由真实事件驱动，失焦暂停、减少动态停在可辨姿态。规范写进 docs/07。
+- **节奏与预算**：按 Claude Code 做短平快，回合短、反馈快、过程可见；**不设 token 与组件预算上限**，不为省钱牺牲体验。参考 claude-code-best/claude-code 的 Goal／Artifacts／多 Agent 编排思路，不引其代码。
+- **收尾顺序**：先修五条 → 再做逐页差异清单 → 修完并验收 → 才按裁定 15 更新日常入口。施工单 `tmp/codex-orders/uiux-shell-fix-20261102.md`。
+- **两笔账**：废纸篓客户已清空（无需再议）；`.git` 约 580MB 客户批准瘦身，单独窗口执行，先镜像备份、再 filter-repo、最后核对 worktree（裁定 18）。
