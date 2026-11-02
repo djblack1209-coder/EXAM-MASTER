@@ -968,3 +968,4 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 - **节奏与预算**：按 Claude Code 做短平快，回合短、反馈快、过程可见；**不设 token 与组件预算上限**，不为省钱牺牲体验。参考 claude-code-best/claude-code 的 Goal／Artifacts／多 Agent 编排思路，不引其代码。
 - **收尾顺序**：先修五条 → 再做逐页差异清单 → 修完并验收 → 才按裁定 15 更新日常入口。施工单 `tmp/codex-orders/uiux-shell-fix-20261102.md`。
 - **两笔账**：废纸篓客户已清空（无需再议）；`.git` 约 580MB 客户批准瘦身，单独窗口执行，先镜像备份、再 filter-repo、最后核对 worktree（裁定 18）。
+- **Git 瘦身实测**：`.git` 577MB／2 个 pack／in-pack 558MiB，另有约 17MB 垃圾 pack（`.git/objects/pack/tmp_pack_*`）。历史 blob 合计 679MB，其中 653MB 属于已不在 HEAD 的路径：`data/professional-source-manifest.json` 27MB、`professional-source-index.json` 16MB、一份 23MB ONNX 模型、13MB `footer-scrub.mp4`、以及成批 4MB 的旧 e2e 截图。预计 `filter-repo` 后可降到 80MB 量级；本轮只测量，不执行。
