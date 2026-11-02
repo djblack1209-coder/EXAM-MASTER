@@ -1,5 +1,12 @@
 <template>
-  <view ref="root" class="muse-composer" :class="{ 'has-dictation': voice.active || voiceMessage }">
+  <view
+    ref="root"
+    class="muse-composer"
+    :class="{ 'has-dictation': voice.active || voiceMessage, 'has-actions': !!$slots.actions }"
+  >
+    <view v-if="$slots.actions" class="muse-composer-actions" role="group" aria-label="学习操作">
+      <slot name="actions"></slot>
+    </view>
     <view v-if="voice.active" class="muse-dictation" :aria-label="t('muse.dictation')">
       <text class="muse-dictation-status"
         >{{ voice.phase === 'starting' ? t('muse.dictationPreparing') : t('muse.dictation') }} ·
@@ -194,9 +201,25 @@ onBeforeUnmount(() => {
   flex: 1;
   min-width: 0;
 }
-.muse-composer.has-dictation {
+.muse-composer.has-dictation,
+.muse-composer.has-actions {
   flex-wrap: wrap;
   border-radius: var(--s-4);
+}
+.muse-composer-actions {
+  display: flex;
+  align-items: center;
+  flex-basis: 100%;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 4px;
+}
+.muse-composer-actions :deep(.base-button) {
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 13px;
 }
 .muse-dictation,
 .muse-dictation-message {

@@ -14,7 +14,6 @@ import { initI18n, setLanguage, t } from '@/i18n/index.js';
 import LearningPage from '@/pages/learning/index.vue';
 import LearningShell from '@/components/business/learning/learning-shell.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
-import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseChip from '@/components/base/base-chip/base-chip.vue';
 import { computed } from 'vue';
 import { learningRepository, LEARNING_KEY } from '@/services/learning/learning-repository.js';
@@ -443,7 +442,7 @@ describe('record location uses canonical facts', () => {
       .vm.$emit('update:modelValue', '第一稿');
     await new Promise((resolve) => setTimeout(resolve, 200));
     await flushPromises();
-    expect(shell.get('[aria-label="学习记录搜索结果"]').text()).toContain('第一稿');
+    expect(shell.get('[aria-label="学习记录搜索结果"]').text()).toContain('题目：阅读这段文字并说明你的理由');
     expect(wrapper.get('[data-test="located-original-answer"]').text()).toContain('第一稿');
     storageService.saveLoginSession({
       userId: 'incompatible-render-owner',
@@ -538,9 +537,10 @@ describe('record location uses canonical facts', () => {
     await new Promise((resolve) => setTimeout(resolve, 200));
     await flushPromises();
     expect(store.exportData()).toBe(before);
-    const row = shell.findAllComponents(BaseButton).find((button) => button.text().includes('第一稿'));
-    expect(row).toBeTruthy();
-    row.vm.$emit('tap');
+    const row = shell.get('[aria-label="学习记录搜索结果"] .recent-item');
+    expect(row.text()).toContain(store.searchRecords('第一稿').items[0].label);
+    expect(row.text()).not.toMatch(/答错|部分正确|待核对/);
+    await row.trigger('tap');
     await flushPromises();
     expect(wrapper.get('[data-test="located-original-answer"]').element.textContent).toBe(first.answer);
     const afterOpen = store.exportData();
@@ -574,7 +574,7 @@ describe('cross-subject review filters use saved evidence', () => {
       await vi.advanceTimersByTimeAsync(1);
       await flushPromises();
       expect(search).toHaveBeenCalledTimes(1);
-      expect(wrapper.get('[aria-label="学习记录搜索结果"]').text()).toContain('第一稿');
+      expect(wrapper.get('[aria-label="学习记录搜索结果"]').text()).toContain('题目：阅读这段文字并说明你的理由');
       input.vm.$emit('update:modelValue', '');
       await flushPromises();
       expect(wrapper.find('[aria-label="学习记录搜索结果"]').exists()).toBe(false);
@@ -678,7 +678,7 @@ describe('cross-subject review filters use saved evidence', () => {
     input.vm.$emit('update:modelValue', '第一稿');
     await new Promise((resolve) => setTimeout(resolve, 200));
     await flushPromises();
-    expect(wrapper.get('[aria-label="学习记录搜索结果"]').text()).toContain('第一稿');
+    expect(wrapper.get('[aria-label="学习记录搜索结果"]').text()).toContain('题目：阅读这段文字并说明你的理由');
     expect(wrapper.get('[aria-label="学习记录搜索结果"]').findAll('.base-tag')).toHaveLength(0);
     expect(store.exportData()).toBe(before);
     input.vm.$emit('update:modelValue', '不存在的学习原文');
@@ -695,7 +695,9 @@ describe('cross-subject review filters use saved evidence', () => {
     input.vm.$emit('update:modelValue', '第一稿');
     await new Promise((resolve) => setTimeout(resolve, 200));
     await flushPromises();
-    expect(wrapper.get('[aria-label="Learning record search results"]').text()).toContain('第一稿');
+    expect(wrapper.get('[aria-label="Learning record search results"]').text()).toContain(
+      '题目：阅读这段文字并说明你的理由'
+    );
     expect(wrapper.get('[aria-label="Learning record search results"]').findAll('.base-tag')).toHaveLength(0);
     expect(store.exportData()).toBe(before);
     expect(request).not.toHaveBeenCalled();

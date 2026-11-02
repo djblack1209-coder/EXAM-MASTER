@@ -18,7 +18,6 @@ beforeEach(() => {
   wrapper = mount(Profile, {
     global: {
       stubs: {
-        LearningShell: { template: '<div><slot /></div>' },
         MuseAIConnectors: true,
         MuseStudyReminders: true,
         CustomModal: true,
@@ -35,6 +34,9 @@ it('labels a compact native settings window independently of the phone breakpoin
   expect(wrapper.classes()).toContain('native-settings-page');
   expect(wrapper.find('.settings-sidebar[role="navigation"]').exists()).toBe(true);
   expect(wrapper.find('.settings-back').exists()).toBe(false);
+  expect(wrapper.find('.muse-rail').exists()).toBe(false);
+  expect(wrapper.find('.space-header').exists()).toBe(false);
+  expect(wrapper.find('.settings-main').exists()).toBe(true);
 });
 it('revokes unsaved settings and account dialogs synchronously when the owner changes', () => {
   wrapper.vm.draftAppearance = 'dark';

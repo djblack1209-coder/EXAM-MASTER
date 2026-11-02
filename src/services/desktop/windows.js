@@ -12,6 +12,9 @@ export function isDesktopSettingsWindow() {
 }
 let settingsOpening = null;
 let settingsReturnFocus = null;
+export function rememberSettingsFocus() {
+  if (!settingsReturnFocus && typeof document !== 'undefined') settingsReturnFocus = document.activeElement;
+}
 export function restoreDesktopSettingsFocus() {
   const target = settingsReturnFocus;
   settingsReturnFocus = null;
@@ -21,7 +24,7 @@ export function openDesktopSettings(panel) {
   if (!['settings', 'connectors', 'profile'].includes(panel)) return Promise.reject(new Error('设置分组不合法'));
   // Sequence different panels; merge duplicate rapid clicks while native creation is pending.
   if (settingsOpening?.panel === panel) return settingsOpening.promise;
-  if (!settingsReturnFocus && typeof document !== 'undefined') settingsReturnFocus = document.activeElement;
+  rememberSettingsFocus();
   const previous = settingsOpening?.promise;
   const operation = { panel };
   operation.promise = Promise.resolve(previous)

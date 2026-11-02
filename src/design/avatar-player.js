@@ -51,7 +51,7 @@ export function createAvatarPlayer({
   function staticOneShot() {
     if (stillTimer !== null) cancel(stillTimer);
     stillTimer = null;
-    if (current.video || !['celebrate', 'resume'].includes(current.state)) return;
+    if (!visible || !focused || current.video || !['celebrate', 'resume'].includes(current.state)) return;
     const layer = current;
     stillTimer = timer(
       () => {
@@ -66,7 +66,7 @@ export function createAvatarPlayer({
   }
   async function schedule() {
     clearDwell();
-    if (destroyed || next || loading || atRest()) return;
+    if (destroyed || !visible || !focused || next || loading || atRest()) return;
     // A poster becoming the same animated pose is not a business state change.
     const remaining = desired === current.state ? 0 : AVATAR_MIN_STAY - (now() - current.enteredAt);
     if (remaining > 0) {
@@ -95,7 +95,7 @@ export function createAvatarPlayer({
       return;
     }
     loading = false;
-    next = { ...layer, state, enteredAt: 0 };
+    next = { ...layer, state, enteredAt: 0, poseStartedAt: now() };
     fading = false;
     reconcileMedia();
     notify();
@@ -128,7 +128,10 @@ export function createAvatarPlayer({
     resting = ['celebrate', 'resume'].includes(base) ? 'idle' : base;
     if (['celebrate', 'resume'].includes(state)) {
       const identity = key || state;
-      if (!visible || consumed.has(identity)) state = resting;
+      if (!visible || !focused) {
+        consumed.add(identity);
+        state = resting;
+      } else if (consumed.has(identity)) state = resting;
       else completionKey = identity;
     }
     desired = state;
@@ -169,7 +172,10 @@ export function createAvatarPlayer({
     visible = values.visible ?? visible;
     focused = values.focused ?? focused;
     reduced = values.reduced ?? reduced;
-    if (!visible && (['celebrate', 'resume'].includes(desired) || ['celebrate', 'resume'].includes(current.state))) {
+    if (
+      (!visible || !focused) &&
+      (['celebrate', 'resume'].includes(desired) || ['celebrate', 'resume'].includes(current.state))
+    ) {
       consumed.add(completionKey || desired);
       desired = resting;
       generation++;
@@ -185,8 +191,17 @@ export function createAvatarPlayer({
       // Hidden one-shots are consumed. Returning never replays them.
       if (['celebrate', 'resume'].includes(current.state)) {
         dispose(current);
-        current = { ...initial, state: 'idle', enteredAt: now(), video: null, dispose: undefined };
+        current = { ...initial, state: resting, enteredAt: now(), video: null, dispose: undefined };
       }
+    }
+    if ((!visible || !focused) && next) {
+      generation++;
+      loading = false;
+      if (fadeTimer !== null) cancel(fadeTimer);
+      fadeTimer = null;
+      dispose(next);
+      next = null;
+      fading = false;
     }
     reconcileMedia();
     notify();

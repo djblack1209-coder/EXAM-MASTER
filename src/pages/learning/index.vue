@@ -24,44 +24,6 @@
     <!-- #endif -->
     <template #controls>
       <BaseButton
-        v-if="learning.active"
-        variant="quiet"
-        :disabled="learning.busy"
-        @tap="run(() => learning.dispatchLearningAction({ type: 'change_method' }))"
-        >换法</BaseButton
-      >
-      <BaseButton v-if="learning.active" variant="quiet" :disabled="learning.busy" @tap="sendDirective('提示')"
-        >只要提示</BaseButton
-      >
-      <BaseButton
-        v-if="learning.active && !learning.active.stopped"
-        variant="quiet"
-        icon="pause"
-        icon-only
-        label="停止当前任务"
-        :disabled="learning.busy"
-        @tap="sendDirective('停止当前任务')"
-      />
-      <BaseButton
-        v-if="learning.active"
-        variant="quiet"
-        icon="user"
-        icon-only
-        :label="t('tutor.intake.title')"
-        :aria-expanded="showIntake"
-        :disabled="learning.busy"
-        @tap="showIntake = !showIntake"
-      />
-      <BaseButton
-        v-if="learning.active"
-        variant="quiet"
-        icon="chart"
-        icon-only
-        :label="t('tutor.archive.title')"
-        :aria-expanded="showInsights"
-        @tap="showInsights = !showInsights"
-      />
-      <BaseButton
         class="connection-pill"
         :aria-expanded="showConnections"
         variant="quiet"
@@ -107,7 +69,48 @@
         @stop="learning.cancel()"
         @submit="send"
         @height="composerHeight = $event"
-      />
+      >
+        <template v-if="learning.active" #actions>
+          <BaseButton
+            v-if="learning.active"
+            variant="quiet"
+            :disabled="learning.busy"
+            @tap="run(() => learning.dispatchLearningAction({ type: 'change_method' }))"
+            >换法</BaseButton
+          >
+          <BaseButton v-if="learning.active" variant="quiet" :disabled="learning.busy" @tap="sendDirective('提示')"
+            >只要提示</BaseButton
+          >
+          <BaseButton
+            v-if="learning.active && !learning.active.stopped"
+            variant="quiet"
+            icon="pause"
+            icon-only
+            label="停止当前任务"
+            :disabled="learning.busy"
+            @tap="sendDirective('停止当前任务')"
+          />
+          <BaseButton
+            v-if="learning.active"
+            variant="quiet"
+            icon="user"
+            icon-only
+            :label="t('tutor.intake.title')"
+            :aria-expanded="showIntake"
+            :disabled="learning.busy"
+            @tap="showIntake = !showIntake"
+          />
+          <BaseButton
+            v-if="learning.active"
+            variant="quiet"
+            icon="chart"
+            icon-only
+            :label="t('tutor.archive.title')"
+            :aria-expanded="showInsights"
+            @tap="showInsights = !showInsights"
+          />
+        </template>
+      </MuseComposer>
     </template>
     <view
       ref="learningRoot"
@@ -545,10 +548,10 @@
             <view class="button-row">
               <BaseTag :tone="learning.locatedRecord.grade?.status === 'reliable' ? 'violet' : 'neutral'">{{
                 t(
-                  `learning.records.${learning.locatedRecord.grade?.status === 'reliable' ? learning.locatedRecord.grade.outcome : 'pending'}`
+                  `learning.feedback.${learning.locatedRecord.grade?.status === 'reliable' ? learning.locatedRecord.grade.outcome : 'pending'}`
                 )
               }}</BaseTag>
-              <BaseTag v-if="learning.locatedRecord.helped" tone="neutral">{{ t('learning.records.helped') }}</BaseTag>
+              <BaseTag v-if="learning.locatedRecord.helped" tone="neutral">{{ t('learning.feedback.helped') }}</BaseTag>
               <BaseButton
                 v-if="essayForAttempt(learning.locatedRecord.attemptId)"
                 variant="quiet"

@@ -1,6 +1,7 @@
 <template>
   <LearningShell
     active="learning"
+    :waiting-for-answer="Boolean(answerTarget)"
     :notice="cancellationNotice"
     :title="materialTrack ? '计算机专业课' : '考研英语写作'"
     :style="{ '--muse-composer-height': `${composerHeight}px`, '--learning-composer-height': `${composerHeight}px` }"
@@ -12,28 +13,6 @@
     <PrivacyPopup />
     <!-- #endif -->
     <template #controls>
-      <BaseButton
-        v-if="coach"
-        variant="quiet"
-        :disabled="learning.busy"
-        @tap="act(() => learning.dispatchLearningAction({ type: 'change_method' }))"
-        >换法</BaseButton
-      >
-      <BaseButton
-        v-if="coach"
-        variant="quiet"
-        :disabled="learning.busy"
-        @tap="act(() => learning.dispatchLearningAction({ type: 'hint_only' }))"
-        >只要提示</BaseButton
-      >
-      <BaseButton
-        v-if="coach && !learning.active.stopped"
-        variant="quiet"
-        icon="pause"
-        icon-only
-        label="暂停带练"
-        @tap="pauseLearning"
-      />
       <BaseButton variant="quiet" icon="shapes" icon-only label="AI 连接器" title="AI 连接器" @tap="openConnections" />
     </template>
     <template #composer>
@@ -64,7 +43,32 @@
           learning.intakeBusy || learning.reply?.kind === 'intake' ? learning.cancelModelIntake() : learning.cancel()
         "
         @height="composerHeight = $event"
-      />
+      >
+        <template v-if="coach" #actions>
+          <BaseButton
+            v-if="coach"
+            variant="quiet"
+            :disabled="learning.busy"
+            @tap="act(() => learning.dispatchLearningAction({ type: 'change_method' }))"
+            >换法</BaseButton
+          >
+          <BaseButton
+            v-if="coach"
+            variant="quiet"
+            :disabled="learning.busy"
+            @tap="act(() => learning.dispatchLearningAction({ type: 'hint_only' }))"
+            >只要提示</BaseButton
+          >
+          <BaseButton
+            v-if="coach && !learning.active.stopped"
+            variant="quiet"
+            icon="pause"
+            icon-only
+            label="暂停带练"
+            @tap="pauseLearning"
+          />
+        </template>
+      </MuseComposer>
     </template>
     <MuseModelControl @connect="openConnections" />
     <MuseModelFeedback

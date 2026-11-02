@@ -1,225 +1,234 @@
 <template>
-  <LearningShell
+  <view
     ref="root"
-    side-panel
-    class="muse-settings-page"
-    :class="{ 'native-settings-page': nativeSettings }"
-    :active="settingsMode ? 'settings' : 'profile'"
-    :title="t('nav.settings')"
+    class="learning-space muse-space muse-settings-page is-settings"
+    :class="{
+      'native-settings-page': nativeSettings,
+      'is-desktop-settings': nativeSettings,
+      'space-dark': isDark,
+      'space-light': !isDark,
+      'reduce-motion': reducedMotion
+    }"
+    :style="tabBarStyle"
   >
-    <view class="settings-layout">
-      <view class="settings-sidebar" role="navigation" :aria-label="t('nav.settings')">
-        <text class="settings-sidebar-title">{{ t('nav.settings') }}</text>
-        <BaseButton
-          v-for="item in settingsSections"
-          :key="item.id"
-          class="settings-nav"
-          :class="{ 'is-current': settingsSection === item.id }"
-          variant="quiet"
-          :icon="item.icon"
-          align="start"
-          :aria-current="settingsSection === item.id ? 'page' : undefined"
-          @tap="settingsSection = item.id"
-          >{{ item.label }}</BaseButton
-        >
-        <view class="settings-spacer" />
-        <BaseButton
-          v-if="isLoggedIn"
-          class="settings-logout logout-btn"
-          variant="quiet"
-          icon="arrow-right"
-          align="start"
-          @tap="handleLogout"
-          >{{ t('dashboard.copy110') }}</BaseButton
-        >
-      </view>
-      <view class="settings-main">
-        <view class="settings-heading"
-          ><text class="settings-title" role="heading" aria-level="1">{{
-            settingsSections.find((item) => item.id === settingsSection)?.label
-          }}</text
-          ><BaseButton
-            v-if="!nativeSettings"
-            class="settings-back"
-            variant="quiet"
-            icon="close"
-            icon-only
-            label="返回对话"
-            @tap="goTo('/pages/learning/index')"
-        /></view>
-        <view v-if="settingsSection === 'general'" class="settings-group user-section">
+    <view class="native-titlebar" data-tauri-drag-region aria-hidden="true" />
+    <view class="space-frame">
+      <view class="settings-layout">
+        <view class="settings-sidebar" role="navigation" :aria-label="t('nav.settings')">
+          <text class="settings-sidebar-title">{{ t('nav.settings') }}</text>
           <BaseButton
-            class="profile-top"
+            v-for="item in settingsSections"
+            :key="item.id"
+            class="settings-nav"
+            :class="{ 'is-current': settingsSection === item.id }"
             variant="quiet"
+            :icon="item.icon"
             align="start"
-            :disabled="isLoggedIn === null"
-            :label="isLoggedIn ? t('muse.account') : t('dashboard.copy98')"
-            @tap="isLoggedIn ? showAccountInfo() : goLogin()"
+            :aria-current="settingsSection === item.id ? 'page' : undefined"
+            @tap="settingsSection = item.id"
+            >{{ item.label }}</BaseButton
           >
-            <image
-              class="avatar"
-              :class="{ 'avatar--brand': !avatarUrl || avatarFailed }"
-              :src="avatarUrl && !avatarFailed ? avatarUrl : defaultAvatar"
-              :mode="avatarUrl && !avatarFailed ? 'aspectFill' : 'aspectFit'"
-              :alt="t('dashboard.copy97')"
-              @error="avatarFailed = true"
-            />
-            <view class="profile-copy"
-              ><text class="user-name">{{ userName }}</text
-              ><text class="login-hint" :role="isLoggedIn === null ? 'status' : undefined">{{
-                isLoggedIn === null
-                  ? t('dashboard.sessionUnavailable')
-                  : isLoggedIn
-                    ? t('dashboard.copy99')
-                    : t('dashboard.copy98')
-              }}</text></view
-            ><BaseIcon name="arrow-right" size="16px" tone="ink-3" />
-          </BaseButton>
+          <view class="settings-spacer" />
+          <BaseButton
+            v-if="isLoggedIn"
+            class="settings-logout logout-btn"
+            variant="quiet"
+            icon="arrow-right"
+            align="start"
+            @tap="handleLogout"
+            >{{ t('dashboard.copy110') }}</BaseButton
+          >
         </view>
-        <template v-if="settingsSection === 'general'">
-          <view class="settings-group">
-            <view class="language-row">
-              <text>{{ t('settings.language') }}</text>
-              <BaseButton
-                class="language-trigger"
-                variant="quiet"
-                :aria-expanded="languageOpen"
-                @tap="languageOpen = !languageOpen"
-                >{{ languageOptions.find((item) => item.value === (draftLanguage || languageCode))?.label
-                }}<BaseIcon name="chevron-down" size="16px"
-              /></BaseButton>
-              <view v-if="languageOpen" class="language-menu" role="group" :aria-label="t('settings.language')">
-                <BaseButton
-                  v-for="item in languageOptions"
-                  :key="item.value"
-                  variant="quiet"
-                  align="start"
-                  :selected="(draftLanguage || languageCode) === item.value"
-                  @tap="chooseLanguage(item.value)"
-                  >{{ item.label
-                  }}<BaseIcon v-if="(draftLanguage || languageCode) === item.value" name="check" size="16px"
-                /></BaseButton>
-              </view>
-            </view>
-          </view>
-          <text class="settings-label">{{ t('muse.appearance') }}</text>
-          <view class="settings-group">
-            <view class="appearance-row"
-              ><text>{{ t('muse.mode') }}</text
-              ><view class="appearance-options" role="group" :aria-label="t('muse.appearance')">
-                <BaseButton
-                  v-for="item in appearanceOptions"
-                  :key="item.value"
-                  variant="quiet"
-                  icon-only
-                  :icon="item.icon"
-                  :label="item.label"
-                  :selected="(draftAppearance || themeStore.appearance) === item.value"
-                  :aria-pressed="(draftAppearance || themeStore.appearance) === item.value"
-                  @tap="chooseAppearance(item.value)"
-                />
-              </view>
-            </view>
-          </view>
-          <view class="settings-actions"
-            ><BaseButton variant="primary" :disabled="!draftLanguage && !draftAppearance" @tap="savePreferences"
-              >保存偏好</BaseButton
-            ></view
-          >
-        </template>
-        <template v-if="settingsSection === 'general'">
-          <text class="settings-label">通知</text>
-          <MuseStudyReminders />
-        </template>
-        <template v-if="settingsSection === 'permissions'">
-          <text class="settings-label">需要权限</text>
-          <view class="settings-group permission-group"
-            ><BaseListRow label="麦克风与语音识别" value="语音输入暂未开放" :actionable="false" /><BaseListRow
-              label="文件与照片"
-              value="添加资料时由系统询问"
-              :actionable="false"
+        <view class="settings-main">
+          <view class="settings-heading"
+            ><text class="settings-title" role="heading" aria-level="1">{{
+              settingsSections.find((item) => item.id === settingsSection)?.label
+            }}</text
+            ><BaseButton
+              v-if="!nativeSettings"
+              class="settings-back"
+              variant="quiet"
+              icon="close"
+              icon-only
+              label="返回对话"
+              @tap="returnToConversation"
           /></view>
-          <text class="settings-label">AI 连接</text>
-          <view class="settings-group"
-            ><BaseListRow
-              label="学习内容发送给 AI"
-              :value="learning.sharingAllowed ? '已允许' : '未允许'"
-              :actionable="false"
-            /><view class="settings-check"
-              ><BaseCheckbox
-                :model-value="ideasModelDraft ?? ideasModelOn"
-                @update:model-value="ideasModelDraft = $event === ideasModelOn ? null : $event"
-                >灵感页每天用我的 API 生成一次建议</BaseCheckbox
-              ></view
-            ></view
-          >
-          <view class="settings-actions"
-            ><BaseButton variant="primary" :disabled="ideasModelDraft === null" @tap="saveIdeasModel"
-              >保存</BaseButton
-            ></view
-          >
-        </template>
-        <view v-if="settingsSection === 'channels'" class="settings-group"
-          ><text class="settings-empty" role="status">暂无可连接的消息渠道</text></view
-        >
-        <template v-if="settingsSection === 'devices'">
-          <text class="settings-label">本机</text>
-          <view class="settings-group"
-            ><BaseListRow label="当前设备" :value="deviceLabel" :actionable="false" /><BaseListRow
-              label="同步学习记录"
-              :value="learning.syncBusy ? '同步中' : ''"
-              :disabled="learning.syncBusy || learning.busy"
-              @tap="handleLearningSync"
-          /></view>
-        </template>
-        <template v-if="settingsSection === 'data'">
-          <text class="settings-label">{{ t('muse.records') }}</text>
-          <text
-            v-if="totalQuestions || studyStore?.studyProgress?.studyMinutes"
-            class="settings-label legacy-stats-label"
-            >{{ t('dashboard.copy101') }}</text
-          >
-          <view v-if="totalQuestions || studyStore?.studyProgress?.studyMinutes" class="settings-group stats-card"
-            ><BaseStat :label="t('dashboard.copy102')" :value="studyStore?.studyProgress?.studyMinutes || 0" /><BaseStat
-              :label="t('dashboard.copy103')"
-              :value="totalQuestions" /><BaseListRow
-              :label="t('dashboard.copy14')"
-              :value="accuracyDisplay"
-              :actionable="false"
-          /></view>
-          <view class="settings-group"
-            ><BaseListRow
-              class="learning-archive-link"
-              :label="t('muse.goals')"
-              @tap="goTo('/pages/archive/index?view=plan')" /><BaseListRow
-              :label="t('dashboard.copy104')"
-              @tap="goTo('/pages/mistake/index')" /><BaseListRow
-              :label="t('dashboard.copy105')"
-              @tap="goTo('/pages/favorite/index')" /><BaseListRow
-              label="备份与恢复"
-              @tap="goTo('/pages/learning/index?panel=data')"
-          /></view>
-          <text class="settings-label">本机数据</text>
-          <view class="settings-group reset-group">
-            <BaseListRow label="清除本机数据" value="退出并重置" :disabled="resetBusy" @tap="handleLocalReset" />
-            <text class="reset-scope"
-              >清除本机所有账户的学习记录、草稿、资料副本与缓存、AI
-              连接与密钥、界面偏好。云端账户、学习记录和保险库不变。</text
+          <view v-if="settingsSection === 'general'" class="settings-group user-section">
+            <BaseButton
+              class="profile-top"
+              variant="quiet"
+              align="start"
+              :disabled="isLoggedIn === null"
+              :label="isLoggedIn ? t('muse.account') : t('dashboard.copy98')"
+              @tap="isLoggedIn ? showAccountInfo() : goLogin()"
             >
-            <text v-if="resetError" class="reset-error" role="alert">{{ resetError }}</text>
+              <image
+                class="avatar"
+                :class="{ 'avatar--brand': !avatarUrl || avatarFailed }"
+                :src="avatarUrl && !avatarFailed ? avatarUrl : defaultAvatar"
+                :mode="avatarUrl && !avatarFailed ? 'aspectFill' : 'aspectFit'"
+                :alt="t('dashboard.copy97')"
+                @error="avatarFailed = true"
+              />
+              <view class="profile-copy"
+                ><text class="user-name">{{ userName }}</text
+                ><text class="login-hint" :role="isLoggedIn === null ? 'status' : undefined">{{
+                  isLoggedIn === null
+                    ? t('dashboard.sessionUnavailable')
+                    : isLoggedIn
+                      ? t('dashboard.copy99')
+                      : t('dashboard.copy98')
+                }}</text></view
+              ><BaseIcon name="arrow-right" size="16px" tone="ink-3" />
+            </BaseButton>
           </view>
-        </template>
-        <template v-if="settingsSection === 'legal'">
-          <view class="settings-group"
-            ><BaseListRow :label="t('dashboard.copy106')" @tap="goTo('/pages/settings/privacy')" /><BaseListRow
-              :label="t('dashboard.copy107')"
-              @tap="goTo('/pages/settings/terms')"
+          <template v-if="settingsSection === 'general'">
+            <view class="settings-group">
+              <view class="language-row">
+                <text>{{ t('settings.language') }}</text>
+                <BaseButton
+                  class="language-trigger"
+                  variant="quiet"
+                  :aria-expanded="languageOpen"
+                  @tap="languageOpen = !languageOpen"
+                  >{{ languageOptions.find((item) => item.value === (draftLanguage || languageCode))?.label
+                  }}<BaseIcon name="chevron-down" size="16px"
+                /></BaseButton>
+                <view v-if="languageOpen" class="language-menu" role="group" :aria-label="t('settings.language')">
+                  <BaseButton
+                    v-for="item in languageOptions"
+                    :key="item.value"
+                    variant="quiet"
+                    align="start"
+                    :selected="(draftLanguage || languageCode) === item.value"
+                    @tap="chooseLanguage(item.value)"
+                    >{{ item.label
+                    }}<BaseIcon v-if="(draftLanguage || languageCode) === item.value" name="check" size="16px"
+                  /></BaseButton>
+                </view>
+              </view>
+            </view>
+            <text class="settings-label">{{ t('muse.appearance') }}</text>
+            <view class="settings-group">
+              <view class="appearance-row"
+                ><text>{{ t('muse.mode') }}</text
+                ><view class="appearance-options" role="group" :aria-label="t('muse.appearance')">
+                  <BaseButton
+                    v-for="item in appearanceOptions"
+                    :key="item.value"
+                    variant="quiet"
+                    icon-only
+                    :icon="item.icon"
+                    :label="item.label"
+                    :selected="(draftAppearance || themeStore.appearance) === item.value"
+                    :aria-pressed="(draftAppearance || themeStore.appearance) === item.value"
+                    @tap="chooseAppearance(item.value)"
+                  />
+                </view>
+              </view>
+            </view>
+            <view class="settings-actions"
+              ><BaseButton variant="primary" :disabled="!draftLanguage && !draftAppearance" @tap="savePreferences"
+                >保存偏好</BaseButton
+              ></view
+            >
+          </template>
+          <template v-if="settingsSection === 'general'">
+            <text class="settings-label">通知</text>
+            <MuseStudyReminders />
+          </template>
+          <template v-if="settingsSection === 'permissions'">
+            <text class="settings-label">需要权限</text>
+            <view class="settings-group permission-group"
+              ><BaseListRow label="麦克风与语音识别" value="语音输入暂未开放" :actionable="false" /><BaseListRow
+                label="文件与照片"
+                value="添加资料时由系统询问"
+                :actionable="false"
+            /></view>
+            <text class="settings-label">AI 连接</text>
+            <view class="settings-group"
+              ><BaseListRow
+                label="学习内容发送给 AI"
+                :value="learning.sharingAllowed ? '已允许' : '未允许'"
+                :actionable="false"
+              /><view class="settings-check"
+                ><BaseCheckbox
+                  :model-value="ideasModelDraft ?? ideasModelOn"
+                  @update:model-value="ideasModelDraft = $event === ideasModelOn ? null : $event"
+                  >灵感页每天用我的 API 生成一次建议</BaseCheckbox
+                ></view
+              ></view
+            >
+            <view class="settings-actions"
+              ><BaseButton variant="primary" :disabled="ideasModelDraft === null" @tap="saveIdeasModel"
+                >保存</BaseButton
+              ></view
+            >
+          </template>
+          <view v-if="settingsSection === 'channels'" class="settings-group"
+            ><text class="settings-empty" role="status">暂无可连接的消息渠道</text></view
+          >
+          <template v-if="settingsSection === 'devices'">
+            <text class="settings-label">本机</text>
+            <view class="settings-group"
+              ><BaseListRow label="当前设备" :value="deviceLabel" :actionable="false" /><BaseListRow
+                label="同步学习记录"
+                :value="learning.syncBusy ? '同步中' : ''"
+                :disabled="learning.syncBusy || learning.busy"
+                @tap="handleLearningSync"
+            /></view>
+          </template>
+          <template v-if="settingsSection === 'data'">
+            <text class="settings-label">{{ t('muse.records') }}</text>
+            <text
+              v-if="totalQuestions || studyStore?.studyProgress?.studyMinutes"
+              class="settings-label legacy-stats-label"
+              >{{ t('dashboard.copy101') }}</text
+            >
+            <view v-if="totalQuestions || studyStore?.studyProgress?.studyMinutes" class="settings-group stats-card"
+              ><BaseStat
+                :label="t('dashboard.copy102')"
+                :value="studyStore?.studyProgress?.studyMinutes || 0" /><BaseStat
+                :label="t('dashboard.copy103')"
+                :value="totalQuestions" /><BaseListRow
+                :label="t('dashboard.copy14')"
+                :value="accuracyDisplay"
+                :actionable="false"
+            /></view>
+            <view class="settings-group"
+              ><BaseListRow
+                class="learning-archive-link"
+                :label="t('muse.goals')"
+                @tap="goTo('/pages/archive/index?view=plan')" /><BaseListRow
+                :label="t('dashboard.copy104')"
+                @tap="goTo('/pages/mistake/index')" /><BaseListRow
+                :label="t('dashboard.copy105')"
+                @tap="goTo('/pages/favorite/index')" /><BaseListRow
+                label="备份与恢复"
+                @tap="goTo('/pages/learning/index?panel=data')"
+            /></view>
+            <text class="settings-label">本机数据</text>
+            <view class="settings-group reset-group">
+              <BaseListRow label="清除本机数据" value="退出并重置" :disabled="resetBusy" @tap="handleLocalReset" />
+              <text class="reset-scope"
+                >清除本机所有账户的学习记录、草稿、资料副本与缓存、AI
+                连接与密钥、界面偏好。云端账户、学习记录和保险库不变。</text
+              >
+              <text v-if="resetError" class="reset-error" role="alert">{{ resetError }}</text>
+            </view>
+          </template>
+          <template v-if="settingsSection === 'legal'">
+            <view class="settings-group"
+              ><BaseListRow :label="t('dashboard.copy106')" @tap="goTo('/pages/settings/privacy')" /><BaseListRow
+                :label="t('dashboard.copy107')"
+                @tap="goTo('/pages/settings/terms')"
+            /></view>
+          </template>
+          <MuseAIConnectors v-if="settingsSection === 'connectors'" />
+          <view v-if="settingsSection === 'support'" class="settings-group"
+            ><BaseListRow :label="t('dashboard.copy108')" @tap="handleFeedback"
           /></view>
-        </template>
-        <MuseAIConnectors v-if="settingsSection === 'connectors'" />
-        <view v-if="settingsSection === 'support'" class="settings-group"
-          ><BaseListRow :label="t('dashboard.copy108')" @tap="handleFeedback"
-        /></view>
+        </view>
       </view>
     </view>
     <CustomModal
@@ -243,13 +252,17 @@
       "
       @confirm="confirmDialog"
     />
-  </LearningShell>
+  </view>
 </template>
 <script>
 import '@/i18n/muse.js';
-import { isDesktopSettingsWindow, openDesktopWorkspace } from '@/services/desktop/windows.js';
+import {
+  isDesktopSettingsWindow,
+  openDesktopWorkspace,
+  restoreDesktopSettingsFocus
+} from '@/services/desktop/windows.js';
 import { isDesktopRuntime } from '@/services/desktop/runtime.js';
-import LearningShell from '@/components/business/learning/learning-shell.vue';
+import '@/components/business/learning/learning-space.css';
 import MuseAIConnectors from '@/components/business/learning/muse-ai-connectors.vue';
 import MuseStudyReminders from '@/components/business/learning/muse-study-reminders.vue';
 import { getTabbarSafeAreaStyle } from '@/utils/core/system.js';
@@ -280,7 +293,6 @@ export default {
   components: {
     MuseStudyReminders,
     MuseAIConnectors,
-    LearningShell,
     BaseButton,
     BaseStat,
     BaseListRow,
@@ -553,6 +565,19 @@ export default {
       safeNavigateTo(url);
     },
 
+    returnToConversation() {
+      const restore = async () => {
+        await this.$nextTick();
+        restoreDesktopSettingsFocus();
+      };
+      const pages = getCurrentPages();
+      if (pages.at(-2)?.route === 'pages/learning/index') {
+        uni.navigateBack({ delta: 1, success: restore });
+      } else {
+        safeNavigateTo('/pages/learning/index', { success: restore });
+      }
+    },
+
     goLogin() {
       safeNavigateTo('/pages/login/index');
     },
@@ -787,6 +812,7 @@ export default {
 }
 
 .settings-layout {
+  width: 100%;
   display: grid;
   grid-template-columns: 224px minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);

@@ -15,7 +15,12 @@
  */
 
 import { isDesktopRuntime } from '@/services/desktop/runtime.js';
-import { isDesktopSettingsWindow, openDesktopSettings, openDesktopWorkspace } from '@/services/desktop/windows.js';
+import {
+  isDesktopSettingsWindow,
+  openDesktopSettings,
+  openDesktopWorkspace,
+  rememberSettingsFocus
+} from '@/services/desktop/windows.js';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
 import { getCurrentRoute, isHomeRoute, openHomeTab } from '@/utils/home-navigation.js';
@@ -70,6 +75,8 @@ export function safeNavigateTo(url, options = {}) {
     logger.warn('[safeNavigate] invalid url:', url);
     return;
   }
+
+  if (url.split('?')[0] === '/pages/profile/index') rememberSettingsFocus();
 
   if (isDesktopRuntime()) {
     if (isDesktopSettingsWindow()) {

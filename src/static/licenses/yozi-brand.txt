@@ -22,3 +22,9 @@ Google colored G: gilbarbara/logos, CC0-1.0, https://github.com/gilbarbara/logos
 The original SVGs provided for this task are shipped under src/static/brand/{wechat,apple,google-g}.svg.
 CC0 dedication: https://creativecommons.org/publicdomain/zero/1.0/
 These marks identify their respective providers; the trademark rights remain with the brand owners.
+
+2026-11-02 小猫表演道具
+客户在本批对话中确认十态概念方向后，用内置 imagegen 独立生成笔记本与坐垫；无 Muse 提取素材。
+正式派生文件：src/assets/brand/kitten-laptop.webp、kitten-cushion.webp（透明、无底板）。
+原提示词：仅从已确认概念分别重画笔记本／空坐垫，黑白粗线、白色实心、透明背景、无角色与文字；完整生成记录在本轮 Codex 对话。
+小猫仍由现有分部位画布重画；Logo 母版和安装图标未改。

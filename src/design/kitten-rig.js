@@ -10,7 +10,11 @@ function gesture(t, start, rise, hold, fall) {
   if (a < 0 || a > rise + hold + fall) return 0;
   return a < rise ? ease(a / rise) : a < rise + hold ? 1 : 1 - ease((a - rise - hold) / fall);
 }
-export function kittenPoseAt(elapsed, state = 'idle', { reduced = false, age = elapsed } = {}) {
+export function kittenPoseAt(elapsed, state = 'idle', { reduced = false, age = elapsed, exit = 0 } = {}) {
+  if (reduced) {
+    const still = kittenPoseAt(0, state, { age: 700 });
+    return { ...still, phase: 'still', breath: 0, tailTip: 0, jump: 0 };
+  }
   const t = elapsed % 57100;
   const blink = [1700, 6400, 11900, 22400, 34100, 46200].reduce(
     (v, start) => Math.max(v, gesture(t, start, 130, 45, 260)),
@@ -33,8 +37,45 @@ export function kittenPoseAt(elapsed, state = 'idle', { reduced = false, age = e
     blink,
     gazeX: 0,
     gazeY: 0,
-    breath: 0
+    breath: 0,
+    headScale: 1,
+    bodyWidth: 1,
+    pawY: 865,
+    jump: 0,
+    shiftX: state === 'making' ? 80 : 0,
+    laptop: state === 'making',
+    cushion: state === 'sleeping',
+    tucked: ['sleeping', 'stopped'].includes(state),
+    phase: exit > 0 ? 'exit' : age < 450 ? 'enter' : 'loop'
   };
+  if (state === 'dozing') {
+    const nod = gesture(elapsed % 19300, 2100, 1700, 1400, 600) + gesture(elapsed % 19300, 11600, 2100, 1900, 800);
+    Object.assign(p, {
+      head: 10 + nod * 13,
+      headY: 48 + nod * 42,
+      body: 0.9,
+      earL: 10 + ear * 16,
+      earR: -8,
+      tail: 30,
+      blink: 0.7 + nod * 0.3,
+      gazeY: 9,
+      tailTip: gesture(elapsed % 31700, 6200, 500, 300, 1000) * 6
+    });
+  }
+  if (['sleeping', 'stopped'].includes(state))
+    Object.assign(p, {
+      head: state === 'sleeping' ? -8 : 6,
+      headY: state === 'sleeping' ? 250 : 225,
+      headScale: 0.8,
+      body: 0.48,
+      bodyWidth: 1.25,
+      pawY: 897,
+      tail: 45,
+      blink: state === 'sleeping' ? 1 : 0.1,
+      earL: 12,
+      earR: -10,
+      gazeY: 4
+    });
   if (state === 'waiting')
     Object.assign(p, {
       head: 20,
@@ -44,7 +85,7 @@ export function kittenPoseAt(elapsed, state = 'idle', { reduced = false, age = e
       tailTip: look * 4,
       pawL: -5,
       pawR: -5,
-      blink: 0.65 + blink * 0.35,
+      blink: 0.2 + blink * 0.8,
       gazeY: 7,
       earL: 10 + ear * 5,
       earR: -5
@@ -76,7 +117,6 @@ export function kittenPoseAt(elapsed, state = 'idle', { reduced = false, age = e
     const left = taps.reduce((v, start, i) => (i % 2 === 0 ? Math.max(v, press(start, i)) : v), 0);
     const right = taps.reduce((v, start, i) => (i % 2 ? Math.max(v, press(start, i)) : v), 0);
     Object.assign(p, {
-      head: 7,
       headY: 24 + Math.max(left, right) * 8,
       body: 0.94,
       earL: -8,
@@ -87,7 +127,8 @@ export function kittenPoseAt(elapsed, state = 'idle', { reduced = false, age = e
       pawR: 28 + right * 105,
       pawTurnL: -8 + left * 9,
       pawTurnR: 8 - right * 9,
-      gazeY: 15,
+      head: 7 - gesture(elapsed % 23900, 13500, 450, 1400, 700) * 8,
+      gazeY: 15 - gesture(elapsed % 23900, 13500, 450, 1400, 700) * 19,
       blink: blink * 0.65
     });
   }
@@ -107,6 +148,7 @@ export function kittenPoseAt(elapsed, state = 'idle', { reduced = false, age = e
       pawTurnR: stretch * 24,
       blink: Math.max(0.6, stretch)
     });
+    p.jump = gesture(age, 500, 180, 100, 400) * 48;
   }
   if (state === 'error')
     Object.assign(p, {
@@ -120,28 +162,32 @@ export function kittenPoseAt(elapsed, state = 'idle', { reduced = false, age = e
       pawTurnL: 12,
       gazeX: 10,
       gazeY: 5,
-      blink: blink * 0.6
+      blink: 0
     });
   if (state === 'resume') {
-    const wake = gesture(age, 30, 260, 250, 480);
+    const wake = gesture(age, 30, 500, 700, 900);
     Object.assign(p, {
       head: 12 - wake * 10,
       earL: -wake * 15,
       earR: wake * 15,
       tail: -18,
+      headY: (1 - ease(age / 1800)) * 180,
+      body: 1 + wake * 0.08,
+      pawL: wake * 100,
       pawR: wake * 115,
+      pawTurnL: -wake * 20,
       pawTurnR: wake * 22,
       blink: age < 350 ? 1 - ease(age / 350) : blink * 0.5
     });
   }
   if (state === 'idle') Object.assign(p, { head: 12 + look * 2, earL: ear * 15, tailTip: look * 5 });
-  if (!reduced) p.breath = Math.sin((elapsed / 5100) * Math.PI * 2) * 0.006;
-  else {
-    p.blink = state === 'waiting' ? 0.85 : state === 'celebrate' ? 0.72 : 0;
-    p.head = { idle: 12, working: 4, making: 7, waiting: 20, celebrate: 5, error: -7, resume: 2 }[state] ?? 12;
-    p.earL = state === 'error' ? 40 : state === 'working' ? -9 : 0;
-    p.tailTip = 0;
-    p.breath = 0;
+  if (!['error', 'stopped'].includes(state)) p.breath = Math.sin((elapsed / 5100) * Math.PI * 2) * 0.006;
+  if (!reduced && exit > 0) {
+    const relax = ease(exit);
+    p.head += (12 - p.head) * relax;
+    p.pawL *= 1 - relax;
+    p.pawR *= 1 - relax;
+    p.tailTip *= 1 - relax;
   }
   return p;
 }
@@ -214,11 +260,13 @@ function eye(ctx, x, y, blink, gazeX, gazeY) {
   }
   ctx.restore();
 }
-export function paintKittenRig(ctx, width, height, pose) {
+export function paintKittenRig(ctx, width, height, pose, props = {}) {
   const p = pose;
   ctx.clearRect(0, 0, width, height);
   ctx.save();
   ctx.scale(width / 1000, height / 1000);
+  ctx.translate(p.shiftX, -p.jump);
+  if (p.cushion && props.cushion?.naturalWidth) ctx.drawImage(props.cushion, 120, 775, 770, 220);
   // Tail moves behind the haunch: a low dropped tail, a wrapped loaf and an
   // upright focused tail have distinct silhouettes even without motion.
   ctx.save();
@@ -237,7 +285,7 @@ export function paintKittenRig(ctx, width, height, pose) {
   ctx.restore();
   ctx.save();
   ctx.translate(490, 898);
-  ctx.scale(1, p.body + p.breath);
+  ctx.scale(p.bodyWidth, p.body + p.breath);
   ctx.translate(-490, -898);
   path(ctx, [
     M(371, 621),
@@ -252,10 +300,12 @@ export function paintKittenRig(ctx, width, height, pose) {
     stripe(ctx, 662 + i * 2, 726 + i * 26, 70 - i * 9, -1);
   }
   ctx.restore();
-  paw(ctx, 421, 865, p.pawL, p.pawTurnL);
-  paw(ctx, 550, 865, p.pawR, p.pawTurnR);
+  if (p.laptop && props.laptop?.naturalWidth) ctx.drawImage(props.laptop, -65, 600, 740, 400);
+  paw(ctx, 421, p.pawY, p.pawL, p.pawTurnL);
+  paw(ctx, p.laptop ? 595 : 550, p.pawY, p.pawR, p.pawTurnR);
   ctx.save();
   ctx.translate(480, 443 + p.headY);
+  ctx.scale(p.headScale, p.headScale);
   ctx.rotate((p.head * Math.PI) / 180);
   ear(ctx, -1, p.earL);
   ear(ctx, 1, p.earR);
@@ -294,5 +344,9 @@ export function paintKittenRig(ctx, width, height, pose) {
   });
   path(ctx, [M(0, 103), Q(0, 145, -36, 131), M(0, 103), Q(0, 145, 37, 131)], { fill: null, width: 7 });
   ctx.restore();
+  if (p.tucked) {
+    path(ctx, [M(500, 923), C(645, 918, 750, 847, 780, 875), C(850, 953, 610, 989, 492, 950), Z()]);
+    for (let i = 0; i < 4; i++) stripe(ctx, 725 - i * 30, 914 + i * 8, 34, -1);
+  }
   ctx.restore();
 }

@@ -65,6 +65,7 @@ const props = defineProps({
   perceptible: { type: Boolean, default: false },
   business: { type: Object, default: null }
 });
+const emit = defineEmits(['state']);
 const root = ref(null),
   body = ref(null),
   currentCanvas = ref(null),
@@ -111,6 +112,7 @@ onMounted(() => {
   runtime = acquireAvatar(props.identity);
   unsubscribe = runtime.player.subscribe((value) => {
     state.value = value;
+    emit('state', { state: value.current.state, focused: value.focused, visible: value.visible });
     nextTick(() => runtime?.paint());
   });
   releaseView = runtime.addView({

@@ -1,7 +1,9 @@
-import { AVATAR_MEDIA, AVATAR_STATIC, avatarStateFor } from './avatar-state.js';
+import { AVATAR_MEDIA, AVATAR_STATIC, createAvatarBehavior } from './avatar-state.js';
 import { createAvatarPlayer } from './avatar-player.js';
 import { bindBusinessMotion } from './business-motion.js';
 import { kittenPoseAt, paintKittenRig } from './kitten-rig.js';
+import laptopUrl from '@/assets/brand/kitten-laptop.webp';
+import cushionUrl from '@/assets/brand/kitten-cushion.webp';
 
 const players = new Map();
 let serial = 0;
@@ -237,9 +239,22 @@ export function acquireAvatar(identity = 'yozi') {
   let frameId = null;
   const views = new Set();
   let reduced = true;
+  let focused = document.hasFocus();
   let lastGates = '';
   let gestureTime = 0;
   let lastTick = null;
+  const behavior = createAvatarBehavior({ onChange: (state, options) => player.request(state, options) });
+  const props = {};
+  function loadProp(name) {
+    if (props[name]) return;
+    const image = new window.Image();
+    props[name] = image;
+    image.onload = () => paint();
+    image.onerror = () => {
+      image.onload = image.onerror = null;
+    };
+    image.src = name === 'laptop' ? laptopUrl : cushionUrl;
+  }
   const fallback = new window.Image();
   fallback.src = AVATAR_MEDIA.idle.poster;
   fallback.onerror = () => {
@@ -253,7 +268,7 @@ export function acquireAvatar(identity = 'yozi') {
         poster: fallback,
         video: null,
         canAnimate: false,
-        animationDuration: state === 'celebrate' ? 2400 : 1200
+        animationDuration: state === 'celebrate' ? 2400 : state === 'resume' ? 2200 : 1200
       };
     const poster = await posterFor(state);
     let video = null;
@@ -297,6 +312,7 @@ export function acquireAvatar(identity = 'yozi') {
     return layer;
   };
   const player = createAvatarPlayer({
+    now: behavior.time,
     initial: { id: ++serial, poster: fallback, video: null, canAnimate: true },
     load,
     frame: (fn) => requestAnimationFrame(fn)
@@ -318,14 +334,19 @@ export function acquireAvatar(identity = 'yozi') {
         // A lost/unavailable canvas keeps the existing poster fallback visible.
         if (!context) continue;
         if (view.perceptible?.()) {
+          if (layer.state === 'making') loadProp('laptop');
+          if (layer.state === 'sleeping') loadProp('cushion');
           paintKittenRig(
             context,
             canvas.width,
             canvas.height,
             kittenPoseAt(gestureTime, layer.state, {
               reduced: state.reduced || !state.activated,
-              age: Date.now() - layer.enteredAt
-            })
+              age: Math.max(0, behavior.time() - (layer.poseStartedAt ?? layer.enteredAt)),
+              exit:
+                key === 'current' && state.fading ? Math.min(1, (behavior.time() - state.next.poseStartedAt) / 500) : 0
+            }),
+            props
           );
           if (key === 'current')
             view.painted?.(state.reduced ? 'fallback' : state.visible && state.focused ? 'playing' : 'paused');
@@ -376,26 +397,41 @@ export function acquireAvatar(identity = 'yozi') {
       return;
     }
     // Use wall time even on a busy renderer; gates reset lastTick while paused.
-    if (lastTick !== null) gestureTime += time - lastTick;
+    gestureTime = behavior.time();
     lastTick = time;
     frameId = null;
     paint();
   }
-  // Like Muse, keep moving while visible, including beside another focused window.
   function gates() {
     const values = {
       visible: !document.hidden && [...views].some((view) => view.visible?.() !== false),
+      focused,
       reduced
     };
     const signature = JSON.stringify(values);
     if (signature === lastGates) return;
     lastGates = signature;
-    if (!values.visible || values.reduced) lastTick = null;
+    behavior.gate(values);
+    if (!values.visible || !values.focused || values.reduced) lastTick = null;
     if (values.reduced) gestureTime = 0;
     player.gate(values);
   }
   const changes = player.subscribe(paint);
   document.addEventListener('visibilitychange', gates);
+  const focus = () => {
+    focused = true;
+    paint();
+  };
+  const blur = () => {
+    focused = false;
+    paint();
+  };
+  window.addEventListener('focus', focus);
+  window.addEventListener('blur', blur);
+  const activity = () => behavior.activity();
+  document.addEventListener('input', activity, { passive: true });
+  document.addEventListener('pointerdown', activity, { passive: true });
+  document.addEventListener('keydown', activity, { passive: true });
   const releaseMotion = bindBusinessMotion((value) => {
     reduced = value;
     gates();
@@ -407,12 +443,7 @@ export function acquireAvatar(identity = 'yozi') {
     paint,
     references: 1,
     business(value) {
-      const state = avatarStateFor(value);
-      player.request(state, {
-        key: value.completionId,
-        base: avatarStateFor({ ...value, completed: false, resuming: false }),
-        activate: Boolean(value.busy || value.resuming)
-      });
+      behavior.update(value);
     },
     activate() {
       player.activate();
@@ -429,8 +460,18 @@ export function acquireAvatar(identity = 'yozi') {
       if (--entry.references) return;
       changes();
       player.destroy();
+      behavior.destroy();
+      for (const image of Object.values(props)) {
+        image.onload = image.onerror = null;
+        image.src = '';
+      }
       if (frameId !== null) cancelAnimationFrame(frameId);
       document.removeEventListener('visibilitychange', gates);
+      window.removeEventListener('focus', focus);
+      window.removeEventListener('blur', blur);
+      document.removeEventListener('input', activity);
+      document.removeEventListener('pointerdown', activity);
+      document.removeEventListener('keydown', activity);
       releaseMotion();
       players.delete(identity);
     }

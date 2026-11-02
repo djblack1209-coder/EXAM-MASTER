@@ -186,7 +186,7 @@
 | 测试候选（固定路径） | `tmp/dev-test.noindex/Yozi AI.app`，2.2.0，可执行 `d47f4ff5…`（2026-11-01 14:55 构建）（11-01 外壳第8批：自带 API 灵感建议，严格签名通过；第7批包在废纸篓 `dev-test-before-ideas-ai-20261101.noindex`）；同目录有 0600 的 `runtime.env` 与多个 `*-before` 原文回退 |
 | 测试后端 | `tmp/yozi-candidate-build/backend`，G30 原生集成补正，381 项相关检查＋新增 1 项回归增量通过、编译及隔离打包通过；最近前态 `tmp/g17.noindex/backend-before-g30`（G29），另有 G27、G26 等失败复现前态；交接前态与 10-26 指定回退保留；原生复验中，N1 未通过，未部署 |
 | 最新候选 | `tmp/task-kitten-final-20261027.noindex/Yozi AI.app`，2.2.0，可执行 `00be2a4a…`；今日编译、严格签名、逐态实屏通过 |
-| 日常入口 | `/Users/blackdj/Applications/Yozi AI.app`（`2e85d945…`，**2026-10-22 构建**）未替换；客户 11-02 复查看到的就是这一版，与 11-01 候选不同步，按裁定 15 在 UI/UX 批验收后统一更新 |
+| 日常入口 | `/Users/blackdj/Applications/Yozi AI.app`（本轮 UI 修复、2.2.0）已备份后原子替换并原生后检；原应用标识和资料域保持，Launch Services 仅该入口 |
 | 既有回退 | `task-kitten-20261027.noindex`（上一候选）、`host-policy-resume-20261026.noindex`（指定回退）、`handoff-final-20261026.noindex`（上批完整基线）、`p13-candidate`（正式程序归档＋验证收据＋私有学习资料备份）、`yozi-candidate-build/backend-before-handoff-20261026`（后端回退）、`ab-contract-offline-before`（WIP 原文回退） |
 | 构建产物 | `dist/build/desktop`（今日前端）、`dist/build/h5`（官网网页端）、`dist/build/mp-weixin`（小程序暂停，原位保留不删） |
 | 官网端在哪 | 同一仓库的 H5 构建，不是独立项目：`isH5 && !isDesktop` 时 `@yozi-home` 指向 `components/business/website/website-home.vue`，路由只放首页／登录／隐私／条款，下载包在 `public/downloads/` |
@@ -217,6 +217,9 @@
 | U5 | 小猫状态机不够生动 | `src/design/avatar-state.js` 现有 7 态，动作偏姿态切换 | 按 [07 小猫行为规范](07-STYLING-SYSTEM.md) 重做，加入打瞌睡、睡着、被唤醒、对笔记本打字等生活化表演 |
 
 完成判定：五条都在真实桌面 App 上实屏核对，带前后截图；随后逐页差异清单（`tmp/codex-orders/shell-page-diff-20261102.md`）出表并分 P0/P1 修完，才算外壳闭环。
+
+2026-11-02 本轮：U1–U5 已完成桌面实屏修复与逐态核对，逐页差异见 `tmp/shell-diff-20261102.md`；P1 拆为目录/搜索、Library/Goals、Settings 三批。
+客户后续指示：反馈入口缺真实联系方式及法律联系段（P0-S01）本轮跳过，列待办，后续通过 Cloudflare 完成；保留 P0，不冒充全局清零。日常入口按本批已验范围更新，账户/资料域沿原标识保持。
 
 ### N1 写作主链质量复评与修复（当前唯一主线）
 

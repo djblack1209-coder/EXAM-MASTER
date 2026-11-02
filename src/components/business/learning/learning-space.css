@@ -1382,12 +1382,16 @@
   flex: 1;
   min-width: 0;
 }
-.directory-top .directory-search .base-field__group {
+.muse-space .directory-top .directory-search .base-field__group {
   padding: 0;
   min-height: 0;
   background: none;
   border: 0;
   box-shadow: none;
+  outline: none;
+}
+.directory-top .directory-search :is(.base-field__input, input):focus-visible {
+  outline: none;
 }
 .directory-top .directory-search .base-field__input {
   font-size: 14px;
@@ -1565,4 +1569,13 @@
   color: inherit;
   background: var(--muse-panel);
   border-radius: 8px;
+}
+
+/* Titles, date and goal stay compact without exposing answer/grade metadata. */
+.recent-item .record-meta {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

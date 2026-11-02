@@ -2,6 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   avatarBusinessForPose,
   avatarBusinessForLearning,
+  createAvatarBehavior,
+  AVATAR_DOZE_AFTER,
+  AVATAR_SLEEP_AFTER,
   avatarStateFor,
   AVATAR_MEDIA
 } from '@/design/avatar-state.js';
@@ -177,10 +180,10 @@ describe('avatar state mapping', () => {
     [{ busy: true, producing: true }, 'making'],
     [{ producing: true }, 'idle'],
     [{ waiting: true }, 'waiting'],
-    [{ stopped: true }, 'waiting'],
+    [{ stopped: true }, 'stopped'],
     [{ error: true }, 'error'],
     [{ completed: true }, 'celebrate'],
-    [{ completed: true, stopped: true }, 'waiting'],
+    [{ completed: true, stopped: true }, 'stopped'],
     [{ resuming: true }, 'resume'],
     [{ busy: true, waiting: true }, 'working'],
     [{ completed: true, resuming: true }, 'celebrate']
@@ -205,7 +208,7 @@ describe('avatar state mapping', () => {
   it('uses saved completion and resume facts, not arbitrary message text', () => {
     expect(avatarStateFor(avatarBusinessForLearning({ busy: true, streamPreview: 'saved stream' }))).toBe('making');
     expect(avatarStateFor(avatarBusinessForLearning({ activeQuestion: {} }))).toBe('waiting');
-    expect(avatarStateFor(avatarBusinessForLearning({ active: { stopped: true } }))).toBe('waiting');
+    expect(avatarStateFor(avatarBusinessForLearning({ active: { stopped: true } }))).toBe('stopped');
     expect(avatarStateFor(avatarBusinessForLearning({}, { id: 'done-1', type: 'coach.finish' }))).toBe('celebrate');
     expect(avatarStateFor(avatarBusinessForLearning({}, { id: 'resume-1', type: 'task.resume' }))).toBe('resume');
     expect(avatarStateFor(avatarBusinessForLearning({}))).toBe('idle');
@@ -474,4 +477,107 @@ describe('one-shot local icon motion', () => {
       expect(spec.frames.at(-1)).toEqual(spec.frames[0]);
     }
   });
+});
+
+describe('foreground kitten behavior', () => {
+  let behavior, changed;
+  beforeEach(() => {
+    vi.useFakeTimers();
+    changed = vi.fn();
+    behavior = createAvatarBehavior({ onChange: changed });
+    behavior.update({ waiting: true });
+  });
+  afterEach(() => {
+    behavior.destroy();
+    vi.useRealTimers();
+  });
+  const lastState = (fn) => fn.mock.calls.at(-1)[0];
+  it('dozes at three foreground minutes and sleeps at ten, without changing the waiting fact', () => {
+    vi.advanceTimersByTime(AVATAR_DOZE_AFTER - 1);
+    expect(lastState(changed)).toBe('waiting');
+    vi.advanceTimersByTime(1);
+    expect(lastState(changed)).toBe('dozing');
+    vi.advanceTimersByTime(AVATAR_SLEEP_AFTER - AVATAR_DOZE_AFTER);
+    expect(lastState(changed)).toBe('sleeping');
+    expect(changed.mock.calls.at(-1)[1].base).toBe('sleeping');
+  });
+  it('excludes both blur and background time, then resumes the same idle interval', () => {
+    vi.advanceTimersByTime(120000);
+    behavior.gate({ focused: false });
+    vi.advanceTimersByTime(1200000);
+    expect(behavior.time()).toBe(120000);
+    expect(lastState(changed)).toBe('waiting');
+    behavior.gate({ focused: true });
+    vi.advanceTimersByTime(60000);
+    expect(lastState(changed)).toBe('dozing');
+    behavior.gate({ visible: false });
+    vi.advanceTimersByTime(1200000);
+    expect(lastState(changed)).toBe('dozing');
+    behavior.gate({ visible: true });
+    vi.advanceTimersByTime(420000);
+    expect(lastState(changed)).toBe('sleeping');
+  });
+  it('wakes on real input and returns to the original waiting task, without replaying on a render', () => {
+    vi.advanceTimersByTime(AVATAR_DOZE_AFTER);
+    behavior.activity();
+    expect(lastState(changed)).toBe('resume');
+    expect(changed.mock.calls.at(-1)[1].base).toBe('waiting');
+    const wakeCalls = changed.mock.calls.length;
+    vi.advanceTimersByTime(10);
+    behavior.activity();
+    expect(changed).toHaveBeenCalledTimes(wakeCalls);
+    expect(lastState(changed)).toBe('resume');
+    vi.advanceTimersByTime(59990);
+    behavior.update({ waiting: true });
+    vi.advanceTimersByTime(120010);
+    expect(lastState(changed)).toBe('dozing');
+  });
+  it('keeps real work, a stopped task and errors ahead of idle poses', () => {
+    behavior.update({ busy: true, producing: true, eventId: 'assessment' });
+    vi.advanceTimersByTime(AVATAR_SLEEP_AFTER);
+    expect(lastState(changed)).toBe('making');
+    behavior.update({ stopped: true, eventId: 'stop' });
+    vi.advanceTimersByTime(AVATAR_SLEEP_AFTER);
+    expect(lastState(changed)).toBe('stopped');
+    behavior.update({ error: true, stopped: true, eventId: 'failed' });
+    expect(lastState(changed)).toBe('error');
+  });
+  it('celebrates a saved completed round, never an ordinary model result', () => {
+    expect(avatarBusinessForLearning({}, { type: 'coach.result', id: 'feedback' }).completed).toBe(false);
+    behavior.update(avatarBusinessForLearning({}, { type: 'coach.finish', id: 'round-complete' }));
+    expect(lastState(changed)).toBe('celebrate');
+    expect(changed.mock.calls.at(-1)[1].key).toBe('round-complete');
+    expect(changed.mock.calls.at(-1)[1].base).toBe('idle');
+  });
+  it('releases the only idle timer when the last shared view is removed', () => {
+    const count = changed.mock.calls.length;
+    behavior.destroy();
+    vi.advanceTimersByTime(AVATAR_SLEEP_AFTER);
+    expect(changed).toHaveBeenCalledTimes(count);
+  });
+});
+
+it('tracks window focus events rather than mistaking removal of the focused button for a background window', () => {
+  const focus = vi.spyOn(document, 'hasFocus').mockReturnValue(true);
+  const hidden = vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
+  const runtime = acquireAvatar('window-focus-lifecycle');
+  const release = runtime.addView({ current: () => null, next: () => null, perceptible: () => true });
+  try {
+    const button = document.createElement('button');
+    document.body.append(button);
+    button.focus();
+    button.remove();
+    focus.mockReturnValue(false);
+    runtime.paint();
+    expect(runtime.player.snapshot().focused).toBe(true);
+    window.dispatchEvent(new Event('blur'));
+    expect(runtime.player.snapshot().focused).toBe(false);
+    window.dispatchEvent(new Event('focus'));
+    expect(runtime.player.snapshot().focused).toBe(true);
+  } finally {
+    release();
+    runtime.release();
+    focus.mockRestore();
+    hidden.mockRestore();
+  }
 });

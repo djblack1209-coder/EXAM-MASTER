@@ -182,20 +182,6 @@
               >{{ t('learning.k8t') }}</BaseButton
             >
             <view class="directory-scroll">
-              <view
-                v-if="!searchOnOpen && learning.recordReadState === 'ready' && learning.state.attempts.length"
-                class="button-row record-filters"
-                role="group"
-                :aria-label="t('learning.records.filter')"
-              >
-                <BaseChip
-                  v-for="filter in learning.recordFilters"
-                  :key="filter"
-                  :model-value="recordFilter === filter"
-                  @update:model-value="recordFilter = recordFilter === filter ? 'all' : filter"
-                  >{{ t(`learning.records.${filter}`) }}</BaseChip
-                >
-              </view>
               <view v-if="learning.recordReadState === 'error'" class="recent-list" role="status">
                 <text class="sidebar-caption">{{ recordReadMessage }}</text>
               </view>
@@ -226,24 +212,17 @@
                   <BaseIcon :name="record.kind === 'conversation' ? 'chat' : 'book-open'" tone="ink-3" />
                   <view class="material-copy">
                     <text class="sidebar-label">{{ record.label }}</text>
-                    <text class="sidebar-caption">{{ record.day }} · {{ record.excerpt }}</text>
-                    <view v-if="!searchOnOpen && record.kind === 'answer'" class="button-row">
-                      <BaseTag tone="neutral">{{
-                        t(`learning.records.${record.gradeStatus === 'reliable' ? record.outcome : 'pending'}`)
-                      }}</BaseTag>
-                      <BaseTag v-if="record.helped" tone="neutral">{{ t('learning.records.helped') }}</BaseTag>
-                    </view>
+                    <text class="sidebar-caption record-meta" :title="record.goal"
+                      >{{ record.day }} · {{ record.goal }}</text
+                    >
                   </view>
                 </BaseButton>
                 <BaseEmpty
                   v-if="!recordSearch.total"
                   :title="t('learning.records.empty')"
                   show-button
-                  :button-text="t(recordFilter === 'all' ? 'learning.records.clear' : 'learning.records.reset')"
-                  @action="
-                    query = '';
-                    recordFilter = 'all';
-                  "
+                  :button-text="t('learning.records.clear')"
+                  @action="query = ''"
                 />
                 <BaseButton v-if="recordPage" variant="quiet" @tap="recordPage--">{{
                   t('learning.records.previous')
@@ -267,14 +246,12 @@
                     :class="{ current: learning.selectedConversationId === conversation.id }"
                     :disabled="learning.busy"
                     :aria-disabled="learning.busy"
-                    :aria-label="`${conversation.goal}，${new Date(conversation.at).toLocaleDateString()}${conversation.stopped ? '，已暂停' : ''}`"
+                    :aria-label="`${conversation.goal}，${new Date(conversation.at).toLocaleDateString()}`"
                     variant="quiet"
                     @tap="resume(conversation.id)"
                   >
                     <text class="sidebar-label">{{ conversation.goal }}</text>
-                    <text class="thread-time">{{
-                      conversation.stopped ? '已暂停' : new Date(conversation.at).toLocaleDateString()
-                    }}</text>
+                    <text class="thread-time">{{ new Date(conversation.at).toLocaleDateString() }}</text>
                   </BaseButton>
                   <view
                     v-if="!searchOnOpen && learning.selectedConversationId === conversation.id"
@@ -381,7 +358,14 @@
             <text v-if="active !== 'learning'" class="space-title">{{ title }}</text>
           </view>
           <view v-if="active === 'learning'" class="muse-chat-identity"
-            ><AnimatedAvatar class="brand-mark" :size="56" autoplay perceptible :business="avatarBusiness" />
+            ><AnimatedAvatar
+              class="brand-mark"
+              :size="56"
+              autoplay
+              perceptible
+              :business="avatarBusiness"
+              @state="avatarPresentation = $event"
+            />
             <view class="brand-label"
               ><text class="brand-name" :title="BRAND.name">{{ BRAND.name }}</text>
               <text class="brand-status" role="status" :title="identityStatus">{{ identityStatus }}</text></view
@@ -446,7 +430,6 @@ import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import { learningText } from '@/i18n/learning.js';
 import BaseButton from '@/components/base/base-button/base-button.vue';
 import BaseInput from '@/components/base/base-input/base-input.vue';
-import BaseChip from '@/components/base/base-chip/base-chip.vue';
 import MuseLaunch from './muse-launch.vue';
 import AnimatedAvatar from '@/components/base/animated-avatar/animated-avatar.vue';
 import { avatarBusinessForLearning, avatarStateFor } from '@/design/avatar-state.js';
@@ -477,6 +460,7 @@ const props = defineProps({
   dismissOverlay: { type: Function, default: null },
   notice: { type: String, default: '' },
   sidePanel: { type: Boolean, default: false },
+  waitingForAnswer: { type: Boolean, default: false },
   active: { type: String, default: 'learning' },
   title: { type: String, default: '' },
   layout: { type: String, default: 'default' }
@@ -509,10 +493,24 @@ syncLogin();
 let releaseIdentity = () => {};
 // 顶部小猫跟随真实学习事件切换状态；空闲时状态行显示当前目标。
 const avatarEvent = ref(null);
-const avatarBusiness = computed(() => avatarBusinessForLearning(learning, avatarEvent.value));
+const avatarPresentation = ref(null);
+const avatarBusiness = computed(() => {
+  const value = avatarBusinessForLearning(learning, avatarEvent.value);
+  return { ...value, waiting: value.waiting || props.waitingForAnswer };
+});
+watch(
+  () => `${learning.recordContext()}:${learning.selectedConversationId}`,
+  () => {
+    avatarEvent.value = null;
+  },
+  { flush: 'sync' }
+);
 const identityStatus = computed(() => {
   const value = avatarBusiness.value,
-    state = avatarStateFor(value);
+    state =
+      value.error || value.stopped || value.busy
+        ? avatarStateFor(value)
+        : avatarPresentation.value?.state || avatarStateFor(value);
   if (!value.stopped && state === 'idle') return learning.active?.goal || props.title;
   const key = value.stopped
     ? 'stopped'
@@ -755,20 +753,17 @@ const query = ref('');
 const searchQuery = ref('');
 const queryPending = computed(() => query.value !== searchQuery.value);
 let searchTimer = null;
-const recordFilter = ref('all');
 const recordPage = ref(0);
 const recordReadMessage = computed(() =>
   t(`learning.records.${learning.recordReadState === 'error' ? 'unavailable' : 'loading'}`)
 );
 const recordSearch = computed(() =>
-  learning.recordReadState === 'ready' &&
-  !queryPending.value &&
-  (searchQuery.value.trim() || recordFilter.value !== 'all')
-    ? learning.searchRecords(searchQuery.value, { offset: recordPage.value * 8, limit: 8, filter: recordFilter.value })
+  learning.recordReadState === 'ready' && !queryPending.value && searchQuery.value.trim()
+    ? learning.searchRecords(searchQuery.value, { offset: recordPage.value * 8, limit: 8 })
     : null
 );
 watch(
-  [query, recordFilter],
+  query,
   () => {
     recordPage.value = 0;
   },
@@ -790,7 +785,6 @@ watch(
   () => JSON.stringify([learning.state.owner, learning.recordContext()]),
   () => {
     query.value = '';
-    recordFilter.value = 'all';
   },
   { flush: 'sync' }
 );
@@ -1029,7 +1023,6 @@ function openView(view) {
   directoryOptions.value = false;
   const route = getCurrentPages().at(-1)?.route;
   if (view === 'search') {
-    recordFilter.value = 'all';
     searchOnOpen.value = true;
     menuOpen.value = true;
     nextTick(() => {
