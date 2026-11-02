@@ -171,6 +171,6 @@ Apple：Team ID / 会员状态 / 证书位置（如办理正式签名）
 | 微信小程序 | `VITE_WX_APP_ID` 与 `manifest.json` 小程序 AppID | `WX_APPID`、`WX_SECRET`                                               |
 | 微信移动   | 原生 SDK 的对应移动公开 AppID                    | `WX_MOBILE_APPID`、`WX_MOBILE_SECRET`                                 |
 
-品牌图标：[512×512 PNG](../public/static/pwa-icons/icon-512x512.png)、[192×192 PNG](../public/static/pwa-icons/icon-192x192.png)。完整接线合同见 [04](04-API-DOCUMENTATION.md)、[05](05-DATABASE-SCHEMAS.md)、[09](09-DEPLOYMENT-GUIDE.md)；受保护发布与设备边界见 [09A](09A-LAF-BACKEND-DEPLOYMENT.md)、[09B 原生连接器](09B-APP-CONNECTOR.md)；最新状态见 [13](13-DEVELOPMENT-PLAN.md)。
+品牌图标：[512×512 PNG](../public/static/pwa-icons/icon-512x512.png)、[192×192 PNG](../public/static/pwa-icons/icon-192x192.png)。完整接线合同见 [04](04-API-DOCUMENTATION.md)、[05](05-DATABASE-SCHEMAS.md)、[09](09-DEPLOYMENT-GUIDE.md)；受保护发布与设备边界见 [09A](09A-LAF-BACKEND-DEPLOYMENT.md)、[09C 原生连接器](09C-APP-CONNECTOR.md)；最新状态见 [13](13-DEVELOPMENT-PLAN.md)。
 
 桌面接续复用上述网站应用资格和正式回调，不要求客户另申请桌面 OAuth 应用。工程侧核对精确桌面/网页 `ALLOWED_ORIGINS`、现有私有 JWT 签名配置及受保护的短期记录索引后，才开启 `DESKTOP_OAUTH_ENABLED`；默认关闭。客户只办理平台资格并交回公开状态与私有文件位置，无需执行数据库命令。

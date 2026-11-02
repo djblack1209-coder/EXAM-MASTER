@@ -5,6 +5,8 @@ import { useConversationLearningStore } from '@/stores/modules/conversation-lear
 import { captureSession } from '@/services/auth-storage.js';
 import { coachFixture } from '../fixtures/writing-coach.js';
 import { explicitIntakeFacts } from '../../laf-backend/functions/_shared/learning-intake.js';
+import { learningRepository } from '@/services/learning/learning-repository.js';
+import { synchronizeLearning } from '@/services/learning/learning-sync.js';
 import {
   fetchLearningModels,
   saveLearningModelPreferences,
@@ -17,6 +19,10 @@ vi.mock('@/services/api/domains/learning.api.js', async (original) => ({
   saveLearningModelPreferences: vi.fn(),
   generateLearningTurn: vi.fn(),
   fetchLearningResult: vi.fn()
+}));
+vi.mock('@/services/learning/learning-sync.js', async (original) => ({
+  ...(await original()),
+  synchronizeLearning: vi.fn()
 }));
 const connection = (id) => ({
   id,
@@ -41,6 +47,9 @@ beforeEach(async () => {
   vi.mocked(fetchLearningModels).mockReset().mockResolvedValue(catalog());
   vi.mocked(generateLearningTurn).mockReset();
   vi.mocked(fetchLearningResult).mockReset();
+  vi.mocked(synchronizeLearning)
+    .mockReset()
+    .mockImplementation(async () => learningRepository.replaceSynchronized(learningRepository.read()));
   store = useConversationLearningStore();
 });
 afterEach(() => {
@@ -273,4 +282,47 @@ it('S3 switching accounts cannot retain the other owner selection or receive a l
   expect(store.models).toEqual([]);
   expect(store.modelId).toBe('');
   expect(store.selectedConversationId).toBeNull();
+});
+it('normal sync restores the saved connection without a model call or a new sharing grant', async () => {
+  store.start('Synthetic sync acceptance');
+  fetchLearningModels.mockResolvedValue(
+    catalog([connection('saved')], { selectedModelId: 'saved', sharingAllowed: false })
+  );
+  await store.loadModels();
+  const before = store.exportData();
+  await store.syncRecords(true);
+  await vi.waitFor(() => expect(store.modelListState.phase).toBe('ready'));
+  expect(fetchLearningModels).toHaveBeenCalledTimes(2);
+  expect(store.modelId).toBe('saved');
+  expect(store.needsConnection).toBe(false);
+  expect(store.sharingAllowed).toBe(false);
+  expect(store.exportData()).toBe(before);
+  expect(generateLearningTurn).not.toHaveBeenCalled();
+  expect(store.syncState.phase).toBe('success');
+});
+it('a late catalog read after sync cannot restore the previous account connection or consent', async () => {
+  let finish;
+  fetchLearningModels.mockImplementationOnce(() => new Promise((resolve) => (finish = resolve)));
+  await store.syncRecords(true);
+  await vi.waitFor(() => expect(finish).toBeTypeOf('function'));
+  await login('sync-other-owner');
+  store.refresh();
+  finish(catalog([connection('private-old')], { selectedModelId: 'private-old', sharingAllowed: true }));
+  await Promise.resolve();
+  await Promise.resolve();
+  expect(store.state.owner).toBe('sync-other-owner');
+  expect(store.models).toEqual([]);
+  expect(store.modelId).toBe('');
+  expect(store.sharingAllowed).toBe(false);
+  expect(generateLearningTurn).not.toHaveBeenCalled();
+});
+it('catalog failure after a completed sync preserves its result and allows an explicit metadata retry', async () => {
+  fetchLearningModels.mockRejectedValueOnce(new Error('Synthetic metadata outage'));
+  await store.syncRecords(true);
+  await vi.waitFor(() => expect(store.modelListState.phase).toBe('error'));
+  expect(store.syncState.phase).toBe('success');
+  fetchLearningModels.mockResolvedValue(catalog([connection('saved')]));
+  await store.loadModels();
+  expect(store.modelListState.phase).toBe('ready');
+  expect(generateLearningTurn).not.toHaveBeenCalled();
 });

@@ -4,7 +4,7 @@
 
 跨学科记录查找：[当前账户规范事实的只读查询/筛选](../laf-backend/functions/_shared/learning-record-search.js)，由现有Store连接侧栏搜索和学习页旧稿呈现。复用原题定位、生命周期与有效判分，无新端点、模型或持久化索引；[查找/更正/筛选/账户/恢复专项](../tests/unit/learning-record-search.spec.js)。
 
-学习路线与整批训练：[共享路线/复盘/两日证据](../laf-backend/functions/_shared/learning-journey.js)、[提醒日期与资格](../laf-backend/functions/_shared/learning-reminders.js)、[受限题目工厂适配](../src/services/learning/journey-training.js)，沿原reducer、Store和repository保存。界面为[路线](../src/components/business/learning/learning-journey.vue)、[题组](../src/components/business/learning/training-group.vue)、[复盘与巩固](../src/components/business/learning/journey-review.vue)、[提醒](../src/components/business/learning/journey-reminders.vue)和[安全消息排版](../src/components/business/learning/learning-message.vue)。
+学习路线与整批训练：[共享路线/复盘/两日证据](../laf-backend/functions/_shared/learning-journey.js)、[提醒日期与资格](../laf-backend/functions/_shared/learning-reminders.js)、[受限题目工厂适配](../src/services/learning/journey-training.js)，沿原reducer、Store和repository保存。界面为[路线](../src/pages/learning/components/learning-journey.vue)、[题组](../src/components/business/learning/training-group.vue)、[复盘与巩固](../src/pages/learning/components/journey-review.vue)、[提醒](../src/components/business/learning/journey-reminders.vue)和[安全消息排版](../src/pages/learning/components/learning-message.vue)。
 
 物理路线扩展沿上述模块和[既有科学规则](../laf-backend/functions/_shared/learning-science.js)；跨目标绑定在共享路线校验，普通重开题目/题组选择在[对话Store](../src/stores/modules/conversation-learning.js)。没有增加服务、判分体系或运行依赖；实际原答、恢复及隔离后端证据见[12](archive/12-CHANGELOG-until-2026-10-18.md#2026-10-12物理整批路线归属与重开接续)。
 
@@ -20,9 +20,9 @@
 
 Mac 资料 OCR：`scripts/native/apple-vision.m` 为真实 Vision/CoreML CPU 适配；`scripts/build/build-apple-vision.mjs` 仅编译，`scripts/build/verify-apple-vision.mjs` 与 `tests/native/apple-vision/` 做合成自检。Python 私人解析器显式选引擎；Service 复核能力/回执，Store 保存当前选择和逐片段提取事件，页面逐次许可/校对。移动原生 OCR 桥未接。
 
-App文件链路：[文件宿主](../src/services/learning/app-material.js)、[Java文件内核](../nativeplugins/Yozi-Connector/android/src/cn/yozi/connector/MaterialFiles.java)、[ContentResolver源](../nativeplugins/Yozi-Connector/android/src/cn/yozi/connector/AndroidMaterialSource.java)、[Foundation文件内核](../nativeplugins/Yozi-Connector/ios/src/YoziMaterialFiles.m)、[页面/Store专项](../tests/unit/learning-app-material.spec.js)和[真实文件校验](../scripts/build/verify-app-material.mjs)。沿原私人资料合同，不新建数据集合，装配/设备边界见[09B](09B-APP-CONNECTOR.md)。
+App文件链路：[文件宿主](../src/services/learning/app-material.js)、[Java文件内核](../nativeplugins/Yozi-Connector/android/src/cn/yozi/connector/MaterialFiles.java)、[ContentResolver源](../nativeplugins/Yozi-Connector/android/src/cn/yozi/connector/AndroidMaterialSource.java)、[Foundation文件内核](../nativeplugins/Yozi-Connector/ios/src/YoziMaterialFiles.m)、[页面/Store专项](../tests/unit/learning-app-material.spec.js)和[真实文件校验](../scripts/build/verify-app-material.mjs)。沿原私人资料合同，不新建数据集合，装配/设备边界见[09C](09C-APP-CONNECTOR.md)。
 
-App连接器：[宿主桥](../src/services/learning/app-connector.js)、[Java内核](../nativeplugins/Yozi-Connector/android/src/cn/yozi/connector/ConnectorTransport.java)、[Foundation内核](../nativeplugins/Yozi-Connector/ios/src/YoziConnectorTransport.m)、[JS专项](../tests/unit/learning-app-connector.spec.js)、[回环校验](../scripts/build/verify-app-connector.mjs)与[SDK编译](../scripts/build/build-app-connector.mjs)。源码/装配/设备分别验收，配置见[09B](09B-APP-CONNECTOR.md)。
+App连接器：[宿主桥](../src/services/learning/app-connector.js)、[Java内核](../nativeplugins/Yozi-Connector/android/src/cn/yozi/connector/ConnectorTransport.java)、[Foundation内核](../nativeplugins/Yozi-Connector/ios/src/YoziConnectorTransport.m)、[JS专项](../tests/unit/learning-app-connector.spec.js)、[回环校验](../scripts/build/verify-app-connector.mjs)与[SDK编译](../scripts/build/build-app-connector.mjs)。源码/装配/设备分别验收，配置见[09C](09C-APP-CONNECTOR.md)。
 
 条件先修：[蕴含与任意精确有理反例检验](../laf-backend/functions/_shared/learning-condition-probe.js)、[原答候选关联](../laf-backend/functions/_shared/learning-prerequisite.js)、[38项人工独立期望](../tests/fixtures/learning/condition-diagnosis-v1.json)、[45项专项](../tests/unit/learning-condition-diagnosis.spec.js)。复用原Store、reducer、计划、教学与原题变式，不增加诊断服务或能力百分比。
 

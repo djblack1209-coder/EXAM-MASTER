@@ -191,7 +191,7 @@ Mac聊天QA程序为`chat-first-qa.noindex/Yozi AI 核验.app`，前端Byvko-2Y�
 
 当前4212服务为PID99455（Wed Oct 14 10:02:59 2026），复用原静态目录并原子换产物，未因更新重启；先前66083已随客户端中断退出。当前用户IAB2/3保留；合成验收4215/4383/27189及测试App已正常退出，后续启动仍须重新核对PID与启动时间。QA归档内仅本机4215地址，不能安装为日常入口。当前完整回退为日常bank-lifecycle / desktop-candidate.zip，H5为h5-before-account-stats / h5-before-bank-lifecycle；原程序固定基线、私人资料与QA hint依赖链继续保留。精确清理与恢复映射沿verification.json.accountStatsIsolation，程序回执native-candidate-receipt.json；以下旧候选和进程均属历史，不能据此操作当前资源。
 
-2026-10-14移动装配准备预查（客户现已延后iPhone，不继续索取SDK）：现有iOS build-only因实际DCloud头/依赖未配置退出2，没有生成包或改App。当前已安装DCloud包和App资源的compilerVersion均5.31；匹配/兼容SDK组合仍未验，不能沿历史5.08说明直接装配。当前准备状态、所需路径与官方来源要求集中[09B](09B-APP-CONNECTOR.md#移动-sdk-编译)，未新增运行资源或移动候选，继续复用下述原交付入口。
+2026-10-14移动装配准备预查（客户现已延后iPhone，不继续索取SDK）：现有iOS build-only因实际DCloud头/依赖未配置退出2，没有生成包或改App。当前已安装DCloud包和App资源的compilerVersion均5.31；匹配/兼容SDK组合仍未验，不能沿历史5.08说明直接装配。当前准备状态、所需路径与官方来源要求集中[09C](09C-APP-CONNECTOR.md#移动-sdk-编译)，未新增运行资源或移动候选，继续复用下述原交付入口。
 
 2026-10-14依赖边界增量：Vite构建对客户端模块图中的braces执行拒绝，当前H5实际检查405模块；40项工具链用例及日志调整后1项通过。2955个H5文件与原交付一致，包含2588项CDN资源，因此未切换网页/原生候选。临时验证输出回收，构建日志为 `tmp/stage1-mobile-20261011/dependency-runtime-h5.log`，完整范围沿verification.json.dependencyRuntimeBoundary。该检查不覆盖所有动态路径、构建工具输入、后端或其他端；旧14项high审计继续阻塞，没有安装、降级或安全豁免。隔离build-source的Vite配置同步当前规则，原生资料域与资料不动。
 
@@ -386,7 +386,7 @@ learning-records.before-signing.json与learning-records.after-signing.json完整
 
 ## 命令索引
 
-App连接器新增两个命令（运行条件/SDK边界见[09B](09B-APP-CONNECTOR.md)）：
+App连接器新增两个命令（运行条件/SDK边界见[09C](09C-APP-CONNECTOR.md)）：
 
 - `npm run test:app:connector` → `node scripts/build/verify-app-connector.mjs`：真实JDK/Foundation双内核回环HTTP/TLS，不调用模型；随机本机端口、合成密钥/编译产物在忽略tmp，完成清理，报告保留。需要macOS及实际Java工具链。
 - `npm run build:app:connector` → `node scripts/build/build-app-connector.mjs --build-only`：实际移动SDK本地编译，缺SDK退出2，不下载/装配/部署。成功新建唯一tmp插件包和SDK哈希，不覆盖已有包；单平台显式追加`-- --android`/`-- --ios`。

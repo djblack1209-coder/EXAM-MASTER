@@ -20,6 +20,7 @@
 | 构建、空间清理与生产边界      | [09 构建与维护](09-DEPLOYMENT-GUIDE.md)           |
 | Laf 与独立后端适配            | [09A 后端运行](09A-LAF-BACKEND-DEPLOYMENT.md)     |
 | 恢复、迁移与回滚              | [09B 迁移](09B-BACKEND-MIGRATION-GUIDE.md)        |
+| App 原生传输、文件与移动 SDK | [09C 原生连接器](09C-APP-CONNECTOR.md) |
 | 写代码和审查的规则            | [10 开发规范](10-DEV-RULES.md)                    |
 | 完整功能清单、证据与发布缺口  | [11 功能与验收](11-RELEASE-NOTES.md)              |
 | 重要变更记录                  | [12 变更](12-CHANGELOG.md)                        |

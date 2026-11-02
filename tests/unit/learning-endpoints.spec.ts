@@ -2087,6 +2087,11 @@ it('局部批改只发送当前题干原答，不把整篇目标、建档与旧�
   const messages = vi.mocked(callLearningProvider).mock.calls[0][1];
   expect(messages).toHaveLength(2);
   expect(messages[1]).toEqual({ role: 'user', content: request.input });
+  expect(messages[0].content).not.toContain(request.input);
+  const config = vi.mocked(callLearningProvider).mock.calls[0][0];
+  const wire = buildLearningRequest(config, messages);
+  expect(wire.tools[0].function.parameters.description).toContain(request.input);
+  expect(messages[0].content).not.toContain(JSON.stringify(config.writingOutput.schema));
   const serialized = JSON.stringify(messages);
   expect(serialized).toContain('活动将在周五下午举行');
   for (const marker of [

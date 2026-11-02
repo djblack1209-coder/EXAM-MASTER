@@ -724,6 +724,41 @@ describe('按任务的真实答题形式送评', () => {
     const analyzed = prepareCoachFeedbackModel(config, coachInferenceContext(syntax), false, false, false, true);
     expect(analyzed.writingOutput.schema.properties.errors.items.properties.errorText).toEqual({ type: 'null' });
     expect(analyzed.writingOutput.schema.properties.errors.items.properties.replacement).toEqual({ type: 'null' });
+    const jsonPrompt = coachSystemPrompt(coachInferenceContext(syntax), analyzed.writingOutput.schema);
+    const toolPrompt = coachSystemPrompt(coachInferenceContext(syntax), analyzed.writingOutput.schema, false);
+    expect(jsonPrompt.split(JSON.stringify(analyzed.writingOutput.schema))).toHaveLength(2);
+    expect(toolPrompt).not.toContain(JSON.stringify(analyzed.writingOutput.schema));
+    expect(toolPrompt).toContain('yozi_coach_response工具Schema');
+    expect(toolPrompt).toContain('只用任务完成评分析内容');
+  });
+  it('英译中只评译意和完成情况，中文原答不能成为英语语法或搭配档的证据', () => {
+    const request = {
+      ...base,
+      target: 'card-c4',
+      task: '译成中文：Our team finished the report before Friday.',
+      input: '我们团队在周五之前完成了报告。'
+    };
+    const p = prepareCoachFeedbackModel(config, coachInferenceContext(request), false, false, false, true);
+    expect(p.writingOutput.schema.properties.dimensions.items.properties.name.enum).toEqual(['表达', '任务完成']);
+    expect(p.writingOutput.schema.properties.errors.items.properties.dimension.enum).toEqual(['表达', '任务完成']);
+    expect(coachSystemPrompt(coachInferenceContext(request), p.writingOutput.schema)).toContain('不评英语语法或搭配');
+    const wire = {
+      quoteVersion: p.writingOutput.schema.properties.quoteVersion.enum[0],
+      message: '本句译意已核对。',
+      lines: [{ quoteId: 'q1', advice: '译文完整表达了原句含义。' }],
+      errors: [],
+      strengths: [],
+      uncertainties: [],
+      phrases: [],
+      dimensions: [{ name: '表达', score: 2, comment: '译意准确。', evidenceIds: ['q1'] }]
+    };
+    expect(JSON.parse(decodeCoachResponse(p, JSON.stringify(wire))).coach.dimensions.map((v) => v.name)).toEqual([
+      '表达'
+    ]);
+    for (const name of ['语法', '搭配']) {
+      wire.dimensions[0].name = name;
+      expect(() => decodeCoachResponse(p, JSON.stringify(wire))).toThrow();
+    }
   });
 });
 describe('摸底错误合并复核一次：讲解题只删不加，单词填空盲填比对', () => {

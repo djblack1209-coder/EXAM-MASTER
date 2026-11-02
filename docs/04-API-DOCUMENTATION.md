@@ -420,7 +420,7 @@ Repository新增本机 `conversation_learning_v1_lifecycle` 共享撤销标记�
 
 私人解析器新增 `/health` 的 `ocrEngines.appleVision`：`available`、`contract=wenli-apple-vision-v1`、`status=capabilities_verified`、`runtime=macos_connector`、`languages=[zh-Hans,en-US]`、`recognitionState=not_tested`。检查只验证程序/协议/CPU/语言能力，不证明冷启动或准确率。`/parse` 可显式传 `ocrEngine=apple-vision`，必须 `allowOCR===true`；默认请求形状/Tesseract兼容。未知/不可用/缺许可在正文解码与存储前拒绝；识别失败不换引擎。文字PDF仍走Poppler。返回 `recognitionEngine`，OCR片段 `method=apple_vision`、`role=unassigned`、`reviewRequired=true`、`coordinateSpace=preview_pixels_top_left`，预览方向/尺寸与行框一致。Apple PDF批次保留原5页上限并加25秒共享期限、180万UTF8字节片段回执预算；达上限保存已完成页，下一页留到后续动作。客户端 Apple 选择只接纳匹配引擎的回执；续页/重试保留选择并复核原解析器 Origin。
 
-App文件合同 `wenli-app-file-v1`：系统选择回执仅id/file(handle/name/size)，明确consent=true后read回执为id/handle/name/size/contentBase64；原生重验元信息与10 MiB字节预算。取消/释放只针对临时句柄，不新增云端API。页面经Store只读recordContext取得实际账户/记录生命周期，清除/恢复使旧动作失效；网络和业务校验仍沿原受保护解析服务。完整字段、时限和移动SDK边界见[09B](09B-APP-CONNECTOR.md)。
+App文件合同 `wenli-app-file-v1`：系统选择回执仅id/file(handle/name/size)，明确consent=true后read回执为id/handle/name/size/contentBase64；原生重验元信息与10 MiB字节预算。取消/释放只针对临时句柄，不新增云端API。页面经Store只读recordContext取得实际账户/记录生命周期，清除/恢复使旧动作失效；网络和业务校验仍沿原受保护解析服务。完整字段、时限和移动SDK边界见[09C](09C-APP-CONNECTOR.md)。
 
 `prerequisite-condition-v1`接受有界条件题可靠wrong。完整原答分类与独立P⇒Q/Q⇒P成立集的差异选充分、必要或双向候选，保存direction（p_to_q/q_to_p）及有序1—2条evidenceIds/evidenceOutcomes。双向不同先检验充分方向，原题变式再检查完整分类，不认定唯一认知错因。新建及question.add重验全题最新作答；最新正确/待核对拒绝陈旧候选，旧已保存题仍保留，更正引用使关联待核对。整数/代数旧v1/v2合同冻结。
 
@@ -466,7 +466,7 @@ safe-condition-relation-v1复用现有learning-sync、作答/教学/恢复合同
 
 ### 本机连接器
 
-App模块wenli-app-connector-v1只接受完整保护能力匹配，原生重验固定路径/方法、精确origin、令牌/授权/容量/时间。固定来源https://wenli-app.invalid须连接器显式允许，不能代替认证。健康、文本、已有原件续解析和匹配删除、文件选择及逐次确认已有源码；缺模块零请求，完整DCloud装配和设备仍待验。云教学流另须wenli-app-stream-v1完整匹配；本地/chat、视觉能力不由流式入口扩大。错误仅固定码，取消和迟到拒绝不自动重试；上限与SDK/设备边界见[09B](09B-APP-CONNECTOR.md)。
+App模块wenli-app-connector-v1只接受完整保护能力匹配，原生重验固定路径/方法、精确origin、令牌/授权/容量/时间。固定来源https://wenli-app.invalid须连接器显式允许，不能代替认证。健康、文本、已有原件续解析和匹配删除、文件选择及逐次确认已有源码；缺模块零请求，完整DCloud装配和设备仍待验。云教学流另须wenli-app-stream-v1完整匹配；本地/chat、视觉能力不由流式入口扩大。错误仅固定码，取消和迟到拒绝不自动重试；上限与SDK/设备边界见[09C](09C-APP-CONNECTOR.md)。
 
 Node local-text-1.0：GET /health、POST /chat、OPTIONS；精确 Origin、Bearer 令牌、固定目标/型号、显式 consent、稳定 requestId。相同请求复用执行及失败结果，异内容 409；输入、输出、次数、速率、并发和时间有硬上限。health 只证明连接器可达和配置能力，upstreamReachability=not_tested，不代表模型已推理成功。只支持文本，工具/视觉/流式关闭，输出不能执行学习工具；平台扣量为零。超限、未授权、取消和上游故障如实返回。
 
@@ -488,7 +488,7 @@ HTTP头为text/event-stream UTF8、no-cache及X-Accel-Buffering:no。事件依�
 
 上游须为明确声明的OpenAI兼容SSE、单choice、实际model一致；请求stream_options.include_usage。完整stop和DONE才返回有效输出；length/content_filter、原生tool/function片段、结束后追加或结构错误拒绝。未完整结束即使用量片段存在也不认最终计费为已确认；完整结束却内容失败时仍保留供应使用量。缺可靠用量继续pending，不能填零。30秒上游/5秒DNS、1MiB上游、3万内容字符；下游2MiB、每事件10万字符/34个事件，客户端45秒。背压停止新增输出，最终收据写入最多等1秒；无无限重试。
 
-App云教学已接专用原生分块合同：仅POST /proxy-ai-stream，基础保护能力与wenli-app-stream-v1全部匹配才发送原账户令牌及本次授权上下文。headers→连续chunk→complete使用同一请求ID和连续序号；规范Base64每块最多8192字节、累计2MiB/256块/45秒。原生完整UTF-8及JS共用解码/SSE/请求绑定/EOF分别校验，旧模块不会借用H5或REST回退。原有H5/微信/App读取每块及事件都核对Store账户、对话/题目、记录生命周期、模型和共享授权，变化时取消并拒绝旧工具。源码、真实本机内核、移动SDK内核编译、完整插件与设备证据分别记录在[09B](09B-APP-CONNECTOR.md)；预览不写学习事实，模型实际费用仍须既有账本确认。
+App云教学已接专用原生分块合同：仅POST /proxy-ai-stream，基础保护能力与wenli-app-stream-v1全部匹配才发送原账户令牌及本次授权上下文。headers→连续chunk→complete使用同一请求ID和连续序号；规范Base64每块最多8192字节、累计2MiB/256块/45秒。原生完整UTF-8及JS共用解码/SSE/请求绑定/EOF分别校验，旧模块不会借用H5或REST回退。原有H5/微信/App读取每块及事件都核对Store账户、对话/题目、记录生命周期、模型和共享授权，变化时取消并拒绝旧工具。源码、真实本机内核、移动SDK内核编译、完整插件与设备证据分别记录在[09C](09C-APP-CONNECTOR.md)；预览不写学习事实，模型实际费用仍须既有账本确认。
 
 `POST /learning-models {action:"result",requestId}`在本账户原成本账只读获取completed的原result，不预留、不请求供应商、不扣平台量。reserved返回409，cancelled返回499，无记录404；失败没有可用结果。客户端仅在原消息/题目/模型/共享授权一致、无后续学习状态调整或隐私生命周期变化时应用，工具及回复沿用同ID幂等。取消/导入历史不恢复执行。重开后需主动选回原模型并授权；旧用户内容不会带新账户令牌发送。
 

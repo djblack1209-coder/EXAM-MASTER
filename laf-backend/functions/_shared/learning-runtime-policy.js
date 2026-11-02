@@ -31,6 +31,13 @@ export function phaseCallLimit(limit, phase) {
 export function learningTimeout(context = {}) {
   return ['writing', 'diagnostic'].includes(learningBudgetPhase(context)) || context.coach ? 60000 : 30000;
 }
+export function coachVerificationBudget(context = {}) {
+  const request = context.coach;
+  // 五题混合初评与独立复核分别有界；不通过减弱模型思考或评分来挤进单次调用时限。
+  return request?.phase === 'feedback' && request.target === 'diagnostic' && request.feedbackVersion === 2
+    ? 120000
+    : 65000;
+}
 export function hostReviewRating({ outcome, hinted = false, correctStreak = 0 }) {
   if (outcome !== 'correct') return 1;
   if (hinted) return 2;

@@ -925,7 +925,7 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 
 ## G17 与 G18 接续核对（Codex，2026-11-01）
 
-- **交接批次已收尾**：`b5712fca` 使用 Claude 原提交说明与原 16 文件清单。App 编译、产物扫描、打包和严格签名通过，退出 1 仅为末尾 Launch Services `-10814`；固定测试候选 `tmp/dev-test.noindex/Yozi AI.app` 可执行 `ff0580cb…`，日常入口未替换，详见根目录 `YOZI-HANDOVER-RESULT.md`。Claude 已退出，未启用 usage credits。
+- **交接批次已收尾**：`b5712fca` 使用 Claude 原提交说明与原 16 文件清单。App 编译、产物扫描、打包和严格签名通过，退出 1 仅为末尾 Launch Services `-10814`；固定测试候选 `tmp/dev-test.noindex/Yozi AI.app` 可执行 `ff0580cb…`，日常入口未替换，详见 [archive/YOZI-HANDOVER-RESULT-2026-11-01.md](archive/YOZI-HANDOVER-RESULT-2026-11-01.md)。Claude 已退出，未启用 usage credits。
 - **G17**：校准 v3 在既有两次盲填中区分不定式与介词 `to`；不增加请求。出题返修可换句与空位，新搭配空只考介词／小品词，旧记录不改。真实探针区分两次不定式与六次介词；开放空仍拒收。免费英一日练增量 3/3 接受（两次经一次返修）；四类题上一轮仅 2/4，不能当作练习总体质量通过。
 - **G18**：补核初评漏记的明确修饰对象矛盾；盲析无法自洽、盲填无法下结论、超时或格式失败均不采用初评，不自动追加调用。保留原答、失败收据、已知脱敏用量与未知费用。复核删错后同步重建过渡语，撤销的正确填空不再照搬候选词优劣。
 - **DeepSeek 适配与授权**：客户明确授权本轮隔离质量参考／独立评阅。按[官方接口](https://api-docs.deepseek.com/api/create-chat-completion/)用推理工具 `auto` 与 `json_object` 能力往返；[上游 strict 仅在显式 Beta 端点使用](https://api-docs.deepseek.com/guides/tool_calls/)。宿主仍核对唯一指定工具、nonce、封闭 Schema 与业务规则。实际 `deepseek-flash` 工具／JSON 往返完成，不迁移用户地址，不启用生产平台教学。

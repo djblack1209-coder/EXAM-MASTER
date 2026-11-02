@@ -408,6 +408,35 @@ it('received nonstream failures keep shape, usage and duration without reply or 
       expect(error).toMatchObject({ code: expectedCode, upstreamStatus: status, upstreamCode });
       expect(JSON.stringify(error)).not.toMatch(/private_fixture_limit|fixture-private-key/);
     }
+    responseStatus = 200;
+    responseText = invalidEnvelope;
+    const timers = vi.spyOn(globalThis, 'setTimeout');
+    try {
+      for (const [contract, expectedTimeout] of [
+        ['writing-error-verification-v2', 45000],
+        ['writing-exercise-calibration-v3', 30000],
+        ['ordinary-call', 30000]
+      ] as const) {
+        timers.mockClear();
+        await callLearningProvider(
+          {
+            ...config,
+            timeoutMs: 45000,
+            writingOutput: {
+              contract,
+              inferencePolicy: 'native-coach-tools-v1',
+              schema: { type: 'object' },
+              schemaDigest: 'fixture'
+            }
+          },
+          [],
+          ['https://model.example']
+        ).catch(() => {});
+        expect(timers.mock.calls.map((call) => call[1])).toContain(expectedTimeout);
+      }
+    } finally {
+      timers.mockRestore();
+    }
   } finally {
     request.mockRestore();
     ipv4.mockRestore();

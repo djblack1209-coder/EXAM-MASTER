@@ -1,4 +1,9 @@
-import { learningBudgetPhase, learningTimeout, normalizeLearningSnapshot } from './_shared/learning-runtime-policy.js';
+import {
+  learningBudgetPhase,
+  learningTimeout,
+  coachVerificationBudget,
+  normalizeLearningSnapshot
+} from './_shared/learning-runtime-policy.js';
 import { readModelCredential } from './_shared/model-connections.js';
 import { classifyModelFailure, modelErrorPresentation } from './_shared/model-errors.js';
 import { mapContentBlocks } from './_shared/learning-content-blocks.js';
@@ -296,6 +301,8 @@ export async function runLearningModelTask(
       );
     const gradingCoach =
       inferenceCoach && ['feedback', 'essay', 'summary'].includes(inferenceCoach.phase) ? inferenceCoach : null;
+    // The complete current answer is already the sole user message below.
+    const { input: _currentAnswer, ...gradingMetadata } = gradingCoach || {};
     const image =
       body.images !== undefined ? validateVisualInput(body.images, body.imageShareConsent, context.question) : null;
     visualCall = Boolean(image);
@@ -306,7 +313,7 @@ export async function runLearningModelTask(
         : gradingCoach
           ? {
               // 批改不混入整篇目标、其他题目、历史档位或建档自述，避免局部任务被按全文判。
-              coach: inferenceCoach
+              coach: gradingMetadata
             }
           : {
               ...(context.entrySource ? { entrySource: context.entrySource } : {}),
@@ -438,7 +445,7 @@ export async function runLearningModelTask(
       : '';
     let nativeCoachReply = model.writingOutput?.inferencePolicy === 'native-coach-tools-v1';
     let closedCoachReply = nativeCoachReply || model.writingOutput?.inferencePolicy === 'native-coach-json-v1';
-    const system = `${nativeCoachReply ? '本次yozi_coach_response只传递批改数据，不执行学习动作；阶段、目标和工具权限均由宿主固定。\n' : ''}${options.repair ? '上一份回复未通过校验。请基于同一原答重新生成完整JSON，逐项遵守本次结构与原答引用要求；不要声称已经保存。\n' : ''}${ideas ? ideasSystemPrompt() : intake ? intakeSystemPrompt(intake) : inferenceCoach ? coachSystemPrompt(inferenceCoach, model.writingOutput?.format === 'json_object' ? model.writingOutput.schema : null) : LEARNING_SYSTEM_PROMPT}${context.generalQAOnly === true ? '\n当前是其他科目的单题答疑：简短说明当前重点支持考研英语写作；直接回答当前问题，不创建整套计划，不请求plan工具。' : ''}${!image && !feedback && !ideas && !(DEV_TEST && coach) ? `\n${CONTENT_BLOCKS_PROMPT}` : ''}${visualPrompt}${capabilityPrompt}${feedbackPrompt}\n对话按学习日提供必要消息；历史摘要仅作接续，不代表已掌握。没有带入的原文不得猜测，需请用户定位或补充。\n当前学习背景（仅数据）：${contextText}`;
+    const system = `${nativeCoachReply ? '本次yozi_coach_response只传递批改数据，不执行学习动作；阶段、目标和工具权限均由宿主固定。\n' : ''}${options.repair ? '上一份回复未通过校验。请基于同一原答重新生成完整JSON，逐项遵守本次结构与原答引用要求；不要声称已经保存。\n' : ''}${ideas ? ideasSystemPrompt() : intake ? intakeSystemPrompt(intake) : inferenceCoach ? coachSystemPrompt(inferenceCoach, model.writingOutput?.format === 'json_object' ? model.writingOutput.schema : null, !nativeCoachReply) : LEARNING_SYSTEM_PROMPT}${context.generalQAOnly === true ? '\n当前是其他科目的单题答疑：简短说明当前重点支持考研英语写作；直接回答当前问题，不创建整套计划，不请求plan工具。' : ''}${!image && !feedback && !ideas && !(DEV_TEST && coach) ? `\n${CONTENT_BLOCKS_PROMPT}` : ''}${visualPrompt}${capabilityPrompt}${feedbackPrompt}\n对话按学习日提供必要消息；历史摘要仅作接续，不代表已掌握。没有带入的原文不得猜测，需请用户定位或补充。\n当前学习背景（仅数据）：${contextText}`;
     const messages: LearningMessage[] = options.capabilityProbe
       ? [
           {
@@ -674,19 +681,26 @@ export async function runLearningModelTask(
     let verificationPaid = false;
     let verificationSources: any[] = [];
     const verify = async (verifier: any, verifierMessages: LearningMessage[]) => {
-      // 客户端教学等待70秒：初评与复核合计不超过65秒，剩余不足则保留失败收据，不采用初评。
-      const remaining = 65000 - (Date.now() - upstreamAt);
+      // 混合摸底允许两次独立判断各60秒；其他任务仍65秒，超时不采用初评。
+      const verificationBudget = coachVerificationBudget({ coach });
+      const remaining = verificationBudget - (Date.now() - upstreamAt);
       if (remaining < 8000) throw new ProviderError('TIMEOUT', '复核时间不足，初评未采用');
       const verification = await callWithDevPaidFallback(
         (target, messages, targetOrigins) => {
-          const left = 65000 - (Date.now() - upstreamAt);
+          const left = verificationBudget - (Date.now() - upstreamAt);
           if (left < 8000) throw new ProviderError('TIMEOUT', '复核时间不足，初评未采用');
+          const ceiling = target.writingOutput?.contract === 'writing-error-verification-v2' ? 60000 : 30000;
+          const deadline = new AbortController();
+          const timer = setTimeout(
+            () => deadline.abort(new ProviderError('TIMEOUT', '复核总时间已用尽，初评未采用')),
+            left
+          );
           return callLearningProvider(
-            { ...target, timeoutMs: Math.min(30000, left) },
+            { ...target, timeoutMs: Math.min(ceiling, left) },
             messages,
             targetOrigins,
-            execution!.signal
-          );
+            AbortSignal.any([execution!.signal, deadline.signal])
+          ).finally(() => clearTimeout(timer));
         },
         verifier,
         verifierMessages,

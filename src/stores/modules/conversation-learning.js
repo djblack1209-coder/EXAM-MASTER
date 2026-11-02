@@ -5175,6 +5175,17 @@ export const useConversationLearningStore = defineStore('conversation-learning',
           error.value = publicError(failure);
           if (applied && request.feedback) syncState.value.message = `${message}本机记录暂不能重读，请重新打开核对。`;
         }
+        if (applied && kind === 'sync') {
+          try {
+            ensureSessionCurrent(request.session);
+            // 同步已撤销旧目录；只重读当前账号元数据，不探测或调用模型。
+            void loadModels().catch(() => {
+              // 读取状态由模型目录维护；失败不改写已经完成的同步结果。
+            });
+          } catch {
+            // 账号已切换或暂不可读时，不替新会话发起旧操作的后续读取。
+          }
+        }
       }
     }
   }

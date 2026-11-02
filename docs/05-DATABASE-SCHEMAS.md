@@ -160,7 +160,7 @@ Mac Apple OCR 资料保存 `recognitionEngine=apple-vision` 与当前许可；�
 
 App所选文件的临时句柄/元信息仅页面与原生模块内存，URI、安全作用域、原始Base64不进入记录/同步/导出；成功解析后仍沿私人material/原件定位/提取事件。选择与读取绑定实际账户及Repository生命周期，普通作答不使其失效，清除/恢复或换账户拒绝旧结果，不新增集合、逻辑版本或数据权威。
 
-App连接器不增集合、学习版本或工具权限。transport id仅关联原生取消，不替代稳定业务requestId；目标/令牌仍会话内存，回调不能自封判分或执行工具。私人原件续解析/删除成功后沿原事件保存，不持久化失败正文、令牌或原生异常。详情见[09B](09B-APP-CONNECTOR.md)。
+App连接器不增集合、学习版本或工具权限。transport id仅关联原生取消，不替代稳定业务requestId；目标/令牌仍会话内存，回调不能自封判分或执行工具。私人原件续解析/删除成功后沿原事件保存，不持久化失败正文、令牌或原生异常。详情见[09C](09C-APP-CONNECTOR.md)。
 
 条件先修题使用prerequisite-condition-v1，方向direction为p_to_q/q_to_p，topic为condition-sufficient-direction/condition-necessary-direction/condition-both-directions；原题、对话、理由及有序1—2条可靠wrong引用沿现有prerequisite。新增时验证全题最新作答；额外权限/来源字段拒绝。小题answerType为condition_implication，conditionProbeAnalysis为contract/status/domain/reason；validation的holds/counterexample/cells/domain/excluded从题干重建。小题无parentQuestionKey，后续变式绑定完整原题；同一事实/帮助/更正/删除/任务分母合同。下文v1/v2规则继续适用于整数/代数，旧记录不自动升级，不新增逻辑版本或数据库集合。
 

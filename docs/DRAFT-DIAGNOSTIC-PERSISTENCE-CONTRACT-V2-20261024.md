@@ -1,6 +1,6 @@
 # 诊断持久采集合同 A v2（待审，未启用）
 
-**草案／未定案。** 原始 [A v1](DRAFT-DIAGNOSTIC-PERSISTENCE-CONTRACT-20261024.md) 冻结保留。技术依据为主线转交的《YOZI-AB-CLAUDE-VERDICT-20261024.md》全文333行，SHA256 `16502dd7eb5e73ac514965d8bc124a8a50c99816767cd97b06a81a7b9184c42d`；它是技术指导，不提供 G1–G9 授权。本轮仅获准默认关闭源码及手写合成夹具离线验证，不授权启用、真实读取／采集或删除。
+**v2 待批／默认关闭。** 原始 [A v1](DRAFT-DIAGNOSTIC-PERSISTENCE-CONTRACT-20261024.md) 冻结保留。技术依据为主线转交的《YOZI-AB-CLAUDE-VERDICT-20261024.md》全文333行，SHA256 `16502dd7eb5e73ac514965d8bc124a8a50c99816767cd97b06a81a7b9184c42d`；它是技术指导，不提供 G1–G9 授权。本轮仅获准默认关闭源码及手写合成夹具离线验证，不授权启用、真实读取／采集或删除。
 
 ## 现状差集 Q1–Q5（仅无秘密源码事实）
 

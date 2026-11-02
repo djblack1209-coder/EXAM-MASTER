@@ -528,7 +528,9 @@ export function prepareCoachFeedbackModel(
   const { kind: _kind, target: _target, ...feedbackFields } = coach;
   if (native) {
     const assessment = coachAssessmentTask(request);
-    const names = assessment?.kind === 'syntax_analysis' ? ['表达', '任务完成'] : WRITING_METHOD.feedback;
+    const names = ['syntax_analysis', 'translate_zh'].includes(assessment?.kind)
+      ? ['表达', '任务完成']
+      : WRITING_METHOD.feedback;
     feedbackFields.dimensions = {
       type: 'array',
       minItems: request.phase === 'essay' ? 4 : 0,
@@ -2262,8 +2264,10 @@ export async function callLearningProvider(
   )
     delete wire.response_format;
   const body = JSON.stringify(wire);
-  // 只认教学60秒；其他调用最多30秒，可由宿主收紧（复核用剩余预算），不能放宽。
-  const timeoutMs = config.timeoutMs === 60000 ? 60000 : Math.min(30000, Math.max(5000, config.timeoutMs || 30000));
+  // 反馈复核接受宿主分配的剩余时间；一般调用和双轮校准仍最多30秒。
+  const ceiling =
+    config.timeoutMs === 60000 || config.writingOutput?.contract === 'writing-error-verification-v2' ? 60000 : 30000;
+  const timeoutMs = Math.min(ceiling, Math.max(5000, config.timeoutMs || 30000));
   const traceSafeModel =
     DEV_TEST &&
     ((config.model === 'openai/gpt-oss-120b' && url.origin === 'https://api.groq.com') ||

@@ -564,6 +564,7 @@ try {
       for (let run = 1; run <= repetitions; run++) {
         const request = coach.normalizeCoachRequest(sample.request),
           context = coach.coachInferenceContext(request);
+        const { input: _currentAnswer, ...gradingMetadata } = context;
         let prepared = provider.prepareCoachFeedbackModel(model, context, false, false, false, true);
         if (!['native-coach-tools-v1', 'native-coach-json-v1'].includes(prepared.writingOutput?.inferencePolicy))
           throw new Error('Native teaching contract unavailable');
@@ -576,9 +577,13 @@ try {
         };
         report.runs.push(row);
         const system =
-          coach.coachSystemPrompt(context, prepared.writingOutput.schema) +
+          coach.coachSystemPrompt(
+            context,
+            prepared.writingOutput.schema,
+            prepared.writingOutput.inferencePolicy !== 'native-coach-tools-v1'
+          ) +
           '\n当前学习背景（仅数据）：' +
-          JSON.stringify({ coach: context });
+          JSON.stringify({ coach: gradingMetadata });
         // 第三次只给开发付费兜底：免费返修仍未通过教学校验时，与 proxy-ai.ts 的 :repair2 一样，按原请求的反馈改由 DeepSeek 质量型号再答一次。
         const freePrepared = prepared;
         for (let attempt = 0, repair = null, verified = false, parentVerified = false; attempt < 3; attempt++) {

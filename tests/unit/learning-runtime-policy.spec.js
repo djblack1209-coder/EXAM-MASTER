@@ -7,6 +7,7 @@ import {
   LEARNING_BUDGET_PHASES,
   learningBudgetPhase,
   learningTimeout,
+  coachVerificationBudget,
   normalizeLearningSnapshot,
   phaseCallLimit
 } from '../../laf-backend/functions/_shared/learning-runtime-policy.js';
@@ -102,6 +103,15 @@ describe('宿主教学权限与隐私', () => {
     expect(LEARNING_TOOLS.progress.timeoutMs).toBe(2000);
     expect(LEARNING_TOOLS.assess.timeoutMs).toBe(60000);
     expect(learningTimeout({ coach: { phase: 'essay' } })).toBe(60000);
+    expect(coachVerificationBudget({ coach: { phase: 'feedback', target: 'diagnostic', feedbackVersion: 2 } })).toBe(
+      120000
+    );
+    for (const coach of [
+      { phase: 'diagnostic', target: 'diagnostic', feedbackVersion: 2 },
+      { phase: 'feedback', target: 'card-c1', feedbackVersion: 2 },
+      { phase: 'feedback', target: 'diagnostic', feedbackVersion: 1 }
+    ])
+      expect(coachVerificationBudget({ coach })).toBe(65000);
   });
   it('只装最近六条当前消息，旧日原文仍保留本机', () => {
     const repo = repository(),

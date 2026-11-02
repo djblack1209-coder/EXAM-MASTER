@@ -248,6 +248,23 @@ describe('模型列表与用量读取的实际请求生命周期', () => {
       cost: { spent: 0, reserved: 0, pending: 0 }
     }
   };
+  it.each([
+    [{ phase: 'feedback', target: 'diagnostic', feedbackVersion: 2 }, 125000],
+    [{ phase: 'feedback', target: 'card-c1', feedbackVersion: 2 }, 70000],
+    [{ phase: 'diagnostic', target: 'diagnostic', feedbackVersion: 2 }, 70000]
+  ])('实际请求等待与当前教练阶段一致：%j', async (coach, timeout) => {
+    const pending = requests();
+    const { learningRequest } = await import('@/services/api/domains/learning.api.js');
+    const reading = learningRequest(
+      '/proxy-ai',
+      { learningContext: { coach } },
+      { session: captureSession(), expectedOwner: 'synthetic-crosswindow-owner' }
+    );
+    expect(pending).toHaveLength(1);
+    expect(pending[0].timeout).toBe(timeout);
+    pending[0].success({ data: { success: true } });
+    expect((await reading).success).toBe(true);
+  });
   it('连续点击仅一次列表请求；等待不改配置，目录缺项清除失效选择且不改学习事实', async () => {
     const pending = requests(),
       before = store.exportData();
@@ -1116,7 +1133,9 @@ describe('加密同账户会话与凭据请求边界', () => {
     remote.events = remote.events.map(normalizePrivateSyncOperation);
     requestFor(pending, '/learning-sync').success({ data: { success: true, data: { state: remote } } });
     await promise;
-    expect(pending).toHaveLength(1);
+    expect(pending.filter((item) => item.url.endsWith('/learning-sync'))).toHaveLength(1);
+    expect(requestFor(pending, 'list').data).toEqual({ action: 'list' });
+    requestFor(pending, 'list').success({ data: { success: true, data: { models: [], presets: [] } } });
     const previous = JSON.parse(facts);
     for (const field of ['attempts', 'questions', 'plans', 'profile'])
       expect(store.state[field]).toEqual(previous[field]);

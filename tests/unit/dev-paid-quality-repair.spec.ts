@@ -199,9 +199,15 @@ it.each(['valid', 'secret-echo', 'wrong-model', 'unfinished'])(
       ).success
     ).toBe(true);
     ledger().calls = [];
+    const clock = Date.now();
+    let elapsed = 0;
+    if (mode === 'valid') vi.spyOn(Date, 'now').mockImplementation(() => clock + elapsed);
     vi.mocked(callLearningProvider).mockImplementation(async (config: any) => {
       if (config.writingOutput?.contract === 'writing-error-verification-v2') {
-        if (!config.devPaidFallback) throw new ProviderError('RATE_LIMITED', 'synthetic free verification limit');
+        if (!config.devPaidFallback) {
+          if (mode === 'valid') elapsed = 76000;
+          throw new ProviderError('RATE_LIMITED', 'synthetic free verification limit');
+        }
         return {
           ...completed,
           finishReason: mode === 'unfinished' ? 'length' : 'stop',
@@ -211,6 +217,7 @@ it.each(['valid', 'secret-echo', 'wrong-model', 'unfinished'])(
             mode === 'secret-echo' ? JSON.stringify({ echo: PAID_KEY }) : JSON.stringify(mixedDiagnosticVerification())
         };
       }
+      if (mode === 'valid') elapsed = 20000;
       return reply(config, true);
     });
     const result = await ai(context(body('verification-fallback-' + mode)));
@@ -227,6 +234,12 @@ it.each(['valid', 'secret-echo', 'wrong-model', 'unfinished'])(
         }
       });
       expect(ledger().calls[0].usage.verification).toMatchObject({ prompt_tokens: 4, completion_tokens: 8 });
+      expect(
+        vi
+          .mocked(callLearningProvider)
+          .mock.calls.slice(1)
+          .map(([config]: any) => config.timeoutMs)
+      ).toEqual([60000, 44000]);
     } else {
       expect(result.success).toBe(false);
       expect(result).not.toHaveProperty('data.coach');

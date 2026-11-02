@@ -2,6 +2,7 @@ import config from '../../../config/index.js';
 import { captureSession, sessionForRequest } from '../../auth-storage.js';
 import { generateLearningTurnStream } from '../../learning/learning-stream.js';
 import { reportAuthenticationFailure, isAuthenticationFailure } from '../../auth-failure.js';
+import { coachVerificationBudget } from '../../../../laf-backend/functions/_shared/learning-runtime-policy.js';
 
 export const learningModelDiscoveryEnabled = () => true;
 const discoveryDisabled = () => ({ success: false, code: 503, errorCode: 'DISCOVERY_DISABLED' });
@@ -61,9 +62,11 @@ export function learningRequest(path, body, options = {}) {
       timeout:
         path === '/learning-models' && ['save', 'test'].includes(body.action)
           ? 130000
-          : body.learningContext?.coach || body.intake || body.feedbackAttemptId
-            ? 70000
-            : 65000,
+          : coachVerificationBudget(body.learningContext) > 65000
+            ? 125000
+            : body.learningContext?.coach || body.intake || body.feedbackAttemptId
+              ? 70000
+              : 65000,
       header: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       success: (res) =>
         finish(
