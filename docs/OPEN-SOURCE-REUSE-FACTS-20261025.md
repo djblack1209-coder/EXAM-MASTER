@@ -60,3 +60,12 @@
 来源：package.json 与 package-lock.json、src-tauri/Cargo.toml 与 Cargo.lock、laf-backend 与 standalone 的 package/lock、requirements-sympy.txt、scripts/pipeline/requirements-docling-macos-arm64.txt；README、AGENTS、docs/02-ARCHITECTURE.md、03-MODULE-INDEX.md、13-DEVELOPMENT-PLAN.md 的已有高层状态及既有协调回执。未读取私有业务源码补证。
 
 未做：运行时依赖追踪、服务器安装与部署核查、真实身份/教学/模型/移动设备验证、上游维护与许可审计、库替换或安装。未列某库不能证明全项目未用；请 Claude 在证据不足处标未知，不以依赖存在断言功能已完成，也不读取私有源码补证。
+
+## 2026-11-02 许可证复核：CCB 与 OpenCode
+
+| 项目 | 许可证事实 | 能否引代码 | 说明 |
+|---|---|---|---|
+| `claude-code-best/claude-code`（CCB） | 根目录 `LICENSE`／`LICENSE.md`／`LICENSE.txt`／`COPYING` 全部 404，`package.json` 无 `license` 字段；自述 `Reverse-engineered Anthropic Claude Code CLI` | **不能** | 未声明许可证＝默认保留所有权利；且逆向自闭源产品，来源有权利瑕疵。只可读公开说明借运作思路 |
+| `anomalyco/opencode`（原 `sst/opencode`） | `LICENSE` 为 MIT（Copyright (c) 2025 opencode），根 `package.json` 版本 2.2.5、Bun monorepo | **可以** | 保留版权与许可声明即可；但它是编码代理（TUI + client/server + LSP + MCP），不是教学引擎，整包替换无意义 |
+
+取件原则不变：先核对维护活跃度与大陆可安装性，单包 ≤50MB 可直接装并记入 `tmp/downloads.json`，改造放上游之外，不为换轮子重写现有可用实现。

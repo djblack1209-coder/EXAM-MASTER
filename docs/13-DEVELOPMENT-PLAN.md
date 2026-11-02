@@ -17,7 +17,7 @@
 | Y-G1 写作主链质量（主线，即 N1） | 讲解、批改、练习稳定可信：批改按量表、带学生原文证据、标 AI 评估；混合摸底不再无据降档；生成练习题经独立校准才进队列 | N1 完成条件全部满足；基线失败逐条有据（9 项已裁定，见日志 10-31），按「不降低封存样本判定标准」自裁 |
 | Y-G2 真实学习闭环（N2＋N3 数据层） | 建档 → 摸底 → 练习／带写 → 批改 → 结构化掌握事件挂到知识框架节点 → 下一次打开今日队列因此变化，且每张卡能追溯到具体事件 | 桌面 App 实际操作走通；真实自然日切一次（改时钟只作补充）；样本不足的节点显示「数据不足」 |
 | Y-G3 学习过程数据化呈现 | 分科正确率、薄弱点在整棵知识框架中的定位、只读思维导图；先数据层（掌握判定挂知识树、按预测效度定义）后展示层；知识卡、答题卡、数据图结构化整卡呈现，不流式拼凑 | 桌面与手机 App 实际操作；每个数字可追到事件 |
-| Y-G4 原版 Muse 外壳复刻 | 先逐页截图核对原版 Muse（Chat、Search、Ideas、Goals、Library、Feed、Settings 及简报第 1 节 B–G 的局部），再按截图完全复刻；与 Yozi 既定移动端形态冲突时以 Yozi 为准 | 每页与原版截图逐项对照，差异有记录；桌面 App 实操截图 |
+| Y-G4 原版 Muse 外壳复刻 | 先逐页截图核对原版 Muse（Chat、Search、Ideas、Goals、Library、Settings 及简报第 1 节 B–G 的局部；Feed 11-02 定不做），再按截图完全复刻；与 Yozi 既定移动端形态冲突时以 Yozi 为准 | 每页与原版截图逐项对照，差异有记录；桌面 App 实操截图 |
 | Y-G5 对话体验 | 微信式排版，虚拟形象出现在每条消息旁、状态机比 Muse 更丰富；回复一开始就以打字机呈现；语音输入边说边出可矫正的文字；对话节奏按 Claude Code：主线里自然推进、该说就说、卡住才问，过程可视化保留但不压制对话 | 桌面 App 实操录屏或逐帧截图 |
 | Y-G6 Goals、Library、Ideas 模型驱动 | Goals 按 Muse 设计与运作（打勾、右上「…」）；Library 按 Muse 图、视频、文档版式归置知识卡、题目、数据图，含选择与筛选器；Ideas 在 Yozi 是知识点拓展流，属后期；11-01 客户批准先做最小一条：灵感页每天用学生自带 API 生成 1–3 条建议，只预填草稿 | Goals、Library 实操走通且由已保存事实或模型产出驱动；Ideas 形态对照，AI 建议只预填草稿、不写学习事实 |
 | Y-G7 设置与选择器 | 设置分通用、连接器、消息渠道、设备、数据控制、权限（合并电脑使用、文件系统访问、语音输入、权限）、帮助与支持、法律信息；不做钱包、安全储存；侧边窗口与模型、思考强度选择器参考 ChatGPT 与 WorkBuddy 取长补短 | 逐页对照截图 |
@@ -26,7 +26,7 @@
 **总监裁定（2026-10-30 起；10-31 按新简报改写的条目已标明）**
 
 1. **底座方式（10-31 改）**：外壳与运作以本机原版 Muse App 为准；Muse 2、ChatGPT2、Claude2、WorkBuddy2 都是半成品，只作参考，与原版不一致时以原版为准。Yozi 保留 uni-app／Tauri／Laf 技术栈，不改写为 React／Go，不运行或改动这些参考项目。UI 先完全复刻、不夹带改良，用户之后再提改动。
-2. **导航（10-31 改）**：一级页面按原版 Muse 的 Chat、Search、Ideas、Goals、Library、Feed、Settings；「AI 团队办公室」「常用指令面板」两个自建构件不复刻。旧蓝图第 5.1 节与 A17 映射表作废。
+2. **导航（10-31 改；11-02 修正）**：一级页面为 Chat、Search、Ideas、Goals、Library、Settings 六项；**Feed 不做**（见裁定 10，原 10-31 版把 Feed 列入，已作废该部分）；「AI 团队办公室」「常用指令面板」两个自建构件不复刻。旧蓝图第 5.1 节与 A17 映射表作废。
 3. **第 6 节等决定事项**：#1 平台参考模型从本机已有免费通道实测可用者中选定，另选异族模型作裁判，型号随结论登记，不启用付费（**2026-11-01 用户更正**：开发通道加 DeepSeek 付费兜底，`5235a4fd`，见开发日志同日条目；免费与兜底样本单列，不算作免费模型的成绩；11-01 Codex 接续时客户另行明确授权：已配置的 DeepSeek 付费通道可用于本轮隔离质量参考和独立评阅，登记实际型号、参数与费用，不据此启用生产平台教学）；#2 调参样本沿用 2013 英语二「慈善义卖邮件」，另封存 2 道未见过的同类题作留出，只验收不调参；#7 知识树展示形态先做只读框架图＋节点详情，思维导图为只读。#3–#6 不影响主线，维持原状。
 4. **知识框架方案第 11 节**：#2 同上；#3 用最新一年英语一／英语二大纲；#4 官网不展示误解原话；#5 两卷同时覆盖、大作文放第二批；#1「参与核对」暂不开放收集，个人层探针在本机运行，口径层只用隔离测试账号，上线前再议。
 5. **N1「弱模型提示」子项**：按用户 2026-10-30 对 Lazy 定下的同一原则处理：不新增提示文案，只用界面与布局表达；排在 N1 主问题之后，不阻塞 N1。
@@ -46,6 +46,10 @@
 17. **对话历史不带评判（11-02 用户定）**：会话历史只显示标题／时间／所属目标，**不显示"答错""部分正确""待核对"这类标签**；对错只在学习反馈里出现。这条覆盖旧外壳批次引入的标签。
 18. **Git 瘦身（11-02 客户批准）**：`.git` 实测 577MB（2 个 pack，in-pack 558MiB，另有约 17MB 垃圾 pack）。历史 blob 合计 679MB，其中 **653MB 属于已不在 HEAD 的路径**（旧数据清单 27MB＋16MB、一份 23MB 的 ONNX 模型、13MB 宣传视频、成批 4MB 的 e2e 截图），预计瘦身后可降到 80MB 量级。执行要求：独占窗口、先做完整镜像备份、用 `git filter-repo` 清大对象、重写后核对工作树与全部 worktree、保留回滚路径；与开发批次分开，不在有并行开发时执行。
 
+
+19. **开源复用与许可证（11-02 用户提出，结论如下）**：
+   - **CCB（claude-code-best/claude-code）不引代码**，原因不是"许可证太严"，而是**它没有声明任何许可证**（根目录 LICENSE／LICENSE.md／LICENSE.txt／COPYING 均为 404，package.json 也没有 license 字段），默认保留所有权利；且自述是 "Reverse-engineered Anthropic Claude Code CLI"，来源本身存在权利瑕疵。只能读它的公开说明借运作思路。
+   - **OpenCode（anomalyco/opencode，原 sst/opencode）是 MIT**，可以引用、修改、商用，保留版权声明即可。但它是**编码代理**（TUI + client/server + LSP + MCP），不是教学引擎，**不能整包替换 Yozi 的对话引擎**；可复用的候选是 provider 抽象与模型元数据思路、会话/流式协议的组织方式。任何取件按既有规则：先 30 分钟核对、近 6 个月维护、可在大陆安装且不依赖被屏蔽 CDN、单包 ≤50MB 可直接装并记入 `tmp/downloads.json`，改造放在上游之外。
 
 ## 0.1 并行开发与模块分工（2026-10-31 起）
 
@@ -167,7 +171,7 @@
 
 **顺序说明**：Y-G3 原定「数据层通过后才做」。按 10-31 指令改为并行：P 先按上面的只读接口做展示层，数据不足时如实显示「数据不足」，不编造数字；N3 的收据绑定与预测性准确率核对仍是展示「已掌握」类结论的前置门槛，由 G 线在 N1 通过后完成。N2 仍等 N1 通过。
 
-**工作位置**：Claude 用主工作树 `/Users/blackdj/Desktop/Yozi AI`；Codex 外壳线用 `/Users/blackdj/Desktop/.worktrees.noindex/yozi-shell-1`；Codex 呈现线用 `/Users/blackdj/Desktop/.worktrees.noindex/yozi-progress-1`（分支 `codex/yozi-progress-1-20261031`）。
+**工作位置（11-02 更新）**：两条执行线的分支 `codex/yozi-shell-1-20261030`、`codex/yozi-progress-1-20261031` **都已并入 `main`**，对应 worktree 仅作历史保留，不再是开发位置。Claude 已因周额度用尽退出（11-05 21:00 北京时间前不接活），**Codex 在主工作树 `/Users/blackdj/Desktop/Yozi AI` 接续全部线**。
 
 **真实界面验收串行**：同一时间只有一条线做桌面 App、H5 或手机端的真实界面验收。开始前用 `mkdir /Users/blackdj/Desktop/.worktrees.noindex/locks/yozi-ui.lock` 取锁（目录已存在就说明别的线在验，先做别的），锁内写 `owner` 文件（线名与开始时间），验完删除。
 
@@ -178,15 +182,15 @@
 | 项 | 当前值 |
 | --- | --- |
 | 代码基线 | 以当前 `git HEAD` 为准；交接批次 `b5712fca` 已提交，G17／G18 接续结果见开发日志；用户未提交材料与 `.collab/` 工具状态保留，未混入功能提交 |
-| 测试候选（固定路径） | `tmp/dev-test.noindex/Yozi AI.app`，2.2.0，可执行 `ff0580cb…`（11-01 外壳第8批：自带 API 灵感建议，严格签名通过；第7批包在废纸篓 `dev-test-before-ideas-ai-20261101.noindex`）；同目录有 0600 的 `runtime.env` 与多个 `*-before` 原文回退 |
+| 测试候选（固定路径） | `tmp/dev-test.noindex/Yozi AI.app`，2.2.0，可执行 `d47f4ff5…`（2026-11-01 14:55 构建）（11-01 外壳第8批：自带 API 灵感建议，严格签名通过；第7批包在废纸篓 `dev-test-before-ideas-ai-20261101.noindex`）；同目录有 0600 的 `runtime.env` 与多个 `*-before` 原文回退 |
 | 测试后端 | `tmp/yozi-candidate-build/backend`，G30 原生集成补正，381 项相关检查＋新增 1 项回归增量通过、编译及隔离打包通过；最近前态 `tmp/g17.noindex/backend-before-g30`（G29），另有 G27、G26 等失败复现前态；交接前态与 10-26 指定回退保留；原生复验中，N1 未通过，未部署 |
 | 最新候选 | `tmp/task-kitten-final-20261027.noindex/Yozi AI.app`，2.2.0，可执行 `00be2a4a…`；今日编译、严格签名、逐态实屏通过 |
-| 日常入口 | `/Users/blackdj/Applications/Yozi AI.app`（`2e85d945…`）未替换，仍是客户可见的唯一入口 |
+| 日常入口 | `/Users/blackdj/Applications/Yozi AI.app`（`2e85d945…`，**2026-10-22 构建**）未替换；客户 11-02 复查看到的就是这一版，与 11-01 候选不同步，按裁定 15 在 UI/UX 批验收后统一更新 |
 | 既有回退 | `task-kitten-20261027.noindex`（上一候选）、`host-policy-resume-20261026.noindex`（指定回退）、`handoff-final-20261026.noindex`（上批完整基线）、`p13-candidate`（正式程序归档＋验证收据＋私有学习资料备份）、`yozi-candidate-build/backend-before-handoff-20261026`（后端回退）、`ab-contract-offline-before`（WIP 原文回退） |
 | 构建产物 | `dist/build/desktop`（今日前端）、`dist/build/h5`（官网网页端）、`dist/build/mp-weixin`（小程序暂停，原位保留不删） |
 | 官网端在哪 | 同一仓库的 H5 构建，不是独立项目：`isH5 && !isDesktop` 时 `@yozi-home` 指向 `components/business/website/website-home.vue`，路由只放首页／登录／隐私／条款，下载包在 `public/downloads/` |
-| 有意保留的大件 | `src-tauri/target` 2.2G（复用 Cargo 缓存，`cargo test`/原生构建还要用）、`node_modules` 494M、`data/raw-inbox` 2.0G（客户原件）、`.git` 577M（不改历史） |
-| 清理回执 | `tmp/cleanup-receipt-20261027.txt`：163 项、逻辑 2.1GB 移入废纸篓（可恢复，未清空）；`tmp` 2.4GB → 407MB |
+| 有意保留的大件 | `src-tauri/target` 2.2G（复用 Cargo 缓存，`cargo test`/原生构建还要用）、`node_modules` 494M、`data/raw-inbox` 2.0G（客户原件）、`.git` 577M（裁定 18：已批准瘦身，待独占窗口执行，预计降到 80MB 量级） |
+| 清理回执 | 11-02 批次见 `tmp/cleanup-receipt-20261102.txt`：257MB 移入废纸篓，文档引用的 36 个证据文件已按原路径还原；`tmp` 686MB → 438MB。10-27 旧回执 `tmp/cleanup-receipt-20261027.txt` 保留；客户已自行清空废纸篓 |
 
 ## 2. 已锁定、不再讨论的边界
 

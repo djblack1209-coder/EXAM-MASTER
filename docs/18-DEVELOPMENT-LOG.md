@@ -969,3 +969,9 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 - **收尾顺序**：先修五条 → 再做逐页差异清单 → 修完并验收 → 才按裁定 15 更新日常入口。施工单 `tmp/codex-orders/uiux-shell-fix-20261102.md`。
 - **两笔账**：废纸篓客户已清空（无需再议）；`.git` 约 580MB 客户批准瘦身，单独窗口执行，先镜像备份、再 filter-repo、最后核对 worktree（裁定 18）。
 - **Git 瘦身实测**：`.git` 577MB／2 个 pack／in-pack 558MiB，另有约 17MB 垃圾 pack（`.git/objects/pack/tmp_pack_*`）。历史 blob 合计 679MB，其中 653MB 属于已不在 HEAD 的路径：`data/professional-source-manifest.json` 27MB、`professional-source-index.json` 16MB、一份 23MB ONNX 模型、13MB `footer-scrub.mp4`、以及成批 4MB 的旧 e2e 截图。预计 `filter-repo` 后可降到 80MB 量级；本轮只测量，不执行。
+
+## 2026-11-02 许可证复核与文档去冲突（客户）
+
+- **CCB 不引代码的真实原因**：根目录无任何 LICENSE 文件（LICENSE／LICENSE.md／LICENSE.txt／COPYING 均 404），`package.json` 也没有 `license` 字段，自述是 "Reverse-engineered Anthropic Claude Code CLI"——未声明许可证即默认保留所有权利，加上逆向来源的权利瑕疵。此前说"只借思路"，依据就是这条，不是嫌 MIT 不好。
+- **OpenCode 是 MIT**（`anomalyco/opencode`，原 `sst/opencode`，2.2.5，Bun monorepo），可引用、可改、可商用；但它是编码代理，不是教学引擎，**不能整包当轮子替换对话引擎**。可看的只有 provider 抽象、模型元数据、会话与流式协议的组织方式；要取件仍按原规则评估。
+- **文档去冲突**：裁定 2（导航）与 Y-G4 里仍把 Feed 当一级页面，已标 11-02 修正；工作位置段仍写 Claude 在主工作树、Codex 用两个 worktree，实际两条分支都已并入 `main` 且 Claude 已因周额度退出；基线表里的测试候选哈希 `ff0580cb…` 与日常入口日期（记为 10-27、实为 10-22）已按实测更正为 `d47f4ff5…` 与 2026-10-22。
