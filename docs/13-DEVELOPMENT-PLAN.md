@@ -45,7 +45,7 @@
 16. **对话节奏与预算（11-02 用户定）**：按 Claude Code 的节奏做**短平快**——回合短、反馈快、过程可见，不为了省 token 而牺牲体验；组件、讲解、过程展示都不设 token 预算上限。参考项目 [claude-code-best/claude-code](https://github.com/claude-code-best/claude-code)（Goal 持续驱动、Artifacts、多 Agent 编排）只借运作方式，不引入其代码与运行时。
 17. **对话历史不带评判（11-02 用户定）**：会话历史只显示标题／时间／所属目标，**不显示"答错""部分正确""待核对"这类标签**；对错只在学习反馈里出现。这条覆盖旧外壳批次引入的标签。
 18. **Git 瘦身（11-02 客户批准，当日已执行）**：`.git` 实测 577MB（2 个 pack，in-pack 558MiB，另有约 17MB 垃圾 pack）。历史 blob 合计 679MB，其中 **653MB 属于已不在 HEAD 的路径**（旧数据清单 27MB＋16MB、一份 23MB 的 ONNX 模型、13MB 宣传视频、成批 4MB 的 e2e 截图），预计瘦身后可降到 80MB 量级。
-   **执行结果（11-02）**：改用"移除已不在 HEAD 的历史路径"方案（6539 条历史路径中有 5785 个 blob 已从 HEAD 消失），`.git` 由 **577MB 降到 162MB（-72%）**，pack 161MiB，提交 756→635（只含被删路径的空提交被收缩），`git fsck` 干净，工作树与重写前逐文件一致。备份在 `~/Desktop/.git-backup.noindex/yozi-before-slim-20261102.git`（镜像）与 `dot-git-before-slim-20261102`（.git 副本）。副作用：**重写前的提交哈希全部失效**，旧文档里 11-02 之前的哈希需用 `git log --grep` 检索或从镜像备份查看；远程未推送，force-push 须客户另行决定。执行要求：独占窗口、先做完整镜像备份、用 `git filter-repo` 清大对象、重写后核对工作树与全部 worktree、保留回滚路径；与开发批次分开，不在有并行开发时执行。
+   **执行结果（11-02）**：改用"移除已不在 HEAD 的历史路径"方案（6539 条历史路径中有 5785 个 blob 已从 HEAD 消失），`.git` 由 **577MB 降到 162MB（-72%）**，pack 161MiB，提交 756→635（只含被删路径的空提交被收缩），`git fsck` 干净，工作树与重写前逐文件一致。两层备份（镜像＋.git 副本）做完后被写、验证通过，**已于当日按客户指示删除**；删前确认远程 `origin/main` 指向 `beec52dc`、本地并无该对象，因此远程不构成重写前历史的备份，旧哈希与已删路径不再可恢复。副作用：**重写前的提交哈希全部失效**，旧文档里 11-02 之前的哈希需用 `git log --grep` 检索或从镜像备份查看；远程未推送，force-push 须客户另行决定。执行要求：独占窗口、先做完整镜像备份、用 `git filter-repo` 清大对象、重写后核对工作树与全部 worktree、保留回滚路径；与开发批次分开，不在有并行开发时执行。
 
 
 19. **开源复用与许可证（11-02 用户提出，结论如下）**：
@@ -190,7 +190,7 @@
 | 既有回退 | `task-kitten-20261027.noindex`（上一候选）、`host-policy-resume-20261026.noindex`（指定回退）、`handoff-final-20261026.noindex`（上批完整基线）、`p13-candidate`（正式程序归档＋验证收据＋私有学习资料备份）、`yozi-candidate-build/backend-before-handoff-20261026`（后端回退）、`ab-contract-offline-before`（WIP 原文回退） |
 | 构建产物 | `dist/build/desktop`（今日前端）、`dist/build/h5`（官网网页端）、`dist/build/mp-weixin`（小程序暂停，原位保留不删） |
 | 官网端在哪 | 同一仓库的 H5 构建，不是独立项目：`isH5 && !isDesktop` 时 `@yozi-home` 指向 `components/business/website/website-home.vue`，路由只放首页／登录／隐私／条款，下载包在 `public/downloads/` |
-| 有意保留的大件 | `src-tauri/target` 2.2G（复用 Cargo 缓存，`cargo test`/原生构建还要用）、`node_modules` 494M、`data/raw-inbox` 2.0G（客户原件）、`.git` 162M（11-02 已瘦身，原 577M；备份在 `~/Desktop/.git-backup.noindex/`） |
+| 有意保留的大件 | `src-tauri/target` 2.2G（复用 Cargo 缓存，`cargo test`/原生构建还要用）、`node_modules` 494M、`data/raw-inbox` 2.0G（客户原件）、`.git` 162M（11-02 已瘦身，原 577M；瘦身备份已按客户指示删除，远程未推送） |
 | 清理回执 | 11-02 批次见 `tmp/cleanup-receipt-20261102.txt`：257MB 移入废纸篓，文档引用的 36 个证据文件已按原路径还原；`tmp` 686MB → 438MB。10-27 旧回执 `tmp/cleanup-receipt-20261027.txt` 保留；客户已自行清空废纸篓 |
 
 ## 2. 已锁定、不再讨论的边界

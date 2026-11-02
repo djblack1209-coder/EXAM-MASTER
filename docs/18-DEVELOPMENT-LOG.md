@@ -982,3 +982,4 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 - **结果**：`.git` **577MB → 162MB（-72%）**，pack 161MiB；提交 **756 → 635**（只含被删路径的空提交被收缩）；`git fsck` 全量干净，工作树 1253 个跟踪文件与重写前逐一比对一致（抽查 `src/pages/learning/index.vue`、`docs/13`、`package.json` 哈希相同）。
 - **顺带清理**：删除 2 个 `refs/codex/turn-diffs/**/base` 树引用与 1 个 `refs/backups/pre-cleanup-20261010`——它们钉住了整棵旧树，是瘦身后仍占空间的主因。
 - **副作用与边界**：重写前所有提交哈希失效，旧文档中的历史哈希需用 `git log --grep` 检索或查镜像备份；远程 origin 已恢复但**未推送**，force-push 须客户另行决定。
+- **备份收尾（同日 19:05）**：瘦身用的两层备份（577MB 镜像 + 578MB `.git` 副本）在验证通过后按客户指示删除，`~/Desktop/.git-backup.noindex/` 已不存在。删前核对：远程 `origin/main` 为 `beec52dc`、本地没有该对象，远程不构成重写前历史的备份；因此旧哈希与 5785 个已删路径不再可恢复，现行历史内容与重写前逐文件一致。
