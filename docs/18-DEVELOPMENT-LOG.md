@@ -983,3 +983,4 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 - **顺带清理**：删除 2 个 `refs/codex/turn-diffs/**/base` 树引用与 1 个 `refs/backups/pre-cleanup-20261010`——它们钉住了整棵旧树，是瘦身后仍占空间的主因。
 - **副作用与边界**：重写前所有提交哈希失效，旧文档中的历史哈希需用 `git log --grep` 检索或查镜像备份；远程 origin 已恢复但**未推送**，force-push 须客户另行决定。
 - **备份收尾（同日 19:05）**：瘦身用的两层备份（577MB 镜像 + 578MB `.git` 副本）在验证通过后按客户指示删除，`~/Desktop/.git-backup.noindex/` 已不存在。删前核对：远程 `origin/main` 为 `beec52dc`、本地没有该对象，远程不构成重写前历史的备份；因此旧哈希与 5785 个已删路径不再可恢复，现行历史内容与重写前逐文件一致。
+- **推送口径（客户 11-02 补充）**：不是"永不推送"，而是**等 Codex 这批 UI/UX 做完再推远端 main**。因历史已重写，远端 `main` 仍是 `beec52dc`（本地无此对象），推送须 `git push --force-with-lease=main:beec52dc origin main`，推前用 `ls-remote` 复核旧值；只推 main，不覆盖标签与历史分支。已写进 docs/13 第 7 节，无需再给 Codex 追加口头指令。
