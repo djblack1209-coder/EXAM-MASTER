@@ -975,3 +975,10 @@ rtk bypass node scripts/eval/compare-test-failures.mjs --baseline "tmp/progress-
 - **CCB 不引代码的真实原因**：根目录无任何 LICENSE 文件（LICENSE／LICENSE.md／LICENSE.txt／COPYING 均 404），`package.json` 也没有 `license` 字段，自述是 "Reverse-engineered Anthropic Claude Code CLI"——未声明许可证即默认保留所有权利，加上逆向来源的权利瑕疵。此前说"只借思路"，依据就是这条，不是嫌 MIT 不好。
 - **OpenCode 是 MIT**（`anomalyco/opencode`，原 `sst/opencode`，2.2.5，Bun monorepo），可引用、可改、可商用；但它是编码代理，不是教学引擎，**不能整包当轮子替换对话引擎**。可看的只有 provider 抽象、模型元数据、会话与流式协议的组织方式；要取件仍按原规则评估。
 - **文档去冲突**：裁定 2（导航）与 Y-G4 里仍把 Feed 当一级页面，已标 11-02 修正；工作位置段仍写 Claude 在主工作树、Codex 用两个 worktree，实际两条分支都已并入 `main` 且 Claude 已因周额度退出；基线表里的测试候选哈希 `ff0580cb…` 与日常入口日期（记为 10-27、实为 10-22）已按实测更正为 `d47f4ff5…` 与 2026-10-22。
+
+## 2026-11-02 Git 瘦身执行（客户当日批准）
+
+- **做法**：先做两层备份（`git clone --mirror` + `.git` 目录副本，均在 `~/Desktop/.git-backup.noindex/`），清掉三个已并入 main 的历史 worktree，再用 `git filter-repo --invert-paths` 移除"历史上存在、HEAD 已不存在"的 5785 个 blob 路径（题库 CDN 253MB、tmp/pdfs 177MB、旧 e2e 截图、专业来源清单 44MB、ONNX 模型 24MB 等）。
+- **结果**：`.git` **577MB → 162MB（-72%）**，pack 161MiB；提交 **756 → 635**（只含被删路径的空提交被收缩）；`git fsck` 全量干净，工作树 1253 个跟踪文件与重写前逐一比对一致（抽查 `src/pages/learning/index.vue`、`docs/13`、`package.json` 哈希相同）。
+- **顺带清理**：删除 2 个 `refs/codex/turn-diffs/**/base` 树引用与 1 个 `refs/backups/pre-cleanup-20261010`——它们钉住了整棵旧树，是瘦身后仍占空间的主因。
+- **副作用与边界**：重写前所有提交哈希失效，旧文档中的历史哈希需用 `git log --grep` 检索或查镜像备份；远程 origin 已恢复但**未推送**，force-push 须客户另行决定。
